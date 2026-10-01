@@ -107,7 +107,7 @@ class LoginScreen extends StatelessWidget {
                     child: ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF1E293B),
-                        padding: const EdgeInsets.vertical(16),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       ),
                       onPressed: () => _quickLogin("Marco"),
@@ -120,7 +120,7 @@ class LoginScreen extends StatelessWidget {
                     child: ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF1E293B),
-                        padding: const EdgeInsets.vertical(16),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       ),
                       onPressed: () => _quickLogin("Marika"),
@@ -324,4 +324,3 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
-
