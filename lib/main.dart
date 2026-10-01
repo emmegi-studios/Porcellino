@@ -209,7 +209,31 @@ class _LoginScreenState extends State<LoginScreen> {
                           style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15),
                         ),
                       ),
-                      const SizedBox(height: 12),
+                      if (!isRegistering) ...[
+                        const SizedBox(height: 8),
+                        TextButton(
+                          onPressed: () async {
+                            final email = _emailController.text.trim();
+                            if (email.isEmpty) {
+                              setState(() => errorMessage = "Inserisci prima la tua email sopra.");
+                              return;
+                            }
+                            try {
+                              await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+                              setState(() => errorMessage = "Email di reset inviata! Controlla la posta.");
+                            } catch (e) {
+                              setState(() => errorMessage = "Errore invio email di reset.");
+                            }
+                          },
+                          child: const Center(
+                            child: Text(
+                              "Password dimenticata? Clicca qui per resettarla",
+                              style: TextStyle(color: Colors.grey, fontSize: 11),
+                            ),
+                          ),
+                        ),
+                      ],
+                      const SizedBox(height: 4),
                       TextButton(
                         onPressed: () {
                           setState(() {
@@ -302,6 +326,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  int _currentIndex = 0;
   bool isShared = true;
 
   @override
@@ -332,7 +357,7 @@ class _HomeScreenState extends State<HomeScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(username, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                const Text("Porcellino OS Native", style: TextStyle(fontSize: 10, color: Color(0xFFF472B6))),
+                const Text("Porcellino OS Banking", style: TextStyle(fontSize: 10, color: Color(0xFFF472B6))),
               ],
             ),
           ],
@@ -344,222 +369,250 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          Container(
-            color: const Color(0xFF0F172A),
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: Container(
-              padding: const EdgeInsets.all(4),
-              decoration: BoxDecoration(color: const Color(0xFF020617), borderRadius: BorderRadius.circular(16)),
-              child: Row(
+      body: StreamBuilder(
+        stream: FirebaseDatabase.instance.ref('${pathPrefix}_transactions').onValue,
+        builder: (context, AsyncSnapshot<DatabaseEvent> snapshot) {
+          List<Map<String, dynamic>> items = [];
+          double patrimonio = 0;
+          double entrateMese = 0;
+          double usciteMese = 0;
+          Map<String, double> categoryTotals = {};
+
+          if (snapshot.hasData && snapshot.data?.snapshot.value != null) {
+            Map<dynamic, dynamic> map = snapshot.data!.snapshot.value as Map<dynamic, dynamic>;
+            map.forEach((key, value) {
+              items.add({"id": key, ...Map<String, dynamic>.from(value)});
+            });
+            items.sort((a, b) => (b['createdAt'] ?? '').compareTo(a['createdAt'] ?? ''));
+
+            final now = DateTime.now();
+            for (var item in items) {
+              double amount = (item['amount'] as num).toDouble();
+              String type = item['type'] ?? 'uscita';
+              String cat = item['category'] ?? 'Altro';
+
+              DateTime txDate = DateTime.tryParse(item['createdAt'] ?? '') ?? now;
+              bool isCurrentMonth = txDate.month == now.month && txDate.year == now.year;
+
+              if (type == 'entrata') {
+                patrimonio += amount;
+                if (isCurrentMonth) entrateMese += amount;
+              } else {
+                patrimonio -= amount;
+                if (isCurrentMonth) {
+                  usciteMese += amount;
+                  categoryTotals[cat] = (categoryTotals[cat] ?? 0) + amount;
+                }
+              }
+            }
+          }
+
+          // Tab 0: Home / Patrimonio & Grafici
+          // Tab 1: Salvadanai & Obiettivi
+          // Tab 2: Simulatore & Livelli
+          if (_currentIndex == 1) {
+            return ListView(
+              padding: const EdgeInsets.all(16),
+              children: [
+                const Text("🎯 Obiettivi & Salvadanai", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 12),
+                SavingsLevelWidget(patrimonio: patrimonio),
+              ],
+            );
+          } else if (_currentIndex == 2) {
+            return ListView(
+              padding: const EdgeInsets.all(16),
+              children: [
+                const Text("🪄 Consulente IA", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 12),
+                SimulatorWidget(patrimonio: patrimonio),
+              ],
+            );
+          }
+
+          return ListView(
+            padding: const EdgeInsets.all(16),
+            children: [
+              // Selettore conto Condiviso / Privato stile banca
+              Container(
+                padding: const EdgeInsets.all(4),
+                decoration: BoxDecoration(color: const Color(0xFF020617), borderRadius: BorderRadius.circular(16)),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () => setState(() => isShared = true),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          decoration: BoxDecoration(
+                            color: isShared ? const Color(0xFFDB2777) : Colors.transparent,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Center(child: Text("👥 Condiviso", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () => setState(() => isShared = false),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          decoration: BoxDecoration(
+                            color: !isShared ? const Color(0xFFDB2777) : Colors.transparent,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Center(child: Text("🔒 Privato", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              Card(
+                color: const Color(0xFF0F172A),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20), side: const BorderSide(color: Color(0xFF1E293B))),
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text("PATRIMONIO TOTALE", style: TextStyle(fontSize: 10, color: Colors.grey, fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 4),
+                      Text("€ ${patrimonio.toStringAsFixed(2)}", style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Color(0xFF10B981))),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+
+              Row(
                 children: [
                   Expanded(
-                    child: GestureDetector(
-                      onTap: () => setState(() => isShared = true),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(vertical: 10),
-                        decoration: BoxDecoration(
-                          color: isShared ? const Color(0xFFDB2777) : Colors.transparent,
-                          borderRadius: BorderRadius.circular(12),
+                    child: Card(
+                      color: const Color(0xFF0F172A),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                      child: Padding(
+                        padding: const EdgeInsets.all(14.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text("ENTRATE MESE", style: TextStyle(fontSize: 9, color: Colors.grey, fontWeight: FontWeight.bold)),
+                            const SizedBox(height: 4),
+                            Text("€ ${entrateMese.toStringAsFixed(2)}", style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.blueAccent)),
+                          ],
                         ),
-                        child: const Center(child: Text("👥 Bilancio Condiviso", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
                       ),
                     ),
                   ),
+                  const SizedBox(width: 8),
                   Expanded(
-                    child: GestureDetector(
-                      onTap: () => setState(() => isShared = false),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(vertical: 10),
-                        decoration: BoxDecoration(
-                          color: !isShared ? const Color(0xFFDB2777) : Colors.transparent,
-                          borderRadius: BorderRadius.circular(12),
+                    child: Card(
+                      color: const Color(0xFF0F172A),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                      child: Padding(
+                        padding: const EdgeInsets.all(14.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text("USCITE MESE", style: TextStyle(fontSize: 9, color: Colors.grey, fontWeight: FontWeight.bold)),
+                            const SizedBox(height: 4),
+                            Text("€ ${usciteMese.toStringAsFixed(2)}", style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFFDB2777))),
+                          ],
                         ),
-                        child: const Center(child: Text("🔒 Personale Privato", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
                       ),
                     ),
                   ),
                 ],
               ),
-            ),
-          ),
-          Expanded(
-            child: StreamBuilder(
-              stream: FirebaseDatabase.instance.ref('${pathPrefix}_transactions').onValue,
-              builder: (context, AsyncSnapshot<DatabaseEvent> snapshot) {
-                List<Map<String, dynamic>> items = [];
-                double patrimonio = 0;
-                double entrateMese = 0;
-                double usciteMese = 0;
-                Map<String, double> categoryTotals = {};
+              const SizedBox(height: 16),
 
-                if (snapshot.hasData && snapshot.data?.snapshot.value != null) {
-                  Map<dynamic, dynamic> map = snapshot.data!.snapshot.value as Map<dynamic, dynamic>;
-                  map.forEach((key, value) {
-                    items.add({"id": key, ...Map<String, dynamic>.from(value)});
-                  });
-                  items.sort((a, b) => (b['createdAt'] ?? '').compareTo(a['createdAt'] ?? ''));
-
-                  final now = DateTime.now();
-                  for (var item in items) {
-                    double amount = (item['amount'] as num).toDouble();
-                    String type = item['type'] ?? 'uscita';
-                    String cat = item['category'] ?? 'Altro';
-
-                    DateTime txDate = DateTime.tryParse(item['createdAt'] ?? '') ?? now;
-                    bool isCurrentMonth = txDate.month == now.month && txDate.year == now.year;
-
-                    if (type == 'entrata') {
-                      patrimonio += amount;
-                      if (isCurrentMonth) entrateMese += amount;
-                    } else {
-                      patrimonio -= amount;
-                      if (isCurrentMonth) {
-                        usciteMese += amount;
-                        categoryTotals[cat] = (categoryTotals[cat] ?? 0) + amount;
-                      }
-                    }
-                  }
-                }
-
-                return ListView(
-                  padding: const EdgeInsets.all(16),
-                  children: [
-                    Card(
-                      color: const Color(0xFF0F172A),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20), side: const BorderSide(color: Color(0xFF1E293B))),
-                      child: Padding(
-                        padding: const EdgeInsets.all(20.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text("PATRIMONIO TOTALE", style: TextStyle(fontSize: 10, color: Colors.grey, fontWeight: FontWeight.bold)),
-                            const SizedBox(height: 4),
-                            Text("€ ${patrimonio.toStringAsFixed(2)}", style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Color(0xFF10B981))),
-                          ],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-
-                    Row(
+              if (categoryTotals.isNotEmpty) ...[
+                Card(
+                  color: const Color(0xFF0F172A),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Expanded(
-                          child: Card(
-                            color: const Color(0xFF0F172A),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                            child: Padding(
-                              padding: const EdgeInsets.all(14.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Text("ENTRATE MESE", style: TextStyle(fontSize: 9, color: Colors.grey, fontWeight: FontWeight.bold)),
-                                  const SizedBox(height: 4),
-                                  Text("€ ${entrateMese.toStringAsFixed(2)}", style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.blueAccent)),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Card(
-                            color: const Color(0xFF0F172A),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                            child: Padding(
-                              padding: const EdgeInsets.all(14.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Text("USCITE MESE", style: TextStyle(fontSize: 9, color: Colors.grey, fontWeight: FontWeight.bold)),
-                                  const SizedBox(height: 4),
-                                  Text("€ ${usciteMese.toStringAsFixed(2)}", style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFFDB2777))),
-                                ],
-                              ),
+                        const Text("📊 Ripartizione Spese Mensili", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white)),
+                        const SizedBox(height: 16),
+                        SizedBox(
+                          height: 160,
+                          child: PieChart(
+                            PieChartData(
+                              sectionsSpace: 2,
+                              centerSpaceRadius: 35,
+                              sections: categoryTotals.entries.map((entry) {
+                                return PieChartSectionData(
+                                  color: _getCategoryColor(entry.key),
+                                  value: entry.value,
+                                  title: '${((entry.value / usciteMese) * 100).toStringAsFixed(0)}%',
+                                  radius: 40,
+                                  titleStyle: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.white),
+                                );
+                              }).toList(),
                             ),
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 16),
+                  ),
+                ),
+                const SizedBox(height: 16),
+              ],
 
-                    if (categoryTotals.isNotEmpty) ...[
-                      Card(
-                        color: const Color(0xFF0F172A),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text("📊 Ripartizione Spese Mensili", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white)),
-                              const SizedBox(height: 16),
-                              SizedBox(
-                                height: 160,
-                                child: PieChart(
-                                  PieChartData(
-                                    sectionsSpace: 2,
-                                    centerSpaceRadius: 35,
-                                    sections: categoryTotals.entries.map((entry) {
-                                      return PieChartSectionData(
-                                        color: _getCategoryColor(entry.key),
-                                        value: entry.value,
-                                        title: '${((entry.value / usciteMese) * 100).toStringAsFixed(0)}%',
-                                        radius: 40,
-                                        titleStyle: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.white),
-                                      );
-                                    }).toList(),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                    ],
-
-                    const Text("📜 STORICO TRANSAZIONI", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey)),
-                    const SizedBox(height: 8),
-                    if (items.isEmpty)
-                      const Padding(
-                        padding: EdgeInsets.all(16.0),
-                        child: Center(child: Text("Nessuna transazione registrata.", style: TextStyle(fontSize: 12, color: Colors.grey))),
-                      ),
-                    ...items.map((tx) => Card(
-                          color: const Color(0xFF0F172A),
-                          margin: const EdgeInsets.only(bottom: 8),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                          child: ListTile(
-                            title: Text(tx['category'] ?? 'Spesa', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
-                            subtitle: Text("${tx['note'] ?? 'Nessuna nota'} • ${tx['createdBy'] ?? ''}", style: const TextStyle(fontSize: 10, color: Colors.grey)),
-                            trailing: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  "${tx['type'] == 'entrata' ? '+' : '-'}€ ${(tx['amount'] as num).toDouble().toStringAsFixed(2)}",
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 13,
-                                    color: tx['type'] == 'entrata' ? const Color(0xFF10B981) : const Color(0xFFDB2777),
-                                  ),
-                                ),
-                                IconButton(
-                                  icon: const Icon(Icons.close, size: 16, color: Colors.grey),
-                                  onPressed: () {
-                                    FirebaseDatabase.instance.ref('${pathPrefix}_transactions/${tx['id']}').remove();
-                                  },
-                                ),
-                              ],
+              const Text("📜 STORICO TRANSAZIONI", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey)),
+              const SizedBox(height: 8),
+              if (items.isEmpty)
+                const Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: Center(child: Text("Nessuna transazione registrata.", style: TextStyle(fontSize: 12, color: Colors.grey))),
+                ),
+              ...items.map((tx) => Card(
+                    color: const Color(0xFF0F172A),
+                    margin: const EdgeInsets.only(bottom: 8),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    child: ListTile(
+                      title: Text(tx['category'] ?? 'Spesa', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                      subtitle: Text("${tx['note'] ?? 'Nessuna nota'} • ${tx['createdBy'] ?? ''}", style: const TextStyle(fontSize: 10, color: Colors.grey)),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            "${tx['type'] == 'entrata' ? '+' : '-'}€ ${(tx['amount'] as num).toDouble().toStringAsFixed(2)}",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 13,
+                              color: tx['type'] == 'entrata' ? const Color(0xFF10B981) : const Color(0xFFDB2777),
                             ),
                           ),
-                        )),
-                  ],
-                );
-              },
-            ),
-          ),
+                          IconButton(
+                            icon: const Icon(Icons.close, size: 16, color: Colors.grey),
+                            onPressed: () {
+                              FirebaseDatabase.instance.ref('${pathPrefix}_transactions/${tx['id']}').remove();
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                  )),
+            ],
+          );
+        },
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: const Color(0xFF0F172A),
+        selectedItemColor: const Color(0xFFDB2777),
+        unselectedItemColor: Colors.grey,
+        currentIndex: _currentIndex,
+        onTap: (index) => setState(() => _currentIndex = index),
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
+          BottomNavigationBarItem(icon: Icon(Icons.savings), label: "Obiettivi"),
+          BottomNavigationBarItem(icon: Icon(Icons.psychology), label: "Simulatore"),
         ],
       ),
       floatingActionButton: FloatingActionButton(
