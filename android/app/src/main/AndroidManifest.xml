@@ -4,6 +4,12 @@
     <application
         android:label="Porcellino"
         android:icon="@mipmap/ic_launcher">
+        
+        <!-- Flag obbligatorio per attivare l'Android Embedding V2 in Flutter -->
+        <meta-data
+            android:name="flutterEmbedding"
+            android:value="2" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
