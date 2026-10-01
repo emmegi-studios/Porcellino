@@ -21,24 +21,36 @@ void main() async {
   runApp(const PorcellinoApp());
 }
 
+class ThemeController extends ValueNotifier<Color> {
+  ThemeController() : super(const Color(0xFF020617));
+  void changeTheme(Color bg) => value = bg;
+}
+
+final themeNotifier = ThemeController();
+
 class PorcellinoApp extends StatelessWidget {
   const PorcellinoApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Porcellino OS',
-      debugShowCheckedModeBanner: false,
-      themeMode: ThemeMode.dark,
-      darkTheme: ThemeData.dark().copyWith(
-        scaffoldBackgroundColor: const Color(0xFF020617),
-        cardColor: const Color(0xFF0F172A),
-        colorScheme: const ColorScheme.dark(
-          primary: Color(0xFFDB2777),
-          secondary: Color(0xFF10B981),
-        ),
-      ),
-      home: const AuthGate(),
+    return ValueListenableBuilder<Color>(
+      valueListenable: themeNotifier,
+      builder: (context, bgColor, child) {
+        return MaterialApp(
+          title: 'Porcellino OS',
+          debugShowCheckedModeBanner: false,
+          themeMode: ThemeMode.dark,
+          darkTheme: ThemeData.dark().copyWith(
+            scaffoldBackgroundColor: bgColor,
+            cardColor: const Color(0xFF0F172A),
+            colorScheme: const ColorScheme.dark(
+              primary: Color(0xFFDB2777),
+              secondary: Color(0xFF10B981),
+            ),
+          ),
+          home: const AuthGate(),
+        );
+      },
     );
   }
 }
@@ -100,6 +112,8 @@ class _LoginScreenState extends State<LoginScreen> {
           password: password,
         );
         await cred.user?.updateDisplayName(name);
+        await cred.user?.sendEmailVerification();
+        setState(() => errorMessage = "Account creato! Mail di verifica inviata.");
       } else {
         await FirebaseAuth.instance.signInWithEmailAndPassword(
           email: email,
@@ -132,7 +146,6 @@ class _LoginScreenState extends State<LoginScreen> {
               const Text("Porcellino OS", style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.white)),
               const Text("Official Finance Platform", style: TextStyle(fontSize: 12, color: Colors.grey)),
               const SizedBox(height: 32),
-
               Card(
                 color: const Color(0xFF0F172A),
                 shape: RoundedRectangleBorder(
@@ -181,7 +194,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       if (errorMessage.isNotEmpty) ...[
                         const SizedBox(height: 12),
-                        Text(errorMessage, style: const TextStyle(color: Colors.redAccent, fontSize: 12)),
+                        Text(errorMessage, style: const TextStyle(color: Colors.amber, fontSize: 12)),
                       ],
                       const SizedBox(height: 20),
                       ElevatedButton(
@@ -233,6 +246,64 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   bool isShared = true;
 
+  void _openSettingsDialog() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: const Color(0xFF0F172A),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+      builder: (context) => Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text("⚙️ Impostazioni & Temi", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 16),
+            const Text("Seleziona Sfondo Interfaccia:", style: TextStyle(fontSize: 12, color: Colors.grey)),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF020617)),
+                    onPressed: () => themeNotifier.changeTheme(const Color(0xFF020617)),
+                    child: const Text("Dark Slate"),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
+                    onPressed: () => themeNotifier.changeTheme(Colors.black),
+                    child: const Text("OLED Black"),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF311B92)),
+                    onPressed: () => themeNotifier.changeTheme(const Color(0xFF311B92)),
+                    child: const Text("Midnight"),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent, minimumSize: const Size.fromHeight(48)),
+              onPressed: () {
+                Navigator.pop(context);
+                FirebaseAuth.instance.signOut();
+              },
+              icon: const Icon(Icons.logout, color: Colors.white),
+              label: const Text("Disconnetti Account", style: TextStyle(color: Colors.white)),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
@@ -257,8 +328,8 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.logout, color: Colors.pinkAccent),
-            onPressed: () => FirebaseAuth.instance.signOut(),
+            icon: const Icon(Icons.settings, color: Colors.pinkAccent),
+            onPressed: _openSettingsDialog,
           ),
         ],
       ),
@@ -693,7 +764,7 @@ class PocketsWidget extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            mainAxisAlignment: MainAxisAlignment.between,
                             children: [
                               Text(p['name'] ?? '', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
                               Text("€ ${current.toStringAsFixed(0)} / € ${target.toStringAsFixed(0)}", style: const TextStyle(fontSize: 11, color: Color(0xFF10B981))),
@@ -784,7 +855,7 @@ class SavingsLevelWidget extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.between,
               children: [
                 const Text("🏆 Livelli Risparmio", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
                 Text(level, style: const TextStyle(fontSize: 10, color: Color(0xFFF472B6), fontWeight: FontWeight.bold)),
