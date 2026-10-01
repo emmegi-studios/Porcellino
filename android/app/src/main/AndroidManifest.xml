@@ -1,11 +1,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.porcellino.app">
+    
     <uses-permission android:name="android.permission.INTERNET"/>
+    
     <application
         android:label="Porcellino"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@android:drawable/sym_def_app_icon"
+        android:theme="@style/LaunchTheme">
         
-        <!-- Flag obbligatorio per attivare l'Android Embedding V2 in Flutter -->
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
@@ -14,7 +16,7 @@
             android:name=".MainActivity"
             android:exported="true"
             android:launchMode="singleTop"
-            android:theme="@android:style/Theme.Black.NoTitleBar"
+            android:theme="@style/LaunchTheme"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
             android:hardwareAccelerated="true"
             android:windowSoftInputMode="adjustResize">
