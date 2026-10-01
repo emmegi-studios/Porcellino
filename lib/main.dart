@@ -4,6 +4,10 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'widgets/settings.dart';
+import 'widgets/pockets.dart';
+import 'widgets/recurring.dart';
+import 'widgets/features.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,13 +24,6 @@ void main() async {
   );
   runApp(const PorcellinoApp());
 }
-
-class ThemeController extends ValueNotifier<Color> {
-  ThemeController() : super(const Color(0xFF020617));
-  void changeTheme(Color bg) => value = bg;
-}
-
-final themeNotifier = ThemeController();
 
 class PorcellinoApp extends StatelessWidget {
   const PorcellinoApp({super.key});
@@ -246,64 +243,6 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   bool isShared = true;
 
-  void _openSettingsDialog() {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: const Color(0xFF0F172A),
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
-      builder: (context) => Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text("⚙️ Impostazioni & Temi", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 16),
-            const Text("Seleziona Sfondo Interfaccia:", style: TextStyle(fontSize: 12, color: Colors.grey)),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                Expanded(
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF020617)),
-                    onPressed: () => themeNotifier.changeTheme(const Color(0xFF020617)),
-                    child: const Text("Dark Slate"),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
-                    onPressed: () => themeNotifier.changeTheme(Colors.black),
-                    child: const Text("OLED Black"),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF311B92)),
-                    onPressed: () => themeNotifier.changeTheme(const Color(0xFF311B92)),
-                    child: const Text("Midnight"),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton.icon(
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent, minimumSize: const Size.fromHeight(48)),
-              onPressed: () {
-                Navigator.pop(context);
-                FirebaseAuth.instance.signOut();
-              },
-              icon: const Icon(Icons.logout, color: Colors.white),
-              label: const Text("Disconnetti Account", style: TextStyle(color: Colors.white)),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
@@ -329,7 +268,7 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.settings, color: Colors.pinkAccent),
-            onPressed: _openSettingsDialog,
+            onPressed: () => openSettingsDialog(context),
           ),
         ],
       ),
@@ -674,263 +613,6 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ],
           ),
-        ),
-      ),
-    );
-  }
-}
-
-class PocketsWidget extends StatelessWidget {
-  final String pathPrefix;
-  const PocketsWidget({super.key, required this.pathPrefix});
-
-  void _showAddPocketDialog(BuildContext context) {
-    final nameController = TextEditingController();
-    final targetController = TextEditingController();
-
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF0F172A),
-        title: const Text("Nuovo Salvadanaio"),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(controller: nameController, decoration: const InputDecoration(labelText: "Nome (es. Vacanze)")),
-            TextField(controller: targetController, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: "Obiettivo (€)")),
-          ],
-        ),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text("Annulla")),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF10B981)),
-            onPressed: () {
-              final target = double.tryParse(targetController.text) ?? 0;
-              if (nameController.text.isNotEmpty && target > 0) {
-                FirebaseDatabase.instance.ref('${pathPrefix}_pockets').push().set({
-                  'name': nameController.text,
-                  'target': target,
-                  'current': 0,
-                });
-                Navigator.pop(context);
-              }
-            },
-            child: const Text("Crea"),
-          ),
-        ],
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      color: const Color(0xFF0F172A),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text("🎯 Salvadanai & Obiettivi", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white)),
-                IconButton(
-                  icon: const Icon(Icons.add_circle, color: Color(0xFF10B981), size: 20),
-                  onPressed: () => _showAddPocketDialog(context),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            StreamBuilder(
-              stream: FirebaseDatabase.instance.ref('${pathPrefix}_pockets').onValue,
-              builder: (context, AsyncSnapshot<DatabaseEvent> snapshot) {
-                if (!snapshot.hasData || snapshot.data?.snapshot.value == null) {
-                  return const Text("Nessun salvadanaio attivo.", style: TextStyle(fontSize: 11, color: Colors.grey));
-                }
-                Map map = snapshot.data!.snapshot.value as Map;
-                return Column(
-                  children: map.entries.map((e) {
-                    var p = e.value;
-                    double current = (p['current'] as num).toDouble();
-                    double target = (p['target'] as num).toDouble();
-                    double perc = (current / target).clamp(0.0, 1.0);
-                    return Container(
-                      margin: const EdgeInsets.only(bottom: 8),
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(color: const Color(0xFF020617), borderRadius: BorderRadius.circular(12)),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.between,
-                            children: [
-                              Text(p['name'] ?? '', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
-                              Text("€ ${current.toStringAsFixed(0)} / € ${target.toStringAsFixed(0)}", style: const TextStyle(fontSize: 11, color: Color(0xFF10B981))),
-                            ],
-                          ),
-                          const SizedBox(height: 6),
-                          LinearProgressIndicator(value: perc, color: const Color(0xFF10B981), backgroundColor: Colors.grey[800]),
-                        ],
-                      ),
-                    );
-                  }).toList(),
-                );
-              },
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class RecurringWidget extends StatelessWidget {
-  final String pathPrefix;
-  const RecurringWidget({super.key, required this.pathPrefix});
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      color: const Color(0xFF0F172A),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text("🔄 Spese & Entrate Ricorrenti", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white)),
-            const SizedBox(height: 8),
-            StreamBuilder(
-              stream: FirebaseDatabase.instance.ref('${pathPrefix}_recurring').onValue,
-              builder: (context, AsyncSnapshot<DatabaseEvent> snapshot) {
-                if (!snapshot.hasData || snapshot.data?.snapshot.value == null) {
-                  return const Text("Nessun abbonamento registrato.", style: TextStyle(fontSize: 11, color: Colors.grey));
-                }
-                Map map = snapshot.data!.snapshot.value as Map;
-                return Column(
-                  children: map.entries.map((e) {
-                    var r = e.value;
-                    return ListTile(
-                      dense: true,
-                      contentPadding: EdgeInsets.zero,
-                      title: Text(r['title'] ?? '', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
-                      trailing: Text(
-                        "€ ${(r['amount'] as num).toDouble().toStringAsFixed(2)}",
-                        style: TextStyle(color: r['type'] == 'entrata' ? Colors.blueAccent : Colors.pinkAccent, fontWeight: FontWeight.bold),
-                      ),
-                    );
-                  }).toList(),
-                );
-              },
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class SavingsLevelWidget extends StatelessWidget {
-  final double patrimonio;
-  const SavingsLevelWidget({super.key, required this.patrimonio});
-
-  @override
-  Widget build(BuildContext context) {
-    double target = 1000;
-    String level = "Livello 1: Smeraldo";
-    if (patrimonio >= 100000) { target = 100000; level = "Livello 4: Porcellone"; }
-    else if (patrimonio >= 50000) { target = 50000; level = "Livello 3: Fortezza"; }
-    else if (patrimonio >= 10000) { target = 10000; level = "Livello 2: Cuscino"; }
-
-    double perc = (patrimonio / target).clamp(0.0, 1.0);
-
-    return Card(
-      color: const Color(0xFF0F172A),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.between,
-              children: [
-                const Text("🏆 Livelli Risparmio", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
-                Text(level, style: const TextStyle(fontSize: 10, color: Color(0xFFF472B6), fontWeight: FontWeight.bold)),
-              ],
-            ),
-            const SizedBox(height: 8),
-            LinearProgressIndicator(value: perc, color: const Color(0xFFDB2777), backgroundColor: Colors.grey[800]),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class SimulatorWidget extends StatefulWidget {
-  final double patrimonio;
-  const SimulatorWidget({super.key, required this.patrimonio});
-
-  @override
-  State<SimulatorWidget> createState() => _SimulatorWidgetState();
-}
-
-class _SimulatorWidgetState extends State<SimulatorWidget> {
-  final amountController = TextEditingController();
-  String resultText = '';
-
-  void _calculate() {
-    final val = double.tryParse(amountController.text) ?? 0;
-    if (val <= 0) return;
-
-    double residuo = widget.patrimonio - val;
-    double rata3 = val / 3;
-    double rata6 = val / 6;
-
-    setState(() {
-      resultText = residuo >= 0
-          ? "✅ Acquisto sostenibile (€ ${residuo.toStringAsFixed(2)} rimanenti).\n💳 Rateizzabile in 3 rate da € ${rata3.toStringAsFixed(2)} o 6 da € ${rata6.toStringAsFixed(2)}"
-          : "🚨 Intaccherebbe le riserve per € ${residuo.abs().toStringAsFixed(2)}.\nConsigliate 6 rate da € ${rata6.toStringAsFixed(2)}";
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      color: const Color(0xFF0F172A),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text("🪄 Consulente IA (Simulatore Acquisti)", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: amountController,
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                    decoration: const InputDecoration(hintText: "Importo spesa (€)", isDense: true, border: OutlineInputBorder()),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.indigo),
-                  onPressed: _calculate,
-                  child: const Text("Valuta", style: TextStyle(color: Colors.white, fontSize: 12)),
-                ),
-              ],
-            ),
-            if (resultText.isNotEmpty) ...[
-              const SizedBox(height: 8),
-              Text(resultText, style: const TextStyle(fontSize: 11, color: Colors.amber)),
-            ],
-          ],
         ),
       ),
     );
