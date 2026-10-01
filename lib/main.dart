@@ -943,12 +943,10 @@ class DailyBudgetWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final now = DateTime.now();
-    // Calcoliamo i giorni rimanenti nel mese corrente
     final lastDayOfMonth = DateTime(now.year, now.month + 1, 0);
     int daysLeft = lastDayOfMonth.day - now.day + 1;
     if (daysLeft <= 0) daysLeft = 1;
 
-    // Budget giornaliero teorico basato sul patrimonio e sui giorni rimasti
     double dailyBudget = patrimonio > 0 ? (patrimonio / daysLeft) : 0;
 
     return Card(
@@ -962,16 +960,15 @@ class DailyBudgetWidget extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text("💡 BUDGET GIORNALIERO CONSIGLIATO", style: TextStyle(fontSize: 10, color: Colors.grey, fontWeight: FontWeight.bold)),
+                const Text("💡 BUDGET GIORNALIERO", style: TextStyle(fontSize: 10, color: Colors.grey, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 4),
-                Text("€ ${dailyBudget.toStringAsFixed(2)} / giorno", style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFFF472B6))),
+                Text("€ ${dailyBudget.toStringAsFixed(2)} / g", style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFFF472B6))),
               ],
             ),
             Container(
-              padding: const EdgeInsets.all(10),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(color: const Color(0xFF020617), borderRadius: BorderRadius.circular(12)),
-              child: Text("$daysLeft giorni
-a fine mese", textAlign: TextAlign.center, style: const TextStyle(fontSize: 10, color: Colors.grey)),
+              child: Text("$daysLeft gg a fine mese", textAlign: TextAlign.center, style: const TextStyle(fontSize: 10, color: Colors.grey)),
             ),
           ],
         ),
