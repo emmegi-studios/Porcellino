@@ -64,17 +64,49 @@ class AuthGate extends StatelessWidget {
   }
 }
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
-  Future<void> _quickLogin(String name) async {
-    final email = "${name.toLowerCase()}@porcellino.app";
-    const pass = "porcellino123";
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _nameController = TextEditingController();
+  bool isRegistering = false;
+  String errorMessage = '';
+
+  Future<void> _submitAuth() async {
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
+    final name = _nameController.text.trim();
+
+    if (email.isEmpty || password.isEmpty) {
+      setState(() => errorMessage = "Inserisci email e password.");
+      return;
+    }
+
     try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: pass);
-    } catch (_) {
-      UserCredential cred = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: pass);
-      await cred.user?.updateDisplayName(name);
+      if (isRegistering) {
+        if (name.isEmpty) {
+          setState(() => errorMessage = "Inserisci il tuo nome utente.");
+          return;
+        }
+        UserCredential cred = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+          email: email,
+          password: password,
+        );
+        await cred.user?.updateDisplayName(name);
+      } else {
+        await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: email,
+          password: password,
+        );
+      }
+    } on FirebaseAuthException catch (e) {
+      setState(() => errorMessage = e.message ?? "Errore di autenticazione.");
     }
   }
 
@@ -83,48 +115,104 @@ class LoginScreen extends StatelessWidget {
     return Scaffold(
       body: Center(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24.0),
+          padding: const EdgeInsets.all(28.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(20),
                 decoration: const BoxDecoration(
                   color: Color(0xFFDB2777),
                   shape: BoxShape.circle,
                 ),
-                child: const Text("🐷", style: TextStyle(fontSize: 48)),
+                child: const Text("🐷", style: TextStyle(fontSize: 52)),
               ),
               const SizedBox(height: 16),
-              const Text("Porcellino OS", style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white)),
-              const Text("Personal & Shared Finance V4.0", style: TextStyle(fontSize: 12, color: Colors.grey)),
+              const Text("Porcellino OS", style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.white)),
+              const Text("Official Finance Platform", style: TextStyle(fontSize: 12, color: Colors.grey)),
               const SizedBox(height: 32),
-              Row(
-                children: [
-                  Expanded(
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF1E293B),
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+
+              Card(
+                color: const Color(0xFF0F172A),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                  side: const BorderSide(color: Color(0xFF1E293B)),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        isRegistering ? "Crea un nuovo account" : "Accedi all'applicazione",
+                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
                       ),
-                      onPressed: () => _quickLogin("Marco"),
-                      child: const Text("👤 Marco", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF1E293B),
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                      const SizedBox(height: 16),
+                      if (isRegistering) ...[
+                        TextField(
+                          controller: _nameController,
+                          decoration: const InputDecoration(
+                            labelText: "Nome Utente (es. Marco)",
+                            prefixIcon: Icon(Icons.person, color: Color(0xFFDB2777)),
+                            border: OutlineInputBorder(),
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                      ],
+                      TextField(
+                        controller: _emailController,
+                        keyboardType: TextInputType.emailAddress,
+                        decoration: const InputDecoration(
+                          labelText: "Indirizzo Email",
+                          prefixIcon: Icon(Icons.email, color: Color(0xFFDB2777)),
+                          border: OutlineInputBorder(),
+                        ),
                       ),
-                      onPressed: () => _quickLogin("Marika"),
-                      child: const Text("👤 Marika", style: TextStyle(color: Color(0xFFF472B6), fontWeight: FontWeight.bold)),
-                    ),
+                      const SizedBox(height: 12),
+                      TextField(
+                        controller: _passwordController,
+                        obscureText: true,
+                        decoration: const InputDecoration(
+                          labelText: "Password",
+                          prefixIcon: Icon(Icons.lock, color: Color(0xFFDB2777)),
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                      if (errorMessage.isNotEmpty) ...[
+                        const SizedBox(height: 12),
+                        Text(errorMessage, style: const TextStyle(color: Colors.redAccent, fontSize: 12)),
+                      ],
+                      const SizedBox(height: 20),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFDB2777),
+                          minimumSize: const Size.fromHeight(50),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                        ),
+                        onPressed: _submitAuth,
+                        child: Text(
+                          isRegistering ? "Registrati" : "Accedi",
+                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      TextButton(
+                        onPressed: () {
+                          setState(() {
+                            isRegistering = !isRegistering;
+                            errorMessage = '';
+                          });
+                        },
+                        child: Center(
+                          child: Text(
+                            isRegistering ? "Hai già un account? Accedi qui" : "Non hai un account? Registrati ora",
+                            style: const TextStyle(color: Color(0xFFF472B6), fontSize: 12),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
             ],
           ),
@@ -161,7 +249,7 @@ class _HomeScreenState extends State<HomeScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(username, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                const Text("Porcellino OS V4.0", style: TextStyle(fontSize: 10, color: Color(0xFFF472B6))),
+                const Text("Porcellino OS Native", style: TextStyle(fontSize: 10, color: Color(0xFFF472B6))),
               ],
             ),
           ],
@@ -255,7 +343,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 return ListView(
                   padding: const EdgeInsets.all(16),
                   children: [
-                    // CARD PATRIMONIO
                     Card(
                       color: const Color(0xFF0F172A),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20), side: const BorderSide(color: Color(0xFF1E293B))),
@@ -273,7 +360,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     const SizedBox(height: 12),
 
-                    // ENTRATE E USCITE MESE
                     Row(
                       children: [
                         Expanded(
@@ -315,7 +401,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     const SizedBox(height: 16),
 
-                    // GRAFICO A TORTA
                     if (categoryTotals.isNotEmpty) ...[
                       Card(
                         color: const Color(0xFF0F172A),
@@ -325,7 +410,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text("📊 Analisi Spese Mensili per Categoria", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white)),
+                              const Text("📊 Ripartizione Spese Mensili", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white)),
                               const SizedBox(height: 16),
                               SizedBox(
                                 height: 160,
@@ -352,23 +437,18 @@ class _HomeScreenState extends State<HomeScreen> {
                       const SizedBox(height: 16),
                     ],
 
-                    // SALVADANAI & OBIETTIVI
                     PocketsWidget(pathPrefix: pathPrefix),
                     const SizedBox(height: 16),
 
-                    // SPESE RICORRENTI
                     RecurringWidget(pathPrefix: pathPrefix),
                     const SizedBox(height: 16),
 
-                    // LIVELLI RISPARMIO
                     SavingsLevelWidget(patrimonio: patrimonio),
                     const SizedBox(height: 16),
 
-                    // CONSULENTE IA
                     SimulatorWidget(patrimonio: patrimonio),
                     const SizedBox(height: 16),
 
-                    // STORICO TRANSAZIONI
                     const Text("📜 STORICO TRANSAZIONI", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey)),
                     const SizedBox(height: 8),
                     if (items.isEmpty)
@@ -532,6 +612,44 @@ class PocketsWidget extends StatelessWidget {
   final String pathPrefix;
   const PocketsWidget({super.key, required this.pathPrefix});
 
+  void _showAddPocketDialog(BuildContext context) {
+    final nameController = TextEditingController();
+    final targetController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF0F172A),
+        title: const Text("Nuovo Salvadanaio"),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(controller: nameController, decoration: const InputDecoration(labelText: "Nome (es. Vacanze)")),
+            TextField(controller: targetController, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: "Obiettivo (€)")),
+          ],
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text("Annulla")),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF10B981)),
+            onPressed: () {
+              final target = double.tryParse(targetController.text) ?? 0;
+              if (nameController.text.isNotEmpty && target > 0) {
+                FirebaseDatabase.instance.ref('${pathPrefix}_pockets').push().set({
+                  'name': nameController.text,
+                  'target': target,
+                  'current': 0,
+                });
+                Navigator.pop(context);
+              }
+            },
+            child: const Text("Crea"),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -542,8 +660,17 @@ class PocketsWidget extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text("🎯 Salvadanai & Obiettivi", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white)),
-            const SizedBox(height: 12),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.between,
+              children: [
+                const Text("🎯 Salvadanai & Obiettivi", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white)),
+                IconButton(
+                  icon: const Icon(Icons.add_circle, color: Color(0xFF10B981), size: 20),
+                  onPressed: () => _showAddPocketDialog(context),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
             StreamBuilder(
               stream: FirebaseDatabase.instance.ref('${pathPrefix}_pockets').onValue,
               builder: (context, AsyncSnapshot<DatabaseEvent> snapshot) {
