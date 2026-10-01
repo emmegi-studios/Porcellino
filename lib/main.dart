@@ -478,31 +478,41 @@ class _HomeScreenState extends State<HomeScreen> {
           Map<String, double> categoryTotals = {};
 
           if (snapshot.hasData && snapshot.data?.snapshot.value != null) {
-            Map<dynamic, dynamic> map = snapshot.data!.snapshot.value as Map<dynamic, dynamic>;
-            map.forEach((key, value) {
-              items.add({"id": key, ...Map<String, dynamic>.from(value)});
-            });
-            items.sort((a, b) => (b['createdAt'] ?? '').compareTo(a['createdAt'] ?? ''));
+            try {
+              Map<dynamic, dynamic> map = snapshot.data!.snapshot.value as Map<dynamic, dynamic>;
+              map.forEach((key, value) {
+                if (value is Map) {
+                  items.add({"id": key, ...Map<String, dynamic>.from(value)});
+                }
+              });
+              items.sort((a, b) => (b['createdAt'] ?? '').compareTo(a['createdAt'] ?? ''));
 
-            final now = DateTime.now();
-            for (var item in items) {
-              double amount = (item['amount'] as num).toDouble();
-              String type = item['type'] ?? 'uscita';
-              String cat = item['category'] ?? 'Altro';
+              final now = DateTime.now();
+              for (var item in items) {
+                double amount = 0.0;
+                try {
+                  amount = (item['amount'] as num?)?.toDouble() ?? 0.0;
+                } catch (_) {}
 
-              DateTime txDate = DateTime.tryParse(item['createdAt'] ?? '') ?? now;
-              bool isCurrentMonth = txDate.month == now.month && txDate.year == now.year;
+                String type = item['type'] ?? 'uscita';
+                String cat = item['category'] ?? 'Altro';
 
-              if (type == 'entrata') {
-                patrimonio += amount;
-                if (isCurrentMonth) entrateMese += amount;
-              } else {
-                patrimonio -= amount;
-                if (isCurrentMonth) {
-                  usciteMese += amount;
-                  categoryTotals[cat] = (categoryTotals[cat] ?? 0) + amount;
+                DateTime txDate = DateTime.tryParse(item['createdAt'] ?? '') ?? now;
+                bool isCurrentMonth = txDate.month == now.month && txDate.year == now.year;
+
+                if (type == 'entrata') {
+                  patrimonio += amount;
+                  if (isCurrentMonth) entrateMese += amount;
+                } else {
+                  patrimonio -= amount;
+                  if (isCurrentMonth) {
+                    usciteMese += amount;
+                    categoryTotals[cat] = (categoryTotals[cat] ?? 0) + amount;
+                  }
                 }
               }
+            } catch (e) {
+              // Previene qualsiasi crash di parsing del database
             }
           }
 
