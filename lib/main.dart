@@ -137,10 +137,12 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(28.0),
-          child: Column(
+      body: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(28.0),
+            child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
@@ -196,8 +198,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         controller: _passwordController,
                         obscureText: true,
                         onChanged: (val) {
-                          // Trigger leggero per aggiornare la forza della password se in registrazione
-                          if (isRegistering) ((StateSetter)setState)((){});
+                          setState(() {});
                         },
                         decoration: const InputDecoration(
                           labelText: "Password",
@@ -243,17 +244,32 @@ class _LoginScreenState extends State<LoginScreen> {
                         Text(errorMessage, style: const TextStyle(color: Colors.amber, fontSize: 12)),
                       ],
                       const SizedBox(height: 20),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFDB2777),
-                          minimumSize: const Size.fromHeight(50),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                        ),
-                        onPressed: _submitAuth,
-                        child: Text(
-                          isRegistering ? "Registrati" : "Accedi",
-                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15),
-                        ),
+                      StatefulBuilder(
+                        builder: (context, setBtnState) {
+                          bool isLoading = false;
+                          return ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFFDB2777),
+                              minimumSize: const Size.fromHeight(50),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                            ),
+                            onPressed: isLoading ? null : () async {
+                              setBtnState(() => isLoading = true);
+                              await _submitAuth();
+                              setBtnState(() => isLoading = false);
+                            },
+                            child: isLoading
+                                ? const SizedBox(
+                                    width: 22,
+                                    height: 22,
+                                    child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5),
+                                  )
+                                : Text(
+                                    isRegistering ? "Registrati" : "Accedi",
+                                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15),
+                                  ),
+                          );
+                        },
                       ),
                       if (!isRegistering) ...[
                         const SizedBox(height: 8),
@@ -373,6 +389,18 @@ void _openSettingsDialog(BuildContext context) {
               );
             },
           ),
+          const SizedBox(height: 12),
+          ElevatedButton.icon(
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.indigo, minimumSize: const Size.fromHeight(48)),
+            onPressed: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text("👥 Link di invito copiato! Condividilo per sincronizzare il bilancio.")),
+              );
+              Navigator.pop(context);
+            },
+            icon: const Icon(Icons.share, color: Colors.white),
+            label: const Text("Invita Collaboratore al Conto", style: TextStyle(color: Colors.white)),
+          ),
           const SizedBox(height: 16),
           ElevatedButton.icon(
             style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent, minimumSize: const Size.fromHeight(48)),
@@ -488,6 +516,103 @@ class _HomeScreenState extends State<HomeScreen> {
                 const Text("🎯 Obiettivi & Salvadanai", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 12),
                 SavingsLevelWidget(patrimonio: patrimonio),
+                const SizedBox(height: 16),
+                // Integriamo il widget salvadanai dinamico basato sul conto attivo (Condiviso/Privato)
+                Card(
+                  color: const Color(0xFF0F172A),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text("🐷 I tuoi Salvadanai", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white)),
+                            IconButton(
+                              icon: const Icon(Icons.add_circle, color: Color(0xFF10B981), size: 20),
+                              onPressed: () {
+                                // Dialog rapido per creare un nuovo salvadanaio nel percorso corrente
+                                final nameController = TextEditingController();
+                                final targetController = TextEditingController();
+                                showDialog(
+                                  context: context,
+                                  builder: (context) => AlertDialog(
+                                    backgroundColor: const Color(0xFF0F172A),
+                                    title: const Text("Nuovo Salvadanaio"),
+                                    content: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        TextField(controller: nameController, decoration: const InputDecoration(labelText: "Nome (es. Vacanze)")),
+                                        TextField(controller: targetController, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: "Obiettivo (€)")),
+                                      ],
+                                    ),
+                                    actions: [
+                                      TextButton(onPressed: () => Navigator.pop(context), child: const Text("Annulla")),
+                                      ElevatedButton(
+                                        style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF10B981)),
+                                        onPressed: () {
+                                          final target = double.tryParse(targetController.text) ?? 0;
+                                          if (nameController.text.isNotEmpty && target > 0) {
+                                            FirebaseDatabase.instance.ref('${pathPrefix}_pockets').push().set({
+                                              'name': nameController.text,
+                                              'target': target,
+                                              'current': 0,
+                                            });
+                                            Navigator.pop(context);
+                                          }
+                                        },
+                                        child: const Text("Crea"),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        StreamBuilder(
+                          stream: FirebaseDatabase.instance.ref('${pathPrefix}_pockets').onValue,
+                          builder: (context, AsyncSnapshot<DatabaseEvent> snapshot) {
+                            if (!snapshot.hasData || snapshot.data?.snapshot.value == null) {
+                              return const Text("Nessun salvadanaio attivo in questa sezione.", style: TextStyle(fontSize: 11, color: Colors.grey));
+                            }
+                            Map map = snapshot.data!.snapshot.value as Map;
+                            return Column(
+                              children: map.entries.map((e) {
+                                var p = e.value;
+                                double current = (p['current'] as num).toDouble();
+                                double target = (p['target'] as num).toDouble();
+                                double perc = (target > 0) ? (current / target).clamp(0.0, 1.0) : 0.0;
+                                return Container(
+                                  margin: const EdgeInsets.only(bottom: 8),
+                                  padding: const EdgeInsets.all(10),
+                                  decoration: BoxDecoration(color: const Color(0xFF020617), borderRadius: BorderRadius.circular(12)),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(p['name'] ?? '', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                                          Text("€ ${current.toStringAsFixed(0)} / € ${target.toStringAsFixed(0)}", style: const TextStyle(fontSize: 11, color: Color(0xFF10B981))),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 6),
+                                      LinearProgressIndicator(value: perc, color: const Color(0xFF10B981), backgroundColor: Colors.grey[800]),
+                                    ],
+                                  ),
+                                );
+                              }).toList(),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               ],
             );
           } else if (_currentIndex == 2) {
@@ -648,7 +773,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                     child: ListTile(
                       title: Text(tx['category'] ?? 'Spesa', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
-                      subtitle: Text("${tx['note'] ?? 'Nessuna nota'} • ${tx['createdBy'] ?? ''}", style: const TextStyle(fontSize: 10, color: Colors.grey)),
+                      subtitle: Text(
+                        "${tx['note'] ?? 'Nessuna nota'} • ${_formatDate(tx['createdAt'])} • ${tx['createdBy'] ?? ''}",
+                        style: const TextStyle(fontSize: 10, color: Colors.grey),
+                      ),
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -780,13 +908,18 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 onPressed: () {
                   final amount = double.tryParse(amountController.text) ?? 0;
-                  if (amount <= 0) return;
+                  if (amount <= 0) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("⚠️ Inserisci un importo valido superiore a zero.")),
+                    );
+                    return;
+                  }
 
                   FirebaseDatabase.instance.ref('${pathPrefix}_transactions').push().set({
                     'type': type,
                     'amount': amount,
                     'category': category,
-                    'note': noteController.text,
+                    'note': noteController.text.isNotEmpty ? noteController.text : 'Senza nota',
                     'createdBy': username,
                     'createdAt': DateTime.now().toIso8601String(),
                   });
@@ -797,6 +930,50 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class DailyBudgetWidget extends StatelessWidget {
+  final double patrimonio;
+  const DailyBudgetWidget({super.key, required this.patrimonio});
+
+  @override
+  Widget build(BuildContext context) {
+    final now = DateTime.now();
+    // Calcoliamo i giorni rimanenti nel mese corrente
+    final lastDayOfMonth = DateTime(now.year, now.month + 1, 0);
+    int daysLeft = lastDayOfMonth.day - now.day + 1;
+    if (daysLeft <= 0) daysLeft = 1;
+
+    // Budget giornaliero teorico basato sul patrimonio e sui giorni rimasti
+    double dailyBudget = patrimonio > 0 ? (patrimonio / daysLeft) : 0;
+
+    return Card(
+      color: const Color(0xFF0F172A),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text("💡 BUDGET GIORNALIERO CONSIGLIATO", style: TextStyle(fontSize: 10, color: Colors.grey, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 4),
+                Text("€ ${dailyBudget.toStringAsFixed(2)} / giorno", style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFFF472B6))),
+              ],
+            ),
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(color: const Color(0xFF020617), borderRadius: BorderRadius.circular(12)),
+              child: Text("$daysLeft giorni
+a fine mese", textAlign: TextAlign.center, style: const TextStyle(fontSize: 10, color: Colors.grey)),
+            ),
+          ],
         ),
       ),
     );
