@@ -3,7 +3,17 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
+    <!-- Sfondo rosa scuro -->
     <path android:fillColor="#DB2777" android:pathData="M0,0h108v108h-108z"/>
-    <path android:fillColor="#F472B6" android:pathData="M54,24C36,24 22,38 22,56C22,74 36,88 54,88C72,88 86,74 86,56C86,38 72,24 54,24Z"/>
-    <path android:fillColor="#BE185D" android:pathData="M44,54C44,50 64,50 64,54C64,60 44,60 44,54Z"/>
+    <!-- Corpo del maialino (tondo) -->
+    <path android:fillColor="#F472B6" android:pathData="M54,28C38,28 26,40 26,56C26,72 38,84 54,84C70,84 82,72 82,56C82,40 70,28 54,28Z"/>
+    <!-- Orecchio sinistro -->
+    <path android:fillColor="#BE185D" android:pathData="M32,34L24,18L42,26Z"/>
+    <!-- Orecchio destro -->
+    <path android:fillColor="#BE185D" android:pathData="M76,34L84,18L66,26Z"/>
+    <!-- Grugno centrale -->
+    <path android:fillColor="#BE185D" android:pathData="M44,52C44,48 64,48 64,52C64,62 44,62 44,52Z"/>
+    <!-- Occhietti -->
+    <path android:fillColor="#020617" android:pathData="M40,46C42,46 42,42 40,42C38,42 38,46 40,46Z"/>
+    <path android:fillColor="#020617" android:pathData="M68,46C70,46 70,42 68,42C66,42 66,46 68,46Z"/>
 </vector>

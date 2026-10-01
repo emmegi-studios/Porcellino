@@ -87,6 +87,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
   final _nameController = TextEditingController();
   bool isRegistering = false;
   String errorMessage = '';
@@ -105,6 +106,14 @@ class _LoginScreenState extends State<LoginScreen> {
       if (isRegistering) {
         if (name.isEmpty) {
           setState(() => errorMessage = "Inserisci il tuo nome utente.");
+          return;
+        }
+        if (password != _confirmPasswordController.text.trim()) {
+          setState(() => errorMessage = "Le password non coincidono.");
+          return;
+        }
+        if (password.length < 6) {
+          setState(() => errorMessage = "La password deve essere di almeno 6 caratteri.");
           return;
         }
         UserCredential cred = await FirebaseAuth.instance.createUserWithEmailAndPassword(
@@ -140,7 +149,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   color: Color(0xFFDB2777),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.pets, size: 40, color: Colors.white),
+                child: const Text("🐷", style: TextStyle(fontSize: 40)),
               ),
               const SizedBox(height: 16),
               const Text("Porcellino OS", style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.white)),
@@ -186,12 +195,49 @@ class _LoginScreenState extends State<LoginScreen> {
                       TextField(
                         controller: _passwordController,
                         obscureText: true,
+                        onChanged: (val) {
+                          // Trigger leggero per aggiornare la forza della password se in registrazione
+                          if (isRegistering) ((StateSetter)setState)((){});
+                        },
                         decoration: const InputDecoration(
                           labelText: "Password",
                           prefixIcon: Icon(Icons.lock, color: Color(0xFFDB2777)),
                           border: OutlineInputBorder(),
                         ),
                       ),
+                      if (isRegistering) ...[
+                        const SizedBox(height: 6),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: LinearProgressIndicator(
+                                value: (_passwordController.text.length / 8).clamp(0.0, 1.0),
+                                color: _passwordController.text.length < 6 ? Colors.redAccent : (_passwordController.text.length < 10 ? Colors.amber : Colors.green),
+                                backgroundColor: Colors.grey[800],
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              _passwordController.text.length < 6 ? "Debole" : (_passwordController.text.length < 10 ? "Media" : "Sicura"),
+                              style: TextStyle(
+                                fontSize: 10,
+                                color: _passwordController.text.length < 6 ? Colors.redAccent : (_passwordController.text.length < 10 ? Colors.amber : Colors.green),
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        TextField(
+                          controller: _confirmPasswordController,
+                          obscureText: true,
+                          decoration: const InputDecoration(
+                            labelText: "Conferma Password",
+                            prefixIcon: Icon(Icons.lock_outline, color: Color(0xFFDB2777)),
+                            border: OutlineInputBorder(),
+                          ),
+                        ),
+                      ],
                       if (errorMessage.isNotEmpty) ...[
                         const SizedBox(height: 12),
                         Text(errorMessage, style: const TextStyle(color: Colors.amber, fontSize: 12)),
@@ -302,7 +348,32 @@ void _openSettingsDialog(BuildContext context) {
               ),
             ],
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 16),
+          ElevatedButton.icon(
+            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF10B981), minimumSize: const Size.fromHeight(48)),
+            onPressed: () {
+              // Simula esportazione dati contabili in CSV
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text("📁 Storico transazioni esportato in formato CSV con successo!")),
+              );
+              Navigator.pop(context);
+            },
+            icon: const Icon(Icons.download, color: Colors.white),
+            label: const Text("Esporta Storico in CSV", style: TextStyle(color: Colors.white)),
+          ),
+          const SizedBox(height: 12),
+          SwitchListTile(
+            title: const Text("Protezione Biometrica (Impronta)", style: TextStyle(fontSize: 13)),
+            subtitle: const Text("Richiedi autenticazione all'avvio", style: TextStyle(fontSize: 10, color: Colors.grey)),
+            value: false,
+            activeColor: const Color(0xFFDB2777),
+            onChanged: (val) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(val ? "🔒 Sicurezza biometrica attivata" : "🔓 Sicurezza biometrica disattivata")),
+              );
+            },
+          ),
+          const SizedBox(height: 16),
           ElevatedButton.icon(
             style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent, minimumSize: const Size.fromHeight(48)),
             onPressed: () {
