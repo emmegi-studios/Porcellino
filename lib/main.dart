@@ -18,7 +18,7 @@ void main() async {
       appId: "1:629577093985:web:e1f59170285d7da80dab20",
     ),
   );
-  runApp(const PorcellinoApp());
+  runApp(const PiggyVaultApp());
 }
 
 class ThemeController extends ValueNotifier<Color> {
@@ -28,8 +28,8 @@ class ThemeController extends ValueNotifier<Color> {
 
 final themeNotifier = ThemeController();
 
-class PorcellinoApp extends StatelessWidget {
-  const PorcellinoApp({super.key});
+class PiggyVaultApp extends StatelessWidget {
+  const PiggyVaultApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +37,7 @@ class PorcellinoApp extends StatelessWidget {
       valueListenable: themeNotifier,
       builder: (context, bgColor, child) {
         return MaterialApp(
-          title: 'Porcellino OS',
+          title: 'Piggy Vault',
           debugShowCheckedModeBanner: false,
           themeMode: ThemeMode.dark,
           darkTheme: ThemeData.dark().copyWith(
@@ -154,7 +154,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: const Text("🐷", style: TextStyle(fontSize: 40)),
               ),
               const SizedBox(height: 16),
-              const Text("Porcellino OS", style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.white)),
+              const Text("Piggy Vault", style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.white)),
               const Text("Official Finance Platform", style: TextStyle(fontSize: 12, color: Colors.grey)),
               const SizedBox(height: 32),
               Card(
@@ -456,7 +456,7 @@ class _HomeScreenState extends State<HomeScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(username, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                const Text("Porcellino OS Banking", style: TextStyle(fontSize: 10, color: Color(0xFFF472B6))),
+                const Text("Piggy Vault Banking", style: TextStyle(fontSize: 10, color: Color(0xFFF472B6))),
               ],
             ),
           ],
