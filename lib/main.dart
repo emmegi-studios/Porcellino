@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -505,7 +506,7 @@ class _HomeScreenState extends State<HomeScreen> {
     if (category.contains('🚗')) return Colors.blueAccent;
     if (category.contains('🐶')) return Colors.purpleAccent;
     if (category.contains('🍕')) return Colors.orangeAccent;
-    return Colors.emeraldAccent;
+    return const Color(0xFF10B981);
   }
 
   void _showAddTransactionDialog(BuildContext context, String pathPrefix, String username) {
@@ -661,7 +662,7 @@ class PocketsWidget extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
-              mainAxisAlignment: MainAxisAlignment.between,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const Text("🎯 Salvadanai & Obiettivi", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white)),
                 IconButton(
@@ -692,7 +693,7 @@ class PocketsWidget extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Row(
-                            mainAxisAlignment: MainAxisAlignment.between,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(p['name'] ?? '', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
                               Text("€ ${current.toStringAsFixed(0)} / € ${target.toStringAsFixed(0)}", style: const TextStyle(fontSize: 11, color: Color(0xFF10B981))),
@@ -783,7 +784,7 @@ class SavingsLevelWidget extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
-              mainAxisAlignment: MainAxisAlignment.between,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const Text("🏆 Livelli Risparmio", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
                 Text(level, style: const TextStyle(fontSize: 10, color: Color(0xFFF472B6), fontWeight: FontWeight.bold)),
@@ -821,7 +822,7 @@ class _SimulatorWidgetState extends State<SimulatorWidget> {
     setState(() {
       resultText = residuo >= 0
           ? "✅ Acquisto sostenibile (€ ${residuo.toStringAsFixed(2)} rimanenti).\n💳 Rateizzabile in 3 rate da € ${rata3.toStringAsFixed(2)} o 6 da € ${rata6.toStringAsFixed(2)}"
-          : "🚨 Intaccherebbe le riserve per € ${Math.abs(residuo).toStringAsFixed(2)}.\nConsigliate 6 rate da € ${rata6.toStringAsFixed(2)}";
+          : "🚨 Intaccherebbe le riserve per € ${residuo.abs().toStringAsFixed(2)}.\nConsigliate 6 rate da € ${rata6.toStringAsFixed(2)}";
     });
   }
 
