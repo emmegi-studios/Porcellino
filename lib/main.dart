@@ -6,7 +6,9 @@ import 'package:fl_chart/fl_chart.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  try {
+    await Firebase.initializeApp();
+  } catch (_) {}
   runApp(const PiggyVaultApp());
 }
 

@@ -2,7 +2,7 @@
     package="com.porcellino.app">
     <uses-permission android:name="android.permission.INTERNET"/>
     <application
-        android:label="Porcellino"
+        android:label="Piggy Vault"
         android:icon="@drawable/ic_launcher_pig"
         android:theme="@style/LaunchTheme">
         <meta-data android:name="flutterEmbedding" android:value="2" />
