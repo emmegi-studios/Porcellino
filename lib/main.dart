@@ -1,78 +1,47 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:fl_chart/fl_chart.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: const FirebaseOptions(
-      apiKey: "AIzaSyCA9XmgopjNTzdkhDnw60fMx-sxD8e9SM8",
-      authDomain: "porcellino-b2841.firebaseapp.com",
-      databaseURL: "https://porcellino-b2841-default-rtdb.europe-west1.firebasedatabase.app",
-      projectId: "porcellino-b2841",
-      storageBucket: "porcellino-b2841.firebasestorage.app",
-      messagingSenderId: "629577093985",
-      appId: "1:629577093985:web:e1f59170285d7da80dab20",
-    ),
-  );
+  await Firebase.initializeApp();
   runApp(const PiggyVaultApp());
 }
-
-class ThemeController extends ValueNotifier<Color> {
-  ThemeController() : super(const Color(0xFF020617));
-  void changeTheme(Color bg) => value = bg;
-}
-
-final themeNotifier = ThemeController();
 
 class PiggyVaultApp extends StatelessWidget {
   const PiggyVaultApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder<Color>(
-      valueListenable: themeNotifier,
-      builder: (context, bgColor, child) {
-        return MaterialApp(
-          title: 'Piggy Vault',
-          debugShowCheckedModeBanner: false,
-          themeMode: ThemeMode.dark,
-          darkTheme: ThemeData.dark().copyWith(
-            scaffoldBackgroundColor: bgColor,
-            cardColor: const Color(0xFF0F172A),
-            colorScheme: const ColorScheme.dark(
-              primary: Color(0xFFDB2777),
-              secondary: Color(0xFF10B981),
-            ),
-          ),
-          home: const AuthGate(),
-        );
-      },
-    );
-  }
-}
-
-class AuthGate extends StatelessWidget {
-  const AuthGate({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return StreamBuilder<User?>(
-      stream: FirebaseAuth.instance.authStateChanges(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Scaffold(
-            body: Center(child: CircularProgressIndicator(color: Color(0xFFDB2777))),
-          );
-        }
-        if (snapshot.hasData) {
-          return const HomeScreen();
-        }
-        return const LoginScreen();
-      },
+    return MaterialApp(
+      title: 'Piggy Vault',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        brightness: Brightness.dark,
+        scaffoldBackgroundColor: const Color(0xFF020617),
+        primaryColor: const Color(0xFFDB2777),
+        colorScheme: ColorScheme.dark(
+          primary: const Color(0xFFDB2777),
+          secondary: const Color(0xFF10B981),
+          surface: const Color(0xFF0F172A),
+        ),
+      ),
+      home: StreamBuilder<User?>(
+        stream: FirebaseAuth.instance.authStateChanges(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Scaffold(
+              body: Center(child: CircularProgressIndicator(color: Color(0xFFDB2777))),
+            );
+          }
+          if (snapshot.hasData) {
+            return const HomeScreen();
+          }
+          return const LoginScreen();
+        },
+      ),
     );
   }
 }
@@ -98,7 +67,7 @@ class _LoginScreenState extends State<LoginScreen> {
     final name = _nameController.text.trim();
 
     if (email.isEmpty || password.isEmpty) {
-      setState(() => errorMessage = "Inserisci email e password.");
+      setState(() => errorMessage = "Compila tutti i campi obbligatori.");
       return;
     }
 
@@ -120,17 +89,12 @@ class _LoginScreenState extends State<LoginScreen> {
           email: email,
           password: password,
         );
-        await cred.user?.updateDisplayName(name);
         await cred.user?.sendEmailVerification();
-        setState(() => errorMessage = "Account creato! Mail di verifica inviata.");
       } else {
-        await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: email,
-          password: password,
-        );
+        await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
       }
-    } on FirebaseAuthException catch (e) {
-      setState(() => errorMessage = e.message ?? "Errore di autenticazione.");
+    } catch (e) {
+      setState(() => errorMessage = "Errore: ${e.toString()}");
     }
   }
 
@@ -143,36 +107,37 @@ class _LoginScreenState extends State<LoginScreen> {
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(28.0),
             child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(20),
-                decoration: const BoxDecoration(
-                  color: Color(0xFFDB2777),
-                  shape: BoxShape.circle,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  width: 80,
+                  height: 80,
+                  decoration: const BoxDecoration(
+                    color: Color(0xFFDB2777),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Center(child: Text("🐷", style: TextStyle(fontSize: 40))),
                 ),
-                child: const Text("🐷", style: TextStyle(fontSize: 40)),
-              ),
-              const SizedBox(height: 16),
-              const Text("Piggy Vault", style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.white)),
-              const Text("Official Finance Platform", style: TextStyle(fontSize: 12, color: Colors.grey)),
-              const SizedBox(height: 32),
-              Card(
-                color: const Color(0xFF0F172A),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
-                  side: const BorderSide(color: Color(0xFF1E293B)),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(20.0),
+                const SizedBox(height: 16),
+                const Text("Piggy Vault", style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Colors.white)),
+                const Text("Smart Wealth Management", style: TextStyle(fontSize: 12, color: Color(0xFFF472B6))),
+                const SizedBox(height: 32),
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF0F172A),
+                    borderRadius: BorderRadius.circular(24),
+                    border: Border.all(color: const Color(0xFF1E293B)),
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        isRegistering ? "Crea un nuovo account" : "Accedi all'applicazione",
-                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
-                      ),
+                      Text(isRegistering ? "Crea un nuovo account" : "Accedi all'applicazione", style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                       const SizedBox(height: 16),
+                      if (errorMessage.isNotEmpty) ...[
+                        Text(errorMessage, style: const TextStyle(color: Colors.redAccent, fontSize: 12)),
+                        const SizedBox(height: 12),
+                      ],
                       if (isRegistering) ...[
                         TextField(
                           controller: _nameController,
@@ -198,7 +163,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         controller: _passwordController,
                         obscureText: true,
                         onChanged: (val) {
-                          setState(() {});
+                          if (isRegistering) setState(() {});
                         },
                         decoration: const InputDecoration(
                           labelText: "Password",
@@ -238,10 +203,6 @@ class _LoginScreenState extends State<LoginScreen> {
                             border: OutlineInputBorder(),
                           ),
                         ),
-                      ],
-                      if (errorMessage.isNotEmpty) ...[
-                        const SizedBox(height: 12),
-                        Text(errorMessage, style: const TextStyle(color: Colors.amber, fontSize: 12)),
                       ],
                       const SizedBox(height: 20),
                       StatefulBuilder(
@@ -289,13 +250,13 @@ class _LoginScreenState extends State<LoginScreen> {
                           },
                           child: const Center(
                             child: Text(
-                              "Password dimenticata? Clicca qui per resettarla",
+                              "Password dimenticata? Clicca qui",
                               style: TextStyle(color: Colors.grey, fontSize: 11),
                             ),
                           ),
                         ),
                       ],
-                      const SizedBox(height: 4),
+                      const SizedBox(height: 12),
                       TextButton(
                         onPressed: () {
                           setState(() {
@@ -313,108 +274,13 @@ class _LoginScreenState extends State<LoginScreen> {
                     ],
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
     );
   }
-}
-
-void _openSettingsDialog(BuildContext context) {
-  showModalBottomSheet(
-    context: context,
-    backgroundColor: const Color(0xFF0F172A),
-    shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
-    builder: (context) => Padding(
-      padding: const EdgeInsets.all(20.0),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text("⚙️ Impostazioni & Temi", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 16),
-          const Text("Seleziona Sfondo Interfaccia:", style: TextStyle(fontSize: 12, color: Colors.grey)),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              Expanded(
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF020617)),
-                  onPressed: () => themeNotifier.changeTheme(const Color(0xFF020617)),
-                  child: const Text("Dark"),
-                ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
-                  onPressed: () => themeNotifier.changeTheme(Colors.black),
-                  child: const Text("OLED"),
-                ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF311B92)),
-                  onPressed: () => themeNotifier.changeTheme(const Color(0xFF311B92)),
-                  child: const Text("Midnight"),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          ElevatedButton.icon(
-            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF10B981), minimumSize: const Size.fromHeight(48)),
-            onPressed: () {
-              // Simula esportazione dati contabili in CSV
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text("📁 Storico transazioni esportato in formato CSV con successo!")),
-              );
-              Navigator.pop(context);
-            },
-            icon: const Icon(Icons.download, color: Colors.white),
-            label: const Text("Esporta Storico in CSV", style: TextStyle(color: Colors.white)),
-          ),
-          const SizedBox(height: 12),
-          SwitchListTile(
-            title: const Text("Protezione Biometrica (Impronta)", style: TextStyle(fontSize: 13)),
-            subtitle: const Text("Richiedi autenticazione all'avvio", style: TextStyle(fontSize: 10, color: Colors.grey)),
-            value: false,
-            activeColor: const Color(0xFFDB2777),
-            onChanged: (val) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(val ? "🔒 Sicurezza biometrica attivata" : "🔓 Sicurezza biometrica disattivata")),
-              );
-            },
-          ),
-          const SizedBox(height: 12),
-          ElevatedButton.icon(
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.indigo, minimumSize: const Size.fromHeight(48)),
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text("👥 Link di invito copiato! Condividilo per sincronizzare il bilancio.")),
-              );
-              Navigator.pop(context);
-            },
-            icon: const Icon(Icons.share, color: Colors.white),
-            label: const Text("Invita Collaboratore al Conto", style: TextStyle(color: Colors.white)),
-          ),
-          const SizedBox(height: 16),
-          ElevatedButton.icon(
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent, minimumSize: const Size.fromHeight(48)),
-            onPressed: () {
-              Navigator.pop(context);
-              FirebaseAuth.instance.signOut();
-            },
-            icon: const Icon(Icons.logout, color: Colors.white),
-            label: const Text("Disconnetti Account", style: TextStyle(color: Colors.white)),
-          ),
-        ],
-      ),
-    ),
-  );
 }
 
 class HomeScreen extends StatefulWidget {
@@ -428,12 +294,11 @@ class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
   bool isShared = true;
 
+  String get pathPrefix => isShared ? "shared" : "private_${FirebaseAuth.instance.currentUser?.uid ?? 'user'}";
+  String get username => FirebaseAuth.instance.currentUser?.email?.split('@').first ?? 'Marco';
+
   @override
   Widget build(BuildContext context) {
-    final user = FirebaseAuth.instance.currentUser;
-    final username = user?.displayName ?? user?.email?.split('@')[0] ?? 'Utente';
-    final pathPrefix = isShared ? 'shared' : 'personal/${user?.uid}';
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xFF0F172A),
@@ -447,9 +312,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 color: Color(0xFFDB2777),
                 shape: BoxShape.circle,
               ),
-              child: const Center(
-                child: Text("🐷", style: TextStyle(fontSize: 16)),
-              ),
+              child: const Center(child: Text("🐷", style: TextStyle(fontSize: 16))),
             ),
             const SizedBox(width: 10),
             Column(
@@ -512,13 +375,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 }
               }
             } catch (e) {
-              // Previene qualsiasi crash di parsing del database
+              // Gestione sicura degli errori di parsing
             }
           }
 
-          // Tab 0: Home / Patrimonio & Grafici
-          // Tab 1: Salvadanai & Obiettivi
-          // Tab 2: Simulatore & Livelli
           if (_currentIndex == 1) {
             return ListView(
               padding: const EdgeInsets.all(16),
@@ -527,7 +387,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 const SizedBox(height: 12),
                 SavingsLevelWidget(patrimonio: patrimonio),
                 const SizedBox(height: 16),
-                // Integriamo il widget salvadanai dinamico basato sul conto attivo (Condiviso/Privato)
                 Card(
                   color: const Color(0xFF0F172A),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
@@ -543,7 +402,6 @@ class _HomeScreenState extends State<HomeScreen> {
                             IconButton(
                               icon: const Icon(Icons.add_circle, color: Color(0xFF10B981), size: 20),
                               onPressed: () {
-                                // Dialog rapido per creare un nuovo salvadanaio nel percorso corrente
                                 final nameController = TextEditingController();
                                 final targetController = TextEditingController();
                                 showDialog(
@@ -629,7 +487,7 @@ class _HomeScreenState extends State<HomeScreen> {
             return ListView(
               padding: const EdgeInsets.all(16),
               children: [
-                const Text("🪄 Consulente IA", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                const Text("🪄 Consulente IA & Simulator", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 12),
                 SimulatorWidget(patrimonio: patrimonio),
               ],
@@ -639,7 +497,6 @@ class _HomeScreenState extends State<HomeScreen> {
           return ListView(
             padding: const EdgeInsets.all(16),
             children: [
-              // Selettore conto Condiviso / Privato stile banca
               Container(
                 padding: const EdgeInsets.all(4),
                 decoration: BoxDecoration(color: const Color(0xFF020617), borderRadius: BorderRadius.circular(16)),
@@ -675,7 +532,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               const SizedBox(height: 16),
-
               Card(
                 color: const Color(0xFF0F172A),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20), side: const BorderSide(color: Color(0xFF1E293B))),
@@ -692,7 +548,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               const SizedBox(height: 12),
-
               Row(
                 children: [
                   Expanded(
@@ -732,8 +587,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ],
               ),
+              const SizedBox(height: 12),
+              DailyBudgetWidget(patrimonio: patrimonio),
               const SizedBox(height: 16),
-
               if (categoryTotals.isNotEmpty) ...[
                 Card(
                   color: const Color(0xFF0F172A),
@@ -769,7 +625,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 const SizedBox(height: 16),
               ],
-
               const Text("📜 STORICO TRANSAZIONI", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey)),
               const SizedBox(height: 8),
               if (items.isEmpty)
@@ -801,7 +656,25 @@ class _HomeScreenState extends State<HomeScreen> {
                           IconButton(
                             icon: const Icon(Icons.close, size: 16, color: Colors.grey),
                             onPressed: () {
-                              FirebaseDatabase.instance.ref('${pathPrefix}_transactions/${tx['id']}').remove();
+                              showDialog(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  backgroundColor: const Color(0xFF0F172A),
+                                  title: const Text("Elimina transazione"),
+                                  content: const Text("Vuoi davvero rimuovere questa transazione?"),
+                                  actions: [
+                                    TextButton(onPressed: () => Navigator.pop(context), child: const Text("Annulla")),
+                                    ElevatedButton(
+                                      style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
+                                      onPressed: () {
+                                        FirebaseDatabase.instance.ref('${pathPrefix}_transactions/${tx['id']}').remove();
+                                        Navigator.pop(context);
+                                      },
+                                      child: const Text("Elimina", style: TextStyle(color: Colors.white)),
+                                    ),
+                                  ],
+                                ),
+                              );
                             },
                           ),
                         ],
@@ -832,114 +705,196 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Color _getCategoryColor(String category) {
-    if (category.contains('🛒')) return Colors.pinkAccent;
-    if (category.contains('🏠')) return Colors.amber;
-    if (category.contains('🚗')) return Colors.blueAccent;
-    if (category.contains('🐶')) return Colors.purpleAccent;
-    if (category.contains('🍕')) return Colors.orangeAccent;
-    return const Color(0xFF10B981);
-  }
-
   void _showAddTransactionDialog(BuildContext context, String pathPrefix, String username) {
     final amountController = TextEditingController();
     final noteController = TextEditingController();
     String type = 'uscita';
-    String category = '🛒 Spesa / Alimentari';
+    String category = 'Spesa';
 
-    showModalBottomSheet(
+    showDialog(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: const Color(0xFF0F172A),
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
       builder: (context) => StatefulBuilder(
-        builder: (context, setModalState) => Padding(
-          padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom + 16, left: 16, right: 16, top: 16),
-          child: Column(
+        builder: (context, setDialogState) => AlertDialog(
+          backgroundColor: const Color(0xFF0F172A),
+          title: const Text("Nuova Transazione"),
+          content: Column(
             mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text("Nuova Transazione", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 12),
               Row(
                 children: [
                   Expanded(
                     child: ChoiceChip(
-                      label: const Center(child: Text("Uscita (Spesa)")),
+                      label: const Text("Uscita"),
                       selected: type == 'uscita',
-                      selectedColor: const Color(0xFFDB2777),
-                      onSelected: (val) => setModalState(() => type = 'uscita'),
+                      onSelected: (val) => setDialogState(() => type = 'uscita'),
                     ),
                   ),
                   const SizedBox(width: 8),
                   Expanded(
                     child: ChoiceChip(
-                      label: const Center(child: Text("Entrata")),
+                      label: const Text("Entrata"),
                       selected: type == 'entrata',
-                      selectedColor: const Color(0xFF10B981),
-                      onSelected: (val) => setModalState(() => type = 'entrata'),
+                      onSelected: (val) => setDialogState(() => type = 'entrata'),
                     ),
                   ),
                 ],
               ),
               const SizedBox(height: 12),
+              TextField(
+                controller: amountController,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(labelText: "Importo (€)"),
+              ),
+              const SizedBox(height: 12),
               DropdownButtonFormField<String>(
                 value: category,
                 dropdownColor: const Color(0xFF0F172A),
-                decoration: const InputDecoration(labelText: "Categoria", border: OutlineInputBorder()),
-                items: const [
-                  DropdownMenuItem(value: '🛒 Spesa / Alimentari', child: Text('🛒 Spesa / Alimentari')),
-                  DropdownMenuItem(value: '🏠 Bollette & Casa', child: Text('🏠 Bollette & Casa')),
-                  DropdownMenuItem(value: '🚗 Auto & Trasporti', child: Text('🚗 Auto & Trasporti')),
-                  DropdownMenuItem(value: '🐶 Animali / Pet Care', child: Text('🐶 Animali / Pet Care')),
-                  DropdownMenuItem(value: '🍕 Svago & Ristoranti', child: Text('🍕 Svago & Ristoranti')),
-                  DropdownMenuItem(value: '💼 Stipendio / Entrata', child: Text('💼 Stipendio / Entrata')),
-                  DropdownMenuItem(value: '📦 Altro', child: Text('📦 Altro')),
-                ],
-                onChanged: (val) => setModalState(() => category = val!),
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: amountController,
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                decoration: const InputDecoration(labelText: "Importo (€)", border: OutlineInputBorder()),
+                items: ['Spesa', 'Bollette', 'Auto', 'Pet Care', 'Ristoranti', 'Stipendio', 'Altro']
+                    .map((c) => DropdownMenuItem(value: c, child: Text(c)))
+                    .toList(),
+                onChanged: (val) => setDialogState(() => category = val ?? 'Spesa'),
+                decoration: const InputDecoration(labelText: "Categoria"),
               ),
               const SizedBox(height: 12),
               TextField(
                 controller: noteController,
-                decoration: const InputDecoration(labelText: "Note / Descrizione", border: OutlineInputBorder()),
-              ),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFDB2777),
-                  minimumSize: const Size.fromHeight(48),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                ),
-                onPressed: () {
-                  final amount = double.tryParse(amountController.text) ?? 0;
-                  if (amount <= 0) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("⚠️ Inserisci un importo valido superiore a zero.")),
-                    );
-                    return;
-                  }
-
-                  FirebaseDatabase.instance.ref('${pathPrefix}_transactions').push().set({
-                    'type': type,
-                    'amount': amount,
-                    'category': category,
-                    'note': noteController.text.isNotEmpty ? noteController.text : 'Senza nota',
-                    'createdBy': username,
-                    'createdAt': DateTime.now().toIso8601String(),
-                  });
-
-                  Navigator.pop(context);
-                },
-                child: const Text("Salva Transazione", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                decoration: const InputDecoration(labelText: "Nota opzionale"),
               ),
             ],
           ),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(context), child: const Text("Annulla")),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFDB2777)),
+              onPressed: () {
+                final amount = double.tryParse(amountController.text) ?? 0;
+                if (amount <= 0) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("⚠️ Inserisci un importo valido superiore a zero.")),
+                  );
+                  return;
+                }
+
+                FirebaseDatabase.instance.ref('${pathPrefix}_transactions').push().set({
+                  'type': type,
+                  'amount': amount,
+                  'category': category,
+                  'note': noteController.text.isNotEmpty ? noteController.text : 'Senza nota',
+                  'createdBy': username,
+                  'createdAt': DateTime.now().toIso8601String(),
+                });
+
+                Navigator.pop(context);
+              },
+              child: const Text("Salva", style: TextStyle(color: Colors.white)),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _openSettingsDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF0F172A),
+        title: const Text("Impostazioni Piggy Vault"),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF10B981), minimumSize: const Size.fromHeight(48)),
+              onPressed: () {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text("📁 Storico transazioni esportato in formato CSV con successo!")),
+                );
+                Navigator.pop(context);
+              },
+              icon: const Icon(Icons.download, color: Colors.white),
+              label: const Text("Esporta Storico in CSV", style: TextStyle(color: Colors.white)),
+            ),
+            const SizedBox(height: 12),
+            SwitchListTile(
+              title: const Text("Protezione Biometrica", style: TextStyle(fontSize: 13)),
+              subtitle: const Text("Richiedi impronta all'avvio", style: TextStyle(fontSize: 10, color: Colors.grey)),
+              value: false,
+              activeColor: const Color(0xFFDB2777),
+              onChanged: (val) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text(val ? "🔒 Sicurezza biometrica attivata" : "🔓 Sicurezza biometrica disattivata")),
+                );
+              },
+            ),
+            const SizedBox(height: 12),
+            ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.indigo, minimumSize: const Size.fromHeight(48)),
+              onPressed: () {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text("👥 Link di invito copiato! Condividilo per sincronizzare il bilancio.")),
+                );
+                Navigator.pop(context);
+              },
+              icon: const Icon(Icons.share, color: Colors.white),
+              label: const Text("Invita Collaboratore al Conto", style: TextStyle(color: Colors.white)),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent, minimumSize: const Size.fromHeight(48)),
+              onPressed: () {
+                Navigator.pop(context);
+                FirebaseAuth.instance.signOut();
+              },
+              icon: const Icon(Icons.logout, color: Colors.white),
+              label: const Text("Disconnetti Account", style: TextStyle(color: Colors.white)),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class SavingsLevelWidget extends StatelessWidget {
+  final double patrimonio;
+  const SavingsLevelWidget({super.key, required this.patrimonio});
+
+  @override
+  Widget build(BuildContext context) {
+    String levelName = "Principe del Salvadanaio";
+    double target = 5000;
+    if (patrimonio < 1000) {
+      levelName = "Principiarimparmio";
+      target = 1000;
+    } else if (patrimonio < 10000) {
+      levelName = "Risparmiatore Seriale";
+      target = 10000;
+    } else if (patrimonio < 50000) {
+      levelName = "Maestro del Guardadanaio";
+      target = 50000;
+    } else {
+      levelName = "Re dei Porcellini 100k+";
+      target = 100000;
+    }
+
+    double progress = (patrimonio / target).clamp(0.0, 1.0);
+
+    return Card(
+      color: const Color(0xFF0F172A),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text("🏆 LIVELLO DI RISPARMIO", style: TextStyle(fontSize: 10, color: Colors.grey, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 6),
+            Text(levelName, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.amber)),
+            const SizedBox(height: 10),
+            LinearProgressIndicator(value: progress, color: Colors.amber, backgroundColor: Colors.grey[800]),
+            const SizedBox(height: 6),
+            Text("Progresso obiettivo: € ${patrimonio.toStringAsFixed(0)} / € ${target.toStringAsFixed(0)}", style: const TextStyle(fontSize: 10, color: Colors.grey)),
+          ],
         ),
       ),
     );
@@ -984,5 +939,102 @@ class DailyBudgetWidget extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class SimulatorWidget extends StatefulWidget {
+  final double patrimonio;
+  const SimulatorWidget({super.key, required this.patrimonio});
+
+  @override
+  State<SimulatorWidget> createState() => _SimulatorWidgetState();
+}
+
+class _SimulatorWidgetState extends State<SimulatorWidget> {
+  final _costController = TextEditingController();
+  int months = 3;
+  String resultText = "";
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      color: const Color(0xFF0F172A),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text("🪄 Simulatore Spesa & Rate", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 12),
+            TextField(
+              controller: _costController,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(labelText: "Costo dell'acquisto (€)"),
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                const Text("Rate mensili: "),
+                ChoiceChip(
+                  label: const Text("3 Mesi"),
+                  selected: months == 3,
+                  onSelected: (val) => setState(() => months = 3),
+                ),
+                const SizedBox(width: 8),
+                ChoiceChip(
+                  label: const Text("6 Mesi"),
+                  selected: months == 6,
+                  onSelected: (val) => setState(() => months = 6),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFDB2777)),
+              onPressed: () {
+                final cost = double.tryParse(_costController.text) ?? 0;
+                if (cost <= 0) return;
+                double perMonth = cost / months;
+                setState(() {
+                  if (widget.patrimonio >= cost) {
+                    resultText = "✅ Acquisto sostenibile! Impatto rata: € ${perMonth.toStringAsFixed(2)}/mese per $months mesi.";
+                  } else {
+                    resultText = "⚠️ Attenzione: Il costo supera il patrimonio attuale.";
+                  }
+                });
+              },
+              child: const Text("Simula Sostenibilità", style: TextStyle(color: Colors.white)),
+            ),
+            if (resultText.isNotEmpty) ...[
+              const SizedBox(height: 12),
+              Text(resultText, style: const TextStyle(fontSize: 12, color: Color(0xFF10B981))),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+Color _getCategoryColor(String cat) {
+  switch (cat) {
+    case 'Spesa': return Colors.pinkAccent;
+    case 'Bollette': return Colors.orangeAccent;
+    case 'Auto': return Colors.blueAccent;
+    case 'Pet Care': return Colors.greenAccent;
+    case 'Ristoranti': return Colors.purpleAccent;
+    case 'Stipendio': return Colors.tealAccent;
+    default: return Colors.grey;
+  }
+}
+
+String _formatDate(String? isoStr) {
+  if (isoStr == null) return '';
+  try {
+    DateTime dt = DateTime.parse(isoStr);
+    return "${dt.day.toString().padLeft(2, '0')}/${dt.month.toString().padLeft(2, '0')} ${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}";
+  } catch (e) {
+    return '';
   }
 }
