@@ -4,10 +4,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'widgets/settings.dart';
-import 'widgets/pockets.dart';
-import 'widgets/recurring.dart';
-import 'widgets/features.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,6 +20,13 @@ void main() async {
   );
   runApp(const PorcellinoApp());
 }
+
+class ThemeController extends ValueNotifier<Color> {
+  ThemeController() : super(const Color(0xFF020617));
+  void changeTheme(Color bg) => value = bg;
+}
+
+final themeNotifier = ThemeController();
 
 class PorcellinoApp extends StatelessWidget {
   const PorcellinoApp({super.key});
@@ -137,7 +140,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   color: Color(0xFFDB2777),
                   shape: BoxShape.circle,
                 ),
-                child: const Text("🐷", style: TextStyle(fontSize: 52)),
+                child: const Icon(Icons.pets, size: 40, color: Colors.white),
               ),
               const SizedBox(height: 16),
               const Text("Porcellino OS", style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.white)),
@@ -233,6 +236,64 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 }
 
+void _openSettingsDialog(BuildContext context) {
+  showModalBottomSheet(
+    context: context,
+    backgroundColor: const Color(0xFF0F172A),
+    shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+    builder: (context) => Padding(
+      padding: const EdgeInsets.all(20.0),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text("⚙️ Impostazioni & Temi", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 16),
+          const Text("Seleziona Sfondo Interfaccia:", style: TextStyle(fontSize: 12, color: Colors.grey)),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF020617)),
+                  onPressed: () => themeNotifier.changeTheme(const Color(0xFF020617)),
+                  child: const Text("Dark"),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
+                  onPressed: () => themeNotifier.changeTheme(Colors.black),
+                  child: const Text("OLED"),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF311B92)),
+                  onPressed: () => themeNotifier.changeTheme(const Color(0xFF311B92)),
+                  child: const Text("Midnight"),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+          ElevatedButton.icon(
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent, minimumSize: const Size.fromHeight(48)),
+            onPressed: () {
+              Navigator.pop(context);
+              FirebaseAuth.instance.signOut();
+            },
+            icon: const Icon(Icons.logout, color: Colors.white),
+            label: const Text("Disconnetti Account", style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -255,7 +316,18 @@ class _HomeScreenState extends State<HomeScreen> {
         elevation: 0,
         title: Row(
           children: [
-            const Text("🐷 ", style: TextStyle(fontSize: 22)),
+            Container(
+              width: 32,
+              height: 32,
+              decoration: const BoxDecoration(
+                color: Color(0xFFDB2777),
+                shape: BoxShape.circle,
+              ),
+              child: const Center(
+                child: Text("🐷", style: TextStyle(fontSize: 16)),
+              ),
+            ),
+            const SizedBox(width: 10),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -268,7 +340,7 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.settings, color: Colors.pinkAccent),
-            onPressed: () => openSettingsDialog(context),
+            onPressed: () => _openSettingsDialog(context),
           ),
         ],
       ),
@@ -447,18 +519,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       const SizedBox(height: 16),
                     ],
-
-                    PocketsWidget(pathPrefix: pathPrefix),
-                    const SizedBox(height: 16),
-
-                    RecurringWidget(pathPrefix: pathPrefix),
-                    const SizedBox(height: 16),
-
-                    SavingsLevelWidget(patrimonio: patrimonio),
-                    const SizedBox(height: 16),
-
-                    SimulatorWidget(patrimonio: patrimonio),
-                    const SizedBox(height: 16),
 
                     const Text("📜 STORICO TRANSAZIONI", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey)),
                     const SizedBox(height: 8),
