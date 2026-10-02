@@ -43,7 +43,7 @@ class _LoginScreenState extends State<LoginScreen> {
     } else if (!password.contains(RegExp(r'[0-9]')) || !password.contains(RegExp(r'[A-Z]'))) {
       setState(() => securityMessage = "🟡 Sicurezza media: inserisci maiuscola e numero");
     } else {
-      setState(() => securityMessage = "🟢 Sicurezza ottima: password forte!");
+      setState(() => securityMessage = "🟢 Password forte!");
     }
   }
 
@@ -186,7 +186,6 @@ class _HomeScreenState extends State<HomeScreen> {
   String aiPurchaseResult = "Inserisci un bene e l'accumulo mensile per calcolare il piano AI.";
   bool isAiLoading = false;
 
-  // I livelli Road to 100k originali con icone e tappe mirate
   Map<String, dynamic> _getLivelloOriginale() {
     if (patrimonio < 1000) {
       return {"nome": "Fondo Cuscinetto", "target": "1.000€", "icon": "🛡️", "color": Colors.blueAccent};
@@ -239,6 +238,58 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
     _inviteEmailController.clear();
+  }
+
+  void _mostraModalNuovoSalvadanaio() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: const Color(0xFF0F172A),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+      builder: (context) {
+        return Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+            left: 20, right: 20, top: 24,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const Text("🏦 Nuovo Salvadanaio Obiettivo", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
+              const SizedBox(height: 16),
+              TextField(
+                controller: _piggyTitleController,
+                decoration: InputDecoration(labelText: "Nome Obiettivo (es. Viaggio, Auto)", filled: true, fillColor: const Color(0xFF1E293B), border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: _piggyTargetController,
+                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                decoration: InputDecoration(labelText: "Importo Target (€)", filled: true, fillColor: const Color(0xFF1E293B), border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))),
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFDB2777), padding: const EdgeInsets.symmetric(vertical: 16), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
+                onPressed: () {
+                  final title = _piggyTitleController.text.trim();
+                  final target = double.tryParse(_piggyTargetController.text.trim().replaceAll(',', '.')) ?? 0.0;
+                  if (title.isNotEmpty && target > 0) {
+                    setState(() {
+                      salvadanai.add({"title": title, "current": 0.0, "target": target});
+                    });
+                    _piggyTitleController.clear();
+                    _piggyTargetController.clear();
+                    Navigator.pop(context);
+                  }
+                },
+                child: const Text("Crea Salvadanaio", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   void _mostraFoglioResoconto() {
