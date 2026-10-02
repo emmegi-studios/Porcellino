@@ -94,7 +94,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 controller: _emailController,
                 style: TextStyle(color: _textColor),
                 decoration: InputDecoration(
-                  labelText: "Email (es. tuamail o marika@email.com)",
+                  labelText: "Email utente",
                   labelStyle: TextStyle(color: _subtitleColor),
                   filled: true,
                   fillColor: _cardBg,
@@ -169,7 +169,14 @@ class _HomeScreenState extends State<HomeScreen> {
   String aiPurchaseResult = "🤖 Consulente IA:\nPronto ad analizzare l'impatto delle spese sul vostro bilancio condiviso.";
   bool isAiLoading = false;
 
-  String get _nomeUtenteDinamico => widget.userEmail.toLowerCase().contains('marika') ? "Marika" : "Marcogrillone";
+  String get _nomeUtenteDinamico {
+    final parts = widget.userEmail.split('@');
+    if (parts.isNotEmpty && parts[0].isNotEmpty) {
+      String name = parts[0];
+      return name[0].toUpperCase() + name.substring(1);
+    }
+    return "Utente";
+  }
 
   bool get _isLight => _currentTheme == 'Porcellino Light';
   Color get _scaffoldBg => _isLight ? const Color(0xFFF1F5F9) : const Color(0xFF0B0F19);
@@ -340,7 +347,7 @@ class _HomeScreenState extends State<HomeScreen> {
       builder: (context) => AlertDialog(
         backgroundColor: _cardBg,
         title: Text("👥 Sincronizzazione Firebase Attiva!", style: TextStyle(color: _textColor)),
-        content: Text("Invito registrato per:\n\n👉 $email\n\nMarika può installare l'APK ed effettuare l'accesso con questa email per vedere e condividere lo stesso bilancio in tempo reale!", style: TextStyle(color: _textColor)),
+        content: Text("Invito registrato per:\n\n👉 $email\n\nChiunque installi l'APK ed effettui l'accesso con questa email potrà condividere lo stesso bilancio in tempo reale!", style: TextStyle(color: _textColor)),
         actions: [TextButton(onPressed: () => Navigator.pop(context), child: Text("Perfetto", style: TextStyle(color: _primaryColor)))],
       ),
     );
@@ -528,7 +535,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: ListTile(
                         dense: true,
                         title: Text(tx['category'], style: TextStyle(fontWeight: FontWeight.bold, color: _textColor)),
-                        subtitle: Text("${tx['note']} • Inserito da: ${tx['author'] ?? 'Ignoto'}", style: TextStyle(color: _subtitleColor)),
+                        subtitle: Text("${tx['note']} • Inserito da: ${tx['author'] ?? 'Utente'}", style: TextStyle(color: _subtitleColor)),
                         trailing: Text(
                           "${tx['type'].contains('Entrata') ? '+' : '-'}€ ${tx['amount'].toStringAsFixed(2)}",
                           style: TextStyle(color: tx['type'].contains('Entrata') ? const Color(0xFF10B981) : _primaryColor, fontWeight: FontWeight.bold),
@@ -734,13 +741,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 context: context,
                 builder: (context) => AlertDialog(
                   backgroundColor: _cardBg,
-                  title: Text("👥 Collega il telefono di Marika", style: TextStyle(color: _textColor)),
-                  content: TextField(controller: _inviteEmailController, style: TextStyle(color: _textColor), decoration: const InputDecoration(labelText: "Inserisci l'email di Marika")),
+                  title: Text("👥 Condividi accesso", style: TextStyle(color: _textColor)),
+                  content: TextField(controller: _inviteEmailController, style: TextStyle(color: _textColor), decoration: const InputDecoration(labelText: "Inserisci l'email di un altro utente")),
                   actions: [TextButton(onPressed: _inviaInvito, child: Text("Collega Cloud", style: TextStyle(color: _primaryColor)))],
                 ),
               ),
               icon: const Icon(Icons.share, color: Colors.white),
-              label: const Text("Condividi accesso in tempo reale con Marika", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+              label: const Text("Condividi accesso in tempo reale", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
             ),
           ],
           const SizedBox(height: 14),
@@ -911,7 +918,7 @@ class _HomeScreenState extends State<HomeScreen> {
             color: _cardBg,
             child: ListTile(
               title: Text(tx['category'], style: TextStyle(fontWeight: FontWeight.bold, color: _textColor)),
-              subtitle: Text("${tx['note']} • ${tx['author'] ?? 'Ignoto'}", style: TextStyle(color: _subtitleColor)),
+              subtitle: Text("${tx['note']} • ${tx['author'] ?? 'Utente'}", style: TextStyle(color: _subtitleColor)),
               trailing: Text("${tx['type'].contains('Entrata') ? '+' : '-'}€${tx['amount']}", style: TextStyle(color: tx['type'].contains('Entrata') ? Colors.greenAccent : _primaryColor, fontWeight: FontWeight.bold)),
             ),
           )),
