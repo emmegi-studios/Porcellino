@@ -13,7 +13,8 @@ class PiggyVaultApp extends StatefulWidget {
 }
 
 class _PiggyVaultAppState extends State<PiggyVaultApp> {
-  // Palette colori radicalmente differenti per ciascun tema
+  // Variabili di tema globale totali
+  String _currentTheme = 'Porcellino';
   Color _scaffoldBg = const Color(0xFF0B0F19);
   Color _cardBg = const Color(0xFF131B2E);
   Color _primaryColor = const Color(0xFFDB2777); 
@@ -21,15 +22,16 @@ class _PiggyVaultAppState extends State<PiggyVaultApp> {
 
   void changeTheme(String themeName) {
     setState(() {
+      _currentTheme = themeName;
       if (themeName == 'Smeraldo') {
-        _scaffoldBg = const Color(0xFF01261B);
-        _cardBg = const Color(0xFF04382B);
-        _primaryColor = const Color(0xFF059669);
+        _scaffoldBg = const Color(0xFF022C22);
+        _cardBg = const Color(0xFF064E3B);
+        _primaryColor = const Color(0xFF10B981);
         _accentColor = const Color(0xFF34D399);
       } else if (themeName == 'Royal Gold') {
-        _scaffoldBg = const Color(0xFF121212);
-        _cardBg = const Color(0xFF1E1E1E);
-        _primaryColor = const Color(0xFFD97706);
+        _scaffoldBg = const Color(0xFF09090B);
+        _cardBg = const Color(0xFF18181B);
+        _primaryColor = const Color(0xFFF59E0B);
         _accentColor = const Color(0xFFFBBF24);
       } else {
         // Porcellino Pink
@@ -53,6 +55,7 @@ class _PiggyVaultAppState extends State<PiggyVaultApp> {
       ),
       home: LoginScreen(
         onThemeChanged: changeTheme,
+        currentTheme: _currentTheme,
         scaffoldBg: _scaffoldBg,
         cardBg: _cardBg,
         primaryColor: _primaryColor,
@@ -64,6 +67,7 @@ class _PiggyVaultAppState extends State<PiggyVaultApp> {
 
 class LoginScreen extends StatefulWidget {
   final Function(String) onThemeChanged;
+  final String currentTheme;
   final Color scaffoldBg;
   final Color cardBg;
   final Color primaryColor;
@@ -72,6 +76,7 @@ class LoginScreen extends StatefulWidget {
   const LoginScreen({
     super.key,
     required this.onThemeChanged,
+    required this.currentTheme,
     required this.scaffoldBg,
     required this.cardBg,
     required this.primaryColor,
@@ -129,6 +134,7 @@ class _LoginScreenState extends State<LoginScreen> {
         builder: (context) => HomeScreen(
           userEmail: email,
           onThemeChanged: widget.onThemeChanged,
+          currentTheme: widget.currentTheme,
           cardBg: widget.cardBg,
           primaryColor: widget.primaryColor,
           accentColor: widget.accentColor,
@@ -227,6 +233,7 @@ class _LoginScreenState extends State<LoginScreen> {
 class HomeScreen extends StatefulWidget {
   final String userEmail;
   final Function(String) onThemeChanged;
+  final String currentTheme;
   final Color cardBg;
   final Color primaryColor;
   final Color accentColor;
@@ -235,6 +242,7 @@ class HomeScreen extends StatefulWidget {
     super.key,
     required this.userEmail,
     required this.onThemeChanged,
+    required this.currentTheme,
     required this.cardBg,
     required this.primaryColor,
     required this.accentColor,
@@ -268,10 +276,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final _amountController = TextEditingController();
   String _selectedType = 'Uscita (Spesa)';
 
-  final _piggyTitleController = TextEditingController();
-  final _piggyTargetController = TextEditingController();
   final _inviteEmailController = TextEditingController();
-
   final _itemController = TextEditingController();
   String aiPurchaseResult = "Inserisci le tue prime entrate e uscite per sbloccare i consigli personalizzati dell'IA.";
   bool isAiLoading = false;
@@ -331,7 +336,7 @@ class _HomeScreenState extends State<HomeScreen> {
     _inviteEmailController.clear();
   }
 
-  // Pannello Profilo (Dedicato all'account e alle info personali)
+  // Pannello Profilo (Dedicato all'account)
   void _mostraModalProfilo() {
     showModalBottomSheet(
       context: context,
@@ -383,7 +388,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // Pannello Impostazioni e Selezione Temi (Dedicato alla rotellina)
+  // Pannello Impostazioni e Temi (Dedicato alla rotellina)
   void _mostraModalImpostazioni() {
     showModalBottomSheet(
       context: context,
@@ -407,8 +412,8 @@ class _HomeScreenState extends State<HomeScreen> {
               ListTile(
                 dense: true,
                 contentPadding: EdgeInsets.zero,
-                title: const Text("Versione Applicazione", style: TextStyle(color: Colors.grey, fontSize: 11)),
-                subtitle: const Text("Porcellino Ufficiale (Build Stabile)", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13)),
+                title: const Text("Tema Attivo", style: TextStyle(color: Colors.grey, fontSize: 11)),
+                subtitle: Text(widget.currentTheme, style: TextStyle(color: widget.primaryColor, fontWeight: FontWeight.bold, fontSize: 14)),
               ),
               const Divider(color: Colors.white24, height: 24),
               const Text("🎨 Scegli Tema Grafico (Riga Unica):", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white70)),
@@ -425,14 +430,14 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     const SizedBox(width: 10),
                     ElevatedButton.icon(
-                      style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF059669), padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10)),
+                      style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF10B981), padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10)),
                       onPressed: () { widget.onThemeChanged('Smeraldo'); Navigator.pop(context); },
                       icon: const Icon(Icons.brush, size: 16),
                       label: const Text("Smeraldo"),
                     ),
                     const SizedBox(width: 10),
                     ElevatedButton.icon(
-                      style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFD97706), padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10)),
+                      style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFF59E0B), padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10)),
                       onPressed: () { widget.onThemeChanged('Royal Gold'); Navigator.pop(context); },
                       icon: const Icon(Icons.brush, size: 16),
                       label: const Text("Royal Gold"),
@@ -712,10 +717,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       const Text("PATRIMONIO TOTALE", style: TextStyle(fontSize: 10, color: Colors.grey, fontWeight: FontWeight.bold)),
                       const SizedBox(height: 4),
-                      Text("€ ${patrimonio.toStringAsFixed(2)}", style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Color(0xFF10B981))),
+                      Text("€ ${patrimonio.toStringAsFixed(2)}", style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: widget.accentColor)),
                     ],
                   ),
-                  const Icon(Icons.account_balance_wallet, color: Color(0xFF10B981), size: 32),
+                  Icon(Icons.account_balance_wallet, color: widget.accentColor, size: 32),
                 ],
               ),
             ),
