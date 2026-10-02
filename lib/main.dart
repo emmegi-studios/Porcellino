@@ -20,7 +20,7 @@ class PiggyVaultApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-      title: 'Porcellino',
+      title: 'Piggy Vault',
       debugShowCheckedModeBanner: false,
       home: LoginScreen(),
     );
@@ -88,7 +88,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               const SizedBox(height: 16),
-              Text("Porcellino Cloud", style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: _textColor)),
+              Text("Piggy Vault", style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: _textColor)),
               const SizedBox(height: 36),
               TextField(
                 controller: _emailController,
@@ -676,7 +676,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             const SizedBox(width: 8),
-            Text("Porcellino Cloud", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: _textColor)),
+            Text("Piggy Vault", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: _textColor)),
           ],
         ),
         actions: [
@@ -705,32 +705,20 @@ class _HomeScreenState extends State<HomeScreen> {
       body: ListView(
         padding: const EdgeInsets.all(16.0),
         children: [
-          Container(
-            padding: const EdgeInsets.all(4),
-            decoration: BoxDecoration(color: _cardBg, borderRadius: BorderRadius.circular(16)),
-            child: Row(
-              children: [
-                Expanded(
-                  child: GestureDetector(
-                    onTap: () => setState(() => isSharedMode = false),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 10),
-                      decoration: BoxDecoration(color: !isSharedMode ? _primaryColor : Colors.transparent, borderRadius: BorderRadius.circular(12)),
-                      child: Center(child: Text("🔒 Conto Privato", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: !isSharedMode ? Colors.white : _textColor))),
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: GestureDetector(
-                    onTap: () => setState(() => isSharedMode = true),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 10),
-                      decoration: BoxDecoration(color: isSharedMode ? const Color(0xFF3B82F6) : Colors.transparent, borderRadius: BorderRadius.circular(12)),
-                      child: Center(child: Text("👥 Conto Condiviso (Cloud)", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: isSharedMode ? Colors.white : _textColor))),
-                    ),
-                  ),
-                ),
-              ],
+          Card(
+            color: _cardBg,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            elevation: 2,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.cloud_sync, color: Color(0xFF3B82F6), size: 20),
+                  const SizedBox(width: 8),
+                  Text("Modalità Sincronizzazione Cloud Attiva", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: _textColor)),
+                ],
+              ),
             ),
           ),
           if (isSharedMode) ...[
