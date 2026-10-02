@@ -18,7 +18,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.porcellino.app"
+        applicationId "com.example.family_budget_app"
         minSdk 23
         targetSdk 34
         versionCode 1
