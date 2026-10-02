@@ -23,3 +23,10 @@ flutter:
   uses-material-design: true
   assets:
     - assets/icon/icona_esterna.png
+
+
+flutter_launcher_icons:
+  image_path: "assets/icon/icona_esterna.png"
+  android: true
+  ios: false
+  min_sdk_android: 21
