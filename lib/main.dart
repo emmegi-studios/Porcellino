@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,84 +18,7 @@ class PiggyVaultApp extends StatelessWidget {
         scaffoldBackgroundColor: const Color(0xFF020617),
         primaryColor: const Color(0xFFDB2777),
       ),
-      home: const AuthWrapper(),
-    );
-  }
-}
-
-class AuthWrapper extends StatelessWidget {
-  const AuthWrapper({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    // Se Firebase non è ancora connesso nativamente, partiamo subito dalla Dashboard stabile
-    try {
-      return StreamBuilder<User?>(
-        stream: FirebaseAuth.instance.authStateChanges(),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            return const HomeScreen();
-          }
-          return const LoginScreen();
-        },
-      );
-    } catch (e) {
-      return const HomeScreen();
-    }
-  }
-}
-
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
-
-  @override
-  State<LoginScreen> createState() => _LoginScreenState();
-}
-
-class _LoginScreenState extends State<LoginScreen> {
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-  bool isLogin = true;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text("🐷", style: TextStyle(fontSize: 48)),
-              const SizedBox(height: 12),
-              const Text("Piggy Vault", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white)),
-              const SizedBox(height: 32),
-              TextField(
-                controller: _emailController,
-                decoration: InputDecoration(labelText: "Email", filled: true, fillColor: const Color(0xFF0F172A), border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))),
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: _passwordController,
-                obscureText: true,
-                decoration: InputDecoration(labelText: "Password", filled: true, fillColor: const Color(0xFF0F172A), border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))),
-              ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFDB2777), minimumSize: const Size.fromHeight(50), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
-                onPressed: () {
-                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const HomeScreen()));
-                },
-                child: Text(isLogin ? "Accedi" : "Registrati", style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-              ),
-              TextButton(
-                onPressed: () => setState(() => isLogin = !isLogin),
-                child: Text(isLogin ? "Non hai un account? Registrati" : "Hai già un account? Accedi", style: const TextStyle(color: Color(0xFFF472B6))),
-              )
-            ],
-          ),
-        ),
-      ),
+      home: const HomeScreen(),
     );
   }
 }
@@ -125,21 +46,171 @@ class _HomeScreenState extends State<HomeScreen> {
     {"title": "Nuova Auto", "current": 800.00, "target": 5000.00},
   ];
 
-  String aiResponse = "Ciao Marco! Sono il tuo assistente AI. I tuoi conti sono stabili e in crescita.";
+  String aiResponse = "Ciao! Sono il tuo assistente AI di Piggy Vault. Analizzo le tue spese per aiutarti a risparmiare.";
   bool isAiLoading = false;
 
-  void _askAi(String prompt) {
+  final _categoryController = TextEditingController();
+  final _noteController = TextEditingController();
+  final _amountController = TextEditingController();
+  String _selectedType = 'uscita';
+
+  void _askAi(String tipoAnalisi) {
     setState(() => isAiLoading = true);
-    Future.delayed(const Duration(seconds: 1), () {
+    Future.delayed(const Duration(milliseconds: 800), () {
       setState(() {
         isAiLoading = false;
-        if (prompt == "consigli") {
-          aiResponse = "💡 Ottimo risparmio questo mese! Ti consiglio di spostare altri 50€ sul salvadanai 'Vacanza Estiva'.";
+        if (tipoAnalisi == "consigli") {
+          double tassoRisparmio = ((entrateMese - usciteMese) / entrateMese) * 100;
+          aiResponse = "💡 Risparmio stimato al ${tassoRisparmio.toStringAsFixed(0)}% questo mese. Ottimo lavoro!";
         } else {
-          aiResponse = "📊 La fetta più grande delle tue uscite va in bollette e spesa. Ottimizzando del 10%, acceleri gli obiettivi!";
+          aiResponse = "📊 Analisi completata: Le uscite principali riguardano spesa e utenze.";
         }
       });
     });
+  }
+
+  // Modale per generare il Foglio di Resoconto Mensile
+  void _mostraFoglioResoconto() {
+    double bilancioNetto = entrateMese - usciteMese;
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: const Color(0xFF0F172A),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) {
+        return Container(
+          padding: const EdgeInsets.all(24),
+          constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text("📋 Foglio Resoconto Mensile", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
+                  Icon(Icons.description, color: Color(0xFFDB2777)),
+                ],
+              ),
+              const SizedBox(height: 16),
+              Card(
+                color: const Color(0xFF1E293B),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text("RIEPILOGO ATTUALE", style: TextStyle(fontSize: 10, color: Colors.grey, fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 8),
+                      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [const Text("Entrate Totali:"), Text("€ ${entrateMese.toStringAsFixed(2)}", style: const TextStyle(color: Colors.blueAccent, fontWeight: FontWeight.bold))]),
+                      const SizedBox(height: 4),
+                      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [const Text("Uscite Totali:"), Text("€ ${usciteMese.toStringAsFixed(2)}", style: const TextStyle(color: Color(0xFFDB2777), fontWeight: FontWeight.bold))]),
+                      const Divider(color: Colors.grey),
+                      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [const Text("Bilancio Netto:"), Text("€ ${bilancioNetto.toStringAsFixed(2)}", style: TextStyle(color: bilancioNetto >= 0 ? const Color(0xFF10B981) : const Color(0xFFDB2777), fontWeight: FontWeight.bold))]),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              const Text("Dettaglio Movimenti del Mese", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey)),
+              const SizedBox(height: 8),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: transazioni.length,
+                  itemBuilder: (context, index) {
+                    final tx = transazioni[index];
+                    return ListTile(
+                      dense: true,
+                      title: Text(tx['category'], style: const TextStyle(fontWeight: FontWeight.bold)),
+                      subtitle: Text(tx['note']),
+                      trailing: Text(
+                        "${tx['type'] == 'entrata' ? '+' : '-'}€ ${tx['amount'].toStringAsFixed(2)}",
+                        style: TextStyle(color: tx['type'] == 'entrata' ? const Color(0xFF10B981) : const Color(0xFFDB2777), fontWeight: FontWeight.bold),
+                      ),
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(height: 12),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFDB2777), padding: const EdgeInsets.symmetric(vertical: 14)),
+                onPressed: () => Navigator.pop(context),
+                child: const Text("Chiudi Resoconto", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+              )
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _mostraModalInserimento() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: const Color(0xFF0F172A),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+      builder: (context) {
+        return Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+            left: 20, right: 20, top: 24,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const Text("➕ Aggiungi Movimento", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
+              const SizedBox(height: 16),
+              TextField(controller: _categoryController, decoration: InputDecoration(labelText: "Categoria", filled: true, fillColor: const Color(0xFF1E293B), border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)))),
+              const SizedBox(height: 12),
+              TextField(controller: _noteController, decoration: InputDecoration(labelText: "Nota", filled: true, fillColor: const Color(0xFF1E293B), border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)))),
+              const SizedBox(height: 12),
+              TextField(controller: _amountController, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: InputDecoration(labelText: "Importo (€)", filled: true, fillColor: const Color(0xFF1E293B), border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)))),
+              const SizedBox(height: 12),
+              DropdownButtonFormField<String>(
+                value: _selectedType,
+                dropdownColor: const Color(0xFF1E293B),
+                decoration: InputDecoration(filled: true, fillColor: const Color(0xFF1E293B), border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))),
+                items: const [
+                  DropdownMenuItem(value: 'entrata', child: Text("🟢 Entrata (+)")),
+                  DropdownMenuItem(value: 'uscita', child: Text("🔴 Uscita (-)")),
+                ],
+                onChanged: (val) => setState(() => _selectedType = val ?? 'uscita'),
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFDB2777), padding: const EdgeInsets.symmetric(vertical: 16), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
+                onPressed: () {
+                  final cat = _categoryController.text.trim();
+                  final note = _noteController.text.trim();
+                  final amount = double.tryParse(_amountController.text.trim().replaceAll(',', '.')) ?? 0.0;
+
+                  if (cat.isNotEmpty && amount > 0) {
+                    setState(() {
+                      transazioni.insert(0, {"category": cat, "note": note.isEmpty ? cat : note, "amount": amount, "type": _selectedType});
+                      if (_selectedType == 'entrata') {
+                        patrimonio += amount;
+                        entrateMese += amount;
+                      } else {
+                        patrimonio -= amount;
+                        usciteMese += amount;
+                      }
+                    });
+                    _categoryController.clear();
+                    _noteController.clear();
+                    _amountController.clear();
+                    Navigator.pop(context);
+                  }
+                },
+                child: const Text("Registra Movimento", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -149,21 +220,22 @@ class _HomeScreenState extends State<HomeScreen> {
         backgroundColor: const Color(0xFF0F172A),
         title: const Row(
           children: [
-            Text("🐷 ", style: TextStyle(fontSize: 20)),
+            Text("🐷 ", style: TextStyle(fontSize: 22)),
             Text("Piggy Vault", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           ],
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.logout, color: Colors.grey),
-            onPressed: () => Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginScreen())),
+            icon: const Icon(Icons.description, color: Color(0xFFF472B6)),
+            tooltip: "Foglio Resoconto",
+            onPressed: _mostraFoglioResoconto,
           )
         ],
       ),
       body: ListView(
         padding: const EdgeInsets.all(16.0),
         children: [
-          // Card Patrimonio
+          // 1. Patrimonio Totale
           Card(
             color: const Color(0xFF0F172A),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
@@ -180,7 +252,8 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           const SizedBox(height: 12),
-          // Entrate e Uscite
+          
+          // 2. Entrate e Uscite del Mese
           Row(
             children: [
               Expanded(
@@ -194,7 +267,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       children: [
                         const Text("ENTRATE MESE", style: TextStyle(fontSize: 9, color: Colors.grey, fontWeight: FontWeight.bold)),
                         const SizedBox(height: 4),
-                        Text("€ ${entrateMese.toStringAsFixed(2)}", style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.blueAccent)),
+                        Text("€ ${entrateMese.toStringAsFixed(2)}", style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.blueAccent)),
                       ],
                     ),
                   ),
@@ -212,7 +285,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       children: [
                         const Text("USCITE MESE", style: TextStyle(fontSize: 9, color: Colors.grey, fontWeight: FontWeight.bold)),
                         const SizedBox(height: 4),
-                        Text("€ ${usciteMese.toStringAsFixed(2)}", style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFFDB2777))),
+                        Text("€ ${usciteMese.toStringAsFixed(2)}", style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Color(0xFFDB2777))),
                       ],
                     ),
                   ),
@@ -221,7 +294,21 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
           const SizedBox(height: 20),
-          // Sezione Grafico a Fetta / Ripartizione Spese
+
+          // 3. Bottone rapido Foglio Resoconto Mensile
+          ElevatedButton.icon(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF1E293B),
+              padding: const EdgeInsets.symmetric(vertical: 14),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+            ),
+            onPressed: _mostraFoglioResoconto,
+            icon: const Icon(Icons.assessment, color: Color(0xFFF472B6)),
+            label: const Text("Genera Foglio Resoconto Mensile", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+          ),
+          const SizedBox(height: 20),
+
+          // 4. Grafico a Torta / Ripartizione Categorie
           const Text("🍰 RIPARTIZIONE SPESE (GRAFICO A FETTA)", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey)),
           const SizedBox(height: 8),
           Card(
@@ -231,26 +318,30 @@ class _HomeScreenState extends State<HomeScreen> {
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 children: [
-                  Row(
+                  const Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      _buildPieSlice("Spesa", "48%", Color(0xFFDB2777)),
-                      _buildPieSlice("Bollette", "52%", Color(0xFF3B82F6)),
+                      Row(children: [Icon(Icons.circle, size: 10, color: Color(0xFFDB2777)), SizedBox(width: 6), Text("Spesa (48%)", style: TextStyle(fontSize: 12, color: Colors.white70))]),
+                      Row(children: [Icon(Icons.circle, size: 10, color: Color(0xFF3B82F6)), SizedBox(width: 6), Text("Bollette (52%)", style: TextStyle(fontSize: 12, color: Colors.white70))]),
                     ],
                   ),
                   const SizedBox(height: 12),
-                  const LinearProgressIndicator(
-                    value: 0.48,
-                    backgroundColor: Color(0xFF3B82F6),
-                    color: Color(0xFFDB2777),
-                    minHeight: 10,
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: const LinearProgressIndicator(
+                      value: 0.48,
+                      backgroundColor: Color(0xFF3B82F6),
+                      color: Color(0xFFDB2777),
+                      minHeight: 12,
+                    ),
                   ),
                 ],
               ),
             ),
           ),
           const SizedBox(height: 20),
-          // Assistente AI
+
+          // 5. Assistente AI
           const Text("🤖 ASSISTENTE FINANZIARIO AI", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey)),
           const SizedBox(height: 8),
           Card(
@@ -270,8 +361,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   const SizedBox(height: 10),
                   isAiLoading
-                      ? const Center(child: CircularProgressIndicator(color: Color(0xFFDB2777)))
-                      : Text(aiResponse, style: const TextStyle(fontSize: 13, color: Colors.white70)),
+                      ? const Center(child: Padding(padding: EdgeInsets.all(8.0), child: CircularProgressIndicator(color: Color(0xFFDB2777))))
+                      : Text(aiResponse, style: const TextStyle(fontSize: 13, color: Colors.white70, height: 1.3)),
                   const SizedBox(height: 14),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -293,7 +384,8 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           const SizedBox(height: 20),
-          // Salvadanai
+
+          // 6. Salvadanai
           const Text("🏦 SALVADANAI", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey)),
           const SizedBox(height: 8),
           ...salvadanai.map((piggy) {
@@ -315,11 +407,14 @@ class _HomeScreenState extends State<HomeScreen> {
                       ],
                     ),
                     const SizedBox(height: 10),
-                    LinearProgressIndicator(
-                      value: progress,
-                      backgroundColor: const Color(0xFF1E293B),
-                      color: const Color(0xFFDB2777),
-                      minHeight: 6,
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(6),
+                      child: LinearProgressIndicator(
+                        value: progress,
+                        backgroundColor: const Color(0xFF1E293B),
+                        color: const Color(0xFFDB2777),
+                        minHeight: 8,
+                      ),
                     ),
                   ],
                 ),
@@ -327,8 +422,24 @@ class _HomeScreenState extends State<HomeScreen> {
             );
           }),
           const SizedBox(height: 20),
-          // Storico Transazioni
-          const Text("📜 STORICO TRANSAZIONI", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey)),
+
+          // 7. Storico Transazioni
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text("📜 STORICO TRANSAZIONI", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey)),
+              ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFDB2777),
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                ),
+                onPressed: _mostraModalInserimento,
+                icon: const Icon(Icons.add, size: 16, color: Colors.white),
+                label: const Text("Nuova", style: TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.bold)),
+              ),
+            ],
+          ),
           const SizedBox(height: 8),
           ...transazioni.map((tx) => Card(
                 color: const Color(0xFF0F172A),
@@ -349,16 +460,6 @@ class _HomeScreenState extends State<HomeScreen> {
               )),
         ],
       ),
-    );
-  }
-
-  Widget _buildPieSlice(String label, String percent, Color color) {
-    return Row(
-      children: [
-        Container(width: 12, height: 12, decoration: BoxDecoration(color: color, shape: BoxShape.circle)),
-        const SizedBox(width: 6),
-        Text("$label ($percent)", style: const TextStyle(fontSize: 12, color: Colors.white70)),
-      ],
     );
   }
 }

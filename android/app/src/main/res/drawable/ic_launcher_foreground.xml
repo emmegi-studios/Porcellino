@@ -3,11 +3,11 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-  <!-- Cerchio esterno della moneta (Oro/Rosa) -->
+  <!-- Cerchio esterno della moneta -->
   <path
       android:fillColor="#DB2777"
       android:pathData="M54,10C30.8,10 12,28.8 12,52c0,23.2 18.8,42 42,42c23.2,0 42,-18.8 42,-42C96,28.8 77.2,10 54,10z"/>
-  <!-- Bordo interno della moneta -->
+  <!-- Bordo interno -->
   <path
       android:fillColor="#F472B6"
       android:pathData="M54,16C34.1,16 18,32.1 18,52c0,19.9 16.1,36 36,36c19.9,0 36,-16.1 36,-36C90,32.1 73.9,16 54,16z"/>
