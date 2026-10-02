@@ -38,6 +38,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
   bool _isRegistrazione = false;
   bool _isLoading = false;
 
@@ -50,13 +51,36 @@ class _LoginScreenState extends State<LoginScreen> {
   Color get _subtitleColor => _isLight ? const Color(0xFF475569) : Colors.grey.shade400;
   Color get _primaryColor => const Color(0xFFDB2777);
 
+  String _valutaSicurezzaPassword(String password) {
+    if (password.isEmpty) return "";
+    if (password.length < 6) return "⚠️ Debole (minimo 6 caratteri)";
+    if (password.length < 10 || !password.contains(RegExp(r'[0-9]')) || !password.contains(RegExp(r'[A-Z]'))) {
+      return "🟡 Media (usa numeri e maiuscole)";
+    }
+    return "🟢 Forte e Sicura";
+  }
+
+  Color _coloreSicurezza(String password) {
+    if (password.length < 6) return Colors.redAccent;
+    if (password.length < 10 || !password.contains(RegExp(r'[0-9]'))) return Colors.orangeAccent;
+    return Colors.greenAccent;
+  }
+
   Future<void> _eseguiAutenticazione() async {
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
+    final confirmPassword = _confirmPasswordController.text.trim();
 
     if (email.isEmpty || !email.contains('@') || password.length < 6) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Inserisci un'email valida e una password di almeno 6 caratteri")),
+      );
+      return;
+    }
+
+    if (_isRegistrazione && password != confirmPassword) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Le password non coincidono")),
       );
       return;
     }
@@ -102,6 +126,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final forzaPass = _valutaSicurezzaPassword(_passwordController.text);
+
     return Scaffold(
       backgroundColor: _scaffoldBg,
       body: Center(
@@ -150,6 +176,7 @@ class _LoginScreenState extends State<LoginScreen> {
               TextField(
                 controller: _passwordController,
                 obscureText: true,
+                onChanged: (val) => setState(() {}),
                 style: TextStyle(color: _textColor),
                 decoration: InputDecoration(
                   labelText: "Password",
@@ -159,6 +186,34 @@ class _LoginScreenState extends State<LoginScreen> {
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
                 ),
               ),
+              if (_isRegistrazione && _passwordController.text.isNotEmpty) ...[
+                const SizedBox(height: 6),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 8.0),
+                    child: Text(
+                      forzaPass,
+                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: _coloreSicurezza(_passwordController.text)),
+                    ),
+                  ),
+                ),
+              ],
+              if (_isRegistrazione) ...[
+                const SizedBox(height: 14),
+                TextField(
+                  controller: _confirmPasswordController,
+                  obscureText: true,
+                  style: TextStyle(color: _textColor),
+                  decoration: InputDecoration(
+                    labelText: "Conferma Password",
+                    labelStyle: TextStyle(color: _subtitleColor),
+                    filled: true,
+                    fillColor: _cardBg,
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
+                  ),
+                ),
+              ],
               const SizedBox(height: 24),
               _isLoading
                   ? const CircularProgressIndicator()
