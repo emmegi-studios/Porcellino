@@ -20,8 +20,7 @@ dev_dependencies:
 flutter_launcher_icons:
   image_path: "assets/icon/icona_esterna.png"
   android: true
-  ios: true
-  remove_alpha_ios: true
+  ios: false
 
 flutter:
   uses-material-design: true
