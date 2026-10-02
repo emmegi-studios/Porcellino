@@ -30,7 +30,6 @@ class _PiggyVaultAppState extends State<PiggyVaultApp> {
     Color textColor = isLight ? const Color(0xFF0F172A) : Colors.white;
     Color subtitleColor = isLight ? const Color(0xFF475569) : Colors.grey.shade400;
     Color primaryColor = const Color(0xFFDB2777);
-    Color accentColor = const Color(0xFFF472B6);
 
     return MaterialApp(
       title: 'Porcellino',
@@ -48,7 +47,6 @@ class _PiggyVaultAppState extends State<PiggyVaultApp> {
         textColor: textColor,
         subtitleColor: subtitleColor,
         primaryColor: primaryColor,
-        accentColor: accentColor,
         isLight: isLight,
       ),
     );
@@ -63,7 +61,6 @@ class LoginScreen extends StatefulWidget {
   final Color textColor;
   final Color subtitleColor;
   final Color primaryColor;
-  final Color accentColor;
   final bool isLight;
 
   const LoginScreen({
@@ -75,7 +72,6 @@ class LoginScreen extends StatefulWidget {
     required this.textColor,
     required this.subtitleColor,
     required this.primaryColor,
-    required this.accentColor,
     required this.isLight,
   });
 
@@ -105,7 +101,6 @@ class _LoginScreenState extends State<LoginScreen> {
           textColor: widget.textColor,
           subtitleColor: widget.subtitleColor,
           primaryColor: widget.primaryColor,
-          accentColor: widget.accentColor,
           isLight: widget.isLight,
         ),
       ),
@@ -126,12 +121,10 @@ class _LoginScreenState extends State<LoginScreen> {
                 width: 70,
                 height: 70,
                 decoration: BoxDecoration(
+                  color: widget.primaryColor,
                   borderRadius: BorderRadius.circular(16),
-                  image: const DecorationImage(
-                    image: AssetImage('assets/icon/icona_esterna.png'),
-                    fit: BoxFit.cover,
-                  ),
                 ),
+                child: const Icon(Icons.savings, color: Colors.white, size: 40),
               ),
               const SizedBox(height: 16),
               Text("Porcellino", style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: widget.textColor)),
@@ -187,7 +180,6 @@ class HomeScreen extends StatefulWidget {
   final Color textColor;
   final Color subtitleColor;
   final Color primaryColor;
-  final Color accentColor;
   final bool isLight;
 
   const HomeScreen({
@@ -200,7 +192,6 @@ class HomeScreen extends StatefulWidget {
     required this.textColor,
     required this.subtitleColor,
     required this.primaryColor,
-    required this.accentColor,
     required this.isLight,
   });
 
@@ -562,12 +553,10 @@ class _HomeScreenState extends State<HomeScreen> {
               width: 32,
               height: 32,
               decoration: BoxDecoration(
+                color: widget.primaryColor,
                 borderRadius: BorderRadius.circular(8),
-                image: const DecorationImage(
-                  image: AssetImage('assets/icon/icona_esterna.png'),
-                  fit: BoxFit.cover,
-                ),
               ),
+              child: const Icon(Icons.savings, color: Colors.white, size: 20),
             ),
             const SizedBox(width: 8),
             Text("Porcellino", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: widget.textColor)),
@@ -646,7 +635,6 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
           const SizedBox(height: 14),
 
-          // PATRIMONIO TOTALE (Verde smeraldo brillante inalterato)
           Card(
             color: widget.cardBg,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
