@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(const PiggyVaultApp());
 }
@@ -160,7 +162,7 @@ class _HomeScreenState extends State<HomeScreen> {
   String aiPurchaseResult = "Inserisci le tue prime entrate e uscite per sbloccare i consigli personalizzati dell'IA.";
   bool isAiLoading = false;
 
-  String get _nomeUtenteDinamico => "Marcogrillone";
+  String get _nomeUtenteDinamico => widget.userEmail.contains('marika') ? "Marika" : "Marcogrillone";
 
   bool get _isLight => _currentTheme == 'Porcellino Light';
   Color get _scaffoldBg => _isLight ? const Color(0xFFF1F5F9) : const Color(0xFF0B0F19);
@@ -169,10 +171,42 @@ class _HomeScreenState extends State<HomeScreen> {
   Color get _subtitleColor => _isLight ? const Color(0xFF475569) : Colors.grey.shade400;
   Color get _primaryColor => const Color(0xFFDB2777);
 
+  @override
+  void initState() {
+    super.initState();
+    _caricaDatiLocali();
+  }
+
+  Future<void> _caricaDatiLocali() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      patrimonio = prefs.getDouble('patrimonio') ?? 0.00;
+      entrateMese = prefs.getDouble('entrateMese') ?? 0.00;
+      usciteMese = prefs.getDouble('usciteMese') ?? 0.00;
+      _currentTheme = prefs.getString('currentTheme') ?? 'Porcellino Dark';
+      
+      final String? txString = prefs.getString('transazioni');
+      if (txString != null) {
+        final List decoded = jsonDecode(txString);
+        transazioni = decoded.map((e) => Map<String, dynamic>.from(e)).toList();
+      }
+    });
+  }
+
+  Future<void> _salvaDatiLocali() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setDouble('patrimonio', patrimonio);
+    await prefs.setDouble('entrateMese', entrateMese);
+    await prefs.setDouble('usciteMese', usciteMese);
+    await prefs.setString('currentTheme', _currentTheme);
+    await prefs.setString('transazioni', jsonEncode(transazioni));
+  }
+
   void _cambiaTema(String nuovoTema) {
     setState(() {
       _currentTheme = nuovoTema;
     });
+    _salvaDatiLocali();
   }
 
   Map<String, dynamic> _getLivelloPorcellino() {
@@ -188,6 +222,23 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   double _getProgresso() => (patrimonio / 100000.0).clamp(0.0, 1.0);
+
+  void _eliminaTransazione(int index) {
+    setState(() {
+      final tx = transazioni[index];
+      double amount = tx['amount'];
+      if (tx['type'].contains('Entrata')) {
+        patrimonio -= amount;
+        entrateMese -= amount;
+      } else {
+        patrimonio += amount;
+        usciteMese -= amount;
+      }
+      transazioni.removeAt(index);
+    });
+    _salvaDatiLocali();
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Transazione eliminata")));
+  }
 
   void _mostraDettaglioLivello(String titolo, String target, String descrizione, IconData icona, Color colore) {
     showDialog(
@@ -248,7 +299,7 @@ class _HomeScreenState extends State<HomeScreen> {
       builder: (context) => AlertDialog(
         backgroundColor: _cardBg,
         title: Text("👥 Invito Inviato!", style: TextStyle(color: _textColor)),
-        content: Text("Link sicuro per il conto condiviso inviato a:\n\n👉 $email", style: TextStyle(color: _textColor)),
+        content: Text("Link sicuro per il conto condiviso inviato a:\n\n👉 $email\n\nMarika potrà installare l'app e accedere con questa email per sincronizzare i dati!", style: TextStyle(color: _textColor)),
         actions: [TextButton(onPressed: () => Navigator.pop(context), child: Text("Ottimo", style: TextStyle(color: _primaryColor)))],
       ),
     );
@@ -346,7 +397,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           onPressed: () {
                             _cambiaTema('Porcellino Dark');
                             setModalState(() {});
-                            setState(() {}); // Forza aggiornamento immediato della schermata principale
+                            setState(() {});
                           },
                           icon: const Icon(Icons.brush, size: 16, color: Colors.white),
                           label: const Text("Porcellino Dark", style: TextStyle(color: Colors.white)),
@@ -357,7 +408,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           onPressed: () {
                             _cambiaTema('Porcellino Light');
                             setModalState(() {});
-                            setState(() {}); // Forza aggiornamento immediato della schermata principale
+                            setState(() {});
                           },
                           icon: const Icon(Icons.brush, size: 16, color: Colors.black87),
                           label: const Text("Porcellino Light", style: TextStyle(color: Colors.black87)),
@@ -416,20 +467,31 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               const SizedBox(height: 16),
-              Text("Dettaglio Movimenti", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: _subtitleColor)),
+              Text("Dettaglio Movimenti (Swipe o elimina)", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: _subtitleColor)),
               const SizedBox(height: 8),
               Expanded(
                 child: ListView.builder(
                   itemCount: transazioni.length,
                   itemBuilder: (context, index) {
                     final tx = transazioni[index];
-                    return ListTile(
-                      dense: true,
-                      title: Text(tx['category'], style: TextStyle(fontWeight: FontWeight.bold, color: _textColor)),
-                      subtitle: Text(tx['note'], style: TextStyle(color: _subtitleColor)),
-                      trailing: Text(
-                        "${tx['type'].contains('Entrata') ? '+' : '-'}€ ${tx['amount'].toStringAsFixed(2)}",
-                        style: TextStyle(color: tx['type'].contains('Entrata') ? const Color(0xFF10B981) : _primaryColor, fontWeight: FontWeight.bold),
+                    return Dismissible(
+                      key: Key('${tx['category']}_${tx['amount']}_$index'),
+                      direction: DismissDirection.endToStart,
+                      background: Container(
+                        alignment: Alignment.centerRight,
+                        padding: const EdgeInsets.only(right: 20),
+                        color: Colors.red,
+                        child: const Icon(Icons.delete, color: Colors.white),
+                      ),
+                      onDismissed: (direction) => _eliminaTransazione(index),
+                      child: ListTile(
+                        dense: true,
+                        title: Text(tx['category'], style: TextStyle(fontWeight: FontWeight.bold, color: _textColor)),
+                        subtitle: Text(tx['note'], style: TextStyle(color: _subtitleColor)),
+                        trailing: Text(
+                          "${tx['type'].contains('Entrata') ? '+' : '-'}€ ${tx['amount'].toStringAsFixed(2)}",
+                          style: TextStyle(color: tx['type'].contains('Entrata') ? const Color(0xFF10B981) : _primaryColor, fontWeight: FontWeight.bold),
+                        ),
                       ),
                     );
                   },
@@ -517,6 +579,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         usciteMese += amount;
                       }
                     });
+                    _salvaDatiLocali();
                     _noteController.clear();
                     _amountController.clear();
                     Navigator.pop(context);
@@ -624,9 +687,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 context: context,
                 builder: (context) => AlertDialog(
                   backgroundColor: _cardBg,
-                  title: Text("👥 Invita Collaboratore", style: TextStyle(color: _textColor)),
-                  content: TextField(controller: _inviteEmailController, style: TextStyle(color: _textColor), decoration: const InputDecoration(labelText: "Email collaboratore")),
-                  actions: [TextButton(onPressed: _inviaInvito, child: Text("Invia Email", style: TextStyle(color: _primaryColor)))],
+                  title: Text("👥 Invita Marika / Collaboratore", style: TextStyle(color: _textColor)),
+                  content: TextField(controller: _inviteEmailController, style: TextStyle(color: _textColor), decoration: const InputDecoration(labelText: "Email collaboratore (es. marika@email.com)")),
+                  actions: [TextButton(onPressed: _inviaInvito, child: Text("Invia Invito", style: TextStyle(color: _primaryColor)))],
                 ),
               ),
               icon: const Icon(Icons.email, color: Colors.white),
@@ -648,7 +711,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       Text("PATRIMONIO TOTALE", style: TextStyle(fontSize: 10, color: _subtitleColor, fontWeight: FontWeight.bold)),
                       const SizedBox(height: 4),
-                      const Text("€ 0.00", style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Color(0xFF10B981))),
+                      Text("€ ${patrimonio.toStringAsFixed(2)}", style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Color(0xFF10B981))),
                     ],
                   ),
                   const Icon(Icons.account_balance_wallet, color: Color(0xFF10B981), size: 32),
@@ -671,7 +734,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       children: [
                         Text("ENTRATE MESE", style: TextStyle(fontSize: 9, color: _subtitleColor, fontWeight: FontWeight.bold)),
                         const SizedBox(height: 4),
-                        const Text("€ 0.00", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blueAccent)),
+                        Text("€ ${entrateMese.toStringAsFixed(2)}", style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blueAccent)),
                       ],
                     ),
                   ),
@@ -689,7 +752,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       children: [
                         Text("USCITE MESE", style: TextStyle(fontSize: 9, color: _subtitleColor, fontWeight: FontWeight.bold)),
                         const SizedBox(height: 4),
-                        const Text("€ 0.00", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.redAccent)),
+                        Text("€ ${usciteMese.toStringAsFixed(2)}", style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.redAccent)),
                       ],
                     ),
                   ),
@@ -797,7 +860,7 @@ class _HomeScreenState extends State<HomeScreen> {
             Text("📜 Storico Transazioni", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: _subtitleColor)),
             ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: _cardBg), onPressed: _mostraFoglioResoconto, child: Text("Apri Resoconto", style: TextStyle(color: _textColor)))
           ]),
-          ...transazioni.map((tx) => Card(
+          ...transazioni.take(5).map((tx) => Card(
             color: _cardBg,
             child: ListTile(
               title: Text(tx['category'], style: TextStyle(fontWeight: FontWeight.bold, color: _textColor)),
