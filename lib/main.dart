@@ -64,7 +64,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ClipRRect(
                 borderRadius: BorderRadius.circular(16),
                 child: Image.asset(
-                  'assets/logo.png',
+                  'assets/icon/icona_esterna.png',
                   width: 70,
                   height: 70,
                   errorBuilder: (context, error, stackTrace) => Container(
@@ -542,7 +542,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ClipRRect(
               borderRadius: BorderRadius.circular(8),
               child: Image.asset(
-                'assets/logo.png',
+                'assets/icon/icona_esterna.png',
                 width: 32,
                 height: 32,
                 errorBuilder: (context, error, stackTrace) => Container(
