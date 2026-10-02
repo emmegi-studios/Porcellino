@@ -11,11 +11,11 @@ class PiggyVaultApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Piggy Vault',
+      title: 'Porcellino',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         brightness: Brightness.dark,
-        scaffoldBackgroundColor: const Color(0xFF020617),
+        scaffoldBackgroundColor: const Color(0xFF0B0F19),
         primaryColor: const Color(0xFFDB2777),
       ),
       home: const LoginScreen(),
@@ -88,16 +88,16 @@ class _LoginScreenState extends State<LoginScreen> {
             children: [
               const Text("🐷", style: TextStyle(fontSize: 60)),
               const SizedBox(height: 12),
-              const Text("Piggy Vault", style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white)),
-              const SizedBox(height: 6),
-              const Text("Il tuo caveau finanziario intelligente", style: TextStyle(fontSize: 13, color: Colors.grey)),
+              const Text("Porcellino", style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white)),
+              const SizedBox(height: 4),
+              const Text("PRE-ALPHA V1.0", style: TextStyle(fontSize: 11, color: Color(0xFFF472B6), fontWeight: FontWeight.bold)),
               const SizedBox(height: 36),
               TextField(
                 controller: _emailController,
                 decoration: InputDecoration(
                   labelText: "Email",
                   filled: true,
-                  fillColor: const Color(0xFF0F172A),
+                  fillColor: const Color(0xFF131B2E),
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
                 ),
               ),
@@ -111,7 +111,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 decoration: InputDecoration(
                   labelText: "Password",
                   filled: true,
-                  fillColor: const Color(0xFF0F172A),
+                  fillColor: const Color(0xFF131B2E),
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
                 ),
               ),
@@ -125,7 +125,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   decoration: InputDecoration(
                     labelText: "Conferma Password",
                     filled: true,
-                    fillColor: const Color(0xFF0F172A),
+                    fillColor: const Color(0xFF131B2E),
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
                   ),
                 ),
@@ -138,7 +138,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                 ),
                 onPressed: _autentica,
-                child: Text(isLogin ? "Accedi al Caveau" : "Registrati", style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+                child: Text(isLogin ? "Accedi a Porcellino" : "Registrati", style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
               ),
               TextButton(
                 onPressed: () => setState(() {
@@ -172,22 +172,21 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Map<String, dynamic>> transazioni = [];
   List<Map<String, dynamic>> salvadanai = [];
 
-  // Categorie predefinite pronte all'uso come richiesto
-  final List<String> categoriePredefinite = [
-    'Stipendio',
-    'Spesa Alimentare',
-    'Bollette & Utenze',
-    'Affitto / Mutuo',
-    'Svago & Tempo Libero',
-    'Trasporti & Carburante',
-    'Investimenti',
-    'Altro'
+  // Categorie con le emoji ufficiali di Porcellino
+  final List<String> categorieConEmoji = [
+    '🛒 Spesa / Alimentari',
+    '🏠 Bollette & Casa',
+    '🚗 Auto & Trasporti',
+    '🐾 Animali / Pet Care',
+    '🍕 Svago & Ristoranti',
+    '💼 Stipendio / Entrata',
+    '📦 Altro'
   ];
-  String _selectedCategory = 'Spesa Alimentare';
+  String _selectedCategory = '🛒 Spesa / Alimentari';
 
   final _noteController = TextEditingController();
   final _amountController = TextEditingController();
-  String _selectedType = 'uscita';
+  String _selectedType = 'Uscita (Spesa)';
 
   final _piggyTitleController = TextEditingController();
   final _piggyTargetController = TextEditingController();
@@ -195,40 +194,34 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final _itemController = TextEditingController();
   final _monthlySaveController = TextEditingController();
-  String aiPurchaseResult = "Inserisci un bene e l'accumulo mensile per calcolare il piano AI.";
+  String aiPurchaseResult = "Inserisci le tue prime entrate e uscite per sbloccare i consigli personalizzati dell'IA.";
   bool isAiLoading = false;
 
-  Map<String, dynamic> _getLivelloOriginale() {
+  // Le 4 tappe originali di Porcellino Road to 100k
+  Map<String, dynamic> _getLivelloPorcellino() {
     if (patrimonio < 1000) {
-      return {"nome": "Fondo Cuscinetto", "target": "1.000€", "icon": "🛡️", "color": Colors.blueAccent};
+      return {"nome": "Emergenze", "target": "1.000€", "icon": "🟢", "color": Colors.greenAccent};
     } else if (patrimonio < 10000) {
-      return {"nome": "Risparmiatore Dinamico", "target": "10.000€", "icon": "📈", "color": Colors.orangeAccent};
-    } else if (patrimonio < 35000) {
-      return {"nome": "Investitore Strategico", "target": "35.000€", "icon": "💼", "color": Colors.purpleAccent};
-    } else if (patrimonio < 70000) {
-      return {"nome": "Maestro del Caveau", "target": "70.000€", "icon": "⚡", "color": const Color(0xFFDB2777)};
-    } else if (patrimonio < 100000) {
-      return {"nome": "Aspirante 100k", "target": "100.000€", "icon": "🚀", "color": Colors.amber};
+      return {"nome": "Cuscino", "target": "10.000€", "icon": "🛡️", "color": Colors.blueAccent};
+    } else if (patrimonio < 50000) {
+      return {"nome": "Fortezza", "target": "50.000€", "icon": "🏰", "color": Colors.purpleAccent};
     } else {
-      return {"nome": "Custode dei 100k+", "target": "Traguardo Raggiunto", "icon": "🏆", "color": const Color(0xFF10B981)};
+      return {"nome": "Porcellone", "target": "100.000€", "icon": "👑", "color": Color(0xFFDB2777)};
     }
   }
 
   double _getProgresso() => (patrimonio / 100000.0).clamp(0.0, 1.0);
 
-  void _simulaAI(String oggetto, String risparmioStr) {
-    if (oggetto.isEmpty) return;
-    double risparmio = double.tryParse(risparmioStr.replaceAll(',', '.')) ?? 150.00;
-    if (risparmio <= 0) risparmio = 150.00;
-
+  void _simulaAI(String spesaStr) {
+    if (spesaStr.isEmpty) return;
+    double valore = double.tryParse(spesaStr.replaceAll(',', '.')) ?? 0.0;
     setState(() => isAiLoading = true);
     
     Future.delayed(const Duration(milliseconds: 700), () {
       setState(() {
         isAiLoading = false;
-        double stima = oggetto.toLowerCase().contains('auto') ? 7500.0 : 1000.0;
-        int mesi = (stima / risparmio).ceil();
-        aiPurchaseResult = "🤖 AI Plan per '$oggetto' (€$stima):\n• Accantonando €$risparmio/mese\n• Tempo stimato: ~$mesi mesi (${(mesi/12).toStringAsFixed(1)} anni).";
+        double impatto = patrimonio > 0 ? (valore / patrimonio) * 100 : 0;
+        aiPurchaseResult = "🤖 Consulente IA:\nUna spesa di €$valore impatta sul tuo patrimonio per il ${impatto.toStringAsFixed(1)}%. Gestiscila con prudenza!";
       });
     });
   }
@@ -243,9 +236,9 @@ class _HomeScreenState extends State<HomeScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF0F172A),
+        backgroundColor: const Color(0xFF131B2E),
         title: const Text("📧 Invito Inviato!"),
-        content: Text("Link di accesso sicuro inviato con successo a:\n\n👉 $email"),
+        content: Text("Link sicuro per il conto condiviso inviato con successo a:\n\n👉 $email"),
         actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text("Ottimo", style: TextStyle(color: Color(0xFFDB2777))))],
       ),
     );
@@ -256,7 +249,7 @@ class _HomeScreenState extends State<HomeScreen> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: const Color(0xFF0F172A),
+      backgroundColor: const Color(0xFF131B2E),
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
       builder: (context) {
         return Padding(
@@ -272,13 +265,13 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 16),
               TextField(
                 controller: _piggyTitleController,
-                decoration: InputDecoration(labelText: "Nome Obiettivo (es. Viaggio, Auto)", filled: true, fillColor: const Color(0xFF1E293B), border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))),
+                decoration: InputDecoration(labelText: "Nome Obiettivo", filled: true, fillColor: const Color(0xFF0B0F19), border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))),
               ),
               const SizedBox(height: 12),
               TextField(
                 controller: _piggyTargetController,
                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                decoration: InputDecoration(labelText: "Importo Target (€)", filled: true, fillColor: const Color(0xFF1E293B), border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))),
+                decoration: InputDecoration(labelText: "Importo Target (€)", filled: true, fillColor: const Color(0xFF0B0F19), border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))),
               ),
               const SizedBox(height: 20),
               ElevatedButton(
@@ -309,7 +302,7 @@ class _HomeScreenState extends State<HomeScreen> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: const Color(0xFF0F172A),
+      backgroundColor: const Color(0xFF131B2E),
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
       builder: (context) {
         return Container(
@@ -327,7 +320,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               const SizedBox(height: 16),
               Card(
-                color: const Color(0xFF1E293B),
+                color: const Color(0xFF0B0F19),
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
@@ -357,8 +350,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       title: Text(tx['category'], style: const TextStyle(fontWeight: FontWeight.bold)),
                       subtitle: Text(tx['note']),
                       trailing: Text(
-                        "${tx['type'] == 'entrata' ? '+' : '-'}€ ${tx['amount'].toStringAsFixed(2)}",
-                        style: TextStyle(color: tx['type'] == 'entrata' ? const Color(0xFF10B981) : const Color(0xFFDB2777), fontWeight: FontWeight.bold),
+                        "${tx['type'].contains('Entrata') ? '+' : '-'}€ ${tx['amount'].toStringAsFixed(2)}",
+                        style: TextStyle(color: tx['type'].contains('Entrata') ? const Color(0xFF10B981) : const Color(0xFFDB2777), fontWeight: FontWeight.bold),
                       ),
                     );
                   },
@@ -381,7 +374,7 @@ class _HomeScreenState extends State<HomeScreen> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: const Color(0xFF0F172A),
+      backgroundColor: const Color(0xFF131B2E),
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
       builder: (context) {
         return Padding(
@@ -393,30 +386,36 @@ class _HomeScreenState extends State<HomeScreen> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Text("➕ Aggiungi Movimento", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
+              const Text("➕ Nuova Transazione", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
               const SizedBox(height: 16),
-              // Menu a tendina delle Categorie Predefinite
-              DropdownButtonFormField<String>(
-                value: _selectedCategory,
-                dropdownColor: const Color(0xFF1E293B),
-                decoration: InputDecoration(labelText: "Categoria", filled: true, fillColor: const Color(0xFF1E293B), border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))),
-                items: categoriePredefinite.map((cat) => DropdownMenuItem(value: cat, child: Text(cat))).toList(),
-                onChanged: (val) => setState(() => _selectedCategory = val ?? 'Altro'),
-              ),
-              const SizedBox(height: 12),
-              TextField(controller: _noteController, decoration: InputDecoration(labelText: "Nota (opzionale)", filled: true, fillColor: const Color(0xFF1E293B), border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)))),
-              const SizedBox(height: 12),
-              TextField(controller: _amountController, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: InputDecoration(labelText: "Importo (€)", filled: true, fillColor: const Color(0xFF1E293B), border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)))),
-              const SizedBox(height: 12),
               DropdownButtonFormField<String>(
                 value: _selectedType,
-                dropdownColor: const Color(0xFF1E293B),
-                decoration: InputDecoration(filled: true, fillColor: const Color(0xFF1E293B), border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))),
+                dropdownColor: const Color(0xFF0B0F19),
+                decoration: InputDecoration(labelText: "Tipo", filled: true, fillColor: const Color(0xFF0B0F19), border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))),
                 items: const [
-                  DropdownMenuItem(value: 'entrata', child: Text("🟢 Entrata (+)")),
-                  DropdownMenuItem(value: 'uscita', child: Text("🔴 Uscita (-)")),
+                  DropdownMenuItem(value: 'Uscita (Spesa)', child: Text("🔴 Uscita (Spesa)")),
+                  DropdownMenuItem(value: 'Entrata (Guadagno)', child: Text("🟢 Entrata (Guadagno)")),
                 ],
-                onChanged: (val) => setState(() => _selectedType = val ?? 'uscita'),
+                onChanged: (val) => setState(() => _selectedType = val ?? 'Uscita (Spesa)'),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: _amountController,
+                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                decoration: InputDecoration(labelText: "Importo (€)", filled: true, fillColor: const Color(0xFF0B0F19), border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))),
+              ),
+              const SizedBox(height: 12),
+              DropdownButtonFormField<String>(
+                value: _selectedCategory,
+                dropdownColor: const Color(0xFF0B0F19),
+                decoration: InputDecoration(labelText: "Categoria", filled: true, fillColor: const Color(0xFF0B0F19), border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))),
+                items: categorieConEmoji.map((cat) => DropdownMenuItem(value: cat, child: Text(cat))).toList(),
+                onChanged: (val) => setState(() => _selectedCategory = val ?? '📦 Altro'),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: _noteController,
+                decoration: InputDecoration(labelText: "Note / Descrizione", filled: true, fillColor: const Color(0xFF0B0F19), border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))),
               ),
               const SizedBox(height: 20),
               ElevatedButton(
@@ -428,7 +427,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   if (amount > 0) {
                     setState(() {
                       transazioni.insert(0, {"category": _selectedCategory, "note": note.isEmpty ? _selectedCategory : note, "amount": amount, "type": _selectedType});
-                      if (_selectedType == 'entrata') {
+                      if (_selectedType.contains('Entrata')) {
                         patrimonio += amount;
                         entrateMese += amount;
                       } else {
@@ -441,7 +440,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     Navigator.pop(context);
                   }
                 },
-                child: const Text("Registra Movimento", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                child: const Text("Registra Transazione", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
               ),
             ],
           ),
@@ -452,13 +451,36 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final livello = _getLivelloOriginale();
+    final livello = _getLivelloPorcellino();
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color(0xFF0F172A),
-        title: const Text("🐷 Piggy Vault", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+        backgroundColor: const Color(0xFF0B0F19),
+        title: Row(
+          children: [
+            const Text("🐷 ", style: TextStyle(fontSize: 20)),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text("Porcellino", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                const Text("PRE-ALPHA V1.0", style: TextStyle(fontSize: 9, color: Color(0xFFF472B6))),
+              ],
+            ),
+          ],
+        ),
         actions: [
+          Container(
+            margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            decoration: BoxDecoration(color: const Color(0xFF131B2E), borderRadius: BorderRadius.circular(20)),
+            child: Row(
+              children: [
+                const Icon(Icons.person, size: 14, color: Color(0xFFF472B6)),
+                const SizedBox(width: 4),
+                Text("Marco", style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white)),
+              ],
+            ),
+          ),
           IconButton(
             icon: const Icon(Icons.description, color: Color(0xFFF472B6)),
             tooltip: "Foglio Resoconto",
@@ -469,13 +491,10 @@ class _HomeScreenState extends State<HomeScreen> {
       body: ListView(
         padding: const EdgeInsets.all(16.0),
         children: [
-          Text("Utente loggato: ${widget.userEmail}", style: const TextStyle(fontSize: 11, color: Colors.grey)),
-          const SizedBox(height: 12),
-
           // SELETTORE PRIVATO / CONDIVISO
           Container(
             padding: const EdgeInsets.all(4),
-            decoration: BoxDecoration(color: const Color(0xFF0F172A), borderRadius: BorderRadius.circular(16)),
+            decoration: BoxDecoration(color: const Color(0xFF131B2E), borderRadius: BorderRadius.circular(16)),
             child: Row(
               children: [
                 Expanded(
@@ -484,7 +503,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 10),
                       decoration: BoxDecoration(color: !isSharedMode ? const Color(0xFFDB2777) : Colors.transparent, borderRadius: BorderRadius.circular(12)),
-                      child: const Center(child: Text("🔒 Conto Privato", style: TextStyle(fontWeight: FontWeight.bold))),
+                      child: const Center(child: Text("🔒 Conto Privato", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13))),
                     ),
                   ),
                 ),
@@ -494,7 +513,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 10),
                       decoration: BoxDecoration(color: isSharedMode ? const Color(0xFF3B82F6) : Colors.transparent, borderRadius: BorderRadius.circular(12)),
-                      child: const Center(child: Text("👥 Conto Condiviso", style: TextStyle(fontWeight: FontWeight.bold))),
+                      child: const Center(child: Text("👥 Conto Condiviso", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13))),
                     ),
                   ),
                 ),
@@ -508,7 +527,7 @@ class _HomeScreenState extends State<HomeScreen> {
               onPressed: () => showDialog(
                 context: context,
                 builder: (context) => AlertDialog(
-                  backgroundColor: const Color(0xFF0F172A),
+                  backgroundColor: const Color(0xFF131B2E),
                   title: const Text("👥 Invita Collaboratore"),
                   content: TextField(controller: _inviteEmailController, decoration: const InputDecoration(labelText: "Email collaboratore")),
                   actions: [TextButton(onPressed: _inviaInvito, child: const Text("Invia Email"))],
@@ -520,61 +539,139 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
           const SizedBox(height: 14),
 
-          // PATRIMONIO E LIVELLO ORIGINALE CON ICONA ROAD TO 100K
+          // 1. PATRIMONIO TOTALE
           Card(
-            color: const Color(0xFF0F172A),
+            color: const Color(0xFF131B2E),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            child: Padding(
+              padding: const EdgeInsets.all(18.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text("PATRIMONIO TOTALE", style: TextStyle(fontSize: 10, color: Colors.grey, fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 4),
+                      Text("€ ${patrimonio.toStringAsFixed(2)}", style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Color(0xFF10B981))),
+                    ],
+                  ),
+                  const Icon(Icons.account_balance_wallet, color: Color(0xFF10B981), size: 32),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 10),
+
+          // ENTRATE E USCITE MESE
+          Row(
+            children: [
+              Expanded(
+                child: Card(
+                  color: const Color(0xFF131B2E),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  child: Padding(
+                    padding: const EdgeInsets.all(14.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text("ENTRATE MESE", style: TextStyle(fontSize: 9, color: Colors.grey, fontWeight: FontWeight.bold)),
+                        const SizedBox(height: 4),
+                        Text("€ ${entrateMese.toStringAsFixed(2)}", style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blueAccent)),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Card(
+                  color: const Color(0xFF131B2E),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  child: Padding(
+                    padding: const EdgeInsets.all(14.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text("USCITE MESE", style: TextStyle(fontSize: 9, color: Colors.grey, fontWeight: FontWeight.bold)),
+                        const SizedBox(height: 4),
+                        Text("€ ${usciteMese.toStringAsFixed(2)}", style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFFDB2777)),
+                      ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+
+          // 2. LIVELLI PORCELLINO RISPARMIO (4 TAPPE)
+          Card(
+            color: const Color(0xFF131B2E),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
             child: Padding(
               padding: const EdgeInsets.all(18.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(isSharedMode ? "PATRIMONIO CONDIVISO" : "PATRIMONIO PERSONALE", style: const TextStyle(fontSize: 10, color: Colors.grey, fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 4),
-                  Text("€ ${patrimonio.toStringAsFixed(2)}", style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Color(0xFF10B981))),
-                  const SizedBox(height: 12),
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(color: const Color(0xFF1E293B), borderRadius: BorderRadius.circular(12), border: Border.all(color: livello['color'].withOpacity(0.4))),
-                    child: Row(
-                      children: [
-                        Text(livello['icon'], style: const TextStyle(fontSize: 22)),
-                        const SizedBox(width: 10),
-                        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                          Text(livello['nome'], style: TextStyle(fontSize: 12, color: livello['color'], fontWeight: FontWeight.bold)),
-                          Text("Target: ${livello['target']}", style: const TextStyle(fontSize: 10, color: Colors.grey)),
-                        ])),
-                        Text("${(_getProgresso() * 100).toStringAsFixed(1)}%", style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
-                      ],
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text("🏆 Livelli Porcellino Risparmio", style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.white)),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        decoration: BoxDecoration(color: const Color(0xFF0B0F19), borderRadius: BorderRadius.circular(12)),
+                        child: Text("Livello: ${livello['nome']}", style: TextStyle(fontSize: 11, color: livello['color'], fontWeight: FontWeight.bold)),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text("Obiettivo Attuale", style: TextStyle(fontSize: 11, color: Colors.grey)),
+                      Text("€ ${patrimonio.toStringAsFixed(0)} / ${livello['target']}", style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
+                    ],
                   ),
                   const SizedBox(height: 8),
-                  LinearProgressIndicator(value: _getProgresso(), backgroundColor: const Color(0xFF1E293B), color: livello['color'], minHeight: 6),
+                  LinearProgressIndicator(value: _getProgresso(), backgroundColor: const Color(0xFF0B0F19), color: livello['color'], minHeight: 8),
+                  const SizedBox(height: 16),
+                  // Le 4 tappe visive
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      _buildTappaBadge("1. Emergenze", "1.000€", patrimonio >= 1000),
+                      _buildTappaBadge("2. Cuscino", "10.000€", patrimonio >= 10000),
+                      _buildTappaBadge("3. Fortezza", "50.000€", patrimonio >= 50000),
+                      _buildTappaBadge("4. Porcellone", "100.000€", patrimonio >= 100000),
+                    ],
+                  ),
                 ],
               ),
             ),
           ),
           const SizedBox(height: 14),
 
-          // SIMULATORE AI
+          // 3. CONSULENTE FINANZIARIO IA
           Card(
-            color: const Color(0xFF0F172A),
+            color: const Color(0xFF131B2E),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text("🤖 Simulatore AI di Accumulo", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey)),
+                  const Text("💡 Consulente Finanziario IA", style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.white)),
                   const SizedBox(height: 8),
-                  TextField(controller: _itemController, decoration: const InputDecoration(hintText: "Cosa vuoi comprare? (es. Scooter)")),
+                  const Text("Inserisci valore spesa per valutare l'impatto:", style: TextStyle(fontSize: 11, color: Colors.grey)),
                   const SizedBox(height: 8),
                   Row(children: [
-                    Expanded(child: TextField(controller: _monthlySaveController, keyboardType: TextInputType.number, decoration: const InputDecoration(hintText: "Accantonamento €/mese"))),
+                    Expanded(child: TextField(controller: _itemController, keyboardType: TextInputType.number, decoration: const InputDecoration(hintText: "es. 150"))),
                     const SizedBox(width: 8),
-                    ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFDB2777)), onPressed: () => _simulaAI(_itemController.text, _monthlySaveController.text), child: const Text("Calcola"))
+                    ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF3B82F6)), onPressed: () => _simulaAI(_itemController.text), child: const Text("Valuta Impatto"))
                   ]),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 10),
                   isAiLoading ? const CircularProgressIndicator() : Text(aiPurchaseResult, style: const TextStyle(fontSize: 11, color: Colors.white70)),
                 ],
               ),
@@ -582,35 +679,43 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           const SizedBox(height: 14),
 
-          // SALVADANAI OBIETTIVO UTENTE
+          // 4. NUOVA TRANSAZIONE & STORICO
           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-            const Text("🏦 Salvadanai Obiettivo", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey)),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFDB2777)),
-              onPressed: _mostraModalNuovoSalvadanaio,
-              child: const Text("+ Nuovo"),
-            )
+            const Text("➕ Nuova Transazione", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey)),
+            ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFDB2777)), onPressed: _mostraModalInserimento, child: const Text("+ Nuova"))
           ]),
-          ...salvadanai.map((p) => Card(color: const Color(0xFF0F172A), child: ListTile(title: Text(p['title']), subtitle: Text("€${p['current']} / €${p['target']}")))),
-          const SizedBox(height: 14),
-
-          // STORICO MOVIMENTI
+          const SizedBox(height: 8),
+          
           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-            const Text("📜 Storico Movimenti", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey)),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFDB2777)),
-              onPressed: _mostraModalInserimento,
-              child: const Text("+ Nuova"),
-            )
+            const Text("📜 Storico Transazioni", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey)),
+            ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF1E293B)), onPressed: _mostraFoglioResoconto, child: const Text("Apri Resoconto"))
           ]),
           ...transazioni.map((tx) => Card(
-            color: const Color(0xFF0F172A),
+            color: const Color(0xFF131B2E),
             child: ListTile(
-              title: Text(tx['category']),
+              title: Text(tx['category'], style: const TextStyle(fontWeight: FontWeight.bold)),
               subtitle: Text(tx['note']),
-              trailing: Text("${tx['type'] == 'entrata' ? '+' : '-'}€${tx['amount']}"),
+              trailing: Text("${tx['type'].contains('Entrata') ? '+' : '-'}€${tx['amount']}", style: TextStyle(color: tx['type'].contains('Entrata') ? Colors.greenAccent : Color(0xFFDB2777), fontWeight: FontWeight.bold)),
             ),
           )),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTappaBadge(String titolo, String sub, bool completata) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+      decoration: BoxDecoration(
+        color: completata ? const Color(0xFFDB2777).withOpacity(0.2) : const Color(0xFF0B0F19),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: completata ? const Color(0xFFDB2777) : Colors.grey.shade800),
+      ),
+      child: Column(
+        children: [
+          Text(titolo, style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: completata ? Colors.white : Colors.grey)),
+          const SizedBox(height: 2),
+          Text(sub, style: const TextStyle(fontSize: 8, color: Colors.grey)),
         ],
       ),
     );
