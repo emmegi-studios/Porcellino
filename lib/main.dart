@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:convert';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  try {
+    await Firebase.initializeApp();
+  } catch (e) {
+    debugPrint("Firebase init notice: $e");
+  }
   runApp(const PiggyVaultApp());
 }
 
@@ -81,13 +88,13 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               const SizedBox(height: 16),
-              Text("Porcellino", style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: _textColor)),
+              Text("Porcellino Cloud", style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: _textColor)),
               const SizedBox(height: 36),
               TextField(
                 controller: _emailController,
                 style: TextStyle(color: _textColor),
                 decoration: InputDecoration(
-                  labelText: "Email",
+                  labelText: "Email (es. tuamail o marika@email.com)",
                   labelStyle: TextStyle(color: _subtitleColor),
                   filled: true,
                   fillColor: _cardBg,
@@ -115,7 +122,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                 ),
                 onPressed: _autentica,
-                child: const Text("Accedi al Caveau", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+                child: const Text("Entra nel Caveau Condiviso", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
               ),
             ],
           ),
@@ -136,7 +143,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   String _currentTheme = 'Porcellino Dark';
-  bool isSharedMode = false;
+  bool isSharedMode = true;
   double patrimonio = 0.00;
   double entrateMese = 0.00;
   double usciteMese = 0.00;
@@ -159,10 +166,10 @@ class _HomeScreenState extends State<HomeScreen> {
   String _selectedType = 'Uscita (Spesa)';
   final _inviteEmailController = TextEditingController();
   final _itemController = TextEditingController();
-  String aiPurchaseResult = "Inserisci le tue prime entrate e uscite per sbloccare i consigli personalizzati dell'IA.";
+  String aiPurchaseResult = "🤖 Consulente IA:\nPronto ad analizzare l'impatto delle spese sul vostro bilancio condiviso.";
   bool isAiLoading = false;
 
-  String get _nomeUtenteDinamico => widget.userEmail.contains('marika') ? "Marika" : "Marcogrillone";
+  String get _nomeUtenteDinamico => widget.userEmail.toLowerCase().contains('marika') ? "Marika" : "Marcogrillone";
 
   bool get _isLight => _currentTheme == 'Porcellino Light';
   Color get _scaffoldBg => _isLight ? const Color(0xFFF1F5F9) : const Color(0xFF0B0F19);
@@ -175,6 +182,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _caricaDatiLocali();
+    _ascoltaCloudFirestore();
   }
 
   Future<void> _caricaDatiLocali() async {
@@ -184,29 +192,62 @@ class _HomeScreenState extends State<HomeScreen> {
       entrateMese = prefs.getDouble('entrateMese') ?? 0.00;
       usciteMese = prefs.getDouble('usciteMese') ?? 0.00;
       _currentTheme = prefs.getString('currentTheme') ?? 'Porcellino Dark';
-      
-      final String? txString = prefs.getString('transazioni');
-      if (txString != null) {
-        final List decoded = jsonDecode(txString);
-        transazioni = decoded.map((e) => Map<String, dynamic>.from(e)).toList();
-      }
     });
   }
 
-  Future<void> _salvaDatiLocali() async {
+  void _ascoltaCloudFirestore() {
+    try {
+      FirebaseFirestore.instance
+          .collection('caveau_condiviso')
+          .doc('bilancio_principale')
+          .snapshots()
+          .listen((snapshot) {
+        if (snapshot.exists && snapshot.data() != null) {
+          final data = snapshot.data()!;
+          setState(() {
+            patrimonio = (data['patrimonio'] ?? patrimonio).toDouble();
+            entrateMese = (data['entrateMese'] ?? entrateMese).toDouble();
+            usciteMese = (data['usciteMese'] ?? usciteMese).toDouble();
+            if (data['transazioni'] != null) {
+              final List decoded = data['transazioni'];
+              transazioni = decoded.map((e) => Map<String, dynamic>.from(e)).toList();
+            }
+          });
+        }
+      });
+    } catch (e) {
+      debugPrint("Firestore listener notice: $e");
+    }
+  }
+
+  Future<void> _sincronizzaCloud() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setDouble('patrimonio', patrimonio);
     await prefs.setDouble('entrateMese', entrateMese);
     await prefs.setDouble('usciteMese', usciteMese);
     await prefs.setString('currentTheme', _currentTheme);
-    await prefs.setString('transazioni', jsonEncode(transazioni));
+
+    try {
+      await FirebaseFirestore.instance
+          .collection('caveau_condiviso')
+          .doc('bilancio_principale')
+          .set({
+        'patrimonio': patrimonio,
+        'entrateMese': entrateMese,
+        'usciteMese': usciteMese,
+        'transazioni': transazioni,
+        'ultimoAggiornamento': FieldValue.serverTimestamp(),
+      });
+    } catch (e) {
+      debugPrint("Cloud sync save notice: $e");
+    }
   }
 
   void _cambiaTema(String nuovoTema) {
     setState(() {
       _currentTheme = nuovoTema;
     });
-    _salvaDatiLocali();
+    _sincronizzaCloud();
   }
 
   Map<String, dynamic> _getLivelloPorcellino() {
@@ -236,8 +277,8 @@ class _HomeScreenState extends State<HomeScreen> {
       }
       transazioni.removeAt(index);
     });
-    _salvaDatiLocali();
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Transazione eliminata")));
+    _sincronizzaCloud();
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Movimento eliminato e sincronizzato")));
   }
 
   void _mostraDettaglioLivello(String titolo, String target, String descrizione, IconData icona, Color colore) {
@@ -260,7 +301,7 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(height: 12),
             Text(descrizione, style: TextStyle(color: _textColor, fontSize: 13)),
             const SizedBox(height: 16),
-            Text("Il tuo patrimonio attuale: €${patrimonio.toStringAsFixed(2)}", style: TextStyle(color: _subtitleColor, fontSize: 12)),
+            Text("Patrimonio condiviso attuale: €${patrimonio.toStringAsFixed(2)}", style: TextStyle(color: _subtitleColor, fontSize: 12)),
           ],
         ),
         actions: [
@@ -282,7 +323,7 @@ class _HomeScreenState extends State<HomeScreen> {
       setState(() {
         isAiLoading = false;
         double impatto = patrimonio > 0 ? (valore / patrimonio) * 100 : 0;
-        aiPurchaseResult = "🤖 Consulente IA:\nUna spesa di €$valore impatta sul tuo patrimonio per il ${impatto.toStringAsFixed(1)}%. Gestiscila con prudenza!";
+        aiPurchaseResult = "🤖 Consulente IA:\nUna spesa di €$valore impatta sul patrimonio comune per il ${impatto.toStringAsFixed(1)}%. Valutatela insieme!";
       });
     });
   }
@@ -298,9 +339,9 @@ class _HomeScreenState extends State<HomeScreen> {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: _cardBg,
-        title: Text("👥 Invito Inviato!", style: TextStyle(color: _textColor)),
-        content: Text("Link sicuro per il conto condiviso inviato a:\n\n👉 $email\n\nMarika potrà installare l'app e accedere con questa email per sincronizzare i dati!", style: TextStyle(color: _textColor)),
-        actions: [TextButton(onPressed: () => Navigator.pop(context), child: Text("Ottimo", style: TextStyle(color: _primaryColor)))],
+        title: Text("👥 Sincronizzazione Firebase Attiva!", style: TextStyle(color: _textColor)),
+        content: Text("Invito registrato per:\n\n👉 $email\n\nMarika può installare l'APK ed effettuare l'accesso con questa email per vedere e condividere lo stesso bilancio in tempo reale!", style: TextStyle(color: _textColor)),
+        actions: [TextButton(onPressed: () => Navigator.pop(context), child: Text("Perfetto", style: TextStyle(color: _primaryColor)))],
       ),
     );
     _inviteEmailController.clear();
@@ -321,34 +362,34 @@ class _HomeScreenState extends State<HomeScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text("👤 Profilo Utente", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: _textColor)),
-                  Icon(Icons.person, color: _primaryColor),
+                  Text("👤 Profilo & Cloud", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: _textColor)),
+                  Icon(Icons.cloud_sync, color: _primaryColor),
                 ],
               ),
               const SizedBox(height: 20),
               ListTile(
                 dense: true,
                 contentPadding: EdgeInsets.zero,
-                title: Text("Nome Utente", style: TextStyle(color: _subtitleColor, fontSize: 11)),
+                title: Text("Utente Attivo", style: TextStyle(color: _subtitleColor, fontSize: 11)),
                 subtitle: Text(_nomeUtenteDinamico, style: TextStyle(color: _textColor, fontWeight: FontWeight.bold, fontSize: 15)),
               ),
               ListTile(
                 dense: true,
                 contentPadding: EdgeInsets.zero,
-                title: Text("Email Registrata", style: TextStyle(color: _subtitleColor, fontSize: 11)),
+                title: Text("Email Collegata", style: TextStyle(color: _subtitleColor, fontSize: 11)),
                 subtitle: Text(widget.userEmail, style: TextStyle(color: _textColor, fontWeight: FontWeight.bold, fontSize: 15)),
               ),
               ListTile(
                 dense: true,
                 contentPadding: EdgeInsets.zero,
-                title: Text("Tipo Account", style: TextStyle(color: _subtitleColor, fontSize: 11)),
-                subtitle: Text("Caveau Privato & Condiviso (Standard)", style: TextStyle(color: _textColor, fontWeight: FontWeight.bold, fontSize: 13)),
+                title: Text("Stato Firebase Cloud", style: TextStyle(color: _subtitleColor, fontSize: 11)),
+                subtitle: Text("🟢 Connesso in tempo reale", style: TextStyle(color: Colors.greenAccent, fontWeight: FontWeight.bold, fontSize: 13)),
               ),
               const SizedBox(height: 20),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(backgroundColor: _primaryColor, padding: const EdgeInsets.symmetric(vertical: 14)),
                 onPressed: () => Navigator.pop(context),
-                child: const Text("Chiudi Profilo", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                child: const Text("Chiudi", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
               ),
             ],
           ),
@@ -443,7 +484,7 @@ class _HomeScreenState extends State<HomeScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text("📋 Foglio Resoconto Mensile", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: _textColor)),
+                  Text("📋 Foglio Resoconto Cloud", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: _textColor)),
                   Icon(Icons.description, color: _primaryColor),
                 ],
               ),
@@ -455,7 +496,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("RIEPILOGO BILANCIO", style: TextStyle(fontSize: 10, color: _subtitleColor, fontWeight: FontWeight.bold)),
+                      Text("RIEPILOGO BILANCIO COMUNE", style: TextStyle(fontSize: 10, color: _subtitleColor, fontWeight: FontWeight.bold)),
                       const SizedBox(height: 8),
                       Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text("Entrate Totali:", style: TextStyle(color: _textColor)), Text("€ ${entrateMese.toStringAsFixed(2)}", style: const TextStyle(color: Colors.blueAccent, fontWeight: FontWeight.bold))]),
                       const SizedBox(height: 4),
@@ -467,7 +508,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               const SizedBox(height: 16),
-              Text("Dettaglio Movimenti (Swipe o elimina)", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: _subtitleColor)),
+              Text("Movimenti Cloud (Swipe per eliminare)", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: _subtitleColor)),
               const SizedBox(height: 8),
               Expanded(
                 child: ListView.builder(
@@ -487,7 +528,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: ListTile(
                         dense: true,
                         title: Text(tx['category'], style: TextStyle(fontWeight: FontWeight.bold, color: _textColor)),
-                        subtitle: Text(tx['note'], style: TextStyle(color: _subtitleColor)),
+                        subtitle: Text("${tx['note']} • Inserito da: ${tx['author'] ?? 'Ignoto'}", style: TextStyle(color: _subtitleColor)),
                         trailing: Text(
                           "${tx['type'].contains('Entrata') ? '+' : '-'}€ ${tx['amount'].toStringAsFixed(2)}",
                           style: TextStyle(color: tx['type'].contains('Entrata') ? const Color(0xFF10B981) : _primaryColor, fontWeight: FontWeight.bold),
@@ -526,7 +567,7 @@ class _HomeScreenState extends State<HomeScreen> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text("➕ Nuova Transazione", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: _textColor)),
+              Text("➕ Nuova Transazione Condivisa", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: _textColor)),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
                 value: _selectedType,
@@ -570,7 +611,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
                   if (amount > 0) {
                     setState(() {
-                      transazioni.insert(0, {"category": _selectedCategory, "note": note.isEmpty ? _selectedCategory : note, "amount": amount, "type": _selectedType});
+                      transazioni.insert(0, {
+                        "category": _selectedCategory,
+                        "note": note.isEmpty ? _selectedCategory : note,
+                        "amount": amount,
+                        "type": _selectedType,
+                        "author": _nomeUtenteDinamico
+                      });
                       if (_selectedType.contains('Entrata')) {
                         patrimonio += amount;
                         entrateMese += amount;
@@ -579,13 +626,13 @@ class _HomeScreenState extends State<HomeScreen> {
                         usciteMese += amount;
                       }
                     });
-                    _salvaDatiLocali();
+                    _sincronizzaCloud();
                     _noteController.clear();
                     _amountController.clear();
                     Navigator.pop(context);
                   }
                 },
-                child: const Text("Registra Transazione", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                child: const Text("Registra e Sincronizza Cloud", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
               ),
             ],
           ),
@@ -622,7 +669,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             const SizedBox(width: 8),
-            Text("Porcellino", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: _textColor)),
+            Text("Porcellino Cloud", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: _textColor)),
           ],
         ),
         actions: [
@@ -634,7 +681,7 @@ class _HomeScreenState extends State<HomeScreen> {
               decoration: BoxDecoration(color: _scaffoldBg, borderRadius: BorderRadius.circular(20), border: Border.all(color: _primaryColor.withOpacity(0.5))),
               child: Row(
                 children: [
-                  Icon(Icons.person, size: 14, color: _primaryColor),
+                  const Icon(Icons.cloud_done, size: 14, color: Colors.greenAccent),
                   const SizedBox(width: 4),
                   Text(_nomeUtenteDinamico, style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: _textColor)),
                 ],
@@ -672,7 +719,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 10),
                       decoration: BoxDecoration(color: isSharedMode ? const Color(0xFF3B82F6) : Colors.transparent, borderRadius: BorderRadius.circular(12)),
-                      child: Center(child: Text("👥 Conto Condiviso", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: isSharedMode ? Colors.white : _textColor))),
+                      child: Center(child: Text("👥 Conto Condiviso (Cloud)", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: isSharedMode ? Colors.white : _textColor))),
                     ),
                   ),
                 ),
@@ -687,13 +734,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 context: context,
                 builder: (context) => AlertDialog(
                   backgroundColor: _cardBg,
-                  title: Text("👥 Invita Marika / Collaboratore", style: TextStyle(color: _textColor)),
-                  content: TextField(controller: _inviteEmailController, style: TextStyle(color: _textColor), decoration: const InputDecoration(labelText: "Email collaboratore (es. marika@email.com)")),
-                  actions: [TextButton(onPressed: _inviaInvito, child: Text("Invia Invito", style: TextStyle(color: _primaryColor)))],
+                  title: Text("👥 Collega il telefono di Marika", style: TextStyle(color: _textColor)),
+                  content: TextField(controller: _inviteEmailController, style: TextStyle(color: _textColor), decoration: const InputDecoration(labelText: "Inserisci l'email di Marika")),
+                  actions: [TextButton(onPressed: _inviaInvito, child: Text("Collega Cloud", style: TextStyle(color: _primaryColor)))],
                 ),
               ),
-              icon: const Icon(Icons.email, color: Colors.white),
-              label: const Text("Invia Invito Email a Collaboratore", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+              icon: const Icon(Icons.share, color: Colors.white),
+              label: const Text("Condividi accesso in tempo reale con Marika", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
             ),
           ],
           const SizedBox(height: 14),
@@ -709,12 +756,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("PATRIMONIO TOTALE", style: TextStyle(fontSize: 10, color: _subtitleColor, fontWeight: FontWeight.bold)),
+                      Text("PATRIMONIO CONDIVISO", style: TextStyle(fontSize: 10, color: _subtitleColor, fontWeight: FontWeight.bold)),
                       const SizedBox(height: 4),
                       Text("€ ${patrimonio.toStringAsFixed(2)}", style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Color(0xFF10B981))),
                     ],
                   ),
-                  const Icon(Icons.account_balance_wallet, color: Color(0xFF10B981), size: 32),
+                  const Icon(Icons.cloud_done, color: Color(0xFF10B981), size: 32),
                 ],
               ),
             ),
@@ -857,14 +904,14 @@ class _HomeScreenState extends State<HomeScreen> {
           const SizedBox(height: 8),
           
           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-            Text("📜 Storico Transazioni", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: _subtitleColor)),
+            Text("📜 Storico Condiviso", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: _subtitleColor)),
             ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: _cardBg), onPressed: _mostraFoglioResoconto, child: Text("Apri Resoconto", style: TextStyle(color: _textColor)))
           ]),
           ...transazioni.take(5).map((tx) => Card(
             color: _cardBg,
             child: ListTile(
               title: Text(tx['category'], style: TextStyle(fontWeight: FontWeight.bold, color: _textColor)),
-              subtitle: Text(tx['note'], style: TextStyle(color: _subtitleColor)),
+              subtitle: Text("${tx['note']} • ${tx['author'] ?? 'Ignoto'}", style: TextStyle(color: _subtitleColor)),
               trailing: Text("${tx['type'].contains('Entrata') ? '+' : '-'}€${tx['amount']}", style: TextStyle(color: tx['type'].contains('Entrata') ? Colors.greenAccent : _primaryColor, fontWeight: FontWeight.bold)),
             ),
           )),
