@@ -5,70 +5,21 @@ void main() {
   runApp(const PiggyVaultApp());
 }
 
-class PiggyVaultApp extends StatefulWidget {
+class PiggyVaultApp extends StatelessWidget {
   const PiggyVaultApp({super.key});
 
   @override
-  State<PiggyVaultApp> createState() => _PiggyVaultAppState();
-}
-
-class _PiggyVaultAppState extends State<PiggyVaultApp> {
-  String _currentTheme = 'Porcellino Dark';
-
-  void changeTheme(String themeName) {
-    setState(() {
-      _currentTheme = themeName;
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
-    bool isLight = _currentTheme == 'Porcellino Light';
-    
-    Color scaffoldBg = isLight ? const Color(0xFFF1F5F9) : const Color(0xFF0B0F19);
-    Color cardBg = isLight ? const Color(0xFFFFFFFF) : const Color(0xFF131B2E);
-    Color textColor = isLight ? const Color(0xFF0F172A) : Colors.white;
-    Color subtitleColor = isLight ? const Color(0xFF475569) : Colors.grey.shade400;
-    Color primaryColor = const Color(0xFFDB2777);
-
-    return MaterialApp(
+    return const MaterialApp(
       title: 'Porcellino',
       debugShowCheckedModeBanner: false,
-      home: LoginScreen(
-        onThemeChanged: changeTheme,
-        currentTheme: _currentTheme,
-        scaffoldBg: scaffoldBg,
-        cardBg: cardBg,
-        textColor: textColor,
-        subtitleColor: subtitleColor,
-        primaryColor: primaryColor,
-        isLight: isLight,
-      ),
+      home: LoginScreen(),
     );
   }
 }
 
 class LoginScreen extends StatefulWidget {
-  final Function(String) onThemeChanged;
-  final String currentTheme;
-  final Color scaffoldBg;
-  final Color cardBg;
-  final Color textColor;
-  final Color subtitleColor;
-  final Color primaryColor;
-  final bool isLight;
-
-  const LoginScreen({
-    super.key,
-    required this.onThemeChanged,
-    required this.currentTheme,
-    required this.scaffoldBg,
-    required this.cardBg,
-    required this.textColor,
-    required this.subtitleColor,
-    required this.primaryColor,
-    required this.isLight,
-  });
+  const LoginScreen({super.key});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -77,6 +28,14 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  String _currentTheme = 'Porcellino Dark';
+
+  bool get _isLight => _currentTheme == 'Porcellino Light';
+  Color get _scaffoldBg => _isLight ? const Color(0xFFF1F5F9) : const Color(0xFF0B0F19);
+  Color get _cardBg => _isLight ? const Color(0xFFFFFFFF) : const Color(0xFF131B2E);
+  Color get _textColor => _isLight ? const Color(0xFF0F172A) : Colors.white;
+  Color get _subtitleColor => _isLight ? const Color(0xFF475569) : Colors.grey.shade400;
+  Color get _primaryColor => const Color(0xFFDB2777);
 
   void _autentica() {
     final email = _emailController.text.trim();
@@ -87,17 +46,7 @@ class _LoginScreenState extends State<LoginScreen> {
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-        builder: (context) => HomeScreen(
-          userEmail: email,
-          onThemeChanged: widget.onThemeChanged,
-          currentTheme: widget.currentTheme,
-          scaffoldBg: widget.scaffoldBg,
-          cardBg: widget.cardBg,
-          textColor: widget.textColor,
-          subtitleColor: widget.subtitleColor,
-          primaryColor: widget.primaryColor,
-          isLight: widget.isLight,
-        ),
+        builder: (context) => HomeScreen(userEmail: email),
       ),
     );
   }
@@ -105,7 +54,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: widget.scaffoldBg,
+      backgroundColor: _scaffoldBg,
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
@@ -116,22 +65,22 @@ class _LoginScreenState extends State<LoginScreen> {
                 width: 70,
                 height: 70,
                 decoration: BoxDecoration(
-                  color: widget.primaryColor,
+                  color: _primaryColor,
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: const Icon(Icons.savings, color: Colors.white, size: 40),
               ),
               const SizedBox(height: 16),
-              Text("Porcellino", style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: widget.textColor)),
+              Text("Porcellino", style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: _textColor)),
               const SizedBox(height: 36),
               TextField(
                 controller: _emailController,
-                style: TextStyle(color: widget.textColor),
+                style: TextStyle(color: _textColor),
                 decoration: InputDecoration(
                   labelText: "Email",
-                  labelStyle: TextStyle(color: widget.subtitleColor),
+                  labelStyle: TextStyle(color: _subtitleColor),
                   filled: true,
-                  fillColor: widget.cardBg,
+                  fillColor: _cardBg,
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
                 ),
               ),
@@ -139,19 +88,19 @@ class _LoginScreenState extends State<LoginScreen> {
               TextField(
                 controller: _passwordController,
                 obscureText: true,
-                style: TextStyle(color: widget.textColor),
+                style: TextStyle(color: _textColor),
                 decoration: InputDecoration(
                   labelText: "Password",
-                  labelStyle: TextStyle(color: widget.subtitleColor),
+                  labelStyle: TextStyle(color: _subtitleColor),
                   filled: true,
-                  fillColor: widget.cardBg,
+                  fillColor: _cardBg,
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
                 ),
               ),
               const SizedBox(height: 24),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: widget.primaryColor,
+                  backgroundColor: _primaryColor,
                   minimumSize: const Size.fromHeight(52),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                 ),
@@ -168,33 +117,15 @@ class _LoginScreenState extends State<LoginScreen> {
 
 class HomeScreen extends StatefulWidget {
   final String userEmail;
-  final Function(String) onThemeChanged;
-  final String currentTheme;
-  final Color scaffoldBg;
-  final Color cardBg;
-  final Color textColor;
-  final Color subtitleColor;
-  final Color primaryColor;
-  final bool isLight;
 
-  const HomeScreen({
-    super.key,
-    required this.userEmail,
-    required this.onThemeChanged,
-    required this.currentTheme,
-    required this.scaffoldBg,
-    required this.cardBg,
-    required this.textColor,
-    required this.subtitleColor,
-    required this.primaryColor,
-    required this.isLight,
-  });
+  const HomeScreen({super.key, required this.userEmail});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  String _currentTheme = 'Porcellino Dark';
   bool isSharedMode = false;
   double patrimonio = 0.00;
   double entrateMese = 0.00;
@@ -223,6 +154,20 @@ class _HomeScreenState extends State<HomeScreen> {
 
   String get _nomeUtenteDinamico => "Marcogrillone";
 
+  // Getter dinamici per i colori reattivi in base al tema selezionato
+  bool get _isLight => _currentTheme == 'Porcellino Light';
+  Color get _scaffoldBg => _isLight ? const Color(0xFFF1F5F9) : const Color(0xFF0B0F19);
+  Color get _cardBg => _isLight ? const Color(0xFFFFFFFF) : const Color(0xFF131B2E);
+  Color get _textColor => _isLight ? const Color(0xFF0F172A) : Colors.white;
+  Color get _subtitleColor => _isLight ? const Color(0xFF475569) : Colors.grey.shade400;
+  Color get _primaryColor => const Color(0xFFDB2777);
+
+  void _cambiaTema(String nuovoTema) {
+    setState(() {
+      _currentTheme = nuovoTema;
+    });
+  }
+
   Map<String, dynamic> _getLivelloPorcellino() {
     if (patrimonio < 1000) {
       return {"nome": "Emergenze", "target": "1.000€", "color": Colors.green, "icon": Icons.shield};
@@ -231,7 +176,7 @@ class _HomeScreenState extends State<HomeScreen> {
     } else if (patrimonio < 50000) {
       return {"nome": "Fortezza", "target": "50.000€", "color": Colors.purple, "icon": Icons.castle};
     } else {
-      return {"nome": "Porcellone", "target": "100.000€", "color": widget.primaryColor, "icon": Icons.savings};
+      return {"nome": "Porcellone", "target": "100.000€", "color": _primaryColor, "icon": Icons.savings};
     }
   }
 
@@ -241,29 +186,29 @@ class _HomeScreenState extends State<HomeScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: widget.cardBg,
+        backgroundColor: _cardBg,
         title: Row(
           children: [
             Icon(icona, color: colore, size: 28),
             const SizedBox(width: 10),
-            Text(titolo, style: TextStyle(color: widget.textColor, fontSize: 18)),
+            Text(titolo, style: TextStyle(color: _textColor, fontSize: 18)),
           ],
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("Obiettivo del livello: $target", style: TextStyle(color: widget.primaryColor, fontWeight: FontWeight.bold, fontSize: 14)),
+            Text("Obiettivo del livello: $target", style: TextStyle(color: _primaryColor, fontWeight: FontWeight.bold, fontSize: 14)),
             const SizedBox(height: 12),
-            Text(descrizione, style: TextStyle(color: widget.textColor, fontSize: 13)),
+            Text(descrizione, style: TextStyle(color: _textColor, fontSize: 13)),
             const SizedBox(height: 16),
-            Text("Il tuo patrimonio attuale: €${patrimonio.toStringAsFixed(2)}", style: TextStyle(color: widget.subtitleColor, fontSize: 12)),
+            Text("Il tuo patrimonio attuale: €${patrimonio.toStringAsFixed(2)}", style: TextStyle(color: _subtitleColor, fontSize: 12)),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text("Capito", style: TextStyle(color: widget.primaryColor, fontWeight: FontWeight.bold)),
+            child: Text("Capito", style: TextStyle(color: _primaryColor, fontWeight: FontWeight.bold)),
           ),
         ],
       ),
@@ -294,10 +239,10 @@ class _HomeScreenState extends State<HomeScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: widget.cardBg,
-        title: Text("👥 Invito Inviato!", style: TextStyle(color: widget.textColor)),
-        content: Text("Link sicuro per il conto condiviso inviato a:\n\n👉 $email", style: TextStyle(color: widget.textColor)),
-        actions: [TextButton(onPressed: () => Navigator.pop(context), child: Text("Ottimo", style: TextStyle(color: widget.primaryColor)))],
+        backgroundColor: _cardBg,
+        title: Text("👥 Invito Inviato!", style: TextStyle(color: _textColor)),
+        content: Text("Link sicuro per il conto condiviso inviato a:\n\n👉 $email", style: TextStyle(color: _textColor)),
+        actions: [TextButton(onPressed: () => Navigator.pop(context), child: Text("Ottimo", style: TextStyle(color: _primaryColor)))],
       ),
     );
     _inviteEmailController.clear();
@@ -306,7 +251,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void _mostraModalProfilo() {
     showModalBottomSheet(
       context: context,
-      backgroundColor: widget.cardBg,
+      backgroundColor: _cardBg,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
       builder: (context) {
         return Padding(
@@ -318,32 +263,32 @@ class _HomeScreenState extends State<HomeScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text("👤 Profilo Utente", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: widget.textColor)),
-                  Icon(Icons.person, color: widget.primaryColor),
+                  Text("👤 Profilo Utente", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: _textColor)),
+                  Icon(Icons.person, color: _primaryColor),
                 ],
               ),
               const SizedBox(height: 20),
               ListTile(
                 dense: true,
                 contentPadding: EdgeInsets.zero,
-                title: Text("Nome Utente", style: TextStyle(color: widget.subtitleColor, fontSize: 11)),
-                subtitle: Text(_nomeUtenteDinamico, style: TextStyle(color: widget.textColor, fontWeight: FontWeight.bold, fontSize: 15)),
+                title: Text("Nome Utente", style: TextStyle(color: _subtitleColor, fontSize: 11)),
+                subtitle: Text(_nomeUtenteDinamico, style: TextStyle(color: _textColor, fontWeight: FontWeight.bold, fontSize: 15)),
               ),
               ListTile(
                 dense: true,
                 contentPadding: EdgeInsets.zero,
-                title: Text("Email Registrata", style: TextStyle(color: widget.subtitleColor, fontSize: 11)),
-                subtitle: Text(widget.userEmail, style: TextStyle(color: widget.textColor, fontWeight: FontWeight.bold, fontSize: 15)),
+                title: Text("Email Registrata", style: TextStyle(color: _subtitleColor, fontSize: 11)),
+                subtitle: Text(widget.userEmail, style: TextStyle(color: _textColor, fontWeight: FontWeight.bold, fontSize: 15)),
               ),
               ListTile(
                 dense: true,
                 contentPadding: EdgeInsets.zero,
-                title: Text("Tipo Account", style: TextStyle(color: widget.subtitleColor, fontSize: 11)),
-                subtitle: Text("Caveau Privato & Condiviso (Standard)", style: TextStyle(color: widget.textColor, fontWeight: FontWeight.bold, fontSize: 13)),
+                title: Text("Tipo Account", style: TextStyle(color: _subtitleColor, fontSize: 11)),
+                subtitle: Text("Caveau Privato & Condiviso (Standard)", style: TextStyle(color: _textColor, fontWeight: FontWeight.bold, fontSize: 13)),
               ),
               const SizedBox(height: 20),
               ElevatedButton(
-                style: ElevatedButton.styleFrom(backgroundColor: widget.primaryColor, padding: const EdgeInsets.symmetric(vertical: 14)),
+                style: ElevatedButton.styleFrom(backgroundColor: _primaryColor, padding: const EdgeInsets.symmetric(vertical: 14)),
                 onPressed: () => Navigator.pop(context),
                 child: const Text("Chiudi Profilo", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
               ),
@@ -357,7 +302,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void _mostraModalImpostazioni() {
     showModalBottomSheet(
       context: context,
-      backgroundColor: widget.cardBg,
+      backgroundColor: _cardBg,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
       builder: (context) {
         return StatefulBuilder(
@@ -371,19 +316,19 @@ class _HomeScreenState extends State<HomeScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text("⚙️ Impostazioni & Temi", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: widget.textColor)),
-                      Icon(Icons.settings, color: widget.primaryColor),
+                      Text("⚙️ Impostazioni & Temi", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: _textColor)),
+                      Icon(Icons.settings, color: _primaryColor),
                     ],
                   ),
                   const SizedBox(height: 14),
                   ListTile(
                     dense: true,
                     contentPadding: EdgeInsets.zero,
-                    title: Text("Tema Attivo", style: TextStyle(color: widget.subtitleColor, fontSize: 11)),
-                    subtitle: Text(widget.currentTheme, style: TextStyle(color: widget.primaryColor, fontWeight: FontWeight.bold, fontSize: 14)),
+                    title: Text("Tema Attivo", style: TextStyle(color: _subtitleColor, fontSize: 11)),
+                    subtitle: Text(_currentTheme, style: TextStyle(color: _primaryColor, fontWeight: FontWeight.bold, fontSize: 14)),
                   ),
-                  Divider(color: widget.subtitleColor, height: 24),
-                  Text("🎨 Scegli Tema Grafico:", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: widget.textColor)),
+                  Divider(color: _subtitleColor, height: 24),
+                  Text("🎨 Scegli Tema Grafico:", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: _textColor)),
                   const SizedBox(height: 12),
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
@@ -392,9 +337,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         ElevatedButton.icon(
                           style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFDB2777), padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10)),
                           onPressed: () {
-                            widget.onThemeChanged('Porcellino Dark');
-                            Navigator.pop(context);
-                            setState(() {});
+                            _cambiaTema('Porcellino Dark');
+                            setModalState(() {});
                           },
                           icon: const Icon(Icons.brush, size: 16, color: Colors.white),
                           label: const Text("Porcellino Dark", style: TextStyle(color: Colors.white)),
@@ -403,9 +347,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         ElevatedButton.icon(
                           style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFE2E8F0), padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10)),
                           onPressed: () {
-                            widget.onThemeChanged('Porcellino Light');
-                            Navigator.pop(context);
-                            setState(() {});
+                            _cambiaTema('Porcellino Light');
+                            setModalState(() {});
                           },
                           icon: const Icon(Icons.brush, size: 16, color: Colors.black87),
                           label: const Text("Porcellino Light", style: TextStyle(color: Colors.black87)),
@@ -428,7 +371,7 @@ class _HomeScreenState extends State<HomeScreen> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: widget.cardBg,
+      backgroundColor: _cardBg,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
       builder: (context) {
         return Container(
@@ -440,31 +383,31 @@ class _HomeScreenState extends State<HomeScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text("📋 Foglio Resoconto Mensile", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: widget.textColor)),
-                  Icon(Icons.description, color: widget.primaryColor),
+                  Text("📋 Foglio Resoconto Mensile", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: _textColor)),
+                  Icon(Icons.description, color: _primaryColor),
                 ],
               ),
               const SizedBox(height: 16),
               Card(
-                color: widget.scaffoldBg,
+                color: _scaffoldBg,
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("RIEPILOGO BILANCIO", style: TextStyle(fontSize: 10, color: widget.subtitleColor, fontWeight: FontWeight.bold)),
+                      Text("RIEPILOGO BILANCIO", style: TextStyle(fontSize: 10, color: _subtitleColor, fontWeight: FontWeight.bold)),
                       const SizedBox(height: 8),
-                      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text("Entrate Totali:", style: TextStyle(color: widget.textColor)), Text("€ ${entrateMese.toStringAsFixed(2)}", style: const TextStyle(color: Colors.blueAccent, fontWeight: FontWeight.bold))]),
+                      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text("Entrate Totali:", style: TextStyle(color: _textColor)), Text("€ ${entrateMese.toStringAsFixed(2)}", style: const TextStyle(color: Colors.blueAccent, fontWeight: FontWeight.bold))]),
                       const SizedBox(height: 4),
-                      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text("Uscite Totali:", style: TextStyle(color: widget.textColor)), Text("€ ${usciteMese.toStringAsFixed(2)}", style: TextStyle(color: widget.primaryColor, fontWeight: FontWeight.bold))]),
-                      Divider(color: widget.subtitleColor),
-                      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text("Bilancio Netto:", style: TextStyle(color: widget.textColor)), Text("€ ${bilancioNetto.toStringAsFixed(2)}", style: TextStyle(color: bilancioNetto >= 0 ? const Color(0xFF10B981) : widget.primaryColor, fontWeight: FontWeight.bold))]),
+                      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text("Uscite Totali:", style: TextStyle(color: _textColor)), Text("€ ${usciteMese.toStringAsFixed(2)}", style: TextStyle(color: _primaryColor, fontWeight: FontWeight.bold))]),
+                      Divider(color: _subtitleColor),
+                      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text("Bilancio Netto:", style: TextStyle(color: _textColor)), Text("€ ${bilancioNetto.toStringAsFixed(2)}", style: TextStyle(color: bilancioNetto >= 0 ? const Color(0xFF10B981) : _primaryColor, fontWeight: FontWeight.bold))]),
                     ],
                   ),
                 ),
               ),
               const SizedBox(height: 16),
-              Text("Dettaglio Movimenti", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: widget.subtitleColor)),
+              Text("Dettaglio Movimenti", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: _subtitleColor)),
               const SizedBox(height: 8),
               Expanded(
                 child: ListView.builder(
@@ -473,11 +416,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     final tx = transazioni[index];
                     return ListTile(
                       dense: true,
-                      title: Text(tx['category'], style: TextStyle(fontWeight: FontWeight.bold, color: widget.textColor)),
-                      subtitle: Text(tx['note'], style: TextStyle(color: widget.subtitleColor)),
+                      title: Text(tx['category'], style: TextStyle(fontWeight: FontWeight.bold, color: _textColor)),
+                      subtitle: Text(tx['note'], style: TextStyle(color: _subtitleColor)),
                       trailing: Text(
                         "${tx['type'].contains('Entrata') ? '+' : '-'}€ ${tx['amount'].toStringAsFixed(2)}",
-                        style: TextStyle(color: tx['type'].contains('Entrata') ? const Color(0xFF10B981) : widget.primaryColor, fontWeight: FontWeight.bold),
+                        style: TextStyle(color: tx['type'].contains('Entrata') ? const Color(0xFF10B981) : _primaryColor, fontWeight: FontWeight.bold),
                       ),
                     );
                   },
@@ -485,7 +428,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               const SizedBox(height: 12),
               ElevatedButton(
-                style: ElevatedButton.styleFrom(backgroundColor: widget.primaryColor, padding: const EdgeInsets.symmetric(vertical: 14)),
+                style: ElevatedButton.styleFrom(backgroundColor: _primaryColor, padding: const EdgeInsets.symmetric(vertical: 14)),
                 onPressed: () => Navigator.pop(context),
                 child: const Text("Chiudi Resoconto", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
               )
@@ -500,7 +443,7 @@ class _HomeScreenState extends State<HomeScreen> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: widget.cardBg,
+      backgroundColor: _cardBg,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
       builder: (context) {
         return Padding(
@@ -512,13 +455,13 @@ class _HomeScreenState extends State<HomeScreen> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text("➕ Nuova Transazione", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: widget.textColor)),
+              Text("➕ Nuova Transazione", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: _textColor)),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
                 value: _selectedType,
-                dropdownColor: widget.cardBg,
-                style: TextStyle(color: widget.textColor),
-                decoration: InputDecoration(labelText: "Tipo", labelStyle: TextStyle(color: widget.subtitleColor), filled: true, fillColor: widget.scaffoldBg, border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))),
+                dropdownColor: _cardBg,
+                style: TextStyle(color: _textColor),
+                decoration: InputDecoration(labelText: "Tipo", labelStyle: TextStyle(color: _subtitleColor), filled: true, fillColor: _scaffoldBg, border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))),
                 items: const [
                   DropdownMenuItem(value: 'Uscita (Spesa)', child: Text("🔴 Uscita (Spesa)")),
                   DropdownMenuItem(value: 'Entrata (Guadagno)', child: Text("🟢 Entrata (Guadagno)")),
@@ -528,28 +471,28 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 12),
               TextField(
                 controller: _amountController,
-                style: TextStyle(color: widget.textColor),
+                style: TextStyle(color: _textColor),
                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                decoration: InputDecoration(labelText: "Importo (€)", labelStyle: TextStyle(color: widget.subtitleColor), filled: true, fillColor: widget.scaffoldBg, border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))),
+                decoration: InputDecoration(labelText: "Importo (€)", labelStyle: TextStyle(color: _subtitleColor), filled: true, fillColor: _scaffoldBg, border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))),
               ),
               const SizedBox(height: 12),
               DropdownButtonFormField<String>(
                 value: _selectedCategory,
-                dropdownColor: widget.cardBg,
-                style: TextStyle(color: widget.textColor),
-                decoration: InputDecoration(labelText: "Categoria", labelStyle: TextStyle(color: widget.subtitleColor), filled: true, fillColor: widget.scaffoldBg, border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))),
+                dropdownColor: _cardBg,
+                style: TextStyle(color: _textColor),
+                decoration: InputDecoration(labelText: "Categoria", labelStyle: TextStyle(color: _subtitleColor), filled: true, fillColor: _scaffoldBg, border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))),
                 items: categorieConEmoji.map((cat) => DropdownMenuItem(value: cat, child: Text(cat))).toList(),
                 onChanged: (val) => setState(() => _selectedCategory = val ?? '📦 Altro'),
               ),
               const SizedBox(height: 12),
               TextField(
                 controller: _noteController,
-                style: TextStyle(color: widget.textColor),
-                decoration: InputDecoration(labelText: "Note / Descrizione", labelStyle: TextStyle(color: widget.subtitleColor), filled: true, fillColor: widget.scaffoldBg, border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))),
+                style: TextStyle(color: _textColor),
+                decoration: InputDecoration(labelText: "Note / Descrizione", labelStyle: TextStyle(color: _subtitleColor), filled: true, fillColor: _scaffoldBg, border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))),
               ),
               const SizedBox(height: 20),
               ElevatedButton(
-                style: ElevatedButton.styleFrom(backgroundColor: widget.primaryColor, padding: const EdgeInsets.symmetric(vertical: 16), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
+                style: ElevatedButton.styleFrom(backgroundColor: _primaryColor, padding: const EdgeInsets.symmetric(vertical: 16), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
                 onPressed: () {
                   final note = _noteController.text.trim();
                   final amount = double.tryParse(_amountController.text.trim().replaceAll(',', '.')) ?? 0.0;
@@ -584,22 +527,22 @@ class _HomeScreenState extends State<HomeScreen> {
     final livello = _getLivelloPorcellino();
 
     return Scaffold(
-      backgroundColor: widget.scaffoldBg,
+      backgroundColor: _scaffoldBg,
       appBar: AppBar(
-        backgroundColor: widget.cardBg,
+        backgroundColor: _cardBg,
         title: Row(
           children: [
             Container(
               width: 32,
               height: 32,
               decoration: BoxDecoration(
-                color: widget.primaryColor,
+                color: _primaryColor,
                 borderRadius: BorderRadius.circular(8),
               ),
               child: const Icon(Icons.savings, color: Colors.white, size: 20),
             ),
             const SizedBox(width: 8),
-            Text("Porcellino", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: widget.textColor)),
+            Text("Porcellino", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: _textColor)),
           ],
         ),
         actions: [
@@ -608,18 +551,18 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Container(
               margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-              decoration: BoxDecoration(color: widget.scaffoldBg, borderRadius: BorderRadius.circular(20), border: Border.all(color: widget.primaryColor.withOpacity(0.5))),
+              decoration: BoxDecoration(color: _scaffoldBg, borderRadius: BorderRadius.circular(20), border: Border.all(color: _primaryColor.withOpacity(0.5))),
               child: Row(
                 children: [
-                  Icon(Icons.person, size: 14, color: widget.primaryColor),
+                  Icon(Icons.person, size: 14, color: _primaryColor),
                   const SizedBox(width: 4),
-                  Text(_nomeUtenteDinamico, style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: widget.textColor)),
+                  Text(_nomeUtenteDinamico, style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: _textColor)),
                 ],
               ),
             ),
           ),
           IconButton(
-            icon: Icon(Icons.settings, color: widget.primaryColor),
+            icon: Icon(Icons.settings, color: _primaryColor),
             tooltip: "Impostazioni e Temi",
             onPressed: _mostraModalImpostazioni,
           ),
@@ -630,7 +573,7 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           Container(
             padding: const EdgeInsets.all(4),
-            decoration: BoxDecoration(color: widget.cardBg, borderRadius: BorderRadius.circular(16)),
+            decoration: BoxDecoration(color: _cardBg, borderRadius: BorderRadius.circular(16)),
             child: Row(
               children: [
                 Expanded(
@@ -638,8 +581,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     onTap: () => setState(() => isSharedMode = false),
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 10),
-                      decoration: BoxDecoration(color: !isSharedMode ? widget.primaryColor : Colors.transparent, borderRadius: BorderRadius.circular(12)),
-                      child: Center(child: Text("🔒 Conto Privato", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: !isSharedMode ? Colors.white : widget.textColor))),
+                      decoration: BoxDecoration(color: !isSharedMode ? _primaryColor : Colors.transparent, borderRadius: BorderRadius.circular(12)),
+                      child: Center(child: Text("🔒 Conto Privato", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: !isSharedMode ? Colors.white : _textColor))),
                     ),
                   ),
                 ),
@@ -649,7 +592,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 10),
                       decoration: BoxDecoration(color: isSharedMode ? const Color(0xFF3B82F6) : Colors.transparent, borderRadius: BorderRadius.circular(12)),
-                      child: Center(child: Text("👥 Conto Condiviso", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: isSharedMode ? Colors.white : widget.textColor))),
+                      child: Center(child: Text("👥 Conto Condiviso", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: isSharedMode ? Colors.white : _textColor))),
                     ),
                   ),
                 ),
@@ -663,10 +606,10 @@ class _HomeScreenState extends State<HomeScreen> {
               onPressed: () => showDialog(
                 context: context,
                 builder: (context) => AlertDialog(
-                  backgroundColor: widget.cardBg,
-                  title: Text("👥 Invita Collaboratore", style: TextStyle(color: widget.textColor)),
-                  content: TextField(controller: _inviteEmailController, style: TextStyle(color: widget.textColor), decoration: const InputDecoration(labelText: "Email collaboratore")),
-                  actions: [TextButton(onPressed: _inviaInvito, child: Text("Invia Email", style: TextStyle(color: widget.primaryColor)))],
+                  backgroundColor: _cardBg,
+                  title: Text("👥 Invita Collaboratore", style: TextStyle(color: _textColor)),
+                  content: TextField(controller: _inviteEmailController, style: TextStyle(color: _textColor), decoration: const InputDecoration(labelText: "Email collaboratore")),
+                  actions: [TextButton(onPressed: _inviaInvito, child: Text("Invia Email", style: TextStyle(color: _primaryColor)))],
                 ),
               ),
               icon: const Icon(Icons.email, color: Colors.white),
@@ -676,7 +619,7 @@ class _HomeScreenState extends State<HomeScreen> {
           const SizedBox(height: 14),
 
           Card(
-            color: widget.cardBg,
+            color: _cardBg,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
             child: Padding(
               padding: const EdgeInsets.all(18.0),
@@ -686,7 +629,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("PATRIMONIO TOTALE", style: TextStyle(fontSize: 10, color: widget.subtitleColor, fontWeight: FontWeight.bold)),
+                      Text("PATRIMONIO TOTALE", style: TextStyle(fontSize: 10, color: _subtitleColor, fontWeight: FontWeight.bold)),
                       const SizedBox(height: 4),
                       const Text("€ 0.00", style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Color(0xFF10B981))),
                     ],
@@ -702,14 +645,14 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               Expanded(
                 child: Card(
-                  color: widget.cardBg,
+                  color: _cardBg,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   child: Padding(
                     padding: const EdgeInsets.all(14.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text("ENTRATE MESE", style: TextStyle(fontSize: 9, color: widget.subtitleColor, fontWeight: FontWeight.bold)),
+                        Text("ENTRATE MESE", style: TextStyle(fontSize: 9, color: _subtitleColor, fontWeight: FontWeight.bold)),
                         const SizedBox(height: 4),
                         const Text("€ 0.00", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blueAccent)),
                       ],
@@ -720,14 +663,14 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(width: 10),
               Expanded(
                 child: Card(
-                  color: widget.cardBg,
+                  color: _cardBg,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   child: Padding(
                     padding: const EdgeInsets.all(14.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text("USCITE MESE", style: TextStyle(fontSize: 9, color: widget.subtitleColor, fontWeight: FontWeight.bold)),
+                        Text("USCITE MESE", style: TextStyle(fontSize: 9, color: _subtitleColor, fontWeight: FontWeight.bold)),
                         const SizedBox(height: 4),
                         const Text("€ 0.00", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.redAccent)),
                       ],
@@ -740,7 +683,7 @@ class _HomeScreenState extends State<HomeScreen> {
           const SizedBox(height: 14),
 
           Card(
-            color: widget.cardBg,
+            color: _cardBg,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
             child: Padding(
               padding: const EdgeInsets.all(18.0),
@@ -754,12 +697,12 @@ class _HomeScreenState extends State<HomeScreen> {
                         children: [
                           Icon(livello['icon'], color: livello['color'], size: 22),
                           const SizedBox(width: 8),
-                          Text("🏆 Livelli Risparmio", style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: widget.textColor)),
+                          Text("🏆 Livelli Risparmio", style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: _textColor)),
                         ],
                       ),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                        decoration: BoxDecoration(color: widget.scaffoldBg, borderRadius: BorderRadius.circular(12)),
+                        decoration: BoxDecoration(color: _scaffoldBg, borderRadius: BorderRadius.circular(12)),
                         child: Text("Livello: ${livello['nome']}", style: TextStyle(fontSize: 11, color: livello['color'], fontWeight: FontWeight.bold)),
                       ),
                     ],
@@ -768,12 +711,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text("Obiettivo Attuale", style: TextStyle(fontSize: 11, color: widget.subtitleColor)),
-                      Text("€ ${patrimonio.toStringAsFixed(0)} / ${livello['target']}", style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: widget.textColor)),
+                      Text("Obiettivo Attuale", style: TextStyle(fontSize: 11, color: _subtitleColor)),
+                      Text("€ ${patrimonio.toStringAsFixed(0)} / ${livello['target']}", style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: _textColor)),
                     ],
                   ),
                   const SizedBox(height: 8),
-                  LinearProgressIndicator(value: _getProgresso(), backgroundColor: widget.scaffoldBg, color: livello['color'], minHeight: 8),
+                  LinearProgressIndicator(value: _getProgresso(), backgroundColor: _scaffoldBg, color: livello['color'], minHeight: 8),
                   const SizedBox(height: 16),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -791,8 +734,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: _buildTappaBadge("Fortezza", "50.000€", Icons.castle, Colors.purple, patrimonio >= 50000),
                       ),
                       GestureDetector(
-                        onTap: () => _mostraDettaglioLivello("4. Porcellone", "100.000€", "Il traguardo supremo del caveau finanziario!", Icons.savings, widget.primaryColor),
-                        child: _buildTappaBadge("Porcellone", "100.000€", Icons.savings, widget.primaryColor, patrimonio >= 100000),
+                        onTap: () => _mostraDettaglioLivello("4. Porcellone", "100.000€", "Il traguardo supremo del caveau finanziario!", Icons.savings, _primaryColor),
+                        child: _buildTappaBadge("Porcellone", "100.000€", Icons.savings, _primaryColor, patrimonio >= 100000),
                       ),
                     ],
                   ),
@@ -803,24 +746,24 @@ class _HomeScreenState extends State<HomeScreen> {
           const SizedBox(height: 14),
 
           Card(
-            color: widget.cardBg,
+            color: _cardBg,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("💡 Consulente Finanziario IA", style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: widget.textColor)),
+                  Text("💡 Consulente Finanziario IA", style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: _textColor)),
                   const SizedBox(height: 8),
-                  Text("Inserisci valore spesa per valutare l'impatto:", style: TextStyle(fontSize: 11, color: widget.subtitleColor)),
+                  Text("Inserisci valore spesa per valutare l'impatto:", style: TextStyle(fontSize: 11, color: _subtitleColor)),
                   const SizedBox(height: 8),
                   Row(children: [
-                    Expanded(child: TextField(controller: _itemController, style: TextStyle(color: widget.textColor), keyboardType: TextInputType.number, decoration: InputDecoration(hintText: "es. 150", hintStyle: TextStyle(color: widget.subtitleColor)))),
+                    Expanded(child: TextField(controller: _itemController, style: TextStyle(color: _textColor), keyboardType: TextInputType.number, decoration: InputDecoration(hintText: "es. 150", hintStyle: TextStyle(color: _subtitleColor)))),
                     const SizedBox(width: 8),
                     ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF3B82F6)), onPressed: () => _simulaAI(_itemController.text), child: const Text("Valuta Impatto", style: TextStyle(color: Colors.white)))
                   ]),
                   const SizedBox(height: 10),
-                  isAiLoading ? const CircularProgressIndicator() : Text(aiPurchaseResult, style: TextStyle(fontSize: 11, color: widget.textColor)),
+                  isAiLoading ? const CircularProgressIndicator() : Text(aiPurchaseResult, style: TextStyle(fontSize: 11, color: _textColor)),
                 ],
               ),
             ),
@@ -828,21 +771,21 @@ class _HomeScreenState extends State<HomeScreen> {
           const SizedBox(height: 14),
 
           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-            Text("➕ Nuova Transazione", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: widget.subtitleColor)),
-            ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: widget.primaryColor), onPressed: _mostraModalInserimento, child: const Text("+ Nuova", style: TextStyle(color: Colors.white)))
+            Text("➕ Nuova Transazione", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: _subtitleColor)),
+            ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: _primaryColor), onPressed: _mostraModalInserimento, child: const Text("+ Nuova", style: TextStyle(color: Colors.white)))
           ]),
           const SizedBox(height: 8),
           
           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-            Text("📜 Storico Transazioni", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: widget.subtitleColor)),
-            ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: widget.cardBg), onPressed: _mostraFoglioResoconto, child: Text("Apri Resoconto", style: TextStyle(color: widget.textColor)))
+            Text("📜 Storico Transazioni", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: _subtitleColor)),
+            ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: _cardBg), onPressed: _mostraFoglioResoconto, child: Text("Apri Resoconto", style: TextStyle(color: _textColor)))
           ]),
           ...transazioni.map((tx) => Card(
-            color: widget.cardBg,
+            color: _cardBg,
             child: ListTile(
-              title: Text(tx['category'], style: TextStyle(fontWeight: FontWeight.bold, color: widget.textColor)),
-              subtitle: Text(tx['note'], style: TextStyle(color: widget.subtitleColor)),
-              trailing: Text("${tx['type'].contains('Entrata') ? '+' : '-'}€${tx['amount']}", style: TextStyle(color: tx['type'].contains('Entrata') ? Colors.greenAccent : widget.primaryColor, fontWeight: FontWeight.bold)),
+              title: Text(tx['category'], style: TextStyle(fontWeight: FontWeight.bold, color: _textColor)),
+              subtitle: Text(tx['note'], style: TextStyle(color: _subtitleColor)),
+              trailing: Text("${tx['type'].contains('Entrata') ? '+' : '-'}€${tx['amount']}", style: TextStyle(color: tx['type'].contains('Entrata') ? Colors.greenAccent : _primaryColor, fontWeight: FontWeight.bold)),
             ),
           )),
         ],
@@ -854,17 +797,17 @@ class _HomeScreenState extends State<HomeScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       decoration: BoxDecoration(
-        color: completata ? colore.withOpacity(0.2) : widget.scaffoldBg,
+        color: completata ? colore.withOpacity(0.2) : _scaffoldBg,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: completata ? colore : Colors.grey.shade700),
       ),
       child: Column(
         children: [
-          Icon(icona, size: 18, color: completata ? colore : widget.subtitleColor),
+          Icon(icona, size: 18, color: completata ? colore : _subtitleColor),
           const SizedBox(height: 4),
-          Text(titolo, style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: completata ? widget.textColor : widget.subtitleColor)),
+          Text(titolo, style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: completata ? _textColor : _subtitleColor)),
           const SizedBox(height: 2),
-          Text(sub, style: TextStyle(fontSize: 8, color: widget.subtitleColor)),
+          Text(sub, style: TextStyle(fontSize: 8, color: _subtitleColor)),
         ],
       ),
     );
