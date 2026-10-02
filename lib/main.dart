@@ -172,10 +172,22 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Map<String, dynamic>> transazioni = [];
   List<Map<String, dynamic>> salvadanai = [];
 
-  final _categoryController = TextEditingController();
+  // Categorie predefinite pronte all'uso come richiesto
+  final List<String> categoriePredefinite = [
+    'Stipendio',
+    'Spesa Alimentare',
+    'Bollette & Utenze',
+    'Affitto / Mutuo',
+    'Svago & Tempo Libero',
+    'Trasporti & Carburante',
+    'Investimenti',
+    'Altro'
+  ];
+  String _selectedCategory = 'Spesa Alimentare';
+
   final _noteController = TextEditingController();
   final _amountController = TextEditingController();
-  String _selectedType = 'entrata';
+  String _selectedType = 'uscita';
 
   final _piggyTitleController = TextEditingController();
   final _piggyTargetController = TextEditingController();
@@ -383,9 +395,16 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               const Text("➕ Aggiungi Movimento", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
               const SizedBox(height: 16),
-              TextField(controller: _categoryController, decoration: InputDecoration(labelText: "Categoria", filled: true, fillColor: const Color(0xFF1E293B), border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)))),
+              // Menu a tendina delle Categorie Predefinite
+              DropdownButtonFormField<String>(
+                value: _selectedCategory,
+                dropdownColor: const Color(0xFF1E293B),
+                decoration: InputDecoration(labelText: "Categoria", filled: true, fillColor: const Color(0xFF1E293B), border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))),
+                items: categoriePredefinite.map((cat) => DropdownMenuItem(value: cat, child: Text(cat))).toList(),
+                onChanged: (val) => setState(() => _selectedCategory = val ?? 'Altro'),
+              ),
               const SizedBox(height: 12),
-              TextField(controller: _noteController, decoration: InputDecoration(labelText: "Nota", filled: true, fillColor: const Color(0xFF1E293B), border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)))),
+              TextField(controller: _noteController, decoration: InputDecoration(labelText: "Nota (opzionale)", filled: true, fillColor: const Color(0xFF1E293B), border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)))),
               const SizedBox(height: 12),
               TextField(controller: _amountController, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: InputDecoration(labelText: "Importo (€)", filled: true, fillColor: const Color(0xFF1E293B), border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)))),
               const SizedBox(height: 12),
@@ -397,19 +416,18 @@ class _HomeScreenState extends State<HomeScreen> {
                   DropdownMenuItem(value: 'entrata', child: Text("🟢 Entrata (+)")),
                   DropdownMenuItem(value: 'uscita', child: Text("🔴 Uscita (-)")),
                 ],
-                onChanged: (val) => setState(() => _selectedType = val ?? 'entrata'),
+                onChanged: (val) => setState(() => _selectedType = val ?? 'uscita'),
               ),
               const SizedBox(height: 20),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFDB2777), padding: const EdgeInsets.symmetric(vertical: 16), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
                 onPressed: () {
-                  final cat = _categoryController.text.trim();
                   final note = _noteController.text.trim();
                   final amount = double.tryParse(_amountController.text.trim().replaceAll(',', '.')) ?? 0.0;
 
-                  if (cat.isNotEmpty && amount > 0) {
+                  if (amount > 0) {
                     setState(() {
-                      transazioni.insert(0, {"category": cat, "note": note.isEmpty ? cat : note, "amount": amount, "type": _selectedType});
+                      transazioni.insert(0, {"category": _selectedCategory, "note": note.isEmpty ? _selectedCategory : note, "amount": amount, "type": _selectedType});
                       if (_selectedType == 'entrata') {
                         patrimonio += amount;
                         entrateMese += amount;
@@ -418,7 +436,6 @@ class _HomeScreenState extends State<HomeScreen> {
                         usciteMese += amount;
                       }
                     });
-                    _categoryController.clear();
                     _noteController.clear();
                     _amountController.clear();
                     Navigator.pop(context);
