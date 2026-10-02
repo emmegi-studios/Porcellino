@@ -24,10 +24,10 @@ jobs:
         channel: 'stable'
         cache: true
 
-    - name: Install Dependencies & Launcher Icons
+    - name: Install Dependencies & Generate Icons
       run: |
         flutter pub get
-        flutter pub run flutter_launcher_icons
+        flutter pub run flutter_launcher_icons:main
 
     - name: Build APK
       run: flutter build apk --release
