@@ -23,6 +23,7 @@ class PiggyVaultApp extends StatelessWidget {
   }
 }
 
+// 1. AUTENTICAZIONE VIA EMAIL
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -106,6 +107,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 }
 
+// 2. SCHERMATA PRINCIPALE DINAMICA E PERSONALIZZABILE
 class HomeScreen extends StatefulWidget {
   final String userEmail;
   const HomeScreen({super.key, required this.userEmail});
@@ -117,32 +119,26 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   bool isSharedMode = false; // False = Privato, True = Condiviso
 
-  double patrimonio = 1250.00;
-  double entrateMese = 2000.00;
-  double usciteMese = 750.00;
+  double patrimonio = 0.00;
+  double entrateMese = 0.00;
+  double usciteMese = 0.00;
 
-  List<Map<String, dynamic>> transazioni = [
-    {"category": "Stipendio", "note": "Acconto", "amount": 2000.00, "type": "entrata"},
-    {"category": "Spesa", "note": "Supermercato", "amount": 120.00, "type": "uscita"},
-  ];
-
-  List<Map<String, dynamic>> salvadanai = [
-    {"title": "Vacanza Estiva", "current": 450.00, "target": 1000.00},
-    {"title": "Nuova Auto", "current": 800.00, "target": 5000.00},
-  ];
+  List<Map<String, dynamic>> transazioni = [];
+  List<Map<String, dynamic>> salvadanai = [];
 
   final _categoryController = TextEditingController();
   final _noteController = TextEditingController();
   final _amountController = TextEditingController();
-  String _selectedType = 'uscita';
+  String _selectedType = 'entrata';
 
-  // Controller per AI Simulatore Acquisti & Accumulo
+  final _piggyTitleController = TextEditingController();
+  final _piggyTargetController = TextEditingController();
+
   final _itemController = TextEditingController();
   final _monthlySaveController = TextEditingController();
   String aiPurchaseResult = "Inserisci un bene e l'accumulo mensile previsto per calcolare il piano dell'AI.";
   bool isAiLoading = false;
 
-  // Calcolo dei Livelli verso i 100.000€
   String _getLivelloPatrimonio() {
     if (patrimonio < 5000) return "Livello 1: Risparmiatore Novizio (Meta: 5.000€)";
     if (patrimonio < 25000) return "Livello 2: Accumulatore Dinamico (Meta: 25.000€)";
@@ -153,27 +149,148 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _simulaAccumuloAI(String oggetto, String risparmioMensileStr) {
     if (oggetto.isEmpty) return;
-    double risparmioMensile = double.tryParse(risparmioMensileStr.replaceAll(',', '.')) ?? 200.00;
-    if (risparmioMensile <= 0) risparmioMensile = 200.00;
+    double risparmioMensile = double.tryParse(risparmioMensileStr.replaceAll(',', '.')) ?? 150.00;
+    if (risparmioMensile <= 0) risparmioMensile = 150.00;
 
     setState(() => isAiLoading = true);
     
     Future.delayed(const Duration(milliseconds: 900), () {
       setState(() {
         isAiLoading = false;
-        // Supponiamo un costo stimato indicativo o basato sull'oggetto
-        double costoStimato = 1200.00;
-        if (oggetto.toLowerCase().contains('auto') || oggetto.toLowerCase().contains('macchina')) costoStimato = 8000.00;
-        if (oggetto.toLowerCase().contains('telefono') || oggetto.toLowerCase().contains('smartphone')) costoStimato = 900.00;
-        
+        double costoStimato = 1000.00;
+        String oggLower = oggetto.toLowerCase();
+        if (oggLower.contains('auto') || oggLower.contains('macchina') || oggLower.contains('moto')) costoStimato = 7500.00;
+        if (oggLower.contains('telefono') || oggLower.contains('smartphone') || oggLower.contains('console')) costoStimato = 650.00;
+        if (oggLower.contains('casa') || oggLower.contains('ristrutturazione')) costoStimato = 20000.00;
+
         int mesiNecessari = (costoStimato / risparmioMensile).ceil();
 
-        aiPurchaseResult = "🤖 Piano AI per '$oggetto' (Valore stimato: €${costoStimato.toStringAsFixed(0)}):\n\n"
-            "• 💰 Accantonando €${risparmioMensile.toStringAsFixed(0)}/mese:\n"
-            "• ⏳ Tempo stimato: Circa $mesiNecessari mesi.\n"
-            "• 💡 Consiglio: Con il tuo margine attuale, questo piano di accumulo è perfettamente sostenibile!";
+        aiPurchaseResult = "🤖 Analisi AI per '$oggetto' (Stima: €${costoStimato.toStringAsFixed(0)}):\n\n"
+            "• 💰 Accantonando €${risparmioMensile.toStringAsFixed(0)} al mese:\n"
+            "• ⏳ Tempo stimato: Circa $mesiNecessari mesi (${(mesiNecessari / 12).toStringAsFixed(1)} anni).\n"
+            "• 💡 Obiettivo tracciabile nel tuo salvadanaio personalizzato!";
       });
     });
+  }
+
+  void _mostraModalNuovoSalvadanaio() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: const Color(0xFF0F172A),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+      builder: (context) {
+        return Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+            left: 20, right: 20, top: 24,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const Text("🏦 Nuovo Salvadanaio Obiettivo", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
+              const SizedBox(height: 16),
+              TextField(
+                controller: _piggyTitleController,
+                decoration: InputDecoration(labelText: "Nome Obiettivo (es. Viaggio, Auto)", filled: true, fillColor: const Color(0xFF1E293B), border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: _piggyTargetController,
+                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                decoration: InputDecoration(labelText: "Importo Target (€)", filled: true, fillColor: const Color(0xFF1E293B), border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))),
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFDB2777), padding: const EdgeInsets.symmetric(vertical: 16), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
+                onPressed: () {
+                  final title = _piggyTitleController.text.trim();
+                  final target = double.tryParse(_piggyTargetController.text.trim().replaceAll(',', '.')) ?? 0.0;
+                  if (title.isNotEmpty && target > 0) {
+                    setState(() {
+                      salvadanai.add({"title": title, "current": 0.0, "target": target});
+                    });
+                    _piggyTitleController.clear();
+                    _piggyTargetController.clear();
+                    Navigator.pop(context);
+                  }
+                },
+                child: const Text("Crea Salvadanaio", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _mostraModalInserimento() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: const Color(0xFF0F172A),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+      builder: (context) {
+        return Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+            left: 20, right: 20, top: 24,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const Text("➕ Aggiungi Movimento", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
+              const SizedBox(height: 16),
+              TextField(controller: _categoryController, decoration: InputDecoration(labelText: "Categoria", filled: true, fillColor: const Color(0xFF1E293B), border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)))),
+              const SizedBox(height: 12),
+              TextField(controller: _noteController, decoration: InputDecoration(labelText: "Nota", filled: true, fillColor: const Color(0xFF1E293B), border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)))),
+              const SizedBox(height: 12),
+              TextField(controller: _amountController, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: InputDecoration(labelText: "Importo (€)", filled: true, fillColor: const Color(0xFF1E293B), border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)))),
+              const SizedBox(height: 12),
+              DropdownButtonFormField<String>(
+                value: _selectedType,
+                dropdownColor: const Color(0xFF1E293B),
+                decoration: InputDecoration(filled: true, fillColor: const Color(0xFF1E293B), border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))),
+                items: const [
+                  DropdownMenuItem(value: 'entrata', child: Text("🟢 Entrata (+)")),
+                  DropdownMenuItem(value: 'uscita', child: Text("🔴 Uscita (-)")),
+                ],
+                onChanged: (val) => setState(() => _selectedType = val ?? 'entrata'),
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFDB2777), padding: const EdgeInsets.symmetric(vertical: 16), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
+                onPressed: () {
+                  final cat = _categoryController.text.trim();
+                  final note = _noteController.text.trim();
+                  final amount = double.tryParse(_amountController.text.trim().replaceAll(',', '.')) ?? 0.0;
+
+                  if (cat.isNotEmpty && amount > 0) {
+                    setState(() {
+                      transazioni.insert(0, {"category": cat, "note": note.isEmpty ? cat : note, "amount": amount, "type": _selectedType});
+                      if (_selectedType == 'entrata') {
+                        patrimonio += amount;
+                        entrateMese += amount;
+                      } else {
+                        patrimonio -= amount;
+                        usciteMese += amount;
+                      }
+                    });
+                    _categoryController.clear();
+                    _noteController.clear();
+                    _amountController.clear();
+                    Navigator.pop(context);
+                  }
+                },
+                child: const Text("Registra Movimento", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   void _mostraInvitoCondiviso() {
@@ -182,7 +299,7 @@ class _HomeScreenState extends State<HomeScreen> {
       builder: (context) => AlertDialog(
         backgroundColor: const Color(0xFF0F172A),
         title: const Text("👥 Gestione Conto Condiviso", style: TextStyle(color: Colors.white)),
-        content: const Text("Invita un partner a gestire questo caveau.\n\nLink di invito generato:\n👉 piggyvault.app/join?invite=shared_vault_secure", style: TextStyle(color: Colors.white70)),
+        content: const Text("Invita un partner a gestire questo caveau condiviso.\n\nLink di invito generato:\n👉 piggyvault.app/join?invite=shared_vault_secure", style: TextStyle(color: Colors.white70)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -266,74 +383,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  void _mostraModalInserimento() {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: const Color(0xFF0F172A),
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
-      builder: (context) {
-        return Padding(
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(context).viewInsets.bottom + 24,
-            left: 20, right: 20, top: 24,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const Text("➕ Aggiungi Movimento", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
-              const SizedBox(height: 16),
-              TextField(controller: _categoryController, decoration: InputDecoration(labelText: "Categoria", filled: true, fillColor: const Color(0xFF1E293B), border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)))),
-              const SizedBox(height: 12),
-              TextField(controller: _noteController, decoration: InputDecoration(labelText: "Nota", filled: true, fillColor: const Color(0xFF1E293B), border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)))),
-              const SizedBox(height: 12),
-              TextField(controller: _amountController, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: InputDecoration(labelText: "Importo (€)", filled: true, fillColor: const Color(0xFF1E293B), border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)))),
-              const SizedBox(height: 12),
-              DropdownButtonFormField<String>(
-                value: _selectedType,
-                dropdownColor: const Color(0xFF1E293B),
-                decoration: InputDecoration(filled: true, fillColor: const Color(0xFF1E293B), border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))),
-                items: const [
-                  DropdownMenuItem(value: 'entrata', child: Text("🟢 Entrata (+)")),
-                  DropdownMenuItem(value: 'uscita', child: Text("🔴 Uscita (-)")),
-                ],
-                onChanged: (val) => setState(() => _selectedType = val ?? 'uscita'),
-              ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFDB2777), padding: const EdgeInsets.symmetric(vertical: 16), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
-                onPressed: () {
-                  final cat = _categoryController.text.trim();
-                  final note = _noteController.text.trim();
-                  final amount = double.tryParse(_amountController.text.trim().replaceAll(',', '.')) ?? 0.0;
-
-                  if (cat.isNotEmpty && amount > 0) {
-                    setState(() {
-                      transazioni.insert(0, {"category": cat, "note": note.isEmpty ? cat : note, "amount": amount, "type": _selectedType});
-                      if (_selectedType == 'entrata') {
-                        patrimonio += amount;
-                        entrateMese += amount;
-                      } else {
-                        patrimonio -= amount;
-                        usciteMese += amount;
-                      }
-                    });
-                    _categoryController.clear();
-                    _noteController.clear();
-                    _amountController.clear();
-                    Navigator.pop(context);
-                  }
-                },
-                child: const Text("Registra Movimento", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -352,7 +401,6 @@ class _HomeScreenState extends State<HomeScreen> {
             onPressed: () {
               setState(() {
                 isSharedMode = !isSharedMode;
-                patrimonio = isSharedMode ? 3400.00 : 1250.00;
               });
             },
           ),
@@ -375,7 +423,7 @@ class _HomeScreenState extends State<HomeScreen> {
           Text("Utente loggato: ${widget.userEmail}", style: const TextStyle(fontSize: 11, color: Colors.grey)),
           const SizedBox(height: 10),
 
-          // 1. Patrimonio e Livello verso i 100k
+          // 1. Patrimonio e Livelli verso i 100k
           Card(
             color: const Color(0xFF0F172A),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
@@ -399,7 +447,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           const SizedBox(height: 16),
 
-          // 2. SIMULATORE AI: ACCUMULO INTELLIGENTE PER ACQUISTI
+          // 2. SIMULATORE AI: ACCUMULO INTELLIGENTE
           const Text("🤖 SIMULATORE AI: PIANO DI ACCUMULO", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey)),
           const SizedBox(height: 8),
           Card(
@@ -458,42 +506,64 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           const SizedBox(height: 20),
 
-          // 3. SALVADANAI (Piggy Banks)
-          const Text("🏦 SALVADANAI E OBIETTIVI", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey)),
-          const SizedBox(height: 8),
-          ...salvadanai.map((piggy) {
-            double progress = (piggy['current'] / piggy['target']).clamp(0.0, 1.0);
-            return Card(
-              color: const Color(0xFF0F172A),
-              margin: const EdgeInsets.only(bottom: 8),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(piggy['title'], style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-                        Text("€ ${piggy['current']} / € ${piggy['target']}", style: const TextStyle(fontSize: 12, color: Color(0xFFF472B6))),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(6),
-                      child: LinearProgressIndicator(
-                        value: progress,
-                        backgroundColor: const Color(0xFF1E293B),
-                        color: const Color(0xFFDB2777),
-                        minHeight: 8,
-                      ),
-                    ),
-                  ],
+          // 3. SALVADANAI GESTITI DALL'UTENTE
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text("🏦 SALVADANAI E OBIETTIVI", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey)),
+              ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFDB2777),
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                 ),
+                onPressed: _mostraModalNuovoSalvadanaio,
+                icon: const Icon(Icons.add, size: 14, color: Colors.white),
+                label: const Text("Nuovo", style: TextStyle(fontSize: 11, color: Colors.white, fontWeight: FontWeight.bold)),
               ),
-            );
-          }),
+            ],
+          ),
+          const SizedBox(height: 8),
+          salvadanai.isEmpty
+              ? const Padding(
+                  padding: EdgeInsets.all(12.0),
+                  child: Text("Nessun salvadanaio creato. Clicca su 'Nuovo' per impostare il tuo primo obiettivo di risparmio!", style: TextStyle(fontSize: 12, color: Colors.grey)),
+                )
+              : Column(
+                  children: salvadanai.map((piggy) {
+                    double progress = (piggy['current'] / piggy['target']).clamp(0.0, 1.0);
+                    return Card(
+                      color: const Color(0xFF0F172A),
+                      margin: const EdgeInsets.only(bottom: 8),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(piggy['title'], style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                                Text("€ ${piggy['current']} / € ${piggy['target']}", style: const TextStyle(fontSize: 12, color: Color(0xFFF472B6))),
+                              ],
+                            ),
+                            const SizedBox(height: 10),
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(6),
+                              child: LinearProgressIndicator(
+                                value: progress,
+                                backgroundColor: const Color(0xFF1E293B),
+                                color: const Color(0xFFDB2777),
+                                minHeight: 8,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                ),
           const SizedBox(height: 20),
 
           // 4. STORICO TRANSAZIONI
@@ -514,23 +584,30 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
           const SizedBox(height: 8),
-          ...transazioni.map((tx) => Card(
-                color: const Color(0xFF0F172A),
-                margin: const EdgeInsets.only(bottom: 8),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                child: ListTile(
-                  title: Text(tx['category'], style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-                  subtitle: Text(tx['note']),
-                  trailing: Text(
-                    "${tx['type'] == 'entrata' ? '+' : '-'}€ ${tx['amount'].toStringAsFixed(2)}",
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
-                      color: tx['type'] == 'entrata' ? const Color(0xFF10B981) : const Color(0xFFDB2777),
-                    ),
-                  ),
+          transazioni.isEmpty
+              ? const Padding(
+                  padding: EdgeInsets.all(12.0),
+                  child: Text("Nessuna transazione registrata. Aggiungi entrate o uscite per popolare il caveau.", style: TextStyle(fontSize: 12, color: Colors.grey)),
+                )
+              : Column(
+                  children: transazioni.map((tx) => Card(
+                        color: const Color(0xFF0F172A),
+                        margin: const EdgeInsets.only(bottom: 8),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                        child: ListTile(
+                          title: Text(tx['category'], style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                          subtitle: Text(tx['note']),
+                          trailing: Text(
+                            "${tx['type'] == 'entrata' ? '+' : '-'}€ ${tx['amount'].toStringAsFixed(2)}",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                              color: tx['type'] == 'entrata' ? const Color(0xFF10B981) : const Color(0xFFDB2777),
+                            ),
+                          ),
+                        ),
+                      )).toList(),
                 ),
-              )),
         ],
       ),
     );
