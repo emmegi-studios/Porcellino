@@ -27,3 +27,8 @@ flutter:
   uses-material-design: true
   assets:
     - assets/icon/icona_esterna.png
+
+flutter_icons:
+  image_path: "assets/icon/icona_esterna.png"
+  android: true
+  ios: true
