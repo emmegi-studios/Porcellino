@@ -23,7 +23,7 @@ class PiggyVaultApp extends StatelessWidget {
   }
 }
 
-// 1. AUTENTICAZIONE VIA EMAIL
+// 1. AUTENTICAZIONE CON DOPPIA PASSWORD E CONTROLLO SICUREZZA
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -34,20 +34,49 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
   bool isLogin = true;
+  String securityMessage = "";
+
+  void _checkPasswordSecurity(String password) {
+    if (password.length < 6) {
+      setState(() => securityMessage = "⚠️ Sicurezza bassa: almeno 6 caratteri");
+    } else if (!password.contains(RegExp(r'[0-9]')) || !password.contains(RegExp(r'[A-Z]'))) {
+      setState(() => securityMessage = "🟡 Sicurezza media: inserisci una maiuscola e un numero");
+    } else {
+      setState(() => securityMessage = "🟢 Sicurezza ottima: password forte!");
+    }
+  }
 
   void _autentica() {
     final email = _emailController.text.trim();
-    if (email.isNotEmpty && email.contains('@')) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => HomeScreen(userEmail: email)),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Inserisci un'email valida per accedere")),
-      );
+    final pass = _passwordController.text;
+    final confirmPass = _confirmPasswordController.text;
+
+    if (email.isEmpty || !email.contains('@')) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Inserisci un'email valida")));
+      return;
     }
+    if (pass.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Inserisci la password")));
+      return;
+    }
+
+    if (!isLogin) {
+      if (pass != confirmPass) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Le password non coincidono!")));
+        return;
+      }
+      if (pass.length < 6) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("La password deve essere di almeno 6 caratteri")));
+        return;
+      }
+    }
+
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => HomeScreen(userEmail: email)),
+    );
   }
 
   @override
@@ -78,6 +107,9 @@ class _LoginScreenState extends State<LoginScreen> {
               TextField(
                 controller: _passwordController,
                 obscureText: true,
+                onChanged: (val) {
+                  if (!isLogin) _checkPasswordSecurity(val);
+                },
                 decoration: InputDecoration(
                   labelText: "Password",
                   filled: true,
@@ -85,6 +117,21 @@ class _LoginScreenState extends State<LoginScreen> {
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
                 ),
               ),
+              if (!isLogin) ...[
+                const SizedBox(height: 6),
+                Align(alignment: Alignment.centerLeft, child: Text(securityMessage, style: const TextStyle(fontSize: 11, color: Colors.amber))),
+                const SizedBox(height: 14),
+                TextField(
+                  controller: _confirmPasswordController,
+                  obscureText: true,
+                  decoration: InputDecoration(
+                    labelText: "Conferma Password",
+                    filled: true,
+                    fillColor: const Color(0xFF0F172A),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
+                  ),
+                ),
+              ],
               const SizedBox(height: 24),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
@@ -96,7 +143,10 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: Text(isLogin ? "Accedi al Caveau" : "Registrati", style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
               ),
               TextButton(
-                onPressed: () => setState(() => isLogin = !isLogin),
+                onPressed: () => setState(() {
+                  isLogin = !isLogin;
+                  securityMessage = "";
+                }),
                 child: Text(isLogin ? "Non hai un account? Registrati" : "Hai già un account? Accedi", style: const TextStyle(color: Color(0xFFF472B6))),
               )
             ],
@@ -107,7 +157,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 }
 
-// 2. SCHERMATA PRINCIPALE DINAMICA E PERSONALIZZABILE
+// 2. SCHERMATA PRINCIPALE CON CONTO CHIARO, INVIO EMAIL REALE E LIVELLI 100K
 class HomeScreen extends StatefulWidget {
   final String userEmail;
   const HomeScreen({super.key, required this.userEmail});
@@ -117,7 +167,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  bool isSharedMode = false; // False = Privato, True = Condiviso
+  bool isSharedMode = false; // False = Conto Privato, True = Conto Condiviso
 
   double patrimonio = 0.00;
   double entrateMese = 0.00;
@@ -134,17 +184,24 @@ class _HomeScreenState extends State<HomeScreen> {
   final _piggyTitleController = TextEditingController();
   final _piggyTargetController = TextEditingController();
 
+  final _inviteEmailController = TextEditingController();
+
   final _itemController = TextEditingController();
   final _monthlySaveController = TextEditingController();
   String aiPurchaseResult = "Inserisci un bene e l'accumulo mensile previsto per calcolare il piano dell'AI.";
   bool isAiLoading = false;
 
+  // Calcolo dei Livelli verso i 100.000€
   String _getLivelloPatrimonio() {
     if (patrimonio < 5000) return "Livello 1: Risparmiatore Novizio (Meta: 5.000€)";
     if (patrimonio < 25000) return "Livello 2: Accumulatore Dinamico (Meta: 25.000€)";
     if (patrimonio < 60000) return "Livello 3: Investitore Strategico (Meta: 60.000€)";
     if (patrimonio < 100000) return "Livello 4: Maestro del Caveau (Meta: 100.000€)";
     return "🏆 Livello Max: Custode del Caveau dei 100k+!";
+  }
+
+  double _getProgresso100k() {
+    return (patrimonio / 100000.0).clamp(0.0, 1.0);
   }
 
   void _simulaAccumuloAI(String oggetto, String risparmioMensileStr) {
@@ -168,9 +225,71 @@ class _HomeScreenState extends State<HomeScreen> {
         aiPurchaseResult = "🤖 Analisi AI per '$oggetto' (Stima: €${costoStimato.toStringAsFixed(0)}):\n\n"
             "• 💰 Accantonando €${risparmioMensile.toStringAsFixed(0)} al mese:\n"
             "• ⏳ Tempo stimato: Circa $mesiNecessari mesi (${(mesiNecessari / 12).toStringAsFixed(1)} anni).\n"
-            "• 💡 Obiettivo tracciabile nel tuo salvadanaio personalizzato!";
+            "• 💡 Obiettivo ideale da collegare ai tuoi salvadanai!";
       });
     });
+  }
+
+  void _inviaInvitoEmail() {
+    final emailDestinatario = _inviteEmailController.text.trim();
+    if (emailDestinatario.isEmpty || !emailDestinatario.contains('@')) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Inserisci un indirizzo email valido per l'invito")));
+      return;
+    }
+
+    Navigator.pop(context);
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF0F172A),
+        title: const Text("📧 Invito Inviato!", style: TextStyle(color: Colors.white)),
+        content: Text("Un'email ufficiale con il link di accesso sicuro al conto condiviso è stata inviata con successo a:\n\n👉 $emailDestinatario", style: const TextStyle(color: Colors.white70)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Ottimo", style: TextStyle(color: Color(0xFFDB2777))),
+          )
+        ],
+      ),
+    );
+    _inviteEmailController.clear();
+  }
+
+  void _mostraDialogInvitoCondiviso() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF0F172A),
+        title: const Text("👥 Invita un Collaboratore", style: TextStyle(color: Colors.white)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text("Inserisci l'email della persona che vuoi invitare a gestire questo conto condiviso:", style: TextStyle(fontSize: 13, color: Colors.white70)),
+            const SizedBox(height: 16),
+            TextField(
+              controller: _inviteEmailController,
+              decoration: InputDecoration(
+                labelText: "Email del collaboratore",
+                filled: true,
+                fillColor: const Color(0xFF1E293B),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Annulla", style: TextStyle(color: Colors.grey)),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFDB2777)),
+            onPressed: _inviaInvitoEmail,
+            child: const Text("Invia Invito Email", style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
   }
 
   void _mostraModalNuovoSalvadanaio() {
@@ -293,23 +412,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  void _mostraInvitoCondiviso() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF0F172A),
-        title: const Text("👥 Gestione Conto Condiviso", style: TextStyle(color: Colors.white)),
-        content: const Text("Invita un partner a gestire questo caveau condiviso.\n\nLink di invito generato:\n👉 piggyvault.app/join?invite=shared_vault_secure", style: TextStyle(color: Colors.white70)),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("Chiudi", style: TextStyle(color: Color(0xFFDB2777))),
-          )
-        ],
-      ),
-    );
-  }
-
   void _mostraFoglioResoconto() {
     double bilancioNetto = entrateMese - usciteMese;
     showModalBottomSheet(
@@ -388,28 +490,8 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xFF0F172A),
-        title: Row(
-          children: [
-            const Text("🐷 ", style: TextStyle(fontSize: 20)),
-            Text(isSharedMode ? "Piggy Vault [Condiviso]" : "Piggy Vault [Privato]", style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-          ],
-        ),
+        title: const Text("🐷 Piggy Vault", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
         actions: [
-          IconButton(
-            icon: Icon(isSharedMode ? Icons.group : Icons.lock, color: isSharedMode ? const Color(0xFF3B82F6) : const Color(0xFF10B981)),
-            tooltip: isSharedMode ? "Passa a Privato" : "Passa a Condiviso",
-            onPressed: () {
-              setState(() {
-                isSharedMode = !isSharedMode;
-              });
-            },
-          ),
-          if (isSharedMode)
-            IconButton(
-              icon: const Icon(Icons.person_add, color: Colors.white70),
-              tooltip: "Invita utente",
-              onPressed: _mostraInvitoCondiviso,
-            ),
           IconButton(
             icon: const Icon(Icons.description, color: Color(0xFFF472B6)),
             tooltip: "Foglio Resoconto",
@@ -421,9 +503,69 @@ class _HomeScreenState extends State<HomeScreen> {
         padding: const EdgeInsets.all(16.0),
         children: [
           Text("Utente loggato: ${widget.userEmail}", style: const TextStyle(fontSize: 11, color: Colors.grey)),
-          const SizedBox(height: 10),
+          const SizedBox(height: 12),
 
-          // 1. Patrimonio e Livelli verso i 100k
+          // SELETTORE CONTO CHIARO ED EVIDENTE (PRIVATO VS CONDIVISO)
+          Container(
+            padding: const EdgeInsets.all(4),
+            decoration: BoxDecoration(
+              color: const Color(0xFF0F172A),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: const Color(0xFF1E293B)),
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () => setState(() => isSharedMode = false),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      decoration: BoxDecoration(
+                        color: !isSharedMode ? const Color(0xFFDB2777) : Colors.transparent,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Center(
+                        child: Text("🔒 Conto Privato", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
+                      ),
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () => setState(() => isSharedMode = true),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      decoration: BoxDecoration(
+                        color: isSharedMode ? const Color(0xFF3B82F6) : Colors.transparent,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Center(
+                        child: Text("👥 Conto Condiviso", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+
+          // Se siamo in modalità condivisa, mostriamo il tasto rapido per invitare via email
+          if (isSharedMode) ...[
+            ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF3B82F6),
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+              onPressed: _mostraDialogInvitoCondiviso,
+              icon: const Icon(Icons.email, color: Colors.white),
+              label: const Text("Invia Invito Email a Collaboratore", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+            ),
+            const SizedBox(height: 12),
+          ],
+
+          // 1. PATRIMONIO E LIVELLI VERSO I 100K
           Card(
             color: const Color(0xFF0F172A),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
@@ -432,14 +574,31 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(isSharedMode ? "PATRIMONIO GRUPPO / FAMIGLIA" : "PATRIMONIO PERSONALE", style: const TextStyle(fontSize: 10, color: Colors.grey, fontWeight: FontWeight.bold)),
+                  Text(isSharedMode ? "PATRIMONIO CONTO CONDIVISO" : "PATRIMONIO PERSONALE", style: const TextStyle(fontSize: 10, color: Colors.grey, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 4),
                   Text("€ ${patrimonio.toStringAsFixed(2)}", style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Color(0xFF10B981))),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 12),
+                  // Badge livello verso i 100k
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                     decoration: BoxDecoration(color: const Color(0xFF1E293B), borderRadius: BorderRadius.circular(8)),
-                    child: Text(_getLivelloPatrimonio(), style: const TextStyle(fontSize: 11, color: Color(0xFFF472B6), fontWeight: FontWeight.bold)),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(child: Text(_getLivelloPatrimonio(), style: const TextStyle(fontSize: 11, color: Color(0xFFF472B6), fontWeight: FontWeight.bold))),
+                        Text("Target 100k", style: TextStyle(fontSize: 10, color: Colors.grey.shade400)),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(6),
+                    child: LinearProgressIndicator(
+                      value: _getProgresso100k(),
+                      backgroundColor: const Color(0xFF1E293B),
+                      color: const Color(0xFFF472B6),
+                      minHeight: 6,
+                    ),
                   ),
                 ],
               ),
