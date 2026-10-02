@@ -13,7 +13,6 @@ class PiggyVaultApp extends StatefulWidget {
 }
 
 class _PiggyVaultAppState extends State<PiggyVaultApp> {
-  // Solo 2 temi: Dark (Principale) e Light (Chiaro e luminoso)
   String _currentTheme = 'Porcellino Dark';
   Color _scaffoldBg = const Color(0xFF0B0F19);
   Color _cardBg = const Color(0xFF131B2E);
@@ -25,15 +24,14 @@ class _PiggyVaultAppState extends State<PiggyVaultApp> {
     setState(() {
       _currentTheme = themeName;
       if (themeName == 'Porcellino Light') {
-        _scaffoldBg = const Color(0xFFF1F5F9);
-        _cardBg = const Color(0xFFFFFFFF);
+        _scaffoldBg = const Color(0xFFF8FAFC); // Sfondo chiaro pulito
+        _cardBg = const Color(0xFFFFFFFF);     // Card bianche luminose
         _primaryColor = const Color(0xFFDB2777);
         _accentColor = const Color(0xFFBE185D);
         _brightness = Brightness.light;
       } else {
-        // Porcellino Dark (Default)
-        _scaffoldBg = const Color(0xFF0B0F19);
-        _cardBg = const Color(0xFF131B2E);
+        _scaffoldBg = const Color(0xFF0B0F19); // Sfondo scuro profondo
+        _cardBg = const Color(0xFF131B2E);     // Card scure eleganti
         _primaryColor = const Color(0xFFDB2777);
         _accentColor = const Color(0xFFF472B6);
         _brightness = Brightness.dark;
@@ -97,7 +95,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _checkPasswordSecurity(String password) {
     if (password.length < 6) {
-      setState(() => securityMessage = "⚠️ Sicurezza bassa: min 6 caratteri");
+      setState(() => securityMessage = "⚠️️ Sicurezza bassa: min 6 caratteri");
     } else if (!password.contains(RegExp(r'[0-9]')) || !password.contains(RegExp(r'[A-Z]'))) {
       setState(() => securityMessage = "🟡 Sicurezza media: usa maiuscola e numero");
     } else {
@@ -148,7 +146,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Color textColor = widget.brightness == Brightness.light ? Colors.black87 : Colors.white;
+    Color textColor = widget.brightness == Brightness.light ? const Color(0xFF1E293B) : Colors.white;
 
     return Scaffold(
       backgroundColor: widget.scaffoldBg,
@@ -306,11 +304,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Map<String, dynamic> _getLivelloPorcellino() {
     if (patrimonio < 1000) {
-      return {"nome": "Emergenze", "target": "1.000€", "icon": "🟢", "color": Colors.greenAccent};
+      return {"nome": "Emergenze", "target": "1.000€", "icon": "🟢", "color": Colors.green};
     } else if (patrimonio < 10000) {
-      return {"nome": "Cuscino", "target": "10.000€", "icon": "🛡", "color": Colors.blueAccent};
+      return {"nome": "Cuscino", "target": "10.000€", "icon": "🛡", "color": Colors.blue};
     } else if (patrimonio < 50000) {
-      return {"nome": "Fortezza", "target": "50.000€", "icon": "🏰", "color": Colors.purpleAccent};
+      return {"nome": "Fortezza", "target": "50.000€", "icon": "🏰", "color": Colors.purple};
     } else {
       return {"nome": "Porcellone", "target": "100.000€", "icon": "👑", "color": widget.primaryColor};
     }
@@ -351,9 +349,8 @@ class _HomeScreenState extends State<HomeScreen> {
     _inviteEmailController.clear();
   }
 
-  // Pannello Profilo (Dedicato all'account)
   void _mostraModalProfilo() {
-    Color textColor = widget.brightness == Brightness.light ? Colors.black87 : Colors.white;
+    Color textColor = widget.brightness == Brightness.light ? const Color(0xFF1E293B) : Colors.white;
     showModalBottomSheet(
       context: context,
       backgroundColor: widget.cardBg,
@@ -404,9 +401,8 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // Pannello Impostazioni e Temi (Dedicato alla rotellina)
   void _mostraModalImpostazioni() {
-    Color textColor = widget.brightness == Brightness.light ? Colors.black87 : Colors.white;
+    Color textColor = widget.brightness == Brightness.light ? const Color(0xFF1E293B) : Colors.white;
     showModalBottomSheet(
       context: context,
       backgroundColor: widget.cardBg,
@@ -433,7 +429,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 subtitle: Text(widget.currentTheme, style: TextStyle(color: widget.primaryColor, fontWeight: FontWeight.bold, fontSize: 14)),
               ),
               const Divider(color: Colors.grey, height: 24),
-              Text("🎨 Scegli Tema Grafico (Riga Unica):", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: textColor)),
+              Text("🎨 Scegli Tema Grafico:", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: textColor)),
               const SizedBox(height: 12),
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
@@ -464,7 +460,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _mostraFoglioResoconto() {
-    Color textColor = widget.brightness == Brightness.light ? Colors.black87 : Colors.white;
+    Color textColor = widget.brightness == Brightness.light ? const Color(0xFF1E293B) : Colors.white;
     double bilancioNetto = entrateMese - usciteMese;
     showModalBottomSheet(
       context: context,
@@ -515,7 +511,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     return ListTile(
                       dense: true,
                       title: Text(tx['category'], style: TextStyle(fontWeight: FontWeight.bold, color: textColor)),
-                      subtitle: Text(tx['note'], style: TextStyle(color: Colors.grey)),
+                      subtitle: Text(tx['note'], style: const TextStyle(color: Colors.grey)),
                       trailing: Text(
                         "${tx['type'].contains('Entrata') ? '+' : '-'}€ ${tx['amount'].toStringAsFixed(2)}",
                         style: TextStyle(color: tx['type'].contains('Entrata') ? const Color(0xFF10B981) : widget.primaryColor, fontWeight: FontWeight.bold),
@@ -538,7 +534,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _mostraModalInserimento() {
-    Color textColor = widget.brightness == Brightness.light ? Colors.black87 : Colors.white;
+    Color textColor = widget.brightness == Brightness.light ? const Color(0xFF1E293B) : Colors.white;
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -624,7 +620,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final livello = _getLivelloPorcellino();
-    Color textColor = widget.brightness == Brightness.light ? Colors.black87 : Colors.white;
+    Color textColor = widget.brightness == Brightness.light ? const Color(0xFF1E293B) : Colors.white;
 
     return Scaffold(
       backgroundColor: widget.scaffoldBg,
@@ -720,7 +716,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
           const SizedBox(height: 14),
 
-          // PATRIMONIO TOTALE (Colore verde smeraldo originale inalterato!)
+          // PATRIMONIO TOTALE (Verde smeraldo brillante inalterato)
           Card(
             color: widget.cardBg,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
@@ -890,7 +886,7 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           Text(titolo, style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: completata ? textColor : Colors.grey)),
           const SizedBox(height: 2),
-          Text(sub, style: const TextStyle(fontSize: 8, color: Colors.grey)),
+          Text(sub, style: TextStyle(fontSize: 8, color: Colors.grey)),
         ],
       ),
     );
