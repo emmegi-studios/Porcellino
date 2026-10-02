@@ -61,14 +61,22 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Container(
-                width: 70,
-                height: 70,
-                decoration: BoxDecoration(
-                  color: _primaryColor,
-                  borderRadius: BorderRadius.circular(16),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: Image.asset(
+                  'assets/logo.png',
+                  width: 70,
+                  height: 70,
+                  errorBuilder: (context, error, stackTrace) => Container(
+                    width: 70,
+                    height: 70,
+                    decoration: BoxDecoration(
+                      color: _primaryColor,
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: const Icon(Icons.savings, color: Colors.white, size: 40),
+                  ),
                 ),
-                child: const Icon(Icons.savings, color: Colors.white, size: 40),
               ),
               const SizedBox(height: 16),
               Text("Porcellino", style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: _textColor)),
@@ -154,7 +162,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   String get _nomeUtenteDinamico => "Marcogrillone";
 
-  // Getter dinamici per i colori reattivi in base al tema selezionato
   bool get _isLight => _currentTheme == 'Porcellino Light';
   Color get _scaffoldBg => _isLight ? const Color(0xFFF1F5F9) : const Color(0xFF0B0F19);
   Color get _cardBg => _isLight ? const Color(0xFFFFFFFF) : const Color(0xFF131B2E);
@@ -532,14 +539,22 @@ class _HomeScreenState extends State<HomeScreen> {
         backgroundColor: _cardBg,
         title: Row(
           children: [
-            Container(
-              width: 32,
-              height: 32,
-              decoration: BoxDecoration(
-                color: _primaryColor,
-                borderRadius: BorderRadius.circular(8),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: Image.asset(
+                'assets/logo.png',
+                width: 32,
+                height: 32,
+                errorBuilder: (context, error, stackTrace) => Container(
+                  width: 32,
+                  height: 32,
+                  decoration: BoxDecoration(
+                    color: _primaryColor,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Icon(Icons.savings, color: Colors.white, size: 20),
+                ),
               ),
-              child: const Icon(Icons.savings, color: Colors.white, size: 20),
             ),
             const SizedBox(width: 8),
             Text("Porcellino", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: _textColor)),
