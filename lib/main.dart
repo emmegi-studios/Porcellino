@@ -25,7 +25,6 @@ class _PiggyVaultAppState extends State<PiggyVaultApp> {
   Widget build(BuildContext context) {
     bool isLight = _currentTheme == 'Porcellino Light';
     
-    // Palette colori globale e reattiva al 100%
     Color scaffoldBg = isLight ? const Color(0xFFF1F5F9) : const Color(0xFF0B0F19);
     Color cardBg = isLight ? const Color(0xFFFFFFFF) : const Color(0xFF131B2E);
     Color textColor = isLight ? const Color(0xFF0F172A) : Colors.white;
@@ -41,7 +40,7 @@ class _PiggyVaultAppState extends State<PiggyVaultApp> {
         scaffoldBackgroundColor: scaffoldBg,
         primaryColor: primaryColor,
       ),
-      home: HomeScreen(
+      home: LoginScreen(
         onThemeChanged: changeTheme,
         currentTheme: _currentTheme,
         scaffoldBg: scaffoldBg,
@@ -56,7 +55,131 @@ class _PiggyVaultAppState extends State<PiggyVaultApp> {
   }
 }
 
+class LoginScreen extends StatefulWidget {
+  final Function(String) onThemeChanged;
+  final String currentTheme;
+  final Color scaffoldBg;
+  final Color cardBg;
+  final Color textColor;
+  final Color subtitleColor;
+  final Color primaryColor;
+  final Color accentColor;
+  final bool isLight;
+
+  const LoginScreen({
+    super.key,
+    required this.onThemeChanged,
+    required this.currentTheme,
+    required this.scaffoldBg,
+    required this.cardBg,
+    required this.textColor,
+    required this.subtitleColor,
+    required this.primaryColor,
+    required this.accentColor,
+    required this.isLight,
+  });
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  final _emailController = TextEditingController(text: "marcogrillone@gmail.com");
+  final _passwordController = TextEditingController(text: "123456");
+
+  void _autentica() {
+    final email = _emailController.text.trim();
+    if (email.isEmpty || !email.contains('@')) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Inserisci un'email valida")));
+      return;
+    }
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => HomeScreen(
+          userEmail: email,
+          onThemeChanged: widget.onThemeChanged,
+          currentTheme: widget.currentTheme,
+          scaffoldBg: widget.scaffoldBg,
+          cardBg: widget.cardBg,
+          textColor: widget.textColor,
+          subtitleColor: widget.subtitleColor,
+          primaryColor: widget.primaryColor,
+          accentColor: widget.accentColor,
+          isLight: widget.isLight,
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: widget.scaffoldBg,
+      body: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                width: 70,
+                height: 70,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(16),
+                  image: const DecorationImage(
+                    image: AssetImage('assets/icon/icona_esterna.png'),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text("Porcellino", style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: widget.textColor)),
+              const SizedBox(height: 36),
+              TextField(
+                controller: _emailController,
+                style: TextStyle(color: widget.textColor),
+                decoration: InputDecoration(
+                  labelText: "Email",
+                  labelStyle: TextStyle(color: widget.subtitleColor),
+                  filled: true,
+                  fillColor: widget.cardBg,
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
+                ),
+              ),
+              const SizedBox(height: 14),
+              TextField(
+                controller: _passwordController,
+                obscureText: true,
+                style: TextStyle(color: widget.textColor),
+                decoration: InputDecoration(
+                  labelText: "Password",
+                  labelStyle: TextStyle(color: widget.subtitleColor),
+                  filled: true,
+                  fillColor: widget.cardBg,
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
+                ),
+              ),
+              const SizedBox(height: 24),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: widget.primaryColor,
+                  minimumSize: const Size.fromHeight(52),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                ),
+                onPressed: _autentica,
+                child: const Text("Accedi al Caveau", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class HomeScreen extends StatefulWidget {
+  final String userEmail;
   final Function(String) onThemeChanged;
   final String currentTheme;
   final Color scaffoldBg;
@@ -69,6 +192,7 @@ class HomeScreen extends StatefulWidget {
 
   const HomeScreen({
     super.key,
+    required this.userEmail,
     required this.onThemeChanged,
     required this.currentTheme,
     required this.scaffoldBg,
@@ -85,7 +209,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  String userEmail = "marcogrillone@gmail.com";
   bool isSharedMode = false;
   double patrimonio = 0.00;
   double entrateMese = 0.00;
@@ -191,7 +314,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 dense: true,
                 contentPadding: EdgeInsets.zero,
                 title: Text("Email Registrata", style: TextStyle(color: widget.subtitleColor, fontSize: 11)),
-                subtitle: Text(userEmail, style: TextStyle(color: widget.textColor, fontWeight: FontWeight.bold, fontSize: 15)),
+                subtitle: Text(widget.userEmail, style: TextStyle(color: widget.textColor, fontWeight: FontWeight.bold, fontSize: 15)),
               ),
               ListTile(
                 dense: true,

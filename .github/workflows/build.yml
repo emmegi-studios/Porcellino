@@ -24,10 +24,21 @@ jobs:
         channel: 'stable'
         cache: true
 
-    - name: Install Dependencies & Generate Icons
+    - name: Install Dependencies
+      run: flutter pub get
+
+    - name: Force Custom Icon into Android Resources
       run: |
-        flutter pub get
-        flutter pub run flutter_launcher_icons:main
+        if [ -f "assets/icon/icona_esterna.png" ]; then
+          cp assets/icon/icona_esterna.png android/app/src/main/res/mipmap-hdpi/ic_launcher.png
+          cp assets/icon/icona_esterna.png android/app/src/main/res/mipmap-mdpi/ic_launcher.png
+          cp assets/icon/icona_esterna.png android/app/src/main/res/mipmap-xhdpi/ic_launcher.png
+          cp assets/icon/icona_esterna.png android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png
+          cp assets/icon/icona_esterna.png android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
+          echo "Icona personalizzata applicata con successo alle risorse mipmap!"
+        else
+          echo "Attenzione: icona_esterna.png non trovata nella cartella assets/icon"
+        fi
 
     - name: Build APK
       run: flutter build apk --release
