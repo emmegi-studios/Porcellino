@@ -75,8 +75,9 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final _emailController = TextEditingController(text: "marcogrillone@gmail.com");
-  final _passwordController = TextEditingController(text: "123456");
+  // Campi vuoti come richiesto: l'utente deve inserire i propri dati
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
 
   void _autentica() {
     final email = _emailController.text.trim();
@@ -361,6 +362,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           onPressed: () {
                             widget.onThemeChanged('Porcellino Dark');
                             Navigator.pop(context);
+                            setState(() {});
                           },
                           icon: const Icon(Icons.brush, size: 16, color: Colors.white),
                           label: const Text("Porcellino Dark", style: TextStyle(color: Colors.white)),
@@ -371,6 +373,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           onPressed: () {
                             widget.onThemeChanged('Porcellino Light');
                             Navigator.pop(context);
+                            setState(() {});
                           },
                           icon: const Icon(Icons.brush, size: 16, color: Colors.black87),
                           label: const Text("Porcellino Light", style: TextStyle(color: Colors.black87)),
