@@ -23,7 +23,6 @@ class PiggyVaultApp extends StatelessWidget {
   }
 }
 
-// 1. AUTENTICAZIONE CON DOPPIA PASSWORD E CONTROLLO SICUREZZA
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -157,7 +156,6 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 }
 
-// 2. SCHERMATA PRINCIPALE CON CONTO CHIARO, INVIO EMAIL REALE E LIVELLI 100K
 class HomeScreen extends StatefulWidget {
   final String userEmail;
   const HomeScreen({super.key, required this.userEmail});
@@ -167,7 +165,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  bool isSharedMode = false; // False = Conto Privato, True = Conto Condiviso
+  bool isSharedMode = false;
 
   double patrimonio = 0.00;
   double entrateMese = 0.00;
@@ -183,7 +181,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final _piggyTitleController = TextEditingController();
   final _piggyTargetController = TextEditingController();
-
   final _inviteEmailController = TextEditingController();
 
   final _itemController = TextEditingController();
@@ -191,13 +188,14 @@ class _HomeScreenState extends State<HomeScreen> {
   String aiPurchaseResult = "Inserisci un bene e l'accumulo mensile previsto per calcolare il piano dell'AI.";
   bool isAiLoading = false;
 
-  // Calcolo dei Livelli verso i 100.000€
+  // Road to 100k con livelli intermedi mirati (Fondo cuscinetto, Dinamico, Strategico, Maestro, Custode)
   String _getLivelloPatrimonio() {
-    if (patrimonio < 5000) return "Livello 1: Risparmiatore Novizio (Meta: 5.000€)";
-    if (patrimonio < 25000) return "Livello 2: Accumulatore Dinamico (Meta: 25.000€)";
-    if (patrimonio < 60000) return "Livello 3: Investitore Strategico (Meta: 60.000€)";
-    if (patrimonio < 100000) return "Livello 4: Maestro del Caveau (Meta: 100.000€)";
-    return "🏆 Livello Max: Custode del Caveau dei 100k+!";
+    if (patrimonio < 1000) return "Livello 1: Fondo Cuscinetto (Meta: 1.000€)";
+    if (patrimonio < 10000) return "Livello 2: Risparmiatore Dinamico (Meta: 10.000€)";
+    if (patrimonio < 35000) return "Livello 3: Investitore Strategico (Meta: 35.000€)";
+    if (patrimonio < 70000) return "Livello 4: Maestro del Caveau (Meta: 70.000€)";
+    if (patrimonio < 100000) return "Livello 5: Aspirante 100k (Meta: 100.000€)";
+    return "🏆 Livello Max: Custode dei 100.000€+!";
   }
 
   double _getProgresso100k() {
@@ -233,7 +231,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void _inviaInvitoEmail() {
     final emailDestinatario = _inviteEmailController.text.trim();
     if (emailDestinatario.isEmpty || !emailDestinatario.contains('@')) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Inserisci un indirizzo email valido per l'invito")));
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Inserisci un indirizzo email valido")));
       return;
     }
 
@@ -243,7 +241,7 @@ class _HomeScreenState extends State<HomeScreen> {
       builder: (context) => AlertDialog(
         backgroundColor: const Color(0xFF0F172A),
         title: const Text("📧 Invito Inviato!", style: TextStyle(color: Colors.white)),
-        content: Text("Un'email ufficiale con il link di accesso sicuro al conto condiviso è stata inviata con successo a:\n\n👉 $emailDestinatario", style: const TextStyle(color: Colors.white70)),
+        content: Text("Un'email ufficiale con il link sicuro al conto condiviso è stata inviata a:\n\n👉 $emailDestinatario", style: const TextStyle(color: Colors.white70)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -264,12 +262,12 @@ class _HomeScreenState extends State<HomeScreen> {
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text("Inserisci l'email della persona che vuoi invitare a gestire questo conto condiviso:", style: TextStyle(fontSize: 13, color: Colors.white70)),
+            const Text("Inserisci l'email della persona da invitare:", style: TextStyle(fontSize: 13, color: Colors.white70)),
             const SizedBox(height: 16),
             TextField(
               controller: _inviteEmailController,
               decoration: InputDecoration(
-                labelText: "Email del collaboratore",
+                labelText: "Email collaboratore",
                 filled: true,
                 fillColor: const Color(0xFF1E293B),
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
@@ -285,7 +283,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFDB2777)),
             onPressed: _inviaInvitoEmail,
-            child: const Text("Invia Invito Email", style: TextStyle(color: Colors.white)),
+            child: const Text("Invia Email", style: TextStyle(color: Colors.white)),
           ),
         ],
       ),
@@ -505,7 +503,7 @@ class _HomeScreenState extends State<HomeScreen> {
           Text("Utente loggato: ${widget.userEmail}", style: const TextStyle(fontSize: 11, color: Colors.grey)),
           const SizedBox(height: 12),
 
-          // SELETTORE CONTO CHIARO ED EVIDENTE (PRIVATO VS CONDIVISO)
+          // SELETTORE CONTO PRIVATO / CONDIVISO
           Container(
             padding: const EdgeInsets.all(4),
             decoration: BoxDecoration(
@@ -550,7 +548,6 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           const SizedBox(height: 12),
 
-          // Se siamo in modalità condivisa, mostriamo il tasto rapido per invitare via email
           if (isSharedMode) ...[
             ElevatedButton.icon(
               style: ElevatedButton.styleFrom(
@@ -565,7 +562,7 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(height: 12),
           ],
 
-          // 1. PATRIMONIO E LIVELLI VERSO I 100K
+          // 1. PATRIMONIO E ROAD TO 100K A TAPPE STRUTTURATE
           Card(
             color: const Color(0xFF0F172A),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
@@ -578,7 +575,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   const SizedBox(height: 4),
                   Text("€ ${patrimonio.toStringAsFixed(2)}", style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Color(0xFF10B981))),
                   const SizedBox(height: 12),
-                  // Badge livello verso i 100k
+                  // Badge Livello a Tappe Road to 100k
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                     decoration: BoxDecoration(color: const Color(0xFF1E293B), borderRadius: BorderRadius.circular(8)),
@@ -586,7 +583,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Expanded(child: Text(_getLivelloPatrimonio(), style: const TextStyle(fontSize: 11, color: Color(0xFFF472B6), fontWeight: FontWeight.bold))),
-                        Text("Target 100k", style: TextStyle(fontSize: 10, color: Colors.grey.shade400)),
+                        Text("Road to 100k", style: TextStyle(fontSize: 10, color: Colors.grey.shade400)),
                       ],
                     ),
                   ),
