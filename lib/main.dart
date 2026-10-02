@@ -13,6 +13,7 @@ class PiggyVaultApp extends StatefulWidget {
 }
 
 class _PiggyVaultAppState extends State<PiggyVaultApp> {
+  // Palette colori radicalmente differenti per ciascun tema
   Color _scaffoldBg = const Color(0xFF0B0F19);
   Color _cardBg = const Color(0xFF131B2E);
   Color _primaryColor = const Color(0xFFDB2777); 
@@ -21,16 +22,17 @@ class _PiggyVaultAppState extends State<PiggyVaultApp> {
   void changeTheme(String themeName) {
     setState(() {
       if (themeName == 'Smeraldo') {
-        _scaffoldBg = const Color(0xFF022C22);
-        _cardBg = const Color(0xFF064E3B);
-        _primaryColor = const Color(0xFF10B981);
+        _scaffoldBg = const Color(0xFF01261B);
+        _cardBg = const Color(0xFF04382B);
+        _primaryColor = const Color(0xFF059669);
         _accentColor = const Color(0xFF34D399);
       } else if (themeName == 'Royal Gold') {
-        _scaffoldBg = const Color(0xFF1C1917);
-        _cardBg = const Color(0xFF292524);
-        _primaryColor = const Color(0xFFF59E0B);
+        _scaffoldBg = const Color(0xFF121212);
+        _cardBg = const Color(0xFF1E1E1E);
+        _primaryColor = const Color(0xFFD97706);
         _accentColor = const Color(0xFFFBBF24);
       } else {
+        // Porcellino Pink
         _scaffoldBg = const Color(0xFF0B0F19);
         _cardBg = const Color(0xFF131B2E);
         _primaryColor = const Color(0xFFDB2777);
@@ -329,6 +331,59 @@ class _HomeScreenState extends State<HomeScreen> {
     _inviteEmailController.clear();
   }
 
+  // Pannello Profilo (Dedicato all'account e alle info personali)
+  void _mostraModalProfilo() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: widget.cardBg,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+      builder: (context) {
+        return Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text("👤 Profilo Utente", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
+                  Icon(Icons.person, color: widget.primaryColor),
+                ],
+              ),
+              const SizedBox(height: 20),
+              ListTile(
+                dense: true,
+                contentPadding: EdgeInsets.zero,
+                title: const Text("Nome Utente", style: TextStyle(color: Colors.grey, fontSize: 11)),
+                subtitle: Text(_nomeUtenteDinamico, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15)),
+              ),
+              ListTile(
+                dense: true,
+                contentPadding: EdgeInsets.zero,
+                title: const Text("Email Registrata", style: TextStyle(color: Colors.grey, fontSize: 11)),
+                subtitle: Text(widget.userEmail, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15)),
+              ),
+              ListTile(
+                dense: true,
+                contentPadding: EdgeInsets.zero,
+                title: const Text("Tipo Account", style: TextStyle(color: Colors.grey, fontSize: 11)),
+                subtitle: const Text("Caveau Privato & Condiviso (Standard)", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13)),
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(backgroundColor: widget.primaryColor, padding: const EdgeInsets.symmetric(vertical: 14)),
+                onPressed: () => Navigator.pop(context),
+                child: const Text("Chiudi Profilo", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  // Pannello Impostazioni e Selezione Temi (Dedicato alla rotellina)
   void _mostraModalImpostazioni() {
     showModalBottomSheet(
       context: context,
@@ -344,17 +399,11 @@ class _HomeScreenState extends State<HomeScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text("⚙️ Impostazioni & Profilo", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
+                  const Text("⚙️ Impostazioni & Temi", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
                   Icon(Icons.settings, color: widget.primaryColor),
                 ],
               ),
               const SizedBox(height: 14),
-              ListTile(
-                dense: true,
-                contentPadding: EdgeInsets.zero,
-                title: const Text("Account Attivo", style: TextStyle(color: Colors.grey, fontSize: 11)),
-                subtitle: Text(widget.userEmail, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13)),
-              ),
               ListTile(
                 dense: true,
                 contentPadding: EdgeInsets.zero,
@@ -376,14 +425,14 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     const SizedBox(width: 10),
                     ElevatedButton.icon(
-                      style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF10B981), padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10)),
+                      style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF059669), padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10)),
                       onPressed: () { widget.onThemeChanged('Smeraldo'); Navigator.pop(context); },
                       icon: const Icon(Icons.brush, size: 16),
                       label: const Text("Smeraldo"),
                     ),
                     const SizedBox(width: 10),
                     ElevatedButton.icon(
-                      style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFF59E0B), padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10)),
+                      style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFD97706), padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10)),
                       onPressed: () { widget.onThemeChanged('Royal Gold'); Navigator.pop(context); },
                       icon: const Icon(Icons.brush, size: 16),
                       label: const Text("Royal Gold"),
@@ -576,8 +625,9 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
         actions: [
+          // Tasto Nome/Profilo separato: apre il pannello con i dati dell'account
           GestureDetector(
-            onTap: _mostraModalImpostazioni,
+            onTap: _mostraModalProfilo,
             child: Container(
               margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
@@ -591,9 +641,10 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
           ),
+          // Tasto Rotellina separato: apre il pannello Impostazioni e Temi
           IconButton(
             icon: Icon(Icons.settings, color: widget.accentColor),
-            tooltip: "Impostazioni App",
+            tooltip: "Impostazioni e Temi",
             onPressed: _mostraModalImpostazioni,
           ),
         ],
