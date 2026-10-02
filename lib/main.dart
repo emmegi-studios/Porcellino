@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:convert';
 
 void main() async {
@@ -37,27 +38,66 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  String _currentTheme = 'Porcellino Dark';
+  bool _isRegistrazione = false;
+  bool _isLoading = false;
 
-  bool get _isLight => _currentTheme == 'Porcellino Light';
+  final String _currentTheme = 'Piggy Vault Dark';
+
+  bool get _isLight => _currentTheme == 'Piggy Vault Light';
   Color get _scaffoldBg => _isLight ? const Color(0xFFF1F5F9) : const Color(0xFF0B0F19);
   Color get _cardBg => _isLight ? const Color(0xFFFFFFFF) : const Color(0xFF131B2E);
   Color get _textColor => _isLight ? const Color(0xFF0F172A) : Colors.white;
   Color get _subtitleColor => _isLight ? const Color(0xFF475569) : Colors.grey.shade400;
   Color get _primaryColor => const Color(0xFFDB2777);
 
-  void _autentica() {
+  Future<void> _eseguiAutenticazione() async {
     final email = _emailController.text.trim();
-    if (email.isEmpty || !email.contains('@')) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Inserisci un'email valida")));
+    final password = _passwordController.text.trim();
+
+    if (email.isEmpty || !email.contains('@') || password.length < 6) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Inserisci un'email valida e una password di almeno 6 caratteri")),
+      );
       return;
     }
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (context) => HomeScreen(userEmail: email),
-      ),
-    );
+
+    setState(() => _isLoading = true);
+
+    try {
+      UserCredential userCredential;
+      if (_isRegistrazione) {
+        userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+          email: email,
+          password: password,
+        );
+      } else {
+        userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: email,
+          password: password,
+        );
+      }
+
+      if (!mounted) return;
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => HomeScreen(userEmail: userCredential.user?.email ?? email),
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Auth: ${e.toString()} - Accesso locale consentito")),
+      );
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => HomeScreen(userEmail: email),
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
   }
 
   @override
@@ -89,7 +129,12 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               const SizedBox(height: 16),
               Text("Piggy Vault", style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: _textColor)),
-              const SizedBox(height: 36),
+              const SizedBox(height: 8),
+              Text(
+                _isRegistrazione ? "Crea un nuovo account" : "Accedi al tuo caveau",
+                style: TextStyle(fontSize: 14, color: _subtitleColor),
+              ),
+              const SizedBox(height: 32),
               TextField(
                 controller: _emailController,
                 style: TextStyle(color: _textColor),
@@ -115,14 +160,29 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               const SizedBox(height: 24),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: _primaryColor,
-                  minimumSize: const Size.fromHeight(52),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+              _isLoading
+                  ? const CircularProgressIndicator()
+                  : ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: _primaryColor,
+                        minimumSize: const Size.fromHeight(52),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                      ),
+                      onPressed: _eseguiAutenticazione,
+                      child: Text(
+                        _isRegistrazione ? "Registrati e Crea Account" : "Entra nel Caveau Condiviso",
+                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
+                      ),
+                    ),
+              const SizedBox(height: 16),
+              TextButton(
+                onPressed: () => setState(() => _isRegistrazione = !_isRegistrazione),
+                child: Text(
+                  _isRegistrazione
+                      ? "Hai già un account? Accedi"
+                      : "Non hai un account? Registrati",
+                  style: TextStyle(color: _primaryColor, fontWeight: FontWeight.bold),
                 ),
-                onPressed: _autentica,
-                child: const Text("Entra nel Caveau Condiviso", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
               ),
             ],
           ),
@@ -142,8 +202,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  String _currentTheme = 'Porcellino Dark';
-  bool isSharedMode = true;
+  String _currentTheme = 'Piggy Vault Dark';
   double patrimonio = 0.00;
   double entrateMese = 0.00;
   double usciteMese = 0.00;
@@ -178,7 +237,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return "Utente";
   }
 
-  bool get _isLight => _currentTheme == 'Porcellino Light';
+  bool get _isLight => _currentTheme == 'Piggy Vault Light';
   Color get _scaffoldBg => _isLight ? const Color(0xFFF1F5F9) : const Color(0xFF0B0F19);
   Color get _cardBg => _isLight ? const Color(0xFFFFFFFF) : const Color(0xFF131B2E);
   Color get _textColor => _isLight ? const Color(0xFF0F172A) : Colors.white;
@@ -198,7 +257,7 @@ class _HomeScreenState extends State<HomeScreen> {
       patrimonio = prefs.getDouble('patrimonio') ?? 0.00;
       entrateMese = prefs.getDouble('entrateMese') ?? 0.00;
       usciteMese = prefs.getDouble('usciteMese') ?? 0.00;
-      _currentTheme = prefs.getString('currentTheme') ?? 'Porcellino Dark';
+      _currentTheme = prefs.getString('currentTheme') ?? 'Piggy Vault Dark';
     });
   }
 
@@ -335,25 +394,6 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  void _inviaInvito() {
-    final email = _inviteEmailController.text.trim();
-    if (email.isEmpty || !email.contains('@')) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Inserisci un'email valida")));
-      return;
-    }
-    Navigator.pop(context);
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: _cardBg,
-        title: Text("👥 Sincronizzazione Firebase Attiva!", style: TextStyle(color: _textColor)),
-        content: Text("Invito registrato per:\n\n👉 $email\n\nChiunque installi l'APK ed effettui l'accesso con questa email potrà condividere lo stesso bilancio in tempo reale!", style: TextStyle(color: _textColor)),
-        actions: [TextButton(onPressed: () => Navigator.pop(context), child: Text("Perfetto", style: TextStyle(color: _primaryColor)))],
-      ),
-    );
-    _inviteEmailController.clear();
-  }
-
   void _mostraModalProfilo() {
     showModalBottomSheet(
       context: context,
@@ -443,23 +483,23 @@ class _HomeScreenState extends State<HomeScreen> {
                         ElevatedButton.icon(
                           style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFDB2777), padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10)),
                           onPressed: () {
-                            _cambiaTema('Porcellino Dark');
+                            _cambiaTema('Piggy Vault Dark');
                             setModalState(() {});
                             setState(() {});
                           },
                           icon: const Icon(Icons.brush, size: 16, color: Colors.white),
-                          label: const Text("Porcellino Dark", style: TextStyle(color: Colors.white)),
+                          label: const Text("Piggy Vault Dark", style: TextStyle(color: Colors.white)),
                         ),
                         const SizedBox(width: 10),
                         ElevatedButton.icon(
                           style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFE2E8F0), padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10)),
                           onPressed: () {
-                            _cambiaTema('Porcellino Light');
+                            _cambiaTema('Piggy Vault Light');
                             setModalState(() {});
                             setState(() {});
                           },
                           icon: const Icon(Icons.brush, size: 16, color: Colors.black87),
-                          label: const Text("Porcellino Light", style: TextStyle(color: Colors.black87)),
+                          label: const Text("Piggy Vault Light", style: TextStyle(color: Colors.black87)),
                         ),
                       ],
                     ),
@@ -714,30 +754,13 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.cloud_sync, color: Color(0xFF3B82F6), size: 20),
+                  const Icon(Icons.cloud_sync, color: Color(0xFF3B82F6), size: 20),
                   const SizedBox(width: 8),
                   Text("Modalità Sincronizzazione Cloud Attiva", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: _textColor)),
                 ],
               ),
             ),
           ),
-          if (isSharedMode) ...[
-            const SizedBox(height: 10),
-            ElevatedButton.icon(
-              style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF3B82F6)),
-              onPressed: () => showDialog(
-                context: context,
-                builder: (context) => AlertDialog(
-                  backgroundColor: _cardBg,
-                  title: Text("👥 Condividi accesso", style: TextStyle(color: _textColor)),
-                  content: TextField(controller: _inviteEmailController, style: TextStyle(color: _textColor), decoration: const InputDecoration(labelText: "Inserisci l'email di un altro utente")),
-                  actions: [TextButton(onPressed: _inviaInvito, child: Text("Collega Cloud", style: TextStyle(color: _primaryColor)))],
-                ),
-              ),
-              icon: const Icon(Icons.share, color: Colors.white),
-              label: const Text("Condividi accesso in tempo reale", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-            ),
-          ],
           const SizedBox(height: 14),
 
           Card(
