@@ -5,8 +5,37 @@ void main() {
   runApp(const PiggyVaultApp());
 }
 
-class PiggyVaultApp extends StatelessWidget {
+class PiggyVaultApp extends StatefulWidget {
   const PiggyVaultApp({super.key});
+
+  @override
+  State<PiggyVaultApp> createState() => _PiggyVaultAppState();
+}
+
+class _PiggyVaultAppState extends State<PiggyVaultApp> {
+  // Gestione dinamica del tema dell'app
+  Color _scaffoldBg = const Color(0xFF0B0F19);
+  Color _cardBg = const Color(0xFF131B2E);
+  Color _primaryColor = const Color(0xFFDB2777);
+
+  void changeTheme(String themeName) {
+    setState(() {
+      if (themeName == 'Smeraldo') {
+        _scaffoldBg = const Color(0xFF064E3B);
+        _cardBg = const Color(0xFF065F46);
+        _primaryColor = const Color(0xFF10B981);
+      } else if (themeName == 'Royal Gold') {
+        _scaffoldBg = const Color(0xFF18181B);
+        _cardBg = const Color(0xFF27272A);
+        _primaryColor = const Color(0xFFF59E0B);
+      } else {
+        // Tema Default Porcellino Dark
+        _scaffoldBg = const Color(0xFF0B0F19);
+        _cardBg = const Color(0xFF131B2E);
+        _primaryColor = const Color(0xFFDB2777);
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -15,16 +44,27 @@ class PiggyVaultApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         brightness: Brightness.dark,
-        scaffoldBackgroundColor: const Color(0xFF0B0F19),
-        primaryColor: const Color(0xFFDB2777),
+        scaffoldBackgroundColor: _scaffoldBg,
+        primaryColor: _primaryColor,
       ),
-      home: const LoginScreen(),
+      home: LoginScreen(onThemeChanged: changeTheme, scaffoldBg: _scaffoldBg, cardBg: _cardBg, primaryColor: _primaryColor),
     );
   }
 }
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+  final Function(String) onThemeChanged;
+  final Color scaffoldBg;
+  final Color cardBg;
+  final Color primaryColor;
+
+  const LoginScreen({
+    super.key,
+    required this.onThemeChanged,
+    required this.scaffoldBg,
+    required this.cardBg,
+    required this.primaryColor,
+  });
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -73,13 +113,21 @@ class _LoginScreenState extends State<LoginScreen> {
 
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => HomeScreen(userEmail: email)),
+      MaterialPageRoute(
+        builder: (context) => HomeScreen(
+          userEmail: email,
+          onThemeChanged: widget.onThemeChanged,
+          cardBg: widget.cardBg,
+          primaryColor: widget.primaryColor,
+        ),
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: widget.scaffoldBg,
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
@@ -97,7 +145,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 decoration: InputDecoration(
                   labelText: "Email",
                   filled: true,
-                  fillColor: const Color(0xFF131B2E),
+                  fillColor: widget.cardBg,
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
                 ),
               ),
@@ -111,7 +159,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 decoration: InputDecoration(
                   labelText: "Password",
                   filled: true,
-                  fillColor: const Color(0xFF131B2E),
+                  fillColor: widget.cardBg,
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
                 ),
               ),
@@ -125,7 +173,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   decoration: InputDecoration(
                     labelText: "Conferma Password",
                     filled: true,
-                    fillColor: const Color(0xFF131B2E),
+                    fillColor: widget.cardBg,
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
                   ),
                 ),
@@ -133,7 +181,7 @@ class _LoginScreenState extends State<LoginScreen> {
               const SizedBox(height: 24),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFDB2777),
+                  backgroundColor: widget.primaryColor,
                   minimumSize: const Size.fromHeight(52),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                 ),
@@ -145,7 +193,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   isLogin = !isLogin;
                   securityMessage = "";
                 }),
-                child: Text(isLogin ? "Non hai un account? Registrati" : "Hai già un account? Accedi", style: const TextStyle(color: Color(0xFFF472B6))),
+                child: Text(isLogin ? "Non hai un account? Registrati" : "Hai già un account? Accedi", style: TextStyle(color: widget.primaryColor)),
               )
             ],
           ),
@@ -157,7 +205,17 @@ class _LoginScreenState extends State<LoginScreen> {
 
 class HomeScreen extends StatefulWidget {
   final String userEmail;
-  const HomeScreen({super.key, required this.userEmail});
+  final Function(String) onThemeChanged;
+  final Color cardBg;
+  final Color primaryColor;
+
+  const HomeScreen({
+    super.key,
+    required this.userEmail,
+    required this.onThemeChanged,
+    required this.cardBg,
+    required this.primaryColor,
+  });
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -172,7 +230,6 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Map<String, dynamic>> transazioni = [];
   List<Map<String, dynamic>> salvadanai = [];
 
-  // Categorie con le emoji ufficiali di Porcellino
   final List<String> categorieConEmoji = [
     '🛒 Spesa / Alimentari',
     '🏠 Bollette & Casa',
@@ -197,16 +254,24 @@ class _HomeScreenState extends State<HomeScreen> {
   String aiPurchaseResult = "Inserisci le tue prime entrate e uscite per sbloccare i consigli personalizzati dell'IA.";
   bool isAiLoading = false;
 
-  // Le 4 tappe originali di Porcellino Road to 100k
+  // Estrae il nome utente dall'email in modo dinamico
+  String get _nomeUtenteDinamico {
+    if (widget.userEmail.contains('@')) {
+      String nome = widget.userEmail.split('@')[0];
+      return nome[0].toUpperCase() + nome.substring(1);
+    }
+    return "Utente";
+  }
+
   Map<String, dynamic> _getLivelloPorcellino() {
     if (patrimonio < 1000) {
       return {"nome": "Emergenze", "target": "1.000€", "icon": "🟢", "color": Colors.greenAccent};
     } else if (patrimonio < 10000) {
-      return {"nome": "Cuscino", "target": "10.000€", "icon": "🛡️", "color": Colors.blueAccent};
+      return {"nome": "Cuscino", "target": "10.000€", "icon": "🛡️️", "color": Colors.blueAccent};
     } else if (patrimonio < 50000) {
       return {"nome": "Fortezza", "target": "50.000€", "icon": "🏰", "color": Colors.purpleAccent};
     } else {
-      return {"nome": "Porcellone", "target": "100.000€", "icon": "👑", "color": Color(0xFFDB2777)};
+      return {"nome": "Porcellone", "target": "100.000€", "icon": "👑", "color": widget.primaryColor};
     }
   }
 
@@ -236,20 +301,73 @@ class _HomeScreenState extends State<HomeScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF131B2E),
+        backgroundColor: widget.cardBg,
         title: const Text("📧 Invito Inviato!"),
         content: Text("Link sicuro per il conto condiviso inviato con successo a:\n\n👉 $email"),
-        actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text("Ottimo", style: TextStyle(color: Color(0xFFDB2777))))],
+        actions: [TextButton(onPressed: () => Navigator.pop(context), child: Text("Ottimo", style: TextStyle(color: widget.primaryColor)))],
       ),
     );
     _inviteEmailController.clear();
+  }
+
+  // Modale Impostazioni e Selezione Temi
+  void _mostraModalImpostazioni() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: widget.cardBg,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+      builder: (context) {
+        return Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text("⚙️ Profilo & Temi", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
+                  Icon(Icons.settings, color: widget.primaryColor),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Text("Account loggato: ${widget.userEmail}", style: const TextStyle(fontSize: 12, color: Colors.grey)),
+              const SizedBox(height: 20),
+              const Text("Scegli il Tema Grafico:", style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.white70)),
+              const SizedBox(height: 12),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFDB2777)),
+                    onPressed: () { widget.onThemeChanged('Porcellino'); Navigator.pop(context); },
+                    child: const Text("Porcellino Pink"),
+                  ),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF10B981)),
+                    onPressed: () { widget.onThemeChanged('Smeraldo'); Navigator.pop(context); },
+                    child: const Text("Smeraldo"),
+                  ),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFF59E0B)),
+                    onPressed: () { widget.onThemeChanged('Royal Gold'); Navigator.pop(context); },
+                    child: const Text("Royal Gold"),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   void _mostraModalNuovoSalvadanaio() {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: const Color(0xFF131B2E),
+      backgroundColor: widget.cardBg,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
       builder: (context) {
         return Padding(
@@ -265,17 +383,17 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 16),
               TextField(
                 controller: _piggyTitleController,
-                decoration: InputDecoration(labelText: "Nome Obiettivo", filled: true, fillColor: const Color(0xFF0B0F19), border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))),
+                decoration: InputDecoration(labelText: "Nome Obiettivo", filled: true, fillColor: widget.cardBg, border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))),
               ),
               const SizedBox(height: 12),
               TextField(
                 controller: _piggyTargetController,
                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                decoration: InputDecoration(labelText: "Importo Target (€)", filled: true, fillColor: const Color(0xFF0B0F19), border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))),
+                decoration: InputDecoration(labelText: "Importo Target (€)", filled: true, fillColor: widget.cardBg, border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))),
               ),
               const SizedBox(height: 20),
               ElevatedButton(
-                style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFDB2777), padding: const EdgeInsets.symmetric(vertical: 16), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
+                style: ElevatedButton.styleFrom(backgroundColor: widget.primaryColor, padding: const EdgeInsets.symmetric(vertical: 16), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
                 onPressed: () {
                   final title = _piggyTitleController.text.trim();
                   final target = double.tryParse(_piggyTargetController.text.trim().replaceAll(',', '.')) ?? 0.0;
@@ -302,7 +420,7 @@ class _HomeScreenState extends State<HomeScreen> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: const Color(0xFF131B2E),
+      backgroundColor: widget.cardBg,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
       builder: (context) {
         return Container(
@@ -311,16 +429,16 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Row(
+              Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text("📋 Foglio Resoconto Mensile", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
-                  Icon(Icons.description, color: Color(0xFFDB2777)),
+                  const Text("📋 Foglio Resoconto Mensile", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
+                  Icon(Icons.description, color: widget.primaryColor),
                 ],
               ),
               const SizedBox(height: 16),
               Card(
-                color: const Color(0xFF0B0F19),
+                color: widget.cardBg,
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
@@ -330,9 +448,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       const SizedBox(height: 8),
                       Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [const Text("Entrate Totali:"), Text("€ ${entrateMese.toStringAsFixed(2)}", style: const TextStyle(color: Colors.blueAccent, fontWeight: FontWeight.bold))]),
                       const SizedBox(height: 4),
-                      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [const Text("Uscite Totali:"), Text("€ ${usciteMese.toStringAsFixed(2)}", style: const TextStyle(color: Color(0xFFDB2777), fontWeight: FontWeight.bold))]),
+                      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [const Text("Uscite Totali:"), Text("€ ${usciteMese.toStringAsFixed(2)}", style: TextStyle(color: widget.primaryColor, fontWeight: FontWeight.bold))]),
                       const Divider(color: Colors.grey),
-                      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [const Text("Bilancio Netto:"), Text("€ ${bilancioNetto.toStringAsFixed(2)}", style: TextStyle(color: bilancioNetto >= 0 ? const Color(0xFF10B981) : const Color(0xFFDB2777), fontWeight: FontWeight.bold))]),
+                      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [const Text("Bilancio Netto:"), Text("€ ${bilancioNetto.toStringAsFixed(2)}", style: TextStyle(color: bilancioNetto >= 0 ? const Color(0xFF10B981) : widget.primaryColor, fontWeight: FontWeight.bold))]),
                     ],
                   ),
                 ),
@@ -351,7 +469,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       subtitle: Text(tx['note']),
                       trailing: Text(
                         "${tx['type'].contains('Entrata') ? '+' : '-'}€ ${tx['amount'].toStringAsFixed(2)}",
-                        style: TextStyle(color: tx['type'].contains('Entrata') ? const Color(0xFF10B981) : const Color(0xFFDB2777), fontWeight: FontWeight.bold),
+                        style: TextStyle(color: tx['type'].contains('Entrata') ? const Color(0xFF10B981) : widget.primaryColor, fontWeight: FontWeight.bold),
                       ),
                     );
                   },
@@ -359,7 +477,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               const SizedBox(height: 12),
               ElevatedButton(
-                style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFDB2777), padding: const EdgeInsets.symmetric(vertical: 14)),
+                style: ElevatedButton.styleFrom(backgroundColor: widget.primaryColor, padding: const EdgeInsets.symmetric(vertical: 14)),
                 onPressed: () => Navigator.pop(context),
                 child: const Text("Chiudi Resoconto", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
               )
@@ -374,7 +492,7 @@ class _HomeScreenState extends State<HomeScreen> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: const Color(0xFF131B2E),
+      backgroundColor: widget.cardBg,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
       builder: (context) {
         return Padding(
@@ -390,8 +508,8 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
                 value: _selectedType,
-                dropdownColor: const Color(0xFF0B0F19),
-                decoration: InputDecoration(labelText: "Tipo", filled: true, fillColor: const Color(0xFF0B0F19), border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))),
+                dropdownColor: widget.cardBg,
+                decoration: InputDecoration(labelText: "Tipo", filled: true, fillColor: widget.cardBg, border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))),
                 items: const [
                   DropdownMenuItem(value: 'Uscita (Spesa)', child: Text("🔴 Uscita (Spesa)")),
                   DropdownMenuItem(value: 'Entrata (Guadagno)', child: Text("🟢 Entrata (Guadagno)")),
@@ -402,24 +520,24 @@ class _HomeScreenState extends State<HomeScreen> {
               TextField(
                 controller: _amountController,
                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                decoration: InputDecoration(labelText: "Importo (€)", filled: true, fillColor: const Color(0xFF0B0F19), border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))),
+                decoration: InputDecoration(labelText: "Importo (€)", filled: true, fillColor: widget.cardBg, border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))),
               ),
               const SizedBox(height: 12),
               DropdownButtonFormField<String>(
                 value: _selectedCategory,
-                dropdownColor: const Color(0xFF0B0F19),
-                decoration: InputDecoration(labelText: "Categoria", filled: true, fillColor: const Color(0xFF0B0F19), border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))),
+                dropdownColor: widget.cardBg,
+                decoration: InputDecoration(labelText: "Categoria", filled: true, fillColor: widget.cardBg, border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))),
                 items: categorieConEmoji.map((cat) => DropdownMenuItem(value: cat, child: Text(cat))).toList(),
                 onChanged: (val) => setState(() => _selectedCategory = val ?? '📦 Altro'),
               ),
               const SizedBox(height: 12),
               TextField(
                 controller: _noteController,
-                decoration: InputDecoration(labelText: "Note / Descrizione", filled: true, fillColor: const Color(0xFF0B0F19), border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))),
+                decoration: InputDecoration(labelText: "Note / Descrizione", filled: true, fillColor: widget.cardBg, border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))),
               ),
               const SizedBox(height: 20),
               ElevatedButton(
-                style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFDB2777), padding: const EdgeInsets.symmetric(vertical: 16), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
+                style: ElevatedButton.styleFrom(backgroundColor: widget.primaryColor, padding: const EdgeInsets.symmetric(vertical: 16), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
                 onPressed: () {
                   final note = _noteController.text.trim();
                   final amount = double.tryParse(_amountController.text.trim().replaceAll(',', '.')) ?? 0.0;
@@ -455,7 +573,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color(0xFF0B0F19),
+        backgroundColor: widget.cardBg,
         title: Row(
           children: [
             const Text("🐷 ", style: TextStyle(fontSize: 20)),
@@ -469,20 +587,23 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
         actions: [
-          Container(
-            margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-            decoration: BoxDecoration(color: const Color(0xFF131B2E), borderRadius: BorderRadius.circular(20)),
-            child: Row(
-              children: [
-                const Icon(Icons.person, size: 14, color: Color(0xFFF472B6)),
-                const SizedBox(width: 4),
-                Text("Marco", style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white)),
-              ],
+          GestureDetector(
+            onTap: _mostraModalImpostazioni,
+            child: Container(
+              margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              decoration: BoxDecoration(color: widget.cardBg, borderRadius: BorderRadius.circular(20), border: Border.all(color: widget.primaryColor.withOpacity(0.5))),
+              child: Row(
+                children: [
+                  Icon(Icons.person, size: 14, color: widget.primaryColor),
+                  const SizedBox(width: 4),
+                  Text(_nomeUtenteDinamico, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white)),
+                ],
+              ),
             ),
           ),
           IconButton(
-            icon: const Icon(Icons.description, color: Color(0xFFF472B6)),
+            icon: Icon(Icons.description, color: widget.primaryColor),
             tooltip: "Foglio Resoconto",
             onPressed: _mostraFoglioResoconto,
           ),
@@ -494,7 +615,7 @@ class _HomeScreenState extends State<HomeScreen> {
           // SELETTORE PRIVATO / CONDIVISO
           Container(
             padding: const EdgeInsets.all(4),
-            decoration: BoxDecoration(color: const Color(0xFF131B2E), borderRadius: BorderRadius.circular(16)),
+            decoration: BoxDecoration(color: widget.cardBg, borderRadius: BorderRadius.circular(16)),
             child: Row(
               children: [
                 Expanded(
@@ -502,7 +623,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     onTap: () => setState(() => isSharedMode = false),
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 10),
-                      decoration: BoxDecoration(color: !isSharedMode ? const Color(0xFFDB2777) : Colors.transparent, borderRadius: BorderRadius.circular(12)),
+                      decoration: BoxDecoration(color: !isSharedMode ? widget.primaryColor : Colors.transparent, borderRadius: BorderRadius.circular(12)),
                       child: const Center(child: Text("🔒 Conto Privato", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13))),
                     ),
                   ),
@@ -527,7 +648,7 @@ class _HomeScreenState extends State<HomeScreen> {
               onPressed: () => showDialog(
                 context: context,
                 builder: (context) => AlertDialog(
-                  backgroundColor: const Color(0xFF131B2E),
+                  backgroundColor: widget.cardBg,
                   title: const Text("👥 Invita Collaboratore"),
                   content: TextField(controller: _inviteEmailController, decoration: const InputDecoration(labelText: "Email collaboratore")),
                   actions: [TextButton(onPressed: _inviaInvito, child: const Text("Invia Email"))],
@@ -541,7 +662,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
           // 1. PATRIMONIO TOTALE
           Card(
-            color: const Color(0xFF131B2E),
+            color: widget.cardBg,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
             child: Padding(
               padding: const EdgeInsets.all(18.0),
@@ -568,7 +689,7 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               Expanded(
                 child: Card(
-                  color: const Color(0xFF131B2E),
+                  color: widget.cardBg,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   child: Padding(
                     padding: const EdgeInsets.all(14.0),
@@ -586,7 +707,7 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(width: 10),
               Expanded(
                 child: Card(
-                  color: const Color(0xFF131B2E),
+                  color: widget.cardBg,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   child: Padding(
                     padding: const EdgeInsets.all(14.0),
@@ -595,8 +716,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       children: [
                         const Text("USCITE MESE", style: TextStyle(fontSize: 9, color: Colors.grey, fontWeight: FontWeight.bold)),
                         const SizedBox(height: 4),
-                        Text("€ ${usciteMese.toStringAsFixed(2)}", style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFFDB2777)),
-                      ),
+                        Text("€ ${usciteMese.toStringAsFixed(2)}", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: widget.primaryColor)),
                       ],
                     ),
                   ),
@@ -608,7 +728,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
           // 2. LIVELLI PORCELLINO RISPARMIO (4 TAPPE)
           Card(
-            color: const Color(0xFF131B2E),
+            color: widget.cardBg,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
             child: Padding(
               padding: const EdgeInsets.all(18.0),
@@ -621,7 +741,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       const Text("🏆 Livelli Porcellino Risparmio", style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.white)),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                        decoration: BoxDecoration(color: const Color(0xFF0B0F19), borderRadius: BorderRadius.circular(12)),
+                        decoration: BoxDecoration(color: widget.cardBg, borderRadius: BorderRadius.circular(12)),
                         child: Text("Livello: ${livello['nome']}", style: TextStyle(fontSize: 11, color: livello['color'], fontWeight: FontWeight.bold)),
                       ),
                     ],
@@ -635,9 +755,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     ],
                   ),
                   const SizedBox(height: 8),
-                  LinearProgressIndicator(value: _getProgresso(), backgroundColor: const Color(0xFF0B0F19), color: livello['color'], minHeight: 8),
+                  LinearProgressIndicator(value: _getProgresso(), backgroundColor: widget.cardBg, color: livello['color'], minHeight: 8),
                   const SizedBox(height: 16),
-                  // Le 4 tappe visive
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
@@ -655,7 +774,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
           // 3. CONSULENTE FINANZIARIO IA
           Card(
-            color: const Color(0xFF131B2E),
+            color: widget.cardBg,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
             child: Padding(
               padding: const EdgeInsets.all(16.0),
@@ -682,20 +801,20 @@ class _HomeScreenState extends State<HomeScreen> {
           // 4. NUOVA TRANSAZIONE & STORICO
           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
             const Text("➕ Nuova Transazione", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey)),
-            ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFDB2777)), onPressed: _mostraModalInserimento, child: const Text("+ Nuova"))
+            ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: widget.primaryColor), onPressed: _mostraModalInserimento, child: const Text("+ Nuova"))
           ]),
           const SizedBox(height: 8),
           
           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
             const Text("📜 Storico Transazioni", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey)),
-            ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF1E293B)), onPressed: _mostraFoglioResoconto, child: const Text("Apri Resoconto"))
+            ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: widget.cardBg), onPressed: _mostraFoglioResoconto, child: const Text("Apri Resoconto"))
           ]),
           ...transazioni.map((tx) => Card(
-            color: const Color(0xFF131B2E),
+            color: widget.cardBg,
             child: ListTile(
               title: Text(tx['category'], style: const TextStyle(fontWeight: FontWeight.bold)),
               subtitle: Text(tx['note']),
-              trailing: Text("${tx['type'].contains('Entrata') ? '+' : '-'}€${tx['amount']}", style: TextStyle(color: tx['type'].contains('Entrata') ? Colors.greenAccent : Color(0xFFDB2777), fontWeight: FontWeight.bold)),
+              trailing: Text("${tx['type'].contains('Entrata') ? '+' : '-'}€${tx['amount']}", style: TextStyle(color: tx['type'].contains('Entrata') ? Colors.greenAccent : widget.primaryColor, fontWeight: FontWeight.bold)),
             ),
           )),
         ],
@@ -707,9 +826,9 @@ class _HomeScreenState extends State<HomeScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
       decoration: BoxDecoration(
-        color: completata ? const Color(0xFFDB2777).withOpacity(0.2) : const Color(0xFF0B0F19),
+        color: completata ? widget.primaryColor.withOpacity(0.2) : widget.cardBg,
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: completata ? const Color(0xFFDB2777) : Colors.grey.shade800),
+        border: Border.all(color: completata ? widget.primaryColor : Colors.grey.shade800),
       ),
       child: Column(
         children: [
