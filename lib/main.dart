@@ -13,26 +13,30 @@ class PiggyVaultApp extends StatefulWidget {
 }
 
 class _PiggyVaultAppState extends State<PiggyVaultApp> {
-  // Gestione dinamica del tema dell'app
+  // Palette colori dinamiche per i temi
   Color _scaffoldBg = const Color(0xFF0B0F19);
   Color _cardBg = const Color(0xFF131B2E);
-  Color _primaryColor = const Color(0xFFDB2777);
+  Color _primaryColor = const Color(0xFFDB2777); // Rosa Porcellino
+  Color _accentColor = const Color(0xFFF472B6);
 
   void changeTheme(String themeName) {
     setState(() {
       if (themeName == 'Smeraldo') {
-        _scaffoldBg = const Color(0xFF064E3B);
-        _cardBg = const Color(0xFF065F46);
+        _scaffoldBg = const Color(0xFF022C22);
+        _cardBg = const Color(0xFF064E3B);
         _primaryColor = const Color(0xFF10B981);
+        _accentColor = const Color(0xFF34D399);
       } else if (themeName == 'Royal Gold') {
         _scaffoldBg = const Color(0xFF18181B);
         _cardBg = const Color(0xFF27272A);
         _primaryColor = const Color(0xFFF59E0B);
+        _accentColor = const Color(0xFFFBBF24);
       } else {
-        // Tema Default Porcellino Dark
+        // Porcellino Pink / Dark di default
         _scaffoldBg = const Color(0xFF0B0F19);
         _cardBg = const Color(0xFF131B2E);
         _primaryColor = const Color(0xFFDB2777);
+        _accentColor = const Color(0xFFF472B6);
       }
     });
   }
@@ -47,7 +51,13 @@ class _PiggyVaultAppState extends State<PiggyVaultApp> {
         scaffoldBackgroundColor: _scaffoldBg,
         primaryColor: _primaryColor,
       ),
-      home: LoginScreen(onThemeChanged: changeTheme, scaffoldBg: _scaffoldBg, cardBg: _cardBg, primaryColor: _primaryColor),
+      home: LoginScreen(
+        onThemeChanged: changeTheme,
+        scaffoldBg: _scaffoldBg,
+        cardBg: _cardBg,
+        primaryColor: _primaryColor,
+        accentColor: _accentColor,
+      ),
     );
   }
 }
@@ -57,6 +67,7 @@ class LoginScreen extends StatefulWidget {
   final Color scaffoldBg;
   final Color cardBg;
   final Color primaryColor;
+  final Color accentColor;
 
   const LoginScreen({
     super.key,
@@ -64,6 +75,7 @@ class LoginScreen extends StatefulWidget {
     required this.scaffoldBg,
     required this.cardBg,
     required this.primaryColor,
+    required this.accentColor,
   });
 
   @override
@@ -79,9 +91,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _checkPasswordSecurity(String password) {
     if (password.length < 6) {
-      setState(() => securityMessage = "⚠️ Sicurezza bassa: almeno 6 caratteri");
+      setState(() => securityMessage = "⚠️ Sicurezza bassa: min 6 caratteri");
     } else if (!password.contains(RegExp(r'[0-9]')) || !password.contains(RegExp(r'[A-Z]'))) {
-      setState(() => securityMessage = "🟡 Sicurezza media: inserisci maiuscola e numero");
+      setState(() => securityMessage = "🟡 Sicurezza media: usa maiuscola e numero");
     } else {
       setState(() => securityMessage = "🟢 Password forte!");
     }
@@ -119,6 +131,7 @@ class _LoginScreenState extends State<LoginScreen> {
           onThemeChanged: widget.onThemeChanged,
           cardBg: widget.cardBg,
           primaryColor: widget.primaryColor,
+          accentColor: widget.accentColor,
         ),
       ),
     );
@@ -138,7 +151,7 @@ class _LoginScreenState extends State<LoginScreen> {
               const SizedBox(height: 12),
               const Text("Porcellino", style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white)),
               const SizedBox(height: 4),
-              const Text("PRE-ALPHA V1.0", style: TextStyle(fontSize: 11, color: Color(0xFFF472B6), fontWeight: FontWeight.bold)),
+              Text("PRE-ALPHA V1.0", style: TextStyle(fontSize: 11, color: widget.accentColor, fontWeight: FontWeight.bold)),
               const SizedBox(height: 36),
               TextField(
                 controller: _emailController,
@@ -186,14 +199,14 @@ class _LoginScreenState extends State<LoginScreen> {
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                 ),
                 onPressed: _autentica,
-                child: Text(isLogin ? "Accedi a Porcellino" : "Registrati", style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+                child: Text(isLogin ? "Accedi al Caveau" : "Registrati", style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
               ),
               TextButton(
                 onPressed: () => setState(() {
                   isLogin = !isLogin;
                   securityMessage = "";
                 }),
-                child: Text(isLogin ? "Non hai un account? Registrati" : "Hai già un account? Accedi", style: TextStyle(color: widget.primaryColor)),
+                child: Text(isLogin ? "Non hai un account? Registrati" : "Hai già un account? Accedi", style: TextStyle(color: widget.accentColor)),
               )
             ],
           ),
@@ -208,6 +221,7 @@ class HomeScreen extends StatefulWidget {
   final Function(String) onThemeChanged;
   final Color cardBg;
   final Color primaryColor;
+  final Color accentColor;
 
   const HomeScreen({
     super.key,
@@ -215,6 +229,7 @@ class HomeScreen extends StatefulWidget {
     required this.onThemeChanged,
     required this.cardBg,
     required this.primaryColor,
+    required this.accentColor,
   });
 
   @override
@@ -254,7 +269,6 @@ class _HomeScreenState extends State<HomeScreen> {
   String aiPurchaseResult = "Inserisci le tue prime entrate e uscite per sbloccare i consigli personalizzati dell'IA.";
   bool isAiLoading = false;
 
-  // Estrae il nome utente dall'email in modo dinamico
   String get _nomeUtenteDinamico {
     if (widget.userEmail.contains('@')) {
       String nome = widget.userEmail.split('@')[0];
@@ -267,7 +281,7 @@ class _HomeScreenState extends State<HomeScreen> {
     if (patrimonio < 1000) {
       return {"nome": "Emergenze", "target": "1.000€", "icon": "🟢", "color": Colors.greenAccent};
     } else if (patrimonio < 10000) {
-      return {"nome": "Cuscino", "target": "10.000€", "icon": "🛡️️", "color": Colors.blueAccent};
+      return {"nome": "Cuscino", "target": "10.000€", "icon": "🛡", "color": Colors.blueAccent};
     } else if (patrimonio < 50000) {
       return {"nome": "Fortezza", "target": "50.000€", "icon": "🏰", "color": Colors.purpleAccent};
     } else {
@@ -303,14 +317,14 @@ class _HomeScreenState extends State<HomeScreen> {
       builder: (context) => AlertDialog(
         backgroundColor: widget.cardBg,
         title: const Text("📧 Invito Inviato!"),
-        content: Text("Link sicuro per il conto condiviso inviato con successo a:\n\n👉 $email"),
+        content: Text("Link sicuro per il conto condiviso inviato a:\n\n👉 $email"),
         actions: [TextButton(onPressed: () => Navigator.pop(context), child: Text("Ottimo", style: TextStyle(color: widget.primaryColor)))],
       ),
     );
     _inviteEmailController.clear();
   }
 
-  // Modale Impostazioni e Selezione Temi
+  // Pannello Impostazioni Ufficiale & Temi su Riga Unica
   void _mostraModalImpostazioni() {
     showModalBottomSheet(
       context: context,
@@ -326,34 +340,53 @@ class _HomeScreenState extends State<HomeScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text("⚙️ Profilo & Temi", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
+                  const Text("⚙️ Impostazioni & Profilo", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
                   Icon(Icons.settings, color: widget.primaryColor),
                 ],
               ),
+              const SizedBox(height: 14),
+              ListTile(
+                dense: true,
+                contentPadding: EdgeInsets.zero,
+                title: const Text("Account Attivo", style: TextStyle(color: Colors.grey, fontSize: 11)),
+                subtitle: Text(widget.userEmail, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13)),
+              ),
+              ListTile(
+                dense: true,
+                contentPadding: EdgeInsets.zero,
+                title: const Text("Versione Applicazione", style: TextStyle(color: Colors.grey, fontSize: 11)),
+                subtitle: const Text("Porcellino Pre-Alpha v1.0 (Build Ufficiale)", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13)),
+              ),
+              const Divider(color: Colors.white24, height: 24),
+              const Text("🎨 Scegli Tema Grafico (Clicca per applicare):", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white70)),
               const SizedBox(height: 12),
-              Text("Account loggato: ${widget.userEmail}", style: const TextStyle(fontSize: 12, color: Colors.grey)),
-              const SizedBox(height: 20),
-              const Text("Scegli il Tema Grafico:", style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.white70)),
-              const SizedBox(height: 12),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFDB2777)),
-                    onPressed: () { widget.onThemeChanged('Porcellino'); Navigator.pop(context); },
-                    child: const Text("Porcellino Pink"),
-                  ),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF10B981)),
-                    onPressed: () { widget.onThemeChanged('Smeraldo'); Navigator.pop(context); },
-                    child: const Text("Smeraldo"),
-                  ),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFF59E0B)),
-                    onPressed: () { widget.onThemeChanged('Royal Gold'); Navigator.pop(context); },
-                    child: const Text("Royal Gold"),
-                  ),
-                ],
+              // Riga unica scorrevole per la selezione dei temi
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFDB2777), padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10)),
+                      onPressed: () { widget.onThemeChanged('Porcellino'); Navigator.pop(context); },
+                      icon: const Icon(Icons.brush, size: 16),
+                      label: const Text("Porcellino Pink"),
+                    ),
+                    const SizedBox(width: 10),
+                    ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF10B981), padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10)),
+                      onPressed: () { widget.onThemeChanged('Smeraldo'); Navigator.pop(context); },
+                      icon: const Icon(Icons.brush, size: 16),
+                      label: const Text("Smeraldo"),
+                    ),
+                    const SizedBox(width: 10),
+                    ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFF59E0B), padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10)),
+                      onPressed: () { widget.onThemeChanged('Royal Gold'); Navigator.pop(context); },
+                      icon: const Icon(Icons.brush, size: 16),
+                      label: const Text("Royal Gold"),
+                    ),
+                  ],
+                ),
               ),
               const SizedBox(height: 20),
             ],
@@ -581,16 +614,17 @@ class _HomeScreenState extends State<HomeScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text("Porcellino", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                const Text("PRE-ALPHA V1.0", style: TextStyle(fontSize: 9, color: Color(0xFFF472B6))),
+                Text("PRE-ALPHA V1.0", style: TextStyle(fontSize: 9, color: widget.accentColor)),
               ],
             ),
           ],
         ),
         actions: [
+          // Tasto Profilo Dinamico che apre le impostazioni
           GestureDetector(
             onTap: _mostraModalImpostazioni,
             child: Container(
-              margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+              margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               decoration: BoxDecoration(color: widget.cardBg, borderRadius: BorderRadius.circular(20), border: Border.all(color: widget.primaryColor.withOpacity(0.5))),
               child: Row(
@@ -602,10 +636,11 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
           ),
+          // Tasto Rotellina Impostazioni ufficiale
           IconButton(
-            icon: Icon(Icons.description, color: widget.primaryColor),
-            tooltip: "Foglio Resoconto",
-            onPressed: _mostraFoglioResoconto,
+            icon: Icon(Icons.settings, color: widget.accentColor),
+            tooltip: "Impostazioni App",
+            onPressed: _mostraModalImpostazioni,
           ),
         ],
       ),
