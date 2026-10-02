@@ -1,0 +1,18 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+  <!-- Cerchio esterno della moneta (Oro/Rosa) -->
+  <path
+      android:fillColor="#DB2777"
+      android:pathData="M54,10C30.8,10 12,28.8 12,52c0,23.2 18.8,42 42,42c23.2,0 42,-18.8 42,-42C96,28.8 77.2,10 54,10z"/>
+  <!-- Bordo interno della moneta -->
+  <path
+      android:fillColor="#F472B6"
+      android:pathData="M54,16C34.1,16 18,32.1 18,52c0,19.9 16.1,36 36,36c19.9,0 36,-16.1 36,-36C90,32.1 73.9,16 54,16z"/>
+  <!-- Lettera P al centro -->
+  <path
+      android:fillColor="#FFFFFF"
+      android:pathData="M44,36h12c6.1,0 10,3.9 10,10s-3.9,10 -10,10H48v14h-4V36z M48,40v12h8c3.3,0 6,-2.7 6,-6s-2.7,-6 -6,-6H48z"/>
+</vector>
