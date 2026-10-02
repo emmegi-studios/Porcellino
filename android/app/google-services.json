@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "123494423393",
+    "project_id": "porcellino-2370c",
+    "storage_bucket": "porcellino-2370c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:123494423393:android:e742cbcb47478d13524320",
+        "android_client_info": {
+          "package_name": "com.example.family_budget_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCPa89Vxbjlz_XxE7-whUdAQ137yR9m5e4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
