@@ -41,7 +41,7 @@ class _LoginScreenState extends State<LoginScreen> {
     if (password.length < 6) {
       setState(() => securityMessage = "⚠️ Sicurezza bassa: almeno 6 caratteri");
     } else if (!password.contains(RegExp(r'[0-9]')) || !password.contains(RegExp(r'[A-Z]'))) {
-      setState(() => securityMessage = "🟡 Sicurezza media: inserisci una maiuscola e un numero");
+      setState(() => securityMessage = "🟡 Sicurezza media: inserisci maiuscola e numero");
     } else {
       setState(() => securityMessage = "🟢 Sicurezza ottima: password forte!");
     }
@@ -60,7 +60,6 @@ class _LoginScreenState extends State<LoginScreen> {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Inserisci la password")));
       return;
     }
-
     if (!isLogin) {
       if (pass != confirmPass) {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Le password non coincidono!")));
@@ -166,7 +165,6 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   bool isSharedMode = false;
-
   double patrimonio = 0.00;
   double entrateMese = 0.00;
   double usciteMese = 0.00;
@@ -185,229 +183,62 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final _itemController = TextEditingController();
   final _monthlySaveController = TextEditingController();
-  String aiPurchaseResult = "Inserisci un bene e l'accumulo mensile previsto per calcolare il piano dell'AI.";
+  String aiPurchaseResult = "Inserisci un bene e l'accumulo mensile per calcolare il piano AI.";
   bool isAiLoading = false;
 
-  // Road to 100k con livelli intermedi mirati (Fondo cuscinetto, Dinamico, Strategico, Maestro, Custode)
-  String _getLivelloPatrimonio() {
-    if (patrimonio < 1000) return "Livello 1: Fondo Cuscinetto (Meta: 1.000€)";
-    if (patrimonio < 10000) return "Livello 2: Risparmiatore Dinamico (Meta: 10.000€)";
-    if (patrimonio < 35000) return "Livello 3: Investitore Strategico (Meta: 35.000€)";
-    if (patrimonio < 70000) return "Livello 4: Maestro del Caveau (Meta: 70.000€)";
-    if (patrimonio < 100000) return "Livello 5: Aspirante 100k (Meta: 100.000€)";
-    return "🏆 Livello Max: Custode dei 100.000€+!";
+  // I livelli Road to 100k originali con icone e tappe mirate
+  Map<String, dynamic> _getLivelloOriginale() {
+    if (patrimonio < 1000) {
+      return {"nome": "Fondo Cuscinetto", "target": "1.000€", "icon": "🛡️", "color": Colors.blueAccent};
+    } else if (patrimonio < 10000) {
+      return {"nome": "Risparmiatore Dinamico", "target": "10.000€", "icon": "📈", "color": Colors.orangeAccent};
+    } else if (patrimonio < 35000) {
+      return {"nome": "Investitore Strategico", "target": "35.000€", "icon": "💼", "color": Colors.purpleAccent};
+    } else if (patrimonio < 70000) {
+      return {"nome": "Maestro del Caveau", "target": "70.000€", "icon": "⚡", "color": const Color(0xFFDB2777)};
+    } else if (patrimonio < 100000) {
+      return {"nome": "Aspirante 100k", "target": "100.000€", "icon": "🚀", "color": Colors.amber};
+    } else {
+      return {"nome": "Custode dei 100k+", "target": "Traguardo Raggiunto", "icon": "🏆", "color": const Color(0xFF10B981)};
+    }
   }
 
-  double _getProgresso100k() {
-    return (patrimonio / 100000.0).clamp(0.0, 1.0);
-  }
+  double _getProgresso() => (patrimonio / 100000.0).clamp(0.0, 1.0);
 
-  void _simulaAccumuloAI(String oggetto, String risparmioMensileStr) {
+  void _simulaAI(String oggetto, String risparmioStr) {
     if (oggetto.isEmpty) return;
-    double risparmioMensile = double.tryParse(risparmioMensileStr.replaceAll(',', '.')) ?? 150.00;
-    if (risparmioMensile <= 0) risparmioMensile = 150.00;
+    double risparmio = double.tryParse(risparmioStr.replaceAll(',', '.')) ?? 150.00;
+    if (risparmio <= 0) risparmio = 150.00;
 
     setState(() => isAiLoading = true);
     
-    Future.delayed(const Duration(milliseconds: 900), () {
+    Future.delayed(const Duration(milliseconds: 700), () {
       setState(() {
         isAiLoading = false;
-        double costoStimato = 1000.00;
-        String oggLower = oggetto.toLowerCase();
-        if (oggLower.contains('auto') || oggLower.contains('macchina') || oggLower.contains('moto')) costoStimato = 7500.00;
-        if (oggLower.contains('telefono') || oggLower.contains('smartphone') || oggLower.contains('console')) costoStimato = 650.00;
-        if (oggLower.contains('casa') || oggLower.contains('ristrutturazione')) costoStimato = 20000.00;
-
-        int mesiNecessari = (costoStimato / risparmioMensile).ceil();
-
-        aiPurchaseResult = "🤖 Analisi AI per '$oggetto' (Stima: €${costoStimato.toStringAsFixed(0)}):\n\n"
-            "• 💰 Accantonando €${risparmioMensile.toStringAsFixed(0)} al mese:\n"
-            "• ⏳ Tempo stimato: Circa $mesiNecessari mesi (${(mesiNecessari / 12).toStringAsFixed(1)} anni).\n"
-            "• 💡 Obiettivo ideale da collegare ai tuoi salvadanai!";
+        double stima = oggetto.toLowerCase().contains('auto') ? 7500.0 : 1000.0;
+        int mesi = (stima / risparmio).ceil();
+        aiPurchaseResult = "🤖 AI Plan per '$oggetto' (€$stima):\n• Accantonando €$risparmio/mese\n• Tempo stimato: ~$mesi mesi (${(mesi/12).toStringAsFixed(1)} anni).";
       });
     });
   }
 
-  void _inviaInvitoEmail() {
-    final emailDestinatario = _inviteEmailController.text.trim();
-    if (emailDestinatario.isEmpty || !emailDestinatario.contains('@')) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Inserisci un indirizzo email valido")));
+  void _inviaInvito() {
+    final email = _inviteEmailController.text.trim();
+    if (email.isEmpty || !email.contains('@')) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Inserisci un'email valida")));
       return;
     }
-
     Navigator.pop(context);
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: const Color(0xFF0F172A),
-        title: const Text("📧 Invito Inviato!", style: TextStyle(color: Colors.white)),
-        content: Text("Un'email ufficiale con il link sicuro al conto condiviso è stata inviata a:\n\n👉 $emailDestinatario", style: const TextStyle(color: Colors.white70)),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("Ottimo", style: TextStyle(color: Color(0xFFDB2777))),
-          )
-        ],
+        title: const Text("📧 Invito Inviato!"),
+        content: Text("Link di accesso sicuro inviato con successo a:\n\n👉 $email"),
+        actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text("Ottimo", style: TextStyle(color: Color(0xFFDB2777))))],
       ),
     );
     _inviteEmailController.clear();
-  }
-
-  void _mostraDialogInvitoCondiviso() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF0F172A),
-        title: const Text("👥 Invita un Collaboratore", style: TextStyle(color: Colors.white)),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text("Inserisci l'email della persona da invitare:", style: TextStyle(fontSize: 13, color: Colors.white70)),
-            const SizedBox(height: 16),
-            TextField(
-              controller: _inviteEmailController,
-              decoration: InputDecoration(
-                labelText: "Email collaboratore",
-                filled: true,
-                fillColor: const Color(0xFF1E293B),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("Annulla", style: TextStyle(color: Colors.grey)),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFDB2777)),
-            onPressed: _inviaInvitoEmail,
-            child: const Text("Invia Email", style: TextStyle(color: Colors.white)),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _mostraModalNuovoSalvadanaio() {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: const Color(0xFF0F172A),
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
-      builder: (context) {
-        return Padding(
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(context).viewInsets.bottom + 24,
-            left: 20, right: 20, top: 24,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const Text("🏦 Nuovo Salvadanaio Obiettivo", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
-              const SizedBox(height: 16),
-              TextField(
-                controller: _piggyTitleController,
-                decoration: InputDecoration(labelText: "Nome Obiettivo (es. Viaggio, Auto)", filled: true, fillColor: const Color(0xFF1E293B), border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))),
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: _piggyTargetController,
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                decoration: InputDecoration(labelText: "Importo Target (€)", filled: true, fillColor: const Color(0xFF1E293B), border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))),
-              ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFDB2777), padding: const EdgeInsets.symmetric(vertical: 16), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
-                onPressed: () {
-                  final title = _piggyTitleController.text.trim();
-                  final target = double.tryParse(_piggyTargetController.text.trim().replaceAll(',', '.')) ?? 0.0;
-                  if (title.isNotEmpty && target > 0) {
-                    setState(() {
-                      salvadanai.add({"title": title, "current": 0.0, "target": target});
-                    });
-                    _piggyTitleController.clear();
-                    _piggyTargetController.clear();
-                    Navigator.pop(context);
-                  }
-                },
-                child: const Text("Crea Salvadanaio", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  void _mostraModalInserimento() {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: const Color(0xFF0F172A),
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
-      builder: (context) {
-        return Padding(
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(context).viewInsets.bottom + 24,
-            left: 20, right: 20, top: 24,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const Text("➕ Aggiungi Movimento", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
-              const SizedBox(height: 16),
-              TextField(controller: _categoryController, decoration: InputDecoration(labelText: "Categoria", filled: true, fillColor: const Color(0xFF1E293B), border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)))),
-              const SizedBox(height: 12),
-              TextField(controller: _noteController, decoration: InputDecoration(labelText: "Nota", filled: true, fillColor: const Color(0xFF1E293B), border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)))),
-              const SizedBox(height: 12),
-              TextField(controller: _amountController, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: InputDecoration(labelText: "Importo (€)", filled: true, fillColor: const Color(0xFF1E293B), border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)))),
-              const SizedBox(height: 12),
-              DropdownButtonFormField<String>(
-                value: _selectedType,
-                dropdownColor: const Color(0xFF1E293B),
-                decoration: InputDecoration(filled: true, fillColor: const Color(0xFF1E293B), border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))),
-                items: const [
-                  DropdownMenuItem(value: 'entrata', child: Text("🟢 Entrata (+)")),
-                  DropdownMenuItem(value: 'uscita', child: Text("🔴 Uscita (-)")),
-                ],
-                onChanged: (val) => setState(() => _selectedType = val ?? 'entrata'),
-              ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFDB2777), padding: const EdgeInsets.symmetric(vertical: 16), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
-                onPressed: () {
-                  final cat = _categoryController.text.trim();
-                  final note = _noteController.text.trim();
-                  final amount = double.tryParse(_amountController.text.trim().replaceAll(',', '.')) ?? 0.0;
-
-                  if (cat.isNotEmpty && amount > 0) {
-                    setState(() {
-                      transazioni.insert(0, {"category": cat, "note": note.isEmpty ? cat : note, "amount": amount, "type": _selectedType});
-                      if (_selectedType == 'entrata') {
-                        patrimonio += amount;
-                        entrateMese += amount;
-                      } else {
-                        patrimonio -= amount;
-                        usciteMese += amount;
-                      }
-                    });
-                    _categoryController.clear();
-                    _noteController.clear();
-                    _amountController.clear();
-                    Navigator.pop(context);
-                  }
-                },
-                child: const Text("Registra Movimento", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-              ),
-            ],
-          ),
-        );
-      },
-    );
   }
 
   void _mostraFoglioResoconto() {
@@ -483,8 +314,78 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  void _mostraModalInserimento() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: const Color(0xFF0F172A),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+      builder: (context) {
+        return Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+            left: 20, right: 20, top: 24,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const Text("➕ Aggiungi Movimento", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
+              const SizedBox(height: 16),
+              TextField(controller: _categoryController, decoration: InputDecoration(labelText: "Categoria", filled: true, fillColor: const Color(0xFF1E293B), border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)))),
+              const SizedBox(height: 12),
+              TextField(controller: _noteController, decoration: InputDecoration(labelText: "Nota", filled: true, fillColor: const Color(0xFF1E293B), border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)))),
+              const SizedBox(height: 12),
+              TextField(controller: _amountController, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: InputDecoration(labelText: "Importo (€)", filled: true, fillColor: const Color(0xFF1E293B), border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)))),
+              const SizedBox(height: 12),
+              DropdownButtonFormField<String>(
+                value: _selectedType,
+                dropdownColor: const Color(0xFF1E293B),
+                decoration: InputDecoration(filled: true, fillColor: const Color(0xFF1E293B), border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))),
+                items: const [
+                  DropdownMenuItem(value: 'entrata', child: Text("🟢 Entrata (+)")),
+                  DropdownMenuItem(value: 'uscita', child: Text("🔴 Uscita (-)")),
+                ],
+                onChanged: (val) => setState(() => _selectedType = val ?? 'entrata'),
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFDB2777), padding: const EdgeInsets.symmetric(vertical: 16), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
+                onPressed: () {
+                  final cat = _categoryController.text.trim();
+                  final note = _noteController.text.trim();
+                  final amount = double.tryParse(_amountController.text.trim().replaceAll(',', '.')) ?? 0.0;
+
+                  if (cat.isNotEmpty && amount > 0) {
+                    setState(() {
+                      transazioni.insert(0, {"category": cat, "note": note.isEmpty ? cat : note, "amount": amount, "type": _selectedType});
+                      if (_selectedType == 'entrata') {
+                        patrimonio += amount;
+                        entrateMese += amount;
+                      } else {
+                        patrimonio -= amount;
+                        usciteMese += amount;
+                      }
+                    });
+                    _categoryController.clear();
+                    _noteController.clear();
+                    _amountController.clear();
+                    Navigator.pop(context);
+                  }
+                },
+                child: const Text("Registra Movimento", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final livello = _getLivelloOriginale();
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xFF0F172A),
@@ -503,28 +404,19 @@ class _HomeScreenState extends State<HomeScreen> {
           Text("Utente loggato: ${widget.userEmail}", style: const TextStyle(fontSize: 11, color: Colors.grey)),
           const SizedBox(height: 12),
 
-          // SELETTORE CONTO PRIVATO / CONDIVISO
+          // SELETTORE PRIVATO / CONDIVISO
           Container(
             padding: const EdgeInsets.all(4),
-            decoration: BoxDecoration(
-              color: const Color(0xFF0F172A),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: const Color(0xFF1E293B)),
-            ),
+            decoration: BoxDecoration(color: const Color(0xFF0F172A), borderRadius: BorderRadius.circular(16)),
             child: Row(
               children: [
                 Expanded(
                   child: GestureDetector(
                     onTap: () => setState(() => isSharedMode = false),
                     child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      decoration: BoxDecoration(
-                        color: !isSharedMode ? const Color(0xFFDB2777) : Colors.transparent,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: const Center(
-                        child: Text("🔒 Conto Privato", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
-                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      decoration: BoxDecoration(color: !isSharedMode ? const Color(0xFFDB2777) : Colors.transparent, borderRadius: BorderRadius.circular(12)),
+                      child: const Center(child: Text("🔒 Conto Privato", style: TextStyle(fontWeight: FontWeight.bold))),
                     ),
                   ),
                 ),
@@ -532,80 +424,71 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: GestureDetector(
                     onTap: () => setState(() => isSharedMode = true),
                     child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      decoration: BoxDecoration(
-                        color: isSharedMode ? const Color(0xFF3B82F6) : Colors.transparent,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: const Center(
-                        child: Text("👥 Conto Condiviso", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
-                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      decoration: BoxDecoration(color: isSharedMode ? const Color(0xFF3B82F6) : Colors.transparent, borderRadius: BorderRadius.circular(12)),
+                      child: const Center(child: Text("👥 Conto Condiviso", style: TextStyle(fontWeight: FontWeight.bold))),
                     ),
                   ),
                 ),
               ],
             ),
           ),
-          const SizedBox(height: 12),
-
           if (isSharedMode) ...[
+            const SizedBox(height: 10),
             ElevatedButton.icon(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF3B82F6),
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF3B82F6)),
+              onPressed: () => showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  backgroundColor: const Color(0xFF0F172A),
+                  title: const Text("👥 Invita Collaboratore"),
+                  content: TextField(controller: _inviteEmailController, decoration: const InputDecoration(labelText: "Email collaboratore")),
+                  actions: [TextButton(onPressed: _inviaInvito, child: const Text("Invia Email"))],
+                ),
               ),
-              onPressed: _mostraDialogInvitoCondiviso,
-              icon: const Icon(Icons.email, color: Colors.white),
-              label: const Text("Invia Invito Email a Collaboratore", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+              icon: const Icon(Icons.email),
+              label: const Text("Invia Invito Email a Collaboratore"),
             ),
-            const SizedBox(height: 12),
           ],
+          const SizedBox(height: 14),
 
-          // 1. PATRIMONIO E ROAD TO 100K A TAPPE STRUTTURATE
+          // PATRIMONIO E LIVELLO ORIGINALE CON ICONA ROAD TO 100K
           Card(
             color: const Color(0xFF0F172A),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
             child: Padding(
-              padding: const EdgeInsets.all(20.0),
+              padding: const EdgeInsets.all(18.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(isSharedMode ? "PATRIMONIO CONTO CONDIVISO" : "PATRIMONIO PERSONALE", style: const TextStyle(fontSize: 10, color: Colors.grey, fontWeight: FontWeight.bold)),
+                  Text(isSharedMode ? "PATRIMONIO CONDIVISO" : "PATRIMONIO PERSONALE", style: const TextStyle(fontSize: 10, color: Colors.grey, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 4),
-                  Text("€ ${patrimonio.toStringAsFixed(2)}", style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Color(0xFF10B981))),
+                  Text("€ ${patrimonio.toStringAsFixed(2)}", style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Color(0xFF10B981))),
                   const SizedBox(height: 12),
-                  // Badge Livello a Tappe Road to 100k
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                    decoration: BoxDecoration(color: const Color(0xFF1E293B), borderRadius: BorderRadius.circular(8)),
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(color: const Color(0xFF1E293B), borderRadius: BorderRadius.circular(12), border: Border.all(color: livello['color'].withOpacity(0.4))),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Expanded(child: Text(_getLivelloPatrimonio(), style: const TextStyle(fontSize: 11, color: Color(0xFFF472B6), fontWeight: FontWeight.bold))),
-                        Text("Road to 100k", style: TextStyle(fontSize: 10, color: Colors.grey.shade400)),
+                        Text(livello['icon'], style: const TextStyle(fontSize: 22)),
+                        const SizedBox(width: 10),
+                        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                          Text(livello['nome'], style: TextStyle(fontSize: 12, color: livello['color'], fontWeight: FontWeight.bold)),
+                          Text("Target: ${livello['target']}", style: const TextStyle(fontSize: 10, color: Colors.grey)),
+                        ])),
+                        Text("${(_getProgresso() * 100).toStringAsFixed(1)}%", style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
                       ],
                     ),
                   ),
                   const SizedBox(height: 8),
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(6),
-                    child: LinearProgressIndicator(
-                      value: _getProgresso100k(),
-                      backgroundColor: const Color(0xFF1E293B),
-                      color: const Color(0xFFF472B6),
-                      minHeight: 6,
-                    ),
-                  ),
+                  LinearProgressIndicator(value: _getProgresso(), backgroundColor: const Color(0xFF1E293B), color: livello['color'], minHeight: 6),
                 ],
               ),
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 14),
 
-          // 2. SIMULATORE AI: ACCUMULO INTELLIGENTE
-          const Text("🤖 SIMULATORE AI: PIANO DI ACCUMULO", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey)),
-          const SizedBox(height: 8),
+          // SIMULATORE AI
           Card(
             color: const Color(0xFF0F172A),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -614,156 +497,52 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text("Cosa desideri acquistare?", style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.white)),
+                  const Text("🤖 Simulatore AI di Accumulo", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey)),
                   const SizedBox(height: 8),
-                  TextField(
-                    controller: _itemController,
-                    decoration: InputDecoration(
-                      hintText: "es. Scooter, TV OLED, Viaggio",
-                      filled: true,
-                      fillColor: const Color(0xFF1E293B),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  const Text("Quanto puoi accantonare al mese? (€)", style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.white)),
+                  TextField(controller: _itemController, decoration: const InputDecoration(hintText: "Cosa vuoi comprare? (es. Scooter)")),
                   const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          controller: _monthlySaveController,
-                          keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                          decoration: InputDecoration(
-                            hintText: "es. 150",
-                            filled: true,
-                            fillColor: const Color(0xFF1E293B),
-                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-                            contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFDB2777)),
-                        onPressed: () => _simulaAccumuloAI(_itemController.text.trim(), _monthlySaveController.text.trim()),
-                        child: const Text("Calcola AI", style: TextStyle(color: Colors.white)),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  isAiLoading
-                      ? const Center(child: Padding(padding: EdgeInsets.all(8.0), child: CircularProgressIndicator(color: Color(0xFFDB2777))))
-                      : Text(aiPurchaseResult, style: const TextStyle(fontSize: 12, color: Colors.white70, height: 1.4)),
+                  Row(children: [
+                    Expanded(child: TextField(controller: _monthlySaveController, keyboardType: TextInputType.number, decoration: const InputDecoration(hintText: "Accantonamento €/mese"))),
+                    const SizedBox(width: 8),
+                    ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFDB2777)), onPressed: () => _simulaAI(_itemController.text, _monthlySaveController.text), child: const Text("Calcola"))
+                  ]),
+                  const SizedBox(height: 8),
+                  isAiLoading ? const CircularProgressIndicator() : Text(aiPurchaseResult, style: const TextStyle(fontSize: 11, color: Colors.white70)),
                 ],
               ),
             ),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 14),
 
-          // 3. SALVADANAI GESTITI DALL'UTENTE
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text("🏦 SALVADANAI E OBIETTIVI", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey)),
-              ElevatedButton.icon(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFDB2777),
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                ),
-                onPressed: _mostraModalNuovoSalvadanaio,
-                icon: const Icon(Icons.add, size: 14, color: Colors.white),
-                label: const Text("Nuovo", style: TextStyle(fontSize: 11, color: Colors.white, fontWeight: FontWeight.bold)),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          salvadanai.isEmpty
-              ? const Padding(
-                  padding: EdgeInsets.all(12.0),
-                  child: Text("Nessun salvadanaio creato. Clicca su 'Nuovo' per impostare il tuo primo obiettivo di risparmio!", style: TextStyle(fontSize: 12, color: Colors.grey)),
-                )
-              : Column(
-                  children: salvadanai.map((piggy) {
-                    double progress = (piggy['current'] / piggy['target']).clamp(0.0, 1.0);
-                    return Card(
-                      color: const Color(0xFF0F172A),
-                      margin: const EdgeInsets.only(bottom: 8),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(piggy['title'], style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-                                Text("€ ${piggy['current']} / € ${piggy['target']}", style: const TextStyle(fontSize: 12, color: Color(0xFFF472B6))),
-                              ],
-                            ),
-                            const SizedBox(height: 10),
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(6),
-                              child: LinearProgressIndicator(
-                                value: progress,
-                                backgroundColor: const Color(0xFF1E293B),
-                                color: const Color(0xFFDB2777),
-                                minHeight: 8,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  }).toList(),
-                ),
-          const SizedBox(height: 20),
+          // SALVADANAI OBIETTIVO UTENTE
+          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+            const Text("🏦 Salvadanai Obiettivo", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey)),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFDB2777)),
+              onPressed: _mostraModalNuovoSalvadanaio,
+              child: const Text("+ Nuovo"),
+            )
+          ]),
+          ...salvadanai.map((p) => Card(color: const Color(0xFF0F172A), child: ListTile(title: Text(p['title']), subtitle: Text("€${p['current']} / €${p['target']}")))),
+          const SizedBox(height: 14),
 
-          // 4. STORICO TRANSAZIONI
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text("📜 STORICO MOVIMENTI", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey)),
-              ElevatedButton.icon(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFDB2777),
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                ),
-                onPressed: _mostraModalInserimento,
-                icon: const Icon(Icons.add, size: 16, color: Colors.white),
-                label: const Text("Nuova", style: TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.bold)),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          transazioni.isEmpty
-              ? const Padding(
-                  padding: EdgeInsets.all(12.0),
-                  child: Text("Nessuna transazione registrata. Aggiungi entrate o uscite per popolare il caveau.", style: TextStyle(fontSize: 12, color: Colors.grey)),
-                )
-              : Column(
-                  children: transazioni.map((tx) => Card(
-                        color: const Color(0xFF0F172A),
-                        margin: const EdgeInsets.only(bottom: 8),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                        child: ListTile(
-                          title: Text(tx['category'], style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-                          subtitle: Text(tx['note']),
-                          trailing: Text(
-                            "${tx['type'] == 'entrata' ? '+' : '-'}€ ${tx['amount'].toStringAsFixed(2)}",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14,
-                              color: tx['type'] == 'entrata' ? const Color(0xFF10B981) : const Color(0xFFDB2777),
-                            ),
-                          ),
-                        ),
-                      )).toList(),
-                ),
+          // STORICO MOVIMENTI
+          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+            const Text("📜 Storico Movimenti", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey)),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFDB2777)),
+              onPressed: _mostraModalInserimento,
+              child: const Text("+ Nuova"),
+            )
+          ]),
+          ...transazioni.map((tx) => Card(
+            color: const Color(0xFF0F172A),
+            child: ListTile(
+              title: Text(tx['category']),
+              subtitle: Text(tx['note']),
+              trailing: Text("${tx['type'] == 'entrata' ? '+' : '-'}€${tx['amount']}"),
+            ),
+          )),
         ],
       ),
     );
