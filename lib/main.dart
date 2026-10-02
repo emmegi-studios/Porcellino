@@ -13,10 +13,9 @@ class PiggyVaultApp extends StatefulWidget {
 }
 
 class _PiggyVaultAppState extends State<PiggyVaultApp> {
-  // Palette colori dinamiche per i temi
   Color _scaffoldBg = const Color(0xFF0B0F19);
   Color _cardBg = const Color(0xFF131B2E);
-  Color _primaryColor = const Color(0xFFDB2777); // Rosa Porcellino
+  Color _primaryColor = const Color(0xFFDB2777); 
   Color _accentColor = const Color(0xFFF472B6);
 
   void changeTheme(String themeName) {
@@ -27,12 +26,11 @@ class _PiggyVaultAppState extends State<PiggyVaultApp> {
         _primaryColor = const Color(0xFF10B981);
         _accentColor = const Color(0xFF34D399);
       } else if (themeName == 'Royal Gold') {
-        _scaffoldBg = const Color(0xFF18181B);
-        _cardBg = const Color(0xFF27272A);
+        _scaffoldBg = const Color(0xFF1C1917);
+        _cardBg = const Color(0xFF292524);
         _primaryColor = const Color(0xFFF59E0B);
         _accentColor = const Color(0xFFFBBF24);
       } else {
-        // Porcellino Pink / Dark di default
         _scaffoldBg = const Color(0xFF0B0F19);
         _cardBg = const Color(0xFF131B2E);
         _primaryColor = const Color(0xFFDB2777);
@@ -147,11 +145,19 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text("🐷", style: TextStyle(fontSize: 60)),
-              const SizedBox(height: 12),
+              Container(
+                width: 70,
+                height: 70,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(16),
+                  image: const DecorationImage(
+                    image: AssetImage('assets/icon/icona_esterna.png'),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
               const Text("Porcellino", style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white)),
-              const SizedBox(height: 4),
-              Text("PRE-ALPHA V1.0", style: TextStyle(fontSize: 11, color: widget.accentColor, fontWeight: FontWeight.bold)),
               const SizedBox(height: 36),
               TextField(
                 controller: _emailController,
@@ -265,7 +271,6 @@ class _HomeScreenState extends State<HomeScreen> {
   final _inviteEmailController = TextEditingController();
 
   final _itemController = TextEditingController();
-  final _monthlySaveController = TextEditingController();
   String aiPurchaseResult = "Inserisci le tue prime entrate e uscite per sbloccare i consigli personalizzati dell'IA.";
   bool isAiLoading = false;
 
@@ -316,7 +321,7 @@ class _HomeScreenState extends State<HomeScreen> {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: widget.cardBg,
-        title: const Text("📧 Invito Inviato!"),
+        title: const Text("👥 Invito Inviato!"),
         content: Text("Link sicuro per il conto condiviso inviato a:\n\n👉 $email"),
         actions: [TextButton(onPressed: () => Navigator.pop(context), child: Text("Ottimo", style: TextStyle(color: widget.primaryColor)))],
       ),
@@ -324,7 +329,6 @@ class _HomeScreenState extends State<HomeScreen> {
     _inviteEmailController.clear();
   }
 
-  // Pannello Impostazioni Ufficiale & Temi su Riga Unica
   void _mostraModalImpostazioni() {
     showModalBottomSheet(
       context: context,
@@ -355,12 +359,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 dense: true,
                 contentPadding: EdgeInsets.zero,
                 title: const Text("Versione Applicazione", style: TextStyle(color: Colors.grey, fontSize: 11)),
-                subtitle: const Text("Porcellino Pre-Alpha v1.0 (Build Ufficiale)", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13)),
+                subtitle: const Text("Porcellino Ufficiale (Build Stabile)", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13)),
               ),
               const Divider(color: Colors.white24, height: 24),
-              const Text("🎨 Scegli Tema Grafico (Clicca per applicare):", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white70)),
+              const Text("🎨 Scegli Tema Grafico (Riga Unica):", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white70)),
               const SizedBox(height: 12),
-              // Riga unica scorrevole per la selezione dei temi
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
@@ -389,58 +392,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               const SizedBox(height: 20),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  void _mostraModalNuovoSalvadanaio() {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: widget.cardBg,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
-      builder: (context) {
-        return Padding(
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(context).viewInsets.bottom + 24,
-            left: 20, right: 20, top: 24,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const Text("🏦 Nuovo Salvadanaio Obiettivo", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
-              const SizedBox(height: 16),
-              TextField(
-                controller: _piggyTitleController,
-                decoration: InputDecoration(labelText: "Nome Obiettivo", filled: true, fillColor: widget.cardBg, border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))),
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: _piggyTargetController,
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                decoration: InputDecoration(labelText: "Importo Target (€)", filled: true, fillColor: widget.cardBg, border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))),
-              ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(backgroundColor: widget.primaryColor, padding: const EdgeInsets.symmetric(vertical: 16), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
-                onPressed: () {
-                  final title = _piggyTitleController.text.trim();
-                  final target = double.tryParse(_piggyTargetController.text.trim().replaceAll(',', '.')) ?? 0.0;
-                  if (title.isNotEmpty && target > 0) {
-                    setState(() {
-                      salvadanai.add({"title": title, "current": 0.0, "target": target});
-                    });
-                    _piggyTitleController.clear();
-                    _piggyTargetController.clear();
-                    Navigator.pop(context);
-                  }
-                },
-                child: const Text("Crea Salvadanaio", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-              ),
             ],
           ),
         );
@@ -609,18 +560,22 @@ class _HomeScreenState extends State<HomeScreen> {
         backgroundColor: widget.cardBg,
         title: Row(
           children: [
-            const Text("🐷 ", style: TextStyle(fontSize: 20)),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text("Porcellino", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                Text("PRE-ALPHA V1.0", style: TextStyle(fontSize: 9, color: widget.accentColor)),
-              ],
+            Container(
+              width: 32,
+              height: 32,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8),
+                image: const DecorationImage(
+                  image: AssetImage('assets/icon/icona_esterna.png'),
+                  fit: BoxFit.cover,
+                ),
+              ),
             ),
+            const SizedBox(width: 8),
+            const Text("Porcellino", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           ],
         ),
         actions: [
-          // Tasto Profilo Dinamico che apre le impostazioni
           GestureDetector(
             onTap: _mostraModalImpostazioni,
             child: Container(
@@ -636,7 +591,6 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
           ),
-          // Tasto Rotellina Impostazioni ufficiale
           IconButton(
             icon: Icon(Icons.settings, color: widget.accentColor),
             tooltip: "Impostazioni App",
@@ -647,7 +601,6 @@ class _HomeScreenState extends State<HomeScreen> {
       body: ListView(
         padding: const EdgeInsets.all(16.0),
         children: [
-          // SELETTORE PRIVATO / CONDIVISO
           Container(
             padding: const EdgeInsets.all(4),
             decoration: BoxDecoration(color: widget.cardBg, borderRadius: BorderRadius.circular(16)),
@@ -695,7 +648,6 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
           const SizedBox(height: 14),
 
-          // 1. PATRIMONIO TOTALE
           Card(
             color: widget.cardBg,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
@@ -719,7 +671,6 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           const SizedBox(height: 10),
 
-          // ENTRATE E USCITE MESE
           Row(
             children: [
               Expanded(
@@ -761,7 +712,6 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           const SizedBox(height: 14),
 
-          // 2. LIVELLI PORCELLINO RISPARMIO (4 TAPPE)
           Card(
             color: widget.cardBg,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
@@ -807,7 +757,6 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           const SizedBox(height: 14),
 
-          // 3. CONSULENTE FINANZIARIO IA
           Card(
             color: widget.cardBg,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -833,7 +782,6 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           const SizedBox(height: 14),
 
-          // 4. NUOVA TRANSAZIONE & STORICO
           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
             const Text("➕ Nuova Transazione", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey)),
             ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: widget.primaryColor), onPressed: _mostraModalInserimento, child: const Text("+ Nuova"))
