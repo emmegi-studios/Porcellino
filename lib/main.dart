@@ -503,12 +503,15 @@ class _HomeScreenState extends State<HomeScreen> {
   void _mostraModalImpostazioni() {
     showModalBottomSheet(
       context: context,
-      backgroundColor: _cardBg,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+      backgroundColor: Colors.transparent,
       builder: (context) {
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setModalState) {
-            return Padding(
+            return Container(
+              decoration: BoxDecoration(
+                color: _cardBg,
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(24))
+              ),
               padding: const EdgeInsets.all(24.0),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
