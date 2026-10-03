@@ -543,8 +543,8 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(height: 8),
             Row(
               children: [
-                Expanded(child: TextField(controller: _inviteController, style: TextStyle(color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black), decoration: const InputDecoration(hintText: "Incolla codice partner", hintStyle: const TextStyle(fontSize: 12, color: Colors.grey)))),
-                IconButton(icon: const Icon(Icons.save, color: Colors.blueAccent), onPressed: () async {
+                Expanded(child: TextField(controller: _inviteController, style: TextStyle(color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black), decoration: const InputDecoration(hintText: "Email del partner", hintStyle: const TextStyle(fontSize: 12, color: Colors.grey)))),
+                IconButton(icon: const Icon(Icons.person_add, color: Colors.blueAccent), onPressed: () async {
                   if (_inviteController.text.trim().isNotEmpty) {
                     final p = await SharedPreferences.getInstance();
                     await p.setString('caveauId', _inviteController.text.trim());
