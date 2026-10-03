@@ -42,9 +42,9 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _isRegistrazione = false;
   bool _isLoading = false;
 
-  final String _currentTheme = 'Piggy Vault Dark';
+  final String _currentTheme = 'Scuro';
 
-  bool get _isLight => _currentTheme == 'Piggy Vault Light';
+  bool get _isLight => _currentTheme == 'Chiaro';
   Color get _scaffoldBg => _isLight ? const Color(0xFFF1F5F9) : const Color(0xFF0B0F19);
   Color get _cardBg => _isLight ? const Color(0xFFFFFFFF) : const Color(0xFF131B2E);
   Color get _textColor => _isLight ? const Color(0xFF0F172A) : Colors.white;
@@ -257,7 +257,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  String _currentTheme = 'Piggy Vault Dark';
+  String _currentTheme = 'Scuro';
   double patrimonio = 0.00;
   double entrateMese = 0.00;
   double usciteMese = 0.00;
@@ -292,7 +292,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return "Utente";
   }
 
-  bool get _isLight => _currentTheme == 'Piggy Vault Light';
+  bool get _isLight => _currentTheme == 'Chiaro';
   Color get _scaffoldBg => _isLight ? const Color(0xFFF1F5F9) : const Color(0xFF0B0F19);
   Color get _cardBg => _isLight ? const Color(0xFFFFFFFF) : const Color(0xFF131B2E);
   Color get _textColor => _isLight ? const Color(0xFF0F172A) : Colors.white;
@@ -312,7 +312,7 @@ class _HomeScreenState extends State<HomeScreen> {
       patrimonio = prefs.getDouble('patrimonio') ?? 0.00;
       entrateMese = prefs.getDouble('entrateMese') ?? 0.00;
       usciteMese = prefs.getDouble('usciteMese') ?? 0.00;
-      _currentTheme = prefs.getString('currentTheme') ?? 'Piggy Vault Dark';
+      _currentTheme = prefs.getString('currentTheme') ?? 'Scuro';
     });
   }
 
@@ -407,8 +407,7 @@ class _HomeScreenState extends State<HomeScreen> {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: _cardBg,
-        title: Row(
-          children: [
+        title: Wrap(alignment: WrapAlignment.center, spacing: 12.0, runSpacing: 12.0, children: [
             Icon(icona, color: colore, size: 28),
             const SizedBox(width: 10),
             Text(titolo, style: TextStyle(color: _textColor, fontSize: 18)),
@@ -541,23 +540,23 @@ class _HomeScreenState extends State<HomeScreen> {
                         ElevatedButton.icon(
                           style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFDB2777), padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10)),
                           onPressed: () {
-                            _cambiaTema('Piggy Vault Dark');
+                            _cambiaTema('Scuro');
                             setModalState(() {});
                             setState(() {});
                           },
                           icon: const Icon(Icons.brush, size: 16, color: Colors.white),
-                          label: const Text("Piggy Vault Dark", style: TextStyle(color: Colors.white)),
+                          label: const Text("Scuro", style: TextStyle(color: Colors.white)),
                         ),
                         const SizedBox(width: 10),
                         ElevatedButton.icon(
                           style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFE2E8F0), padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10)),
                           onPressed: () {
-                            _cambiaTema('Piggy Vault Light');
+                            _cambiaTema('Chiaro');
                             setModalState(() {});
                             setState(() {});
                           },
                           icon: const Icon(Icons.brush, size: 16, color: Colors.black87),
-                          label: const Text("Piggy Vault Light", style: TextStyle(color: Colors.black87)),
+                          label: const Text("Chiaro", style: TextStyle(color: Colors.black87)),
                         ),
                       ],
                     ),
