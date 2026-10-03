@@ -598,7 +598,7 @@ ListTile(leading: const Icon(Icons.logout, color: Colors.redAccent), title: cons
 
   void _mostraFoglioResoconto() {
     double bilancioNetto = entrateMese - usciteMese;
-    showModalBottomSheet(isScrollControlled: true, context: context,
+    showModalBottomSheet( context: context,
       isScrollControlled: true, backgroundColor: _cardBg,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
       builder: (context) {
@@ -679,7 +679,7 @@ ListTile(leading: const Icon(Icons.logout, color: Colors.redAccent), title: cons
   }
 
   void _mostraModalInserimento() {
-    showModalBottomSheet(isScrollControlled: true, context: context,
+    showModalBottomSheet( context: context,
       isScrollControlled: true, backgroundColor: _cardBg,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
       builder: (context) {
