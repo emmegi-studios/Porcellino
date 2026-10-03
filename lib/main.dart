@@ -603,7 +603,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       Text("RIEPILOGO BILANCIO COMUNE", style: TextStyle(fontSize: 10, color: _subtitleColor, fontWeight: FontWeight.bold)),
                       const SizedBox(height: 8),
-                      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text("Entrate Totali:", style: TextStyle(color: _textColor)), Text("€ ${entrateMese.toStringAsFixed(2)}", style: const TextStyle(color: Colors.blueAccent, fontWeight: FontWeight.bold))]),
+                      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text("Entrate Totali:", style: TextStyle(color: _textColor)), Text("€ ${entrateMese.toStringAsFixed(2)}", style: const TextStyle(color: Colors.blueAccent, fontWeight: FontWeight.bold))]), const SizedBox(height: 24), Divider(color: Colors.grey.withOpacity(0.5)), ListTile(leading: const Icon(Icons.logout, color: Colors.redAccent), title: const Text(\"Disconnetti Account\", style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold, fontSize: 16)), onTap: () async { Navigator.pop(context); await FirebaseAuth.instance.signOut(); }),
                       const SizedBox(height: 4),
                       Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text("Uscite Totali:", style: TextStyle(color: _textColor)), Text("€ ${usciteMese.toStringAsFixed(2)}", style: TextStyle(color: _primaryColor, fontWeight: FontWeight.bold))]),
                       Divider(color: _subtitleColor),
@@ -629,6 +629,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         color: Colors.red,
                         child: const Icon(Icons.delete, color: Colors.white),
                       ),
+                      confirmDismiss: (direction) async { return await showDialog(context: context, builder: (ctx) => AlertDialog(backgroundColor: Theme.of(context).scaffoldBackgroundColor, title: const Text("Conferma"), content: const Text("Vuoi davvero eliminare questo movimento?"), actions: [TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text("Annulla")), TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text("Elimina", style: TextStyle(color: Colors.red)))])); },
                       onDismissed: (direction) => _eliminaTransazione(index),
                       child: ListTile(
                         dense: true,
