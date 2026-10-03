@@ -257,7 +257,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  String _caveauId = \'bilancio_principale\';
+  String _caveauId = "bilancio_principale";
   final TextEditingController _inviteController = TextEditingController();
   String _currentTheme = 'Piggy Dark';
   double patrimonio = 0.00;
