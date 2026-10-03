@@ -42,9 +42,9 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _isRegistrazione = false;
   bool _isLoading = false;
 
-  final String _currentTheme = 'Scuro';
+  final String _currentTheme = 'Piggy Dark';
 
-  bool get _isLight => _currentTheme == 'Chiaro';
+  bool get _isLight => _currentTheme == 'Piggy White';
   Color get _scaffoldBg => _isLight ? const Color(0xFFF1F5F9) : const Color(0xFF0B0F19);
   Color get _cardBg => _isLight ? const Color(0xFFFFFFFF) : const Color(0xFF131B2E);
   Color get _textColor => _isLight ? const Color(0xFF0F172A) : Colors.white;
@@ -257,7 +257,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  String _currentTheme = 'Scuro';
+  String _currentTheme = 'Piggy Dark';
   double patrimonio = 0.00;
   double entrateMese = 0.00;
   double usciteMese = 0.00;
@@ -292,7 +292,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return "Utente";
   }
 
-  bool get _isLight => _currentTheme == 'Chiaro';
+  bool get _isLight => _currentTheme == 'Piggy White';
   Color get _scaffoldBg => _isLight ? const Color(0xFFF1F5F9) : const Color(0xFF0B0F19);
   Color get _cardBg => _isLight ? const Color(0xFFFFFFFF) : const Color(0xFF131B2E);
   Color get _textColor => _isLight ? const Color(0xFF0F172A) : Colors.white;
@@ -312,7 +312,7 @@ class _HomeScreenState extends State<HomeScreen> {
       patrimonio = prefs.getDouble('patrimonio') ?? 0.00;
       entrateMese = prefs.getDouble('entrateMese') ?? 0.00;
       usciteMese = prefs.getDouble('usciteMese') ?? 0.00;
-      _currentTheme = prefs.getString('currentTheme') ?? 'Scuro';
+      _currentTheme = prefs.getString('currentTheme') ?? 'Piggy Dark';
     });
   }
 
@@ -540,23 +540,23 @@ class _HomeScreenState extends State<HomeScreen> {
                         ElevatedButton.icon(
                           style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFDB2777), padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10)),
                           onPressed: () {
-                            _cambiaTema('Scuro');
+                            _cambiaTema('Piggy Dark');
                             setModalState(() {});
                             setState(() {});
                           },
                           icon: const Icon(Icons.brush, size: 16, color: Colors.white),
-                          label: const Text("Scuro", style: TextStyle(color: Colors.white)),
+                          label: const Text("Piggy Dark", style: TextStyle(color: Colors.white)),
                         ),
                         const SizedBox(width: 10),
                         ElevatedButton.icon(
                           style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFE2E8F0), padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10)),
                           onPressed: () {
-                            _cambiaTema('Chiaro');
+                            _cambiaTema('Piggy White');
                             setModalState(() {});
                             setState(() {});
                           },
                           icon: const Icon(Icons.brush, size: 16, color: Colors.black87),
-                          label: const Text("Chiaro", style: TextStyle(color: Colors.black87)),
+                          label: const Text("Piggy White", style: TextStyle(color: Colors.black87)),
                         ),
                       ],
                     ),
