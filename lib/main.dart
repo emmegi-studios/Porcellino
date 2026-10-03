@@ -535,7 +535,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   
             const SizedBox(height: 16),
             const Divider(),
-              const Text("🔗 Condivisione Caveau", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Theme.of(context).textTheme.bodyLarge?.color)), style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+              const SizedBox.shrink(), // Titolo eliminato definitivamente
             const SizedBox(height: 8),
             const Text("Il tuo codice (tieni premuto per copiare):", style: TextStyle(fontSize: 12, color: Colors.grey)),
             const SizedBox(height: 4),
