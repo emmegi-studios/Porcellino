@@ -452,8 +452,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _mostraModalProfilo() {
-    showModalBottomSheet(isScrollControlled: true, 
-      context: context,
+    showModalBottomSheet(isScrollControlled: true, context: context,
       backgroundColor: _cardBg,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
       builder: (context) {
@@ -503,8 +502,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _mostraModalImpostazioni() {
-    showModalBottomSheet(isScrollControlled: true, 
-      context: context,
+    showModalBottomSheet(isScrollControlled: true, context: context,
       backgroundColor: Colors.transparent,
       builder: (context) {
         return StatefulBuilder(
@@ -600,10 +598,8 @@ ListTile(leading: const Icon(Icons.logout, color: Colors.redAccent), title: cons
 
   void _mostraFoglioResoconto() {
     double bilancioNetto = entrateMese - usciteMese;
-    showModalBottomSheet(isScrollControlled: true, 
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: _cardBg,
+    showModalBottomSheet(isScrollControlled: true, context: context,
+      isScrollControlled: true, backgroundColor: _cardBg,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
       builder: (context) {
         return Container(
@@ -683,10 +679,8 @@ ListTile(leading: const Icon(Icons.logout, color: Colors.redAccent), title: cons
   }
 
   void _mostraModalInserimento() {
-    showModalBottomSheet(isScrollControlled: true, 
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: _cardBg,
+    showModalBottomSheet(isScrollControlled: true, context: context,
+      isScrollControlled: true, backgroundColor: _cardBg,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
       builder: (context) {
         return Padding(
