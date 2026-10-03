@@ -257,6 +257,8 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  String _caveauId = \'bilancio_principale\';
+  final TextEditingController _inviteController = TextEditingController();
   String _currentTheme = 'Piggy Dark';
   double patrimonio = 0.00;
   double entrateMese = 0.00;
@@ -313,6 +315,7 @@ class _HomeScreenState extends State<HomeScreen> {
       entrateMese = prefs.getDouble('entrateMese') ?? 0.00;
       usciteMese = prefs.getDouble('usciteMese') ?? 0.00;
       _currentTheme = prefs.getString('currentTheme') ?? 'Piggy Dark';
+      _caveauId = prefs.getString('caveauId') ?? FirebaseAuth.instance.currentUser?.uid ?? _caveauId;
     });
   }
 
@@ -320,7 +323,7 @@ class _HomeScreenState extends State<HomeScreen> {
     try {
       FirebaseFirestore.instance
           .collection('caveau_condiviso')
-          .doc('bilancio_principale')
+          .doc(_caveauId)
           .snapshots()
           .listen((snapshot) {
         if (snapshot.exists && snapshot.data() != null) {
@@ -351,7 +354,7 @@ class _HomeScreenState extends State<HomeScreen> {
     try {
       await FirebaseFirestore.instance
           .collection('caveau_condiviso')
-          .doc('bilancio_principale')
+          .doc(_caveauId)
           .set({
         'patrimonio': patrimonio,
         'entrateMese': entrateMese,
@@ -531,7 +534,31 @@ class _HomeScreenState extends State<HomeScreen> {
                     subtitle: Text(_currentTheme, style: TextStyle(color: _primaryColor, fontWeight: FontWeight.bold, fontSize: 14)),
                   ),
                   Divider(color: _subtitleColor, height: 24),
-                  ListTile(leading: const Icon(Icons.logout, color: Colors.redAccent), title: const Text("Disconnetti Account", style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold)), onTap: () async { Navigator.pop(context); await FirebaseAuth.instance.signOut(); }), const SizedBox(height: 16), Text("🎨 Scegli Tema Grafico:", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: _textColor)),
+                  
+            const SizedBox(height: 16),
+            const Divider(),
+            const Text("🔗 Condivisione Caveau", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+            const SizedBox(height: 8),
+            const Text("Il tuo codice (tieni premuto per copiare):", style: TextStyle(fontSize: 12, color: Colors.grey)),
+            const SizedBox(height: 4),
+            SelectableText(FirebaseAuth.instance.currentUser?.uid ?? "N/A", style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.blueAccent)),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Expanded(child: TextField(controller: _inviteController, decoration: const InputDecoration(hintText: "Incolla codice partner", hintStyle: TextStyle(fontSize: 12)))),
+                IconButton(icon: const Icon(Icons.save, color: Colors.blueAccent), onPressed: () async {
+                  if (_inviteController.text.trim().isNotEmpty) {
+                    final p = await SharedPreferences.getInstance();
+                    await p.setString('caveauId', _inviteController.text.trim());
+                    setState(() { _caveauId = _inviteController.text.trim(); });
+                    _ascoltaCloudFirestore();
+                    Navigator.pop(context);
+                  }
+                })
+              ],
+            ),
+            const SizedBox(height: 16),
+ListTile(leading: const Icon(Icons.logout, color: Colors.redAccent), title: const Text("Disconnetti Account", style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold)), onTap: () async { Navigator.pop(context); await FirebaseAuth.instance.signOut(); }), const SizedBox(height: 16), Text("🎨 Scegli Tema Grafico:", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: _textColor)),
                   const SizedBox(height: 12),
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
