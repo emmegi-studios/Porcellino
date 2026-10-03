@@ -452,7 +452,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _mostraModalProfilo() {
-    showModalBottomSheet(
+    showModalBottomSheet(isScrollControlled: true, 
       context: context,
       backgroundColor: _cardBg,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
@@ -503,7 +503,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _mostraModalImpostazioni() {
-    showModalBottomSheet(
+    showModalBottomSheet(isScrollControlled: true, 
       context: context,
       backgroundColor: Colors.transparent,
       builder: (context) {
@@ -537,7 +537,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   
             const SizedBox(height: 16),
             const Divider(),
-            const Text("🔗 Condivisione Caveau", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+            Text("🔗 Condivisione Caveau", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black)),
             const SizedBox(height: 8),
             const Text("Il tuo codice (tieni premuto per copiare):", style: TextStyle(fontSize: 12, color: Colors.grey)),
             const SizedBox(height: 4),
@@ -545,7 +545,7 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(height: 8),
             Row(
               children: [
-                Expanded(child: TextField(controller: _inviteController, decoration: const InputDecoration(hintText: "Incolla codice partner", hintStyle: TextStyle(fontSize: 12)))),
+                Expanded(child: TextField(controller: _inviteController, style: TextStyle(color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black), decoration: const InputDecoration(hintText: "Incolla codice partner", hintStyle: const TextStyle(fontSize: 12, color: Colors.grey)))),
                 IconButton(icon: const Icon(Icons.save, color: Colors.blueAccent), onPressed: () async {
                   if (_inviteController.text.trim().isNotEmpty) {
                     final p = await SharedPreferences.getInstance();
@@ -600,7 +600,7 @@ ListTile(leading: const Icon(Icons.logout, color: Colors.redAccent), title: cons
 
   void _mostraFoglioResoconto() {
     double bilancioNetto = entrateMese - usciteMese;
-    showModalBottomSheet(
+    showModalBottomSheet(isScrollControlled: true, 
       context: context,
       isScrollControlled: true,
       backgroundColor: _cardBg,
@@ -683,7 +683,7 @@ ListTile(leading: const Icon(Icons.logout, color: Colors.redAccent), title: cons
   }
 
   void _mostraModalInserimento() {
-    showModalBottomSheet(
+    showModalBottomSheet(isScrollControlled: true, 
       context: context,
       isScrollControlled: true,
       backgroundColor: _cardBg,
