@@ -955,9 +955,9 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("💡 Consulente Finanziario IA", style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: _textColor)),
+                  Text("💡 Pianificatore Acquisti & Rate", style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: _textColor)),
                   const SizedBox(height: 8),
-                  Text("Inserisci valore spesa per valutare l'impatto:", style: TextStyle(fontSize: 11, color: _subtitleColor)),
+                  Text("Inserisci l'importo (es. 600) per simulare:", style: TextStyle(fontSize: 11, color: _subtitleColor)),
                   const SizedBox(height: 8),
                   Row(children: [
                     Expanded(child: TextField(controller: _itemController, style: TextStyle(color: _textColor), keyboardType: TextInputType.number, decoration: InputDecoration(hintText: "es. 150", hintStyle: TextStyle(color: _subtitleColor)))),
