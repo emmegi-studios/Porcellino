@@ -27,7 +27,7 @@ class AuthGate extends StatelessWidget {
           return const Scaffold(body: Center(child: CircularProgressIndicator()));
         }
         if (snapshot.hasData && snapshot.data != null) {
-          return const HomeScreen(); // Utente già loggato: dritto al caveau
+          return const InviteManager(child: HomeScreen()); // Utente già loggato: dritto al caveau
         }
         return const LoginScreen(); // Utente non loggato: schermata di login
       },
@@ -571,8 +571,20 @@ class _HomeScreenState extends State<HomeScreen> {
                 IconButton(icon: const Icon(Icons.person_add, color: Colors.blueAccent), onPressed: () async {
                   if (_inviteController.text.trim().isNotEmpty) {
                     final p = await SharedPreferences.getInstance();
-                    await p.setString('caveauId', _inviteController.text.trim());
-                    setState(() { _caveauId = _inviteController.text.trim(); });
+                    
+final targetEmail = _inviteController.text.trim().toLowerCase();
+if (targetEmail.isNotEmpty) {
+  final user = FirebaseAuth.instance.currentUser;
+  final myEmail = user?.email ?? 'Un utente';
+  await FirebaseFirestore.instance.collection('inviti').doc(targetEmail).set({
+    'caveau_id': _caveauId,
+    'mittente': myEmail,
+  });
+  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("📩 Invito inviato con successo a $targetEmail")));
+  _inviteController.clear();
+}
+
+                    
                     _ascoltaCloudFirestore();
                     Navigator.pop(context);
                   }
@@ -1058,5 +1070,64 @@ ListTile(leading: const Icon(Icons.logout, color: Colors.redAccent), title: cons
         ],
       ),
     );
+  }
+}
+
+class InviteManager extends StatefulWidget {
+  final Widget child;
+  const InviteManager({super.key, required this.child});
+  @override
+  State<InviteManager> createState() => _InviteManagerState();
+}
+class _InviteManagerState extends State<InviteManager> {
+  @override
+  void initState() {
+    super.initState();
+    _checkInviti();
+  }
+  Future<void> _checkInviti() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null || user.email == null) return;
+    
+    FirebaseFirestore.instance.collection('inviti').doc(myEmail).snapshots().listen((snapshot) {
+      if (snapshot.exists && snapshot.data() != null) {
+        final data = snapshot.data()!;
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (ctx) => AlertDialog(
+            title: const Text('📩 Nuovo Invito!', style: TextStyle(color: Colors.black)),
+            content: Text("${data['mittente']} ti ha invitato nel suo Caveau.
+
+Vuoi unire i vostri portafogli?", style: const TextStyle(color: Colors.black)),
+            actions: [
+              TextButton(
+                onPressed: () async {
+                  await FirebaseFirestore.instance.collection('inviti').doc(myEmail).delete();
+                  if (ctx.mounted) Navigator.pop(ctx);
+                },
+                child: const Text('Rifiuta', style: TextStyle(color: Colors.red)),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  final prefs = await SharedPreferences.getInstance();
+                  await prefs.setString('caveauId', data['caveau_id']);
+                  await FirebaseFirestore.instance.collection('inviti').doc(myEmail).delete();
+                  if (ctx.mounted) {
+                    Navigator.pop(ctx);
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Caveau Unito! Riavvia l'app per sincronizzare.")));
+                  }
+                },
+                child: const Text('Accetta e Unisci'),
+              ),
+            ],
+          ),
+        );
+      }
+    });
+  }
+  @override
+  Widget build(BuildContext context) {
+    return widget.child;
   }
 }
