@@ -248,6 +248,13 @@ class _HomeScreenState extends State<HomeScreen> {
   Color get _scaffoldBg => Theme.of(context).brightness == Brightness.dark ? const Color(0xFF0F111A) : Colors.grey.shade100;
 
 
+  
+  
+  
+  
+  
+
+
 void _esportaCSV() {
   String csv = 'Data,Categoria,Tipo,Importo
 ';
