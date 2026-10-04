@@ -488,7 +488,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   Icon(Icons.cloud_sync, color: _primaryColor),
                 ],
               ),
-              const SizedBox(height: 20),
+              ,
               ListTile(
                 dense: true,
                 contentPadding: EdgeInsets.zero,
@@ -507,7 +507,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 title: Text("Stato Firebase Cloud", style: TextStyle(color: _subtitleColor, fontSize: 11)),
                 subtitle: Text("🟢 Connesso in tempo reale", style: TextStyle(color: Colors.greenAccent, fontWeight: FontWeight.bold, fontSize: 13)),
               ),
-              const SizedBox(height: 20),
+              ,
               ElevatedButton(
                 style: ElevatedButton.styleFrom(backgroundColor: _primaryColor, padding: const EdgeInsets.symmetric(vertical: 14)),
                 onPressed: () => Navigator.pop(context),
@@ -550,10 +550,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     title: Text("Tema Attivo", style: TextStyle(color: _subtitleColor, fontSize: 11)),
                     subtitle: Text(_currentTheme, style: TextStyle(color: _primaryColor, fontWeight: FontWeight.bold, fontSize: 14)),
                   ),
-                  Divider(color: _subtitleColor, height: 24),
+                  ,
                   
             const SizedBox(height: 16),
-            const Divider(),
+            const ,
               const SizedBox.shrink(), // Titolo eliminato definitivamente
             const SizedBox(height: 8),
             const SizedBox(height: 4),
@@ -622,7 +622,7 @@ ListTile(leading: const Icon(Icons.logout, color: Colors.redAccent), title: cons
                       ],
                     ),
                   ),
-                  const SizedBox(height: 20),
+                  ,
                 ],
               ),
             );
@@ -664,7 +664,7 @@ ListTile(leading: const Icon(Icons.logout, color: Colors.redAccent), title: cons
                       Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text("Entrate Totali:", style: TextStyle(color: _textColor)), Text("€ ${entrateMese.toStringAsFixed(2)}", style: const TextStyle(color: Colors.blueAccent, fontWeight: FontWeight.bold))]),
                       const SizedBox(height: 4),
                       Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text("Uscite Totali:", style: TextStyle(color: _textColor)), Text("€ ${usciteMese.toStringAsFixed(2)}", style: TextStyle(color: _primaryColor, fontWeight: FontWeight.bold))]),
-                      Divider(color: _subtitleColor),
+                      ,
                       Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text("Bilancio Netto:", style: TextStyle(color: _textColor)), Text("€ ${bilancioNetto.toStringAsFixed(2)}", style: TextStyle(color: bilancioNetto >= 0 ? const Color(0xFF10B981) : _primaryColor, fontWeight: FontWeight.bold))]),
                     ],
                   ),
@@ -763,7 +763,7 @@ ListTile(leading: const Icon(Icons.logout, color: Colors.redAccent), title: cons
                 style: TextStyle(color: _textColor),
                 decoration: InputDecoration(labelText: "Note / Descrizione", labelStyle: TextStyle(color: _subtitleColor), filled: true, fillColor: _scaffoldBg, border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))),
               ),
-              const SizedBox(height: 20),
+              ,
               ElevatedButton(
                 style: ElevatedButton.styleFrom(backgroundColor: _primaryColor, padding: const EdgeInsets.symmetric(vertical: 16), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
                 onPressed: () {
