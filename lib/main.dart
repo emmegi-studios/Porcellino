@@ -482,106 +482,80 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _mostraModalImpostazioni() {
-    showModalBottomSheet(isScrollControlled: true, context: context,
-      backgroundColor: Colors.transparent,
-      builder: (context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: _cardBg,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (BuildContext context) {
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setModalState) {
-            return Container(
-              decoration: BoxDecoration(
-                color: _cardBg,
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(24))
-              ),
-              padding: const EdgeInsets.all(24.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text("⚙️ Impostazioni & Temi", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: _textColor)),
-                      Icon(Icons.settings, color: _primaryColor)]),
-                  const SizedBox(height: 14),
-                  ListTile(
-                    dense: true,
-                    contentPadding: EdgeInsets.zero,
-                    title: Text("Tema Attivo", style: TextStyle(color: _subtitleColor, fontSize: 11)),
-                    subtitle: Text(_currentTheme, style: TextStyle(color: _primaryColor, fontWeight: FontWeight.bold, fontSize: 14))),
-                  
-            const SizedBox(height: 16),
-            const SizedBox.shrink(), // Titolo eliminato definitivamente
-            const SizedBox(height: 8),
-            const SizedBox(height: 4),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                Expanded(child: TextField(
-        controller: _inviteController, style: TextStyle(color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black),
-        style: TextStyle(
-          color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
-          fontWeight: FontWeight.w600,
-        ),
-        decoration: const InputDecoration(
-          hintText: 'Email del partner',
-          hintStyle: TextStyle(color: Colors.grey),
-        ),
-      ).brightness == Brightness.dark ? Colors.white : Colors.black),
-  decoration: const InputDecoration(
-    hintText: "Email del partner",
-    hintStyle: TextStyle(fontSize: 12, color: Colors.grey)
-  )
-)),
-                IconButton(icon: const Icon(Icons.person_add, color: Colors.blueAccent), onPressed: () async {
-                  if (_inviteController.text.trim().isNotEmpty) {
-                    final p = await SharedPreferences.getInstance();
-                    
-final targetEmail = _inviteController.text.trim().toLowerCase();
-if (targetEmail.isNotEmpty) {
-  final user = FirebaseAuth.instance.currentUser;
-  final myEmail = user?.email ?? 'Un utente';
-  await FirebaseFirestore.instance.collection('inviti').doc(targetEmail).set({
-    'caveau_id': _caveauId,
-    'mittente': myEmail,
-  });
-  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("📩 Invito inviato con successo a $targetEmail")));
-  _inviteController.clear();
-}
-
-                    
-                    _ascoltaCloudFirestore();
-                    Navigator.pop(context);
-                  }
-                })
-              ]),
-            const SizedBox(height: 16),
-ListTile(leading: const Icon(Icons.logout, color: Colors.redAccent), title: const Text("Disconnetti Account", style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold)), onTap: () async { Navigator.pop(context); await FirebaseAuth.instance.signOut(); }), const SizedBox(height: 16), Text("🎨 Scegli Tema Grafico:", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: _textColor)),
-                  const SizedBox(height: 12),
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
+            return Padding(
+              padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom, left: 16, right: 16, top: 24),
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(Icons.settings, color: _primaryColor),
+                        const SizedBox(width: 8),
+                        Text('⚙️ Impostazioni & Temi', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: _textColor)),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    ListTile(
+                      title: Text('Tema Attivo', style: TextStyle(color: _subtitleColor, fontSize: 11)),
+                      subtitle: Text(_currentTheme, style: TextStyle(color: _primaryColor, fontWeight: FontWeight.bold, fontSize: 14)),
+                    ),
+                    const SizedBox(height: 16),
+                    TextField(
+                      controller: _inviteController,
+                      style: TextStyle(color: _textColor),
+                      decoration: InputDecoration(
+                        hintText: 'Email del partner da invitare',
+                        hintStyle: TextStyle(color: _subtitleColor),
+                        filled: true,
+                        fillColor: _scaffoldBg,
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    ListTile(
+                      leading: const Icon(Icons.logout, color: Colors.redAccent),
+                      title: const Text('Disconnetti Account', style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold)),
+                      onTap: () { Navigator.pop(context); },
+                    ),
+                    const SizedBox(height: 16),
+                    Text('🎨 Scegli Tema Grafico:', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: _textColor)),
+                    const SizedBox(height: 8),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         ElevatedButton.icon(
-                          style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFDB2777), padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10)),
-                          onPressed: () {
-                            _cambiaTema('Piggy Dark');
-                            setModalState(() {});
-                            setState(() {});
-                          },
-                          icon: const Icon(Icons.brush, size: 16, color: Colors.white),
-                          label: const Text("Piggy Dark", style: TextStyle(color: Colors.white))),
-                        const SizedBox(width: 10),
+                          style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFC2185B)),
+                          onPressed: () { setState(() => _currentTheme = 'Piggy Dark'); Navigator.pop(context); },
+                          icon: const Icon(Icons.dark_mode, color: Colors.white, size: 16),
+                          label: const Text('Piggy Dark', style: TextStyle(color: Colors.white)),
+                        ),
                         ElevatedButton.icon(
-                          style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFE2E8F0), padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10)),
-                          onPressed: () {
-                            _cambiaTema('Piggy White');
-                            setModalState(() {});
-                            setState(() {});
-                          },
-                          icon: const Icon(Icons.brush, size: 16, color: Colors.black87),
-                          label: const Text("Piggy White", style: TextStyle(color: Colors.black87)))]))]));
-          });
-      });
+                          style: ElevatedButton.styleFrom(backgroundColor: Colors.grey.shade200),
+                          onPressed: () { setState(() => _currentTheme = 'Piggy White'); Navigator.pop(context); },
+                          icon: const Icon(Icons.light_mode, color: Colors.black87, size: 16),
+                          label: const Text('Piggy White', style: TextStyle(color: Colors.black87)),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 24),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
   }
 
   void _mostraFoglioResoconto() {
