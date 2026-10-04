@@ -30,8 +30,7 @@ class AuthGate extends StatelessWidget {
           return InviteManager(child: HomeScreen(userEmail: FirebaseAuth.instance.currentUser?.email ?? 'Nessuna Email')); // Utente già loggato: dritto al caveau
         }
         return const LoginScreen(); // Utente non loggato: schermata di login
-      },
-    );
+      });
   }
 }
 
@@ -43,8 +42,7 @@ class PiggyVaultApp extends StatelessWidget {
     return const MaterialApp(
       title: 'Piggy Vault',
       debugShowCheckedModeBanner: false,
-      home: const AuthGate(),
-    );
+      home: const AuthGate());
   }
 }
 
@@ -93,15 +91,13 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (email.isEmpty || !email.contains('@') || password.length < 6) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Inserisci un'email valida e una password di almeno 6 caratteri")),
-      );
+        const SnackBar(content: Text("Inserisci un'email valida e una password di almeno 6 caratteri")));
       return;
     }
 
     if (_isRegistrazione && password != confirmPassword) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Le password non coincidono")),
-      );
+        const SnackBar(content: Text("Le password non coincidono")));
       return;
     }
 
@@ -112,33 +108,26 @@ class _LoginScreenState extends State<LoginScreen> {
       if (_isRegistrazione) {
         userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
           email: email,
-          password: password,
-        );
+          password: password);
       } else {
         userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
           email: email,
-          password: password,
-        );
+          password: password);
       }
 
       if (!mounted) return;
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => HomeScreen(userEmail: userCredential.user?.email ?? email),
-        ),
-      );
+          builder: (context) => HomeScreen(userEmail: userCredential.user?.email ?? email)));
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Auth: ${e.toString()} - Accesso locale consentito")),
-      );
+        SnackBar(content: Text("Auth: ${e.toString()} - Accesso locale consentito")));
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => HomeScreen(userEmail: email),
-        ),
-      );
+          builder: (context) => HomeScreen(userEmail: email)));
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -167,19 +156,14 @@ class _LoginScreenState extends State<LoginScreen> {
                     height: 70,
                     decoration: BoxDecoration(
                       color: _primaryColor,
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: const Icon(Icons.savings, color: Colors.white, size: 40),
-                  ),
-                ),
-              ),
+                      borderRadius: BorderRadius.circular(16)),
+                    child: const Icon(Icons.savings, color: Colors.white, size: 40)))),
               const SizedBox(height: 16),
               Text("Piggy Vault", style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: _textColor)),
               const SizedBox(height: 8),
               Text(
                 _isRegistrazione ? "Crea un nuovo account" : "Accedi al tuo caveau",
-                style: TextStyle(fontSize: 14, color: _subtitleColor),
-              ),
+                style: TextStyle(fontSize: 14, color: _subtitleColor)),
               const SizedBox(height: 32),
               TextField(
                 controller: _emailController,
@@ -189,9 +173,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   labelStyle: TextStyle(color: _subtitleColor),
                   filled: true,
                   fillColor: _cardBg,
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
-                ),
-              ),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)))),
               const SizedBox(height: 14),
               TextField(
                 controller: _passwordController,
@@ -203,9 +185,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   labelStyle: TextStyle(color: _subtitleColor),
                   filled: true,
                   fillColor: _cardBg,
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
-                ),
-              ),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)))),
               if (_isRegistrazione && _passwordController.text.isNotEmpty) ...[
                 const SizedBox(height: 6),
                 Align(
@@ -214,11 +194,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     padding: const EdgeInsets.only(left: 8.0),
                     child: Text(
                       forzaPass,
-                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: _coloreSicurezza(_passwordController.text)),
-                    ),
-                  ),
-                ),
-              ],
+                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: _coloreSicurezza(_passwordController.text)))))],
               if (_isRegistrazione) ...[
                 const SizedBox(height: 14),
                 TextField(
@@ -230,10 +206,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     labelStyle: TextStyle(color: _subtitleColor),
                     filled: true,
                     fillColor: _cardBg,
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
-                  ),
-                ),
-              ],
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(14))))],
               const SizedBox(height: 24),
               _isLoading
                   ? const CircularProgressIndicator()
@@ -241,14 +214,11 @@ class _LoginScreenState extends State<LoginScreen> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: _primaryColor,
                         minimumSize: const Size.fromHeight(52),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                      ),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14))),
                       onPressed: _eseguiAutenticazione,
                       child: Text(
                         _isRegistrazione ? "Registrati e Crea Account" : "Entra nel Caveau Condiviso",
-                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
-                      ),
-                    ),
+                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16))),
               const SizedBox(height: 16),
               TextButton(
                 onPressed: () => setState(() => _isRegistrazione = !_isRegistrazione),
@@ -256,14 +226,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   _isRegistrazione
                       ? "Hai già un account? Accedi"
                       : "Non hai un account? Registrati",
-                  style: TextStyle(color: _primaryColor, fontWeight: FontWeight.bold),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+                  style: TextStyle(color: _primaryColor, fontWeight: FontWeight.bold)))]))));
   }
 }
 
@@ -432,9 +395,7 @@ class _HomeScreenState extends State<HomeScreen> {
         title: Wrap(alignment: WrapAlignment.center, spacing: 12.0, runSpacing: 12.0, children: [
             Icon(icona, color: colore, size: 28),
             const SizedBox(width: 10),
-            Text(titolo, style: TextStyle(color: _textColor, fontSize: 18)),
-          ],
-        ),
+            Text(titolo, style: TextStyle(color: _textColor, fontSize: 18))]),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -443,17 +404,11 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(height: 12),
             Text(descrizione, style: TextStyle(color: _textColor, fontSize: 13)),
             const SizedBox(height: 16),
-            Text("Patrimonio condiviso attuale: €${patrimonio.toStringAsFixed(2)}", style: TextStyle(color: _subtitleColor, fontSize: 12)),
-          ],
-        ),
+            Text("Patrimonio condiviso attuale: €${patrimonio.toStringAsFixed(2)}", style: TextStyle(color: _subtitleColor, fontSize: 12))]),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text("Capito", style: TextStyle(color: _primaryColor, fontWeight: FontWeight.bold)),
-          ),
-        ],
-      ),
-    );
+            child: Text("Capito", style: TextStyle(color: _primaryColor, fontWeight: FontWeight.bold)))]));
   }
 
   void _simulaAI(String spesaStr) {
@@ -485,39 +440,27 @@ class _HomeScreenState extends State<HomeScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text("👤 Profilo & Cloud", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: _textColor)),
-                  Icon(Icons.cloud_sync, color: _primaryColor),
-                ],
-              ),
-              ,
+                  Icon(Icons.cloud_sync, color: _primaryColor)]),
               ListTile(
                 dense: true,
                 contentPadding: EdgeInsets.zero,
                 title: Text("Utente Attivo", style: TextStyle(color: _subtitleColor, fontSize: 11)),
-                subtitle: Text(_nomeUtenteDinamico, style: TextStyle(color: _textColor, fontWeight: FontWeight.bold, fontSize: 15)),
-              ),
+                subtitle: Text(_nomeUtenteDinamico, style: TextStyle(color: _textColor, fontWeight: FontWeight.bold, fontSize: 15))),
               ListTile(
                 dense: true,
                 contentPadding: EdgeInsets.zero,
                 title: Text("Email Collegata", style: TextStyle(color: _subtitleColor, fontSize: 11)),
-                subtitle: Text(widget.userEmail, style: TextStyle(color: _textColor, fontWeight: FontWeight.bold, fontSize: 15)),
-              ),
+                subtitle: Text(widget.userEmail, style: TextStyle(color: _textColor, fontWeight: FontWeight.bold, fontSize: 15))),
               ListTile(
                 dense: true,
                 contentPadding: EdgeInsets.zero,
                 title: Text("Stato Firebase Cloud", style: TextStyle(color: _subtitleColor, fontSize: 11)),
-                subtitle: Text("🟢 Connesso in tempo reale", style: TextStyle(color: Colors.greenAccent, fontWeight: FontWeight.bold, fontSize: 13)),
-              ),
-              ,
+                subtitle: Text("🟢 Connesso in tempo reale", style: TextStyle(color: Colors.greenAccent, fontWeight: FontWeight.bold, fontSize: 13))),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(backgroundColor: _primaryColor, padding: const EdgeInsets.symmetric(vertical: 14)),
                 onPressed: () => Navigator.pop(context),
-                child: const Text("Chiudi", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-              ),
-            ],
-          ),
-        );
-      },
-    );
+                child: const Text("Chiudi", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)))]));
+      });
   }
 
   void _mostraModalImpostazioni() {
@@ -540,17 +483,13 @@ class _HomeScreenState extends State<HomeScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text("⚙️ Impostazioni & Temi", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: _textColor)),
-                      Icon(Icons.settings, color: _primaryColor),
-                    ],
-                  ),
+                      Icon(Icons.settings, color: _primaryColor)]),
                   const SizedBox(height: 14),
                   ListTile(
                     dense: true,
                     contentPadding: EdgeInsets.zero,
                     title: Text("Tema Attivo", style: TextStyle(color: _subtitleColor, fontSize: 11)),
-                    subtitle: Text(_currentTheme, style: TextStyle(color: _primaryColor, fontWeight: FontWeight.bold, fontSize: 14)),
-                  ),
-                  ,
+                    subtitle: Text(_currentTheme, style: TextStyle(color: _primaryColor, fontWeight: FontWeight.bold, fontSize: 14))),
                   
             const SizedBox(height: 16),
             const ,
@@ -589,8 +528,7 @@ if (targetEmail.isNotEmpty) {
                     Navigator.pop(context);
                   }
                 })
-              ],
-            ),
+              ]),
             const SizedBox(height: 16),
 ListTile(leading: const Icon(Icons.logout, color: Colors.redAccent), title: const Text("Disconnetti Account", style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold)), onTap: () async { Navigator.pop(context); await FirebaseAuth.instance.signOut(); }), const SizedBox(height: 16), Text("🎨 Scegli Tema Grafico:", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: _textColor)),
                   const SizedBox(height: 12),
@@ -606,8 +544,7 @@ ListTile(leading: const Icon(Icons.logout, color: Colors.redAccent), title: cons
                             setState(() {});
                           },
                           icon: const Icon(Icons.brush, size: 16, color: Colors.white),
-                          label: const Text("Piggy Dark", style: TextStyle(color: Colors.white)),
-                        ),
+                          label: const Text("Piggy Dark", style: TextStyle(color: Colors.white))),
                         const SizedBox(width: 10),
                         ElevatedButton.icon(
                           style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFE2E8F0), padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10)),
@@ -617,19 +554,9 @@ ListTile(leading: const Icon(Icons.logout, color: Colors.redAccent), title: cons
                             setState(() {});
                           },
                           icon: const Icon(Icons.brush, size: 16, color: Colors.black87),
-                          label: const Text("Piggy White", style: TextStyle(color: Colors.black87)),
-                        ),
-                      ],
-                    ),
-                  ),
-                  ,
-                ],
-              ),
-            );
-          },
-        );
-      },
-    );
+                          label: const Text("Piggy White", style: TextStyle(color: Colors.black87)))]))]));
+          });
+      });
   }
 
   void _mostraFoglioResoconto() {
@@ -648,9 +575,7 @@ ListTile(leading: const Icon(Icons.logout, color: Colors.redAccent), title: cons
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text("📋 Foglio Resoconto Cloud", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: _textColor)),
-                  Icon(Icons.description, color: _primaryColor),
-                ],
-              ),
+                  Icon(Icons.description, color: _primaryColor)]),
               const SizedBox(height: 16),
               Card(
                 color: _scaffoldBg,
@@ -664,12 +589,7 @@ ListTile(leading: const Icon(Icons.logout, color: Colors.redAccent), title: cons
                       Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text("Entrate Totali:", style: TextStyle(color: _textColor)), Text("€ ${entrateMese.toStringAsFixed(2)}", style: const TextStyle(color: Colors.blueAccent, fontWeight: FontWeight.bold))]),
                       const SizedBox(height: 4),
                       Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text("Uscite Totali:", style: TextStyle(color: _textColor)), Text("€ ${usciteMese.toStringAsFixed(2)}", style: TextStyle(color: _primaryColor, fontWeight: FontWeight.bold))]),
-                      ,
-                      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text("Bilancio Netto:", style: TextStyle(color: _textColor)), Text("€ ${bilancioNetto.toStringAsFixed(2)}", style: TextStyle(color: bilancioNetto >= 0 ? const Color(0xFF10B981) : _primaryColor, fontWeight: FontWeight.bold))]),
-                    ],
-                  ),
-                ),
-              ),
+                      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text("Bilancio Netto:", style: TextStyle(color: _textColor)), Text("€ ${bilancioNetto.toStringAsFixed(2)}", style: TextStyle(color: bilancioNetto >= 0 ? const Color(0xFF10B981) : _primaryColor, fontWeight: FontWeight.bold))])]))),
               const SizedBox(height: 16),
               Text("Movimenti Cloud (Swipe per eliminare)", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: _subtitleColor)),
               const SizedBox(height: 8),
@@ -685,8 +605,7 @@ ListTile(leading: const Icon(Icons.logout, color: Colors.redAccent), title: cons
                         alignment: Alignment.centerRight,
                         padding: const EdgeInsets.only(right: 20),
                         color: Colors.red,
-                        child: const Icon(Icons.delete, color: Colors.white),
-                      ),
+                        child: const Icon(Icons.delete, color: Colors.white)),
                       onDismissed: (direction) => _eliminaTransazione(index),
                       child: ListTile(
                         dense: true,
@@ -694,24 +613,15 @@ ListTile(leading: const Icon(Icons.logout, color: Colors.redAccent), title: cons
                         subtitle: Text("${tx['note']} • Inserito da: ${tx['author'] ?? 'Utente'}", style: TextStyle(color: _subtitleColor)),
                         trailing: Text(
                           "${tx['type'].contains('Entrata') ? '+' : '-'}€ ${tx['amount'].toStringAsFixed(2)}",
-                          style: TextStyle(color: tx['type'].contains('Entrata') ? const Color(0xFF10B981) : _primaryColor, fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
+                          style: TextStyle(color: tx['type'].contains('Entrata') ? const Color(0xFF10B981) : _primaryColor, fontWeight: FontWeight.bold))));
+                  })),
               const SizedBox(height: 12),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(backgroundColor: _primaryColor, padding: const EdgeInsets.symmetric(vertical: 14)),
                 onPressed: () => Navigator.pop(context),
-                child: const Text("Chiudi Resoconto", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-              )
-            ],
-          ),
-        );
-      },
-    );
+                child: const Text("Chiudi Resoconto", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)))
+            ]));
+      });
   }
 
   void _mostraModalInserimento() {
@@ -722,8 +632,7 @@ ListTile(leading: const Icon(Icons.logout, color: Colors.redAccent), title: cons
         return Padding(
           padding: EdgeInsets.only(
             bottom: MediaQuery.of(context).viewInsets.bottom + 24,
-            left: 20, right: 20, top: 24,
-          ),
+            left: 20, right: 20, top: 24),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -737,17 +646,14 @@ ListTile(leading: const Icon(Icons.logout, color: Colors.redAccent), title: cons
                 decoration: InputDecoration(labelText: "Tipo", labelStyle: TextStyle(color: _subtitleColor), filled: true, fillColor: _scaffoldBg, border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))),
                 items: const [
                   DropdownMenuItem(value: 'Uscita (Spesa)', child: Text("🔴 Uscita (Spesa)")),
-                  DropdownMenuItem(value: 'Entrata (Guadagno)', child: Text("🟢 Entrata (Guadagno)")),
-                ],
-                onChanged: (val) => setState(() => _selectedType = val ?? 'Uscita (Spesa)'),
-              ),
+                  DropdownMenuItem(value: 'Entrata (Guadagno)', child: Text("🟢 Entrata (Guadagno)"))],
+                onChanged: (val) => setState(() => _selectedType = val ?? 'Uscita (Spesa)')),
               const SizedBox(height: 12),
               TextField(
                 controller: _amountController,
                 style: TextStyle(color: _textColor),
                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                decoration: InputDecoration(labelText: "Importo (€)", labelStyle: TextStyle(color: _subtitleColor), filled: true, fillColor: _scaffoldBg, border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))),
-              ),
+                decoration: InputDecoration(labelText: "Importo (€)", labelStyle: TextStyle(color: _subtitleColor), filled: true, fillColor: _scaffoldBg, border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)))),
               const SizedBox(height: 12),
               DropdownButtonFormField<String>(
                 value: _selectedCategory,
@@ -755,15 +661,12 @@ ListTile(leading: const Icon(Icons.logout, color: Colors.redAccent), title: cons
                 style: TextStyle(color: _textColor),
                 decoration: InputDecoration(labelText: "Categoria", labelStyle: TextStyle(color: _subtitleColor), filled: true, fillColor: _scaffoldBg, border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))),
                 items: categorieConEmoji.map((cat) => DropdownMenuItem(value: cat, child: Text(cat))).toList(),
-                onChanged: (val) => setState(() => _selectedCategory = val ?? '📦 Altro'),
-              ),
+                onChanged: (val) => setState(() => _selectedCategory = val ?? '📦 Altro')),
               const SizedBox(height: 12),
               TextField(
                 controller: _noteController,
                 style: TextStyle(color: _textColor),
-                decoration: InputDecoration(labelText: "Note / Descrizione", labelStyle: TextStyle(color: _subtitleColor), filled: true, fillColor: _scaffoldBg, border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))),
-              ),
-              ,
+                decoration: InputDecoration(labelText: "Note / Descrizione", labelStyle: TextStyle(color: _subtitleColor), filled: true, fillColor: _scaffoldBg, border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)))),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(backgroundColor: _primaryColor, padding: const EdgeInsets.symmetric(vertical: 16), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
                 onPressed: () {
@@ -793,13 +696,8 @@ ListTile(leading: const Icon(Icons.logout, color: Colors.redAccent), title: cons
                     Navigator.pop(context);
                   }
                 },
-                child: const Text("Registra e Sincronizza Cloud", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-              ),
-            ],
-          ),
-        );
-      },
-    );
+                child: const Text("Registra e Sincronizza Cloud", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)))]));
+      });
   }
 
   @override
@@ -823,16 +721,10 @@ ListTile(leading: const Icon(Icons.logout, color: Colors.redAccent), title: cons
                   height: 32,
                   decoration: BoxDecoration(
                     color: _primaryColor,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const Icon(Icons.savings, color: Colors.white, size: 20),
-                ),
-              ),
-            ),
+                    borderRadius: BorderRadius.circular(8)),
+                  child: const Icon(Icons.savings, color: Colors.white, size: 20)))),
             const SizedBox(width: 8),
-            Text("Piggy Vault", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: _textColor)),
-          ],
-        ),
+            Text("Piggy Vault", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: _textColor))]),
         actions: [
           GestureDetector(
             onTap: _mostraModalProfilo,
@@ -844,18 +736,11 @@ ListTile(leading: const Icon(Icons.logout, color: Colors.redAccent), title: cons
                 children: [
                   const Icon(Icons.cloud_done, size: 14, color: Colors.greenAccent),
                   const SizedBox(width: 4),
-                  Text(_nomeUtenteDinamico, style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: _textColor)),
-                ],
-              ),
-            ),
-          ),
+                  Text(_nomeUtenteDinamico, style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: _textColor))]))),
           IconButton(
             icon: Icon(Icons.settings, color: _primaryColor),
             tooltip: "Impostazioni e Temi",
-            onPressed: _mostraModalImpostazioni,
-          ),
-        ],
-      ),
+            onPressed: _mostraModalImpostazioni)]),
       body: ListView(
         padding: const EdgeInsets.all(16.0),
         children: [
@@ -870,11 +755,7 @@ ListTile(leading: const Icon(Icons.logout, color: Colors.redAccent), title: cons
                 children: [
                   const Icon(Icons.cloud_sync, color: Color(0xFF3B82F6), size: 20),
                   const SizedBox(width: 8),
-                  Text("Modalità Sincronizzazione Cloud Attiva", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: _textColor)),
-                ],
-              ),
-            ),
-          ),
+                  Text("Modalità Sincronizzazione Cloud Attiva", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: _textColor))]))),
           const SizedBox(height: 14),
 
           Card(
@@ -890,14 +771,8 @@ ListTile(leading: const Icon(Icons.logout, color: Colors.redAccent), title: cons
                     children: [
                       Text("PATRIMONIO CONDIVISO", style: TextStyle(fontSize: 10, color: _subtitleColor, fontWeight: FontWeight.bold)),
                       const SizedBox(height: 4),
-                      Text("€ ${patrimonio.toStringAsFixed(2)}", style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Color(0xFF10B981))),
-                    ],
-                  ),
-                  const Icon(Icons.cloud_done, color: Color(0xFF10B981), size: 32),
-                ],
-              ),
-            ),
-          ),
+                      Text("€ ${patrimonio.toStringAsFixed(2)}", style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Color(0xFF10B981)))]),
+                  const Icon(Icons.cloud_done, color: Color(0xFF10B981), size: 32)]))),
           const SizedBox(height: 10),
 
           Row(
@@ -913,12 +788,7 @@ ListTile(leading: const Icon(Icons.logout, color: Colors.redAccent), title: cons
                       children: [
                         Text("ENTRATE MESE", style: TextStyle(fontSize: 9, color: _subtitleColor, fontWeight: FontWeight.bold)),
                         const SizedBox(height: 4),
-                        Text("€ ${entrateMese.toStringAsFixed(2)}", style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blueAccent)),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
+                        Text("€ ${entrateMese.toStringAsFixed(2)}", style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blueAccent))])))),
               const SizedBox(width: 10),
               Expanded(
                 child: Card(
@@ -931,14 +801,7 @@ ListTile(leading: const Icon(Icons.logout, color: Colors.redAccent), title: cons
                       children: [
                         Text("USCITE MESE", style: TextStyle(fontSize: 9, color: _subtitleColor, fontWeight: FontWeight.bold)),
                         const SizedBox(height: 4),
-                        Text("€ ${usciteMese.toStringAsFixed(2)}", style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.redAccent)),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
+                        Text("€ ${usciteMese.toStringAsFixed(2)}", style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.redAccent))]))))]),
           const SizedBox(height: 14),
 
           Card(
@@ -956,24 +819,17 @@ ListTile(leading: const Icon(Icons.logout, color: Colors.redAccent), title: cons
                         children: [
                           Icon(livello['icon'], color: livello['color'], size: 22),
                           const SizedBox(width: 8),
-                          Text("🏆 Livelli Risparmio", style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: _textColor)),
-                        ],
-                      ),
+                          Text("🏆 Livelli Risparmio", style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: _textColor))]),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                         decoration: BoxDecoration(color: _scaffoldBg, borderRadius: BorderRadius.circular(12)),
-                        child: Text("Livello: ${livello['nome']}", style: TextStyle(fontSize: 11, color: livello['color'], fontWeight: FontWeight.bold)),
-                      ),
-                    ],
-                  ),
+                        child: Text("Livello: ${livello['nome']}", style: TextStyle(fontSize: 11, color: livello['color'], fontWeight: FontWeight.bold)))]),
                   const SizedBox(height: 10),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text("Obiettivo Attuale", style: TextStyle(fontSize: 11, color: _subtitleColor)),
-                      Text("€ ${patrimonio.toStringAsFixed(0)} / ${livello['target']}", style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: _textColor)),
-                    ],
-                  ),
+                      Text("€ ${patrimonio.toStringAsFixed(0)} / ${livello['target']}", style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: _textColor))]),
                   const SizedBox(height: 8),
                   LinearProgressIndicator(value: _getProgresso(), backgroundColor: _scaffoldBg, color: livello['color'], minHeight: 8),
                   const SizedBox(height: 16),
@@ -982,26 +838,16 @@ ListTile(leading: const Icon(Icons.logout, color: Colors.redAccent), title: cons
                     children: [
                       GestureDetector(
                         onTap: () => _mostraDettaglioLivello("1. Emergenze", "1.000€", "Fondo di prima sicurezza per imprevisti urgenti.", Icons.shield, Colors.green),
-                        child: _buildTappaBadge("Emergenze", "1.000€", Icons.shield, Colors.green, patrimonio >= 1000),
-                      ),
+                        child: _buildTappaBadge("Emergenze", "1.000€", Icons.shield, Colors.green, patrimonio >= 1000)),
                       GestureDetector(
                         onTap: () => _mostraDettaglioLivello("2. Cuscino", "10.000€", "Cuscino finanziario per una tranquillità a medio termine.", Icons.weekend, Colors.blue),
-                        child: _buildTappaBadge("Cuscino", "10.000€", Icons.weekend, Colors.blue, patrimonio >= 10000),
-                      ),
+                        child: _buildTappaBadge("Cuscino", "10.000€", Icons.weekend, Colors.blue, patrimonio >= 10000)),
                       GestureDetector(
                         onTap: () => _mostraDettaglioLivello("3. Fortezza", "50.000€", "Solida fortezza patrimoniale per investimenti e stabilità.", Icons.castle, Colors.purple),
-                        child: _buildTappaBadge("Fortezza", "50.000€", Icons.castle, Colors.purple, patrimonio >= 50000),
-                      ),
+                        child: _buildTappaBadge("Fortezza", "50.000€", Icons.castle, Colors.purple, patrimonio >= 50000)),
                       GestureDetector(
                         onTap: () => _mostraDettaglioLivello("4. Porcellone", "100.000€", "Il traguardo supremo del caveau finanziario!", Icons.savings, _primaryColor),
-                        child: _buildTappaBadge("Porcellone", "100.000€", Icons.savings, _primaryColor, patrimonio >= 100000),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
+                        child: _buildTappaBadge("Porcellone", "100.000€", Icons.savings, _primaryColor, patrimonio >= 100000))])]))),
           const SizedBox(height: 14),
 
           Card(
@@ -1022,11 +868,7 @@ ListTile(leading: const Icon(Icons.logout, color: Colors.redAccent), title: cons
                     ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF3B82F6)), onPressed: () => _simulaAI(_itemController.text), child: const Text("Valuta Impatto", style: TextStyle(color: Colors.white)))
                   ]),
                   const SizedBox(height: 10),
-                  isAiLoading ? const CircularProgressIndicator() : Text(aiPurchaseResult, style: TextStyle(fontSize: 11, color: _textColor)),
-                ],
-              ),
-            ),
-          ),
+                  isAiLoading ? const CircularProgressIndicator() : Text(aiPurchaseResult, style: TextStyle(fontSize: 11, color: _textColor))]))),
           const SizedBox(height: 14),
 
           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
@@ -1044,12 +886,7 @@ ListTile(leading: const Icon(Icons.logout, color: Colors.redAccent), title: cons
             child: ListTile(
               title: Text(tx['category'], style: TextStyle(fontWeight: FontWeight.bold, color: _textColor)),
               subtitle: Text("${tx['note']} • ${tx['author'] ?? 'Utente'}", style: TextStyle(color: _subtitleColor)),
-              trailing: Text("${tx['type'].contains('Entrata') ? '+' : '-'}€${tx['amount']}", style: TextStyle(color: tx['type'].contains('Entrata') ? Colors.greenAccent : _primaryColor, fontWeight: FontWeight.bold)),
-            ),
-          )),
-        ],
-      ),
-    );
+              trailing: Text("${tx['type'].contains('Entrata') ? '+' : '-'}€${tx['amount']}", style: TextStyle(color: tx['type'].contains('Entrata') ? Colors.greenAccent : _primaryColor, fontWeight: FontWeight.bold)))))]));
   }
 
   Widget _buildTappaBadge(String titolo, String sub, IconData icona, Color colore, bool completata) {
@@ -1058,18 +895,14 @@ ListTile(leading: const Icon(Icons.logout, color: Colors.redAccent), title: cons
       decoration: BoxDecoration(
         color: completata ? colore.withOpacity(0.2) : _scaffoldBg,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: completata ? colore : Colors.grey.shade700),
-      ),
+        border: Border.all(color: completata ? colore : Colors.grey.shade700)),
       child: Column(
         children: [
           Icon(icona, size: 18, color: completata ? colore : _subtitleColor),
           const SizedBox(height: 4),
           Text(titolo, style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: completata ? _textColor : _subtitleColor)),
           const SizedBox(height: 2),
-          Text(sub, style: TextStyle(fontSize: 8, color: _subtitleColor)),
-        ],
-      ),
-    );
+          Text(sub, style: TextStyle(fontSize: 8, color: _subtitleColor))]));
   }
 }
 
@@ -1118,8 +951,7 @@ class _InviteManagerState extends State<InviteManager> {
                   }
                   if (ctx.mounted) Navigator.pop(ctx);
                 },
-                child: const Text('Rifiuta', style: TextStyle(color: Colors.red)),
-              ),
+                child: const Text('Rifiuta', style: TextStyle(color: Colors.red))),
               ElevatedButton(
                 onPressed: () async {
                   final prefs = await SharedPreferences.getInstance();
@@ -1132,11 +964,7 @@ class _InviteManagerState extends State<InviteManager> {
                     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Caveau Unito! Riavvia l\'app per sincronizzare.')));
                   }
                 },
-                child: const Text('Accetta e Unisci'),
-              ),
-            ],
-          ),
-        );
+                child: const Text('Accetta e Unisci'))]));
       }
     });
   }
