@@ -240,6 +240,27 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+
+void _esportaCSV() {
+  String csv = 'Data,Categoria,Tipo,Importo
+';
+  for (var t in transazioni) {
+    csv += "${t['data']},${t['categoria']},${t['tipo']},${t['importo']}
+";
+  }
+  // Mostra il report pronto per essere copiato o condiviso
+  showDialog(
+    context: context,
+    builder: (ctx) => AlertDialog(
+      title: const Text('📊 Esportazione CSV', style: TextStyle(color: Colors.black)),
+      content: SelectableText(csv, style: const TextStyle(color: Colors.black87)),
+      actions: [
+        TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Chiudi'))
+      ],
+    ),
+  );
+}
+
   String _caveauId = "bilancio_principale";
   final TextEditingController _inviteController = TextEditingController();
   String _currentTheme = 'Piggy Dark';
@@ -499,7 +520,7 @@ class _HomeScreenState extends State<HomeScreen> {
             Row(
               children: [
                 Expanded(child: TextField(
-        controller: _inviteController,
+        controller: _inviteController, style: TextStyle(color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black),
         style: TextStyle(
           color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
           fontWeight: FontWeight.w600,
