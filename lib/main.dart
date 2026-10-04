@@ -492,8 +492,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     subtitle: Text(_currentTheme, style: TextStyle(color: _primaryColor, fontWeight: FontWeight.bold, fontSize: 14))),
                   
             const SizedBox(height: 16),
-            const ,
-              const SizedBox.shrink(), // Titolo eliminato definitivamente
+            const SizedBox.shrink(), // Titolo eliminato definitivamente
             const SizedBox(height: 8),
             const SizedBox(height: 4),
             const SizedBox(height: 8),
