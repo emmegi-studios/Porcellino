@@ -315,7 +315,6 @@ class _HomeScreenState extends State<HomeScreen> {
       entrateMese = prefs.getDouble('entrateMese') ?? 0.00;
       usciteMese = prefs.getDouble('usciteMese') ?? 0.00;
       _currentTheme = prefs.getString('currentTheme') ?? 'Piggy Dark';
-      _caveauId = prefs.getString('caveauId') ?? FirebaseAuth.instance.currentUser?.uid ?? _caveauId;
     });
   }
 
@@ -537,9 +536,7 @@ class _HomeScreenState extends State<HomeScreen> {
             const Divider(),
               const SizedBox.shrink(), // Titolo eliminato definitivamente
             const SizedBox(height: 8),
-            const Text("Il tuo codice (tieni premuto per copiare):", style: TextStyle(fontSize: 12, color: Colors.grey)),
             const SizedBox(height: 4),
-            SelectableText(FirebaseAuth.instance.currentUser?.uid ?? "N/A", style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.blueAccent)),
             const SizedBox(height: 8),
             Row(
               children: [
