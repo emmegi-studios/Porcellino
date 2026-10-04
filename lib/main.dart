@@ -240,6 +240,12 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  Color get _cardBg => Theme.of(context).brightness == Brightness.dark ? const Color(0xFF1E2235) : Colors.white;
+  Color get _textColor => Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black87;
+  Color get _subtitleColor => Theme.of(context).brightness == Brightness.dark ? Colors.grey.shade400 : Colors.grey.shade600;
+  Color get _primaryColor => Colors.pinkAccent;
+  Color get _scaffoldBg => Theme.of(context).brightness == Brightness.dark ? const Color(0xFF0F111A) : Colors.grey.shade100;
+
   double patrimonio = 0.0;
   double entrateMese = 0.0;
   double usciteMese = 0.0;
@@ -257,11 +263,11 @@ class _HomeScreenState extends State<HomeScreen> {
   String _selectedCategory = '📦 Altro';
   final List<String> categorieConEmoji = ['🍔 Cibo & Spesa', '🏠 Casa & Affitto', '🚗 Trasporti', '💡 Bollette & Utenze', '🎉 Svago & Hobby', '📦 Altro'];
 
-  Color get _cardBg => Theme.of(context).brightness == Brightness.dark ? const Color(0xFF1E2235) : Colors.white;
-  Color get _textColor => Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black87;
-  Color get _subtitleColor => Theme.of(context).brightness == Brightness.dark ? Colors.grey.shade400 : Colors.grey.shade600;
-  Color get _primaryColor => Colors.pinkAccent;
-  Color get _scaffoldBg => Theme.of(context).brightness == Brightness.dark ? const Color(0xFF0F111A) : Colors.grey.shade100;
+  
+  
+  
+  
+  
 
   void _esportaCSV() {
     String csv = 'Data,Categoria,Tipo,Importo\n';
@@ -280,11 +286,11 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Color get _cardBg => Theme.of(context).brightness == Brightness.dark ? const Color(0xFF1E2235) : Colors.white;
-  Color get _textColor => Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black87;
-  Color get _subtitleColor => Theme.of(context).brightness == Brightness.dark ? Colors.grey.shade400 : Colors.grey.shade600;
-  Color get _primaryColor => Colors.pinkAccent;
-  Color get _scaffoldBg => Theme.of(context).brightness == Brightness.dark ? const Color(0xFF0F111A) : Colors.grey.shade100;
+  
+  
+  
+  
+  
 
 
   
