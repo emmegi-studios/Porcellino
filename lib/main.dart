@@ -240,6 +240,23 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  void _esportaCSV() {
+    String csv = 'Data,Categoria,Tipo,Importo\n';
+    for (var t in transazioni) {
+      csv += "${t['data']},${t['categoria']},${t['tipo']},${t['importo']}\n";
+    }
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('📊 Esportazione CSV', style: TextStyle(color: Colors.black)),
+        content: SelectableText(csv, style: const TextStyle(color: Colors.black87)),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Chiudi'))
+        ],
+      ),
+    );
+  }
+
   Color get _cardBg => Theme.of(context).brightness == Brightness.dark ? const Color(0xFF1E2235) : Colors.white;
   Color get _textColor => Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black87;
   Color get _subtitleColor => Theme.of(context).brightness == Brightness.dark ? Colors.grey.shade400 : Colors.grey.shade600;
@@ -261,76 +278,7 @@ class _HomeScreenState extends State<HomeScreen> {
   
 
 
-void _esportaCSV() {
-  String csv = 'Data,Categoria,Tipo,Importo
-';
-  for (var t in transazioni) {
-    csv += "${t['data']},${t['categoria']},${t['tipo']},${t['importo']}
-";
-  }
-  // Mostra il report pronto per essere copiato o condiviso
-  showDialog(
-    context: context,
-    builder: (ctx) => AlertDialog(
-      title: const Text('📊 Esportazione CSV', style: TextStyle(color: Colors.black)),
-      content: SelectableText(csv, style: const TextStyle(color: Colors.black87)),
-      actions: [
-        TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Chiudi'))
-      ],
-    ),
-  );
-}
 
-  String _caveauId = "bilancio_principale";
-  final TextEditingController _inviteController = TextEditingController();
-  String _currentTheme = 'Piggy Dark';
-  double patrimonio = 0.00;
-  double entrateMese = 0.00;
-  double usciteMese = 0.00;
-
-  List<Map<String, dynamic>> transazioni = [];
-
-  final List<String> categorieConEmoji = [
-    '🛒 Spesa / Alimentari',
-    '🏠 Bollette & Casa',
-    '🚗 Auto & Trasporti',
-    '🐾 Animali / Pet Care',
-    '🍕 Svago & Ristoranti',
-    '💼 Stipendio / Entrata',
-    '📦 Altro'
-  ];
-  String _selectedCategory = '🛒 Spesa / Alimentari';
-
-  final _noteController = TextEditingController();
-  final _amountController = TextEditingController();
-  String _selectedType = 'Uscita (Spesa)';
-  final _inviteEmailController = TextEditingController();
-  final _itemController = TextEditingController();
-  String aiPurchaseResult = "🤖 Consulente IA:\nPronto ad analizzare l'impatto delle spese sul vostro bilancio condiviso.";
-  bool isAiLoading = false;
-
-  String get _nomeUtenteDinamico {
-    final parts = widget.userEmail.split('@');
-    if (parts.isNotEmpty && parts[0].isNotEmpty) {
-      String name = parts[0];
-      return name[0].toUpperCase() + name.substring(1);
-    }
-    return "Utente";
-  }
-
-  bool get _isLight => _currentTheme == 'Piggy White';
-  
-  
-  
-  
-  
-
-  @override
-  void initState() {
-    super.initState();
-    _caricaDatiLocali();
-    _ascoltaCloudFirestore();
-  }
 
   Future<void> _caricaDatiLocali() async {
     final prefs = await SharedPreferences.getInstance();
