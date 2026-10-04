@@ -63,11 +63,11 @@ class _LoginScreenState extends State<LoginScreen> {
   final String _currentTheme = 'Piggy Dark';
 
   bool get _isLight => _currentTheme == 'Piggy White';
-  Color get _scaffoldBg => _isLight ? const Color(0xFFF1F5F9) : const Color(0xFF0B0F19);
-  Color get _cardBg => _isLight ? const Color(0xFFFFFFFF) : const Color(0xFF131B2E);
-  Color get _textColor => _isLight ? const Color(0xFF0F172A) : Colors.white;
-  Color get _subtitleColor => _isLight ? const Color(0xFF475569) : Colors.grey.shade400;
-  Color get _primaryColor => const Color(0xFFDB2777);
+  
+  
+  
+  
+  
 
   String _valutaSicurezzaPassword(String password) {
     if (password.isEmpty) return "";
@@ -241,6 +241,13 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
 
+  Color get _cardBg => Theme.of(context).brightness == Brightness.dark ? const Color(0xFF1E2235) : Colors.white;
+  Color get _textColor => Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black87;
+  Color get _subtitleColor => Theme.of(context).brightness == Brightness.dark ? Colors.grey.shade400 : Colors.grey.shade600;
+  Color get _primaryColor => Colors.pinkAccent;
+  Color get _scaffoldBg => Theme.of(context).brightness == Brightness.dark ? const Color(0xFF0F111A) : Colors.grey.shade100;
+
+
 void _esportaCSV() {
   String csv = 'Data,Categoria,Tipo,Importo
 ';
@@ -299,11 +306,11 @@ void _esportaCSV() {
   }
 
   bool get _isLight => _currentTheme == 'Piggy White';
-  Color get _scaffoldBg => _isLight ? const Color(0xFFF1F5F9) : const Color(0xFF0B0F19);
-  Color get _cardBg => _isLight ? const Color(0xFFFFFFFF) : const Color(0xFF131B2E);
-  Color get _textColor => _isLight ? const Color(0xFF0F172A) : Colors.white;
-  Color get _subtitleColor => _isLight ? const Color(0xFF475569) : Colors.grey.shade400;
-  Color get _primaryColor => const Color(0xFFDB2777);
+  
+  
+  
+  
+  
 
   @override
   void initState() {
