@@ -499,8 +499,16 @@ class _HomeScreenState extends State<HomeScreen> {
             Row(
               children: [
                 Expanded(child: TextField(
-  controller: _inviteController,
-  style: TextStyle(color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black),
+        controller: _inviteController,
+        style: TextStyle(
+          color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
+          fontWeight: FontWeight.w600,
+        ),
+        decoration: const InputDecoration(
+          hintText: 'Email del partner',
+          hintStyle: TextStyle(color: Colors.grey),
+        ),
+      ).brightness == Brightness.dark ? Colors.white : Colors.black),
   decoration: const InputDecoration(
     hintText: "Email del partner",
     hintStyle: TextStyle(fontSize: 12, color: Colors.grey)
