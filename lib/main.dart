@@ -543,13 +543,13 @@ class _HomeScreenState extends State<HomeScreen> {
                       children: [
                         ElevatedButton.icon(
                           style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFC2185B)),
-                          onPressed: () { setState(() { _currentTheme = 'Piggy Dark'; }); _salvaDati(); Navigator.pop(context); },
+                          onPressed: () { setState(() { _currentTheme = 'Piggy Dark'; }); SharedPreferences.getInstance().then((p) => p.setString("currentTheme", _currentTheme)); Navigator.pop(context); },
                           icon: const Icon(Icons.dark_mode, color: Colors.white, size: 16),
                           label: const Text('Piggy Dark', style: TextStyle(color: Colors.white)),
                         ),
                         ElevatedButton.icon(
                           style: ElevatedButton.styleFrom(backgroundColor: Colors.grey.shade200),
-                          onPressed: () { setState(() { _currentTheme = 'Piggy White'; }); _salvaDati(); Navigator.pop(context); },
+                          onPressed: () { setState(() { _currentTheme = 'Piggy White'; }); SharedPreferences.getInstance().then((p) => p.setString("currentTheme", _currentTheme)); Navigator.pop(context); },
                           icon: const Icon(Icons.light_mode, color: Colors.black87, size: 16),
                           label: const Text('Piggy White', style: TextStyle(color: Colors.black87)),
                         ),
@@ -709,6 +709,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    try {
+      _nomeUtenteDinamico = widget.userEmail.split("@")[0];
+      if (_nomeUtenteDinamico.isNotEmpty) {
+        _nomeUtenteDinamico = _nomeUtenteDinamico[0].toUpperCase() + _nomeUtenteDinamico.substring(1);
+      }
+    } catch(e) {}
     final livello = _getLivelloPorcellino();
 
     return Scaffold(
@@ -929,13 +935,6 @@ class _InviteManagerState extends State<InviteManager> {
 
   @override
   void initState() {
-
-    try {
-      _nomeUtenteDinamico = widget.userEmail.split('@')[0];
-      if (_nomeUtenteDinamico.isNotEmpty) {
-        _nomeUtenteDinamico = _nomeUtenteDinamico[0].toUpperCase() + _nomeUtenteDinamico.substring(1);
-      }
-    } catch(e) {}
 
     super.initState();
     _checkInviti();
