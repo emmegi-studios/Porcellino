@@ -55,11 +55,12 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
 
-  Color get _cardBg => Theme.of(context).brightness == Brightness.dark ? const Color(0xFF1E2235) : Colors.white;
-  Color get _textColor => Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black87;
-  Color get _subtitleColor => Theme.of(context).brightness == Brightness.dark ? Colors.grey.shade400 : Colors.grey.shade600;
+  bool get isDark => _currentTheme == 'Piggy Dark';
+  Color get _cardBg => isDark ? const Color(0xFF1E2235) : Colors.white;
+  Color get _textColor => isDark ? Colors.white : Colors.black87;
+  Color get _subtitleColor => isDark ? Colors.grey.shade400 : Colors.grey.shade600;
   Color get _primaryColor => Colors.pinkAccent;
-  Color get _scaffoldBg => Theme.of(context).brightness == Brightness.dark ? const Color(0xFF0F111A) : Colors.grey.shade100;
+  Color get _scaffoldBg => isDark ? const Color(0xFF0F111A) : Colors.grey.shade100;
 
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -268,7 +269,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController _inviteController = TextEditingController();
   String _selectedType = 'Uscita (Spesa)';
   String _selectedCategory = '📦 Altro';
-  final List<String> categorieConEmoji = ['🍔 Cibo & Spesa', '🏠 Casa & Affitto', '🚗 Trasporti', '💡 Bollette & Utenze', '🎉 Svago & Hobby', '📦 Altro'];
+  final List<String> categorieConEmoji = ['💰 Stipendio / Entrate', '🍔 Cibo & Spesa', '🏠 Casa & Affitto', '🚗 Trasporti', '💡 Bollette & Utenze', '🎉 Svago & Hobby', '📦 Altro'];
 
   
   
@@ -542,13 +543,13 @@ class _HomeScreenState extends State<HomeScreen> {
                       children: [
                         ElevatedButton.icon(
                           style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFC2185B)),
-                          onPressed: () { setState(() => _currentTheme = 'Piggy Dark'); Navigator.pop(context); },
+                          onPressed: () { setState(() { _currentTheme = 'Piggy Dark'; }); _salvaDati(); Navigator.pop(context); },
                           icon: const Icon(Icons.dark_mode, color: Colors.white, size: 16),
                           label: const Text('Piggy Dark', style: TextStyle(color: Colors.white)),
                         ),
                         ElevatedButton.icon(
                           style: ElevatedButton.styleFrom(backgroundColor: Colors.grey.shade200),
-                          onPressed: () { setState(() => _currentTheme = 'Piggy White'); Navigator.pop(context); },
+                          onPressed: () { setState(() { _currentTheme = 'Piggy White'; }); _salvaDati(); Navigator.pop(context); },
                           icon: const Icon(Icons.light_mode, color: Colors.black87, size: 16),
                           label: const Text('Piggy White', style: TextStyle(color: Colors.black87)),
                         ),
@@ -928,6 +929,14 @@ class _InviteManagerState extends State<InviteManager> {
 
   @override
   void initState() {
+
+    try {
+      _nomeUtenteDinamico = widget.userEmail.split('@')[0];
+      if (_nomeUtenteDinamico.isNotEmpty) {
+        _nomeUtenteDinamico = _nomeUtenteDinamico[0].toUpperCase() + _nomeUtenteDinamico.substring(1);
+      }
+    } catch(e) {}
+
     super.initState();
     _checkInviti();
   }
