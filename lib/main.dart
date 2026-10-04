@@ -1073,37 +1073,42 @@ ListTile(leading: const Icon(Icons.logout, color: Colors.redAccent), title: cons
   }
 }
 
+
+
 class InviteManager extends StatefulWidget {
   final Widget child;
-  InviteManager({super.key, required this.child});
+  const InviteManager({super.key, required this.child});
   @override
   State<InviteManager> createState() => _InviteManagerState();
 }
+
 class _InviteManagerState extends State<InviteManager> {
   @override
   void initState() {
     super.initState();
     _checkInviti();
   }
+
   Future<void> _checkInviti() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null || user.email == null) return;
     
-    FirebaseFirestore.instance.collection('inviti').doc(myEmail).snapshots().listen((snapshot) {
+    FirebaseFirestore.instance.collection('inviti').doc(currentEmail).snapshots().listen((snapshot) {
       if (snapshot.exists && snapshot.data() != null) {
         final data = snapshot.data()!;
+        final mittente = data['mittente'] ?? 'Qualcuno';
+        final caveauId = data['caveau_id'] ?? '';
+        
         showDialog(
           context: context,
           barrierDismissible: false,
           builder: (ctx) => AlertDialog(
             title: const Text('📩 Nuovo Invito!', style: TextStyle(color: Colors.black)),
-            content: Text("${data['mittente']} ti ha invitato nel suo Caveau.
-
-Vuoi unire i vostri portafogli?", style: const TextStyle(color: Colors.black)),
+            content: Text('$mittente ti ha invitato nel suo Caveau.\n\nVuoi unire i vostri portafogli?', style: const TextStyle(color: Colors.black)),
             actions: [
               TextButton(
                 onPressed: () async {
-                  await FirebaseFirestore.instance.collection('inviti').doc(myEmail).delete();
+                  await FirebaseFirestore.instance.collection('inviti').doc(currentEmail).delete();
                   if (ctx.mounted) Navigator.pop(ctx);
                 },
                 child: const Text('Rifiuta', style: TextStyle(color: Colors.red)),
@@ -1111,11 +1116,11 @@ Vuoi unire i vostri portafogli?", style: const TextStyle(color: Colors.black)),
               ElevatedButton(
                 onPressed: () async {
                   final prefs = await SharedPreferences.getInstance();
-                  await prefs.setString('caveauId', data['caveau_id']);
-                  await FirebaseFirestore.instance.collection('inviti').doc(myEmail).delete();
+                  await prefs.setString('caveauId', caveauId);
+                  await FirebaseFirestore.instance.collection('inviti').doc(currentEmail).delete();
                   if (ctx.mounted) {
                     Navigator.pop(ctx);
-                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Caveau Unito! Riavvia l'app per sincronizzare.")));
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Caveau Unito! Riavvia l\'app per sincronizzare.')));
                   }
                 },
                 child: const Text('Accetta e Unisci'),
@@ -1126,6 +1131,7 @@ Vuoi unire i vostri portafogli?", style: const TextStyle(color: Colors.black)),
       }
     });
   }
+
   @override
   Widget build(BuildContext context) {
     return widget.child;
