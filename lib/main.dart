@@ -1075,6 +1075,8 @@ ListTile(leading: const Icon(Icons.logout, color: Colors.redAccent), title: cons
 
 
 
+
+
 class InviteManager extends StatefulWidget {
   final Widget child;
   const InviteManager({super.key, required this.child});
@@ -1083,6 +1085,8 @@ class InviteManager extends StatefulWidget {
 }
 
 class _InviteManagerState extends State<InviteManager> {
+  String? currentEmail;
+
   @override
   void initState() {
     super.initState();
@@ -1092,6 +1096,7 @@ class _InviteManagerState extends State<InviteManager> {
   Future<void> _checkInviti() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null || user.email == null) return;
+    
     
     FirebaseFirestore.instance.collection('inviti').doc(currentEmail).snapshots().listen((snapshot) {
       if (snapshot.exists && snapshot.data() != null) {
@@ -1108,7 +1113,9 @@ class _InviteManagerState extends State<InviteManager> {
             actions: [
               TextButton(
                 onPressed: () async {
-                  await FirebaseFirestore.instance.collection('inviti').doc(currentEmail).delete();
+                  if (currentEmail != null) {
+                    await FirebaseFirestore.instance.collection('inviti').doc(currentEmail).delete();
+                  }
                   if (ctx.mounted) Navigator.pop(ctx);
                 },
                 child: const Text('Rifiuta', style: TextStyle(color: Colors.red)),
@@ -1117,7 +1124,9 @@ class _InviteManagerState extends State<InviteManager> {
                 onPressed: () async {
                   final prefs = await SharedPreferences.getInstance();
                   await prefs.setString('caveauId', caveauId);
-                  await FirebaseFirestore.instance.collection('inviti').doc(currentEmail).delete();
+                  if (currentEmail != null) {
+                    await FirebaseFirestore.instance.collection('inviti').doc(currentEmail).delete();
+                  }
                   if (ctx.mounted) {
                     Navigator.pop(ctx);
                     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Caveau Unito! Riavvia l\'app per sincronizzare.')));
