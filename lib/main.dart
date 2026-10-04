@@ -15,6 +15,26 @@ void main() async {
   runApp(const PiggyVaultApp());
 }
 
+
+class AuthGate extends StatelessWidget {
+  const AuthGate({super.key});
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<User?>(
+      stream: FirebaseAuth.instance.authStateChanges(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Scaffold(body: Center(child: CircularProgressIndicator()));
+        }
+        if (snapshot.hasData && snapshot.data != null) {
+          return const HomeScreen(); // Utente già loggato: dritto al caveau
+        }
+        return const LoginScreen(); // Utente non loggato: schermata di login
+      },
+    );
+  }
+}
+
 class PiggyVaultApp extends StatelessWidget {
   const PiggyVaultApp({super.key});
 
@@ -23,7 +43,7 @@ class PiggyVaultApp extends StatelessWidget {
     return const MaterialApp(
       title: 'Piggy Vault',
       debugShowCheckedModeBanner: false,
-      home: LoginScreen(),
+      home: const AuthGate(),
     );
   }
 }
