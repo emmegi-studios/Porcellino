@@ -27,7 +27,7 @@ class AuthGate extends StatelessWidget {
           return const Scaffold(body: Center(child: CircularProgressIndicator()));
         }
         if (snapshot.hasData && snapshot.data != null) {
-          return const InviteManager(child: HomeScreen()); // Utente già loggato: dritto al caveau
+          return InviteManager(child: HomeScreen(userEmail: FirebaseAuth.instance.currentUser?.email ?? 'Nessuna Email')); // Utente già loggato: dritto al caveau
         }
         return const LoginScreen(); // Utente non loggato: schermata di login
       },
@@ -270,7 +270,7 @@ class _LoginScreenState extends State<LoginScreen> {
 class HomeScreen extends StatefulWidget {
   final String userEmail;
 
-  const HomeScreen({super.key, required this.userEmail});
+  HomeScreen({super.key, required this.userEmail});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -1075,7 +1075,7 @@ ListTile(leading: const Icon(Icons.logout, color: Colors.redAccent), title: cons
 
 class InviteManager extends StatefulWidget {
   final Widget child;
-  const InviteManager({super.key, required this.child});
+  InviteManager({super.key, required this.child});
   @override
   State<InviteManager> createState() => _InviteManagerState();
 }
