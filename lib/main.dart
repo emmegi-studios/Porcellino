@@ -278,22 +278,47 @@ class _HomeScreenState extends State<HomeScreen> {
   
   
 
+  
   void _esportaCSV() {
-    String csv = 'Data,Categoria,Tipo,Importo\n';
+    String csv = 'Data,Categoria,Tipo,Importo,Autore,Note
+';
     for (var t in transazioni) {
-      csv += "${t['data']},${t['categoria']},${t['tipo']},${t['importo']}\n";
+      csv += "${t['data']},${t['category']},${t['tipo']},${t['amount']},${t['author'] ?? 'Utente'},${t['note'] ?? ''}
+";
     }
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('📊 Esportazione CSV', style: TextStyle(color: Colors.black)),
-        content: SelectableText(csv, style: const TextStyle(color: Colors.black87)),
+        backgroundColor: _cardBg,
+        title: Text('📊 Esportazione CSV', style: TextStyle(color: _textColor)),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: SingleChildScrollView(
+            child: SelectableText(csv, style: TextStyle(color: _textColor, fontSize: 12)),
+          ),
+        ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Disconnetti Account'))
+          ElevatedButton.icon(
+            style: ElevatedButton.styleFrom(backgroundColor: _primaryColor),
+            onPressed: () {
+              Clipboard.setData(ClipboardData(text: csv));
+              Navigator.pop(ctx);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('CSV scaricato e copiato negli appunti!')),
+              );
+            },
+            icon: const Icon(Icons.download, color: Colors.white, size: 16),
+            label: const Text('Scarica CSV', style: TextStyle(color: Colors.white)),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text('Chiudi', style: TextStyle(color: _subtitleColor)),
+          ),
         ],
       ),
     );
   }
+
 
   
   
@@ -453,41 +478,59 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _mostraModalProfilo() {
-    showModalBottomSheet(isScrollControlled: true, context: context,
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
       backgroundColor: _cardBg,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
-      builder: (context) {
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (BuildContext context) {
         return Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text("👤 Profilo & Cloud", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: _textColor)),
-                  Icon(Icons.cloud_sync, color: _primaryColor)]),
-              ListTile(
-                dense: true,
-                contentPadding: EdgeInsets.zero,
-                title: Text("Utente Attivo", style: TextStyle(color: _subtitleColor, fontSize: 11)),
-                subtitle: Text(_nomeUtenteDinamico, style: TextStyle(color: _textColor, fontWeight: FontWeight.bold, fontSize: 15))),
-              ListTile(
-                dense: true,
-                contentPadding: EdgeInsets.zero,
-                title: Text("Email Collegata", style: TextStyle(color: _subtitleColor, fontSize: 11)),
-                subtitle: Text(widget.userEmail, style: TextStyle(color: _textColor, fontWeight: FontWeight.bold, fontSize: 15))),
-              ListTile(
-                dense: true,
-                contentPadding: EdgeInsets.zero,
-                title: Text("Stato Firebase Cloud", style: TextStyle(color: _subtitleColor, fontSize: 11)),
-                subtitle: Text("🟢 Connesso in tempo reale", style: TextStyle(color: Colors.greenAccent, fontWeight: FontWeight.bold, fontSize: 13))),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(backgroundColor: _primaryColor, padding: const EdgeInsets.symmetric(vertical: 14)),
-                onPressed: () => Navigator.pop(context),
-                child: const Text("Chiudi", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)))]));
-      });
+          padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom, left: 16, right: 16, top: 24),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('👤 Profilo & Cloud', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: _textColor)),
+                    Icon(Icons.cloud_sync, color: _primaryColor),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                ListTile(
+                  title: Text('Utente Attivo', style: TextStyle(color: _subtitleColor, fontSize: 11)),
+                  subtitle: Text(_nomeUtenteDinamico, style: TextStyle(color: _textColor, fontWeight: FontWeight.bold, fontSize: 15)),
+                ),
+                ListTile(
+                  title: Text('Email Collegata', style: TextStyle(color: _subtitleColor, fontSize: 11)),
+                  subtitle: Text(widget.userEmail, style: TextStyle(color: _textColor, fontWeight: FontWeight.bold, fontSize: 15)),
+                ),
+                ListTile(
+                  title: Text('Stato Firebase Cloud', style: TextStyle(color: _subtitleColor, fontSize: 11)),
+                  subtitle: const Text('Connesso in tempo reale', style: TextStyle(color: Colors.greenAccent, fontWeight: FontWeight.bold)),
+                ),
+                const SizedBox(height: 24),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.redAccent,
+                    minimumSize: const Size(double.infinity, 50),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                  onPressed: () async {
+                    Navigator.pop(context);
+                    await FirebaseAuth.instance.signOut();
+                  },
+                  child: const Text('Disconnetti Account', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                ),
+                const SizedBox(height: 24),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 
   void _mostraModalImpostazioni() {
