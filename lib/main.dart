@@ -953,7 +953,21 @@ Card(
                 children: [
                   Text("🎯 Portafogli a Obiettivi", style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: _textColor)),
                   const SizedBox(height: 12),
-                  if (portafogli.isEmpty) Text("Nessun obiettivo attivo. Creane uno!", style: TextStyle(color: _subtitleColor, fontSize: 11)),
+                  if (portafogli.isEmpty) Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.pinkAccent.withOpacity(0.2)),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.flag_outlined, color: Colors.pinkAccent, size: 20),
+                  const SizedBox(width: 12),
+                  const Text("Nessun obiettivo attivo. Creane uno!", style: TextStyle(color: Colors.white70, fontSize: 13)),
+                ],
+              ),
+            ) // Text("Nessun obiettivo attivo. Creane uno!", style: TextStyle(color: _subtitleColor, fontSize: 11)),
                   ...portafogli.asMap().entries.map((entry) {
                     int idx = entry.key;
                     var goal = entry.value;
