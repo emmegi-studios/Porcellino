@@ -264,6 +264,9 @@ class _HomeScreenState extends State<HomeScreen> {
   String _caveauId = '';
   String _nomeUtenteDinamico = 'Utente';
   bool isAiLoading = false;
+  List<Map<String, dynamic>> portafogli = [];
+  final TextEditingController _goalNameController = TextEditingController();
+  final TextEditingController _goalTargetController = TextEditingController();
   String aiPurchaseResult = '';
   final TextEditingController _itemController = TextEditingController();
   final TextEditingController _amountController = TextEditingController();
@@ -611,6 +614,79 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+
+  void _mostraModalNuovoObiettivo() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: _cardBg,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (BuildContext context) {
+        return Padding(
+          padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom, left: 16, right: 16, top: 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text("🎯 Nuovo Obiettivo", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: _textColor)),
+              const SizedBox(height: 16),
+              TextField(controller: _goalNameController, style: TextStyle(color: _textColor), decoration: InputDecoration(labelText: 'Nome Obiettivo (es. Viaggio)', labelStyle: TextStyle(color: _subtitleColor), fillColor: _scaffoldBg, filled: true)),
+              const SizedBox(height: 12),
+              TextField(controller: _goalTargetController, keyboardType: TextInputType.number, style: TextStyle(color: _textColor), decoration: InputDecoration(labelText: 'Target in € (es. 1500)', labelStyle: TextStyle(color: _subtitleColor), fillColor: _scaffoldBg, filled: true)),
+              const SizedBox(height: 24),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(backgroundColor: _primaryColor, minimumSize: const Size(double.infinity, 50)),
+                onPressed: () {
+                  if (_goalNameController.text.isNotEmpty && _goalTargetController.text.isNotEmpty) {
+                    setState(() {
+                      portafogli.add({
+                        'nome': _goalNameController.text.trim(),
+                        'target': double.tryParse(_goalTargetController.text.replaceAll(',', '.')) ?? 0.0,
+                        'attuale': 0.0
+                      });
+                    });
+                    _goalNameController.clear();
+                    _goalTargetController.clear();
+                    Navigator.pop(context);
+                  }
+                },
+                child: const Text("Crea Obiettivo", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+              ),
+              const SizedBox(height: 24),
+            ]
+          )
+        );
+      }
+    );
+  }
+
+  void _aggiungiFondiObiettivo(int index) {
+    final TextEditingController fundController = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: _cardBg,
+        title: Text("Finanzia: ${portafogli[index]['nome']}", style: TextStyle(color: _textColor, fontSize: 16, fontWeight: FontWeight.bold)),
+        content: TextField(controller: fundController, keyboardType: TextInputType.number, style: TextStyle(color: _textColor), decoration: InputDecoration(hintText: "Importo da aggiungere", hintStyle: TextStyle(color: _subtitleColor))),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: Text("Annulla", style: TextStyle(color: _subtitleColor))),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: _primaryColor),
+            onPressed: () {
+              double val = double.tryParse(fundController.text.replaceAll(',', '.')) ?? 0.0;
+              if (val > 0) {
+                setState(() {
+                  portafogli[index]['attuale'] += val;
+                });
+                Navigator.pop(ctx);
+              }
+            },
+            child: const Text("Aggiungi", style: TextStyle(color: Colors.white))
+          )
+        ]
+      )
+    );
+  }
+
   void _mostraFoglioResoconto() {
     double bilancioNetto = entrateMese - usciteMese;
     showModalBottomSheet( context: context,
@@ -814,7 +890,55 @@ class _HomeScreenState extends State<HomeScreen> {
       body: ListView(
         padding: const EdgeInsets.all(16.0),
         children: [
-          Card(
+                    Card(
+            color: _cardBg,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text("🎯 Portafogli a Obiettivi", style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: _textColor)),
+                  const SizedBox(height: 12),
+                  if (portafogli.isEmpty) Text("Nessun obiettivo attivo. Creane uno!", style: TextStyle(color: _subtitleColor, fontSize: 11)),
+                  ...portafogli.asMap().entries.map((entry) {
+                    int idx = entry.key;
+                    var goal = entry.value;
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(goal['nome'], style: TextStyle(color: _textColor, fontWeight: FontWeight.bold)),
+                            Text("€${goal['attuale'].toStringAsFixed(0)} / €${goal['target'].toStringAsFixed(0)}", style: TextStyle(color: _subtitleColor, fontSize: 11)),
+                          ]
+                        ),
+                        const SizedBox(height: 4),
+                        LinearProgressIndicator(value: goal['target'] > 0 ? (goal['attuale'] / goal['target']).clamp(0.0, 1.0) : 0.0, backgroundColor: _scaffoldBg, color: _primaryColor, minHeight: 6),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: TextButton(
+                            onPressed: () => _aggiungiFondiObiettivo(idx),
+                            child: Text("+ Aggiungi fondi", style: TextStyle(color: _primaryColor, fontSize: 12, fontWeight: FontWeight.bold))
+                          )
+                        ),
+                        const SizedBox(height: 4),
+                      ]
+                    );
+                  }).toList(),
+                  ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(backgroundColor: _scaffoldBg, elevation: 0, minimumSize: const Size(double.infinity, 40)),
+                    onPressed: _mostraModalNuovoObiettivo,
+                    icon: Icon(Icons.add, color: _primaryColor, size: 16),
+                    label: Text("Crea Nuovo Obiettivo", style: TextStyle(color: _primaryColor, fontWeight: FontWeight.bold)),
+                  )
+                ]
+              )
+            )
+          ),
+          const SizedBox(height: 16),
+Card(
             color: _cardBg,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
             elevation: 2,
