@@ -289,7 +289,7 @@ class _HomeScreenState extends State<HomeScreen> {
         title: const Text('📊 Esportazione CSV', style: TextStyle(color: Colors.black)),
         content: SelectableText(csv, style: const TextStyle(color: Colors.black87)),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Chiudi'))
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Disconnetti Account'))
         ],
       ),
     );
