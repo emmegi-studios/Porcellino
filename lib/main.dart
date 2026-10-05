@@ -271,13 +271,6 @@ class HomeScreen extends StatefulWidget {
 
 
   // --- V4.19: Funzione Recupero Password ---
-  Future<void> _resetPassword(String email, BuildContext context) async {
-    if (email.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Inserisci prima la tua email nel campo apposito")),
-      );
-      return;
-    }
     try {
       await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
       ScaffoldMessenger.of(context).showSnackBar(
@@ -1257,13 +1250,6 @@ class InviteManager extends StatefulWidget {
 
 
   // --- V4.19: Funzione Recupero Password ---
-  Future<void> _resetPassword(String email, BuildContext context) async {
-    if (email.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Inserisci prima la tua email nel campo apposito")),
-      );
-      return;
-    }
     try {
       await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
       ScaffoldMessenger.of(context).showSnackBar(
