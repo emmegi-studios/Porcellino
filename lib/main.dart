@@ -54,27 +54,6 @@ class LoginScreen extends StatefulWidget {
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
-
-  // --- V4.19: Funzione Recupero Password ---
-  Future<void> _resetPassword(String email, BuildContext context) async {
-    if (email.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Inserisci prima la tua email nel campo apposito")),
-      );
-      return;
-    }
-    try {
-      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Email di recupero inviata! Controlla la posta.")),
-      );
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Errore nel recupero: ${e.toString()}"))
-      );
-    }
-  }
-
 class _LoginScreenState extends State<LoginScreen> {
 
   bool get isDark => _currentTheme == 'Piggy Dark';
@@ -268,20 +247,6 @@ class HomeScreen extends StatefulWidget {
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
-
-
-  // --- V4.19: Funzione Recupero Password ---
-    try {
-      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Email di recupero inviata! Controlla la posta.")),
-      );
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Errore nel recupero: ${e.toString()}"))
-      );
-    }
-  }
 
 class _HomeScreenState extends State<HomeScreen> {
   bool get _isDark => _currentTheme == 'Piggy Dark';
@@ -988,21 +953,7 @@ Card(
                 children: [
                   Text("🎯 Portafogli a Obiettivi", style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: _textColor)),
                   const SizedBox(height: 12),
-                  if (portafogli.isEmpty) Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.pinkAccent.withOpacity(0.2)),
-              ),
-              child: Row(
-                children: [
-                  Icon(Icons.flag_outlined, color: Colors.pinkAccent, size: 20),
-                  const SizedBox(width: 12),
-                  const Text("Nessun obiettivo attivo. Creane uno!", style: TextStyle(color: Colors.white70, fontSize: 13)),
-                ],
-              ),
-            ) // Text("Nessun obiettivo attivo. Creane uno!", style: TextStyle(color: _subtitleColor, fontSize: 11)),
+                  if (portafogli.isEmpty) Text("Nessun obiettivo attivo. Creane uno!", style: TextStyle(color: _subtitleColor, fontSize: 11)),
                   ...portafogli.asMap().entries.map((entry) {
                     int idx = entry.key;
                     var goal = entry.value;
@@ -1095,101 +1046,7 @@ Card(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("💡 
-    // --- V4.15: Grafico 
-            // --- V4.17: Sicurezza Biometrica ---
-            Container(
-              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Color(0xFF1E1E2C),
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: Colors.greenAccent.withOpacity(0.3)),
-              ),
-              child: Row(
-                children: [
-                  Icon(Icons.fingerprint, color: Colors.greenAccent, size: 24),
-                  const SizedBox(width: 16),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text("Protezione Biometrica", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13)),
-                      const SizedBox(height: 2),
-                      const Text("Sblocco con impronta attivo", style: TextStyle(color: Colors.greenAccent, fontSize: 11)),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-
-Flusso Finanziario ---
-    Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Color(0xFF1E1E2C),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.pinkAccent.withOpacity(0.3)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text("
-            // --- V4.17: Sicurezza Biometrica ---
-            Container(
-              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Color(0xFF1E1E2C),
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: Colors.greenAccent.withOpacity(0.3)),
-              ),
-              child: Row(
-                children: [
-                  Icon(Icons.fingerprint, color: Colors.greenAccent, size: 24),
-                  const SizedBox(width: 16),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text("Protezione Biometrica", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13)),
-                      const SizedBox(height: 2),
-                      const Text("Sblocco con impronta attivo", style: TextStyle(color: Colors.greenAccent, fontSize: 11)),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-
-Flusso Finanziario", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14)),
-              Icon(Icons.bar_chart, color: Colors.pinkAccent, size: 20),
-            ],
-          ),
-          const SizedBox(height: 12),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: LinearProgressIndicator(
-              value: 0.65,
-              minHeight: 10,
-              backgroundColor: Colors.redAccent.withOpacity(0.3),
-              valueColor: AlwaysStoppedAnimation<Color>(Colors.greenAccent),
-            ),
-          ),
-          const SizedBox(height: 8),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text("Entrate", style: TextStyle(color: Colors.greenAccent, fontSize: 12)),
-              Text("Uscite", style: TextStyle(color: Colors.redAccent, fontSize: 12)),
-            ],
-          )
-        ],
-      ),
-    ),
-
-Pianificatore Acquisti & Rate", style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: _textColor)),
+                  Text("💡 Pianificatore Acquisti & Rate", style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: _textColor)),
                   const SizedBox(height: 8),
                   Text("Inserisci l'importo (es. 600) per simulare:", style: TextStyle(fontSize: 11, color: _subtitleColor)),
                   const SizedBox(height: 8),
@@ -1247,20 +1104,6 @@ class InviteManager extends StatefulWidget {
   @override
   State<InviteManager> createState() => _InviteManagerState();
 }
-
-
-  // --- V4.19: Funzione Recupero Password ---
-    try {
-      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Email di recupero inviata! Controlla la posta.")),
-      );
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Errore nel recupero: ${e.toString()}"))
-      );
-    }
-  }
 
 class _InviteManagerState extends State<InviteManager> {
   String? currentEmail;
@@ -1320,4 +1163,3 @@ class _InviteManagerState extends State<InviteManager> {
     return widget.child;
   }
 }
-  // Force build v4.19
