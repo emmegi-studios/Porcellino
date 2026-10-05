@@ -887,54 +887,7 @@ class _HomeScreenState extends State<HomeScreen> {
       body: ListView(
         padding: const EdgeInsets.all(16.0),
         children: [
-                    Card(
-            color: _cardBg,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text("🎯 Portafogli a Obiettivi", style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: _textColor)),
-                  const SizedBox(height: 12),
-                  if (portafogli.isEmpty) Text("Nessun obiettivo attivo. Creane uno!", style: TextStyle(color: _subtitleColor, fontSize: 11)),
-                  ...portafogli.asMap().entries.map((entry) {
-                    int idx = entry.key;
-                    var goal = entry.value;
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(goal['nome'], style: TextStyle(color: _textColor, fontWeight: FontWeight.bold)),
-                            Text("€${goal['attuale'].toStringAsFixed(0)} / €${goal['target'].toStringAsFixed(0)}", style: TextStyle(color: _subtitleColor, fontSize: 11)),
-                          ]
-                        ),
-                        const SizedBox(height: 4),
-                        LinearProgressIndicator(value: goal['target'] > 0 ? (goal['attuale'] / goal['target']).clamp(0.0, 1.0) : 0.0, backgroundColor: _scaffoldBg, color: _primaryColor, minHeight: 6),
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: TextButton(
-                            onPressed: () => _aggiungiFondiObiettivo(idx),
-                            child: Text("+ Aggiungi fondi", style: TextStyle(color: _primaryColor, fontSize: 12, fontWeight: FontWeight.bold))
-                          )
-                        ),
-                        const SizedBox(height: 4),
-                      ]
-                    );
-                  }).toList(),
-                  ElevatedButton.icon(
-                    style: ElevatedButton.styleFrom(backgroundColor: _scaffoldBg, elevation: 0, minimumSize: const Size(double.infinity, 40)),
-                    onPressed: _mostraModalNuovoObiettivo,
-                    icon: Icon(Icons.add, color: _primaryColor, size: 16),
-                    label: Text("Crea Nuovo Obiettivo", style: TextStyle(color: _primaryColor, fontWeight: FontWeight.bold)),
-                  )
-                ]
-              )
-            )
-          ),
-          const SizedBox(height: 16),
+                    ,
 Card(
             color: _cardBg,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -995,6 +948,55 @@ Card(
                         Text("€ ${usciteMese.toStringAsFixed(2)}", style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.redAccent))]))))]),
           const SizedBox(height: 14),
 
+          Card(
+            color: _cardBg,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text("🎯 Portafogli a Obiettivi", style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: _textColor)),
+                  const SizedBox(height: 12),
+                  if (portafogli.isEmpty) Text("Nessun obiettivo attivo. Creane uno!", style: TextStyle(color: _subtitleColor, fontSize: 11)),
+                  ...portafogli.asMap().entries.map((entry) {
+                    int idx = entry.key;
+                    var goal = entry.value;
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(goal['nome'], style: TextStyle(color: _textColor, fontWeight: FontWeight.bold)),
+                            Text("€${goal['attuale'].toStringAsFixed(0)} / €${goal['target'].toStringAsFixed(0)}", style: TextStyle(color: _subtitleColor, fontSize: 11)),
+                          ]
+                        ),
+                        const SizedBox(height: 4),
+                        LinearProgressIndicator(value: goal['target'] > 0 ? (goal['attuale'] / goal['target']).clamp(0.0, 1.0) : 0.0, backgroundColor: _scaffoldBg, color: _primaryColor, minHeight: 6),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: TextButton(
+                            onPressed: () => _aggiungiFondiObiettivo(idx),
+                            child: Text("+ Aggiungi fondi", style: TextStyle(color: _primaryColor, fontSize: 12, fontWeight: FontWeight.bold))
+                          )
+                        ),
+                        const SizedBox(height: 4),
+                      ]
+                    );
+                  }).toList(),
+                  ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(backgroundColor: _scaffoldBg, elevation: 0, minimumSize: const Size(double.infinity, 40)),
+                    onPressed: _mostraModalNuovoObiettivo,
+                    icon: Icon(Icons.add, color: _primaryColor, size: 16),
+                    label: Text("Crea Nuovo Obiettivo", style: TextStyle(color: _primaryColor, fontWeight: FontWeight.bold)),
+                  )
+                ]
+              )
+            )
+          ),
+          const SizedBox(height: 16)
+          const SizedBox(height: 16),
           Card(
             color: _cardBg,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
