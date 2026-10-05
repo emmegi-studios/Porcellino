@@ -887,7 +887,7 @@ class _HomeScreenState extends State<HomeScreen> {
       body: ListView(
         padding: const EdgeInsets.all(16.0),
         children: [
-                    ,
+
 Card(
             color: _cardBg,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -995,7 +995,7 @@ Card(
               )
             )
           ),
-          const SizedBox(height: 16)
+          const SizedBox(height: 16),
           const SizedBox(height: 16),
           Card(
             color: _cardBg,
