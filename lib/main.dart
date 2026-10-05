@@ -303,7 +303,7 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: [
           ElevatedButton.icon(
             style: ElevatedButton.styleFrom(backgroundColor: _primaryColor),
-            onPressed: () {
+            onPressed: () { HapticFeedback.lightImpact();
               Clipboard.setData(ClipboardData(text: csv));
               Navigator.pop(ctx);
               ScaffoldMessenger.of(context).showSnackBar(
@@ -522,7 +522,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     minimumSize: const Size(double.infinity, 50),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
-                      onPressed: () async { Navigator.pop(context); await FirebaseAuth.instance.signOut(); Navigator.of(context, rootNavigator: true).pushNamedAndRemoveUntil("/", (route) => false); },
+                      onPressed: () async { HapticFeedback.lightImpact(); Navigator.pop(context); await FirebaseAuth.instance.signOut(); Navigator.of(context, rootNavigator: true).pushNamedAndRemoveUntil("/", (route) => false); },
                   child: const Text('Disconnetti Account', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                 ),
                 const SizedBox(height: 24),
@@ -583,13 +583,13 @@ class _HomeScreenState extends State<HomeScreen> {
                       children: [
                         ElevatedButton.icon(
                           style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFC2185B)),
-                          onPressed: () { setState(() { _currentTheme = 'Piggy Dark'; }); SharedPreferences.getInstance().then((p) => p.setString("currentTheme", _currentTheme)); Navigator.pop(context); },
+                          onPressed: () { HapticFeedback.lightImpact(); setState(() { _currentTheme = 'Piggy Dark'; }); SharedPreferences.getInstance().then((p) => p.setString("currentTheme", _currentTheme)); Navigator.pop(context); },
                           icon: const Icon(Icons.dark_mode, color: Colors.white, size: 16),
                           label: const Text('Piggy Dark', style: TextStyle(color: Colors.white)),
                         ),
                         ElevatedButton.icon(
                           style: ElevatedButton.styleFrom(backgroundColor: Colors.grey.shade200),
-                          onPressed: () { setState(() { _currentTheme = 'Piggy White'; }); SharedPreferences.getInstance().then((p) => p.setString("currentTheme", _currentTheme)); Navigator.pop(context); },
+                          onPressed: () { HapticFeedback.lightImpact(); setState(() { _currentTheme = 'Piggy White'; }); SharedPreferences.getInstance().then((p) => p.setString("currentTheme", _currentTheme)); Navigator.pop(context); },
                           icon: const Icon(Icons.light_mode, color: Colors.black87, size: 16),
                           label: const Text('Piggy White', style: TextStyle(color: Colors.black87)),
                         ),
@@ -627,7 +627,7 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 24),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(backgroundColor: _primaryColor, minimumSize: const Size(double.infinity, 50)),
-                onPressed: () {
+                onPressed: () { HapticFeedback.lightImpact();
                   if (_goalNameController.text.isNotEmpty && _goalTargetController.text.isNotEmpty) {
                     setState(() {
                       portafogli.add({
@@ -663,7 +663,7 @@ class _HomeScreenState extends State<HomeScreen> {
           TextButton(onPressed: () => Navigator.pop(ctx), child: Text("Annulla", style: TextStyle(color: _subtitleColor))),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: _primaryColor),
-            onPressed: () {
+            onPressed: () { HapticFeedback.lightImpact();
               double val = double.tryParse(fundController.text.replaceAll(',', '.')) ?? 0.0;
               if (val > 0) {
                 setState(() {
@@ -701,7 +701,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       IconButton(
                         icon: Icon(Icons.download, color: _primaryColor),
                         tooltip: 'Esporta CSV',
-                        onPressed: () {
+                        onPressed: () { HapticFeedback.lightImpact();
                           _esportaCSV();
                         },
                       ),
@@ -801,7 +801,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 decoration: InputDecoration(labelText: "Note / Descrizione", labelStyle: TextStyle(color: _subtitleColor), filled: true, fillColor: _scaffoldBg, border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)))),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(backgroundColor: _primaryColor, padding: const EdgeInsets.symmetric(vertical: 16), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
-                onPressed: () {
+                onPressed: () { HapticFeedback.lightImpact();
                   final note = _noteController.text.trim();
                   final amount = double.tryParse(_amountController.text.trim().replaceAll(',', '.')) ?? 0.0;
 
@@ -1134,7 +1134,7 @@ class _InviteManagerState extends State<InviteManager> {
             content: Text('$mittente ti ha invitato nel suo Caveau.\n\nVuoi unire i vostri portafogli?', style: const TextStyle(color: Colors.black)),
             actions: [
               TextButton(
-                onPressed: () async {
+                onPressed: () async { HapticFeedback.lightImpact();
                   if (currentEmail != null) {
                     await FirebaseFirestore.instance.collection('inviti').doc(currentEmail).delete();
                   }
@@ -1142,7 +1142,7 @@ class _InviteManagerState extends State<InviteManager> {
                 },
                 child: const Text('Rifiuta', style: TextStyle(color: Colors.red))),
               ElevatedButton(
-                onPressed: () async {
+                onPressed: () async { HapticFeedback.lightImpact();
                   final prefs = await SharedPreferences.getInstance();
                   await prefs.setString('caveauId', caveauId);
                   if (currentEmail != null) {
