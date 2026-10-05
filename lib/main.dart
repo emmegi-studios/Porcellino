@@ -54,6 +54,27 @@ class LoginScreen extends StatefulWidget {
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
+
+  // --- V4.19: Funzione Recupero Password ---
+  Future<void> _resetPassword(String email, BuildContext context) async {
+    if (email.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Inserisci prima la tua email nel campo apposito")),
+      );
+      return;
+    }
+    try {
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Email di recupero inviata! Controlla la posta.")),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Errore nel recupero: ${e.toString()}"))
+      );
+    }
+  }
+
 class _LoginScreenState extends State<LoginScreen> {
 
   bool get isDark => _currentTheme == 'Piggy Dark';
@@ -247,6 +268,27 @@ class HomeScreen extends StatefulWidget {
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
+
+
+  // --- V4.19: Funzione Recupero Password ---
+  Future<void> _resetPassword(String email, BuildContext context) async {
+    if (email.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Inserisci prima la tua email nel campo apposito")),
+      );
+      return;
+    }
+    try {
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Email di recupero inviata! Controlla la posta.")),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Errore nel recupero: ${e.toString()}"))
+      );
+    }
+  }
 
 class _HomeScreenState extends State<HomeScreen> {
   bool get _isDark => _currentTheme == 'Piggy Dark';
@@ -1212,6 +1254,27 @@ class InviteManager extends StatefulWidget {
   @override
   State<InviteManager> createState() => _InviteManagerState();
 }
+
+
+  // --- V4.19: Funzione Recupero Password ---
+  Future<void> _resetPassword(String email, BuildContext context) async {
+    if (email.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Inserisci prima la tua email nel campo apposito")),
+      );
+      return;
+    }
+    try {
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Email di recupero inviata! Controlla la posta.")),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Errore nel recupero: ${e.toString()}"))
+      );
+    }
+  }
 
 class _InviteManagerState extends State<InviteManager> {
   String? currentEmail;
