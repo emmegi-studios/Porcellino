@@ -248,11 +248,12 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  Color get _cardBg => Theme.of(context).brightness == Brightness.dark ? const Color(0xFF1E2235) : Colors.white;
-  Color get _textColor => Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black87;
-  Color get _subtitleColor => Theme.of(context).brightness == Brightness.dark ? Colors.grey.shade400 : Colors.grey.shade600;
+  bool get _isDark => _currentTheme == 'Piggy Dark';
+  Color get _cardBg => _isDark ? const Color(0xFF1E2235) : Colors.white;
+  Color get _textColor => _isDark ? Colors.white : Colors.black87;
+  Color get _subtitleColor => _isDark ? Colors.grey.shade400 : Colors.grey.shade600;
   Color get _primaryColor => Colors.pinkAccent;
-  Color get _scaffoldBg => Theme.of(context).brightness == Brightness.dark ? const Color(0xFF0F111A) : Colors.grey.shade100;
+  Color get _scaffoldBg => _isDark ? const Color(0xFF0F111A) : Colors.grey.shade100;
 
   double patrimonio = 0.0;
   double entrateMese = 0.0;
@@ -581,7 +582,19 @@ class _HomeScreenState extends State<HomeScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text("📋 Foglio Resoconto Cloud", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: _textColor)),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text("📋 Foglio Resoconto Cloud", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: _textColor)),
+                      IconButton(
+                        icon: Icon(Icons.download, color: _primaryColor),
+                        tooltip: 'Esporta CSV',
+                        onPressed: () {
+                          _esportaCSV();
+                        },
+                      ),
+                    ],
+                  ),
                   Icon(Icons.description, color: _primaryColor)]),
               const SizedBox(height: 16),
               Card(
