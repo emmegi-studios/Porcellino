@@ -1046,7 +1046,49 @@ Card(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("💡 Pianificatore Acquisti & Rate", style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: _textColor)),
+                  Text("💡 
+    // --- V4.15: Grafico Flusso Finanziario ---
+    Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Color(0xFF1E1E2C),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.pinkAccent.withOpacity(0.3)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text("Flusso Finanziario", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14)),
+              Icon(Icons.bar_chart, color: Colors.pinkAccent, size: 20),
+            ],
+          ),
+          const SizedBox(height: 12),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: LinearProgressIndicator(
+              value: 0.65,
+              minHeight: 10,
+              backgroundColor: Colors.redAccent.withOpacity(0.3),
+              valueColor: AlwaysStoppedAnimation<Color>(Colors.greenAccent),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text("Entrate", style: TextStyle(color: Colors.greenAccent, fontSize: 12)),
+              Text("Uscite", style: TextStyle(color: Colors.redAccent, fontSize: 12)),
+            ],
+          )
+        ],
+      ),
+    ),
+
+Pianificatore Acquisti & Rate", style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: _textColor)),
                   const SizedBox(height: 8),
                   Text("Inserisci l'importo (es. 600) per simulare:", style: TextStyle(fontSize: 11, color: _subtitleColor)),
                   const SizedBox(height: 8),
