@@ -522,7 +522,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     minimumSize: const Size(double.infinity, 50),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
-                      onPressed: () async { Navigator.pop(context); await FirebaseAuth.instance.signOut(); },
+                      onPressed: () async { Navigator.pop(context); await FirebaseAuth.instance.signOut(); Navigator.of(context, rootNavigator: true).pushNamedAndRemoveUntil("/", (route) => false); },
                   child: const Text('Disconnetti Account', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                 ),
                 const SizedBox(height: 24),
