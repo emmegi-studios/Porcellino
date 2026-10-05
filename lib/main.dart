@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -279,12 +280,11 @@ class _HomeScreenState extends State<HomeScreen> {
   
 
   
+  
   void _esportaCSV() {
-    String csv = 'Data,Categoria,Tipo,Importo,Autore,Note
-';
+    String csv = 'Data,Categoria,Tipo,Importo,Autore,Note\n;';
     for (var t in transazioni) {
-      csv += "${t['data']},${t['category']},${t['tipo']},${t['amount']},${t['author'] ?? 'Utente'},${t['note'] ?? ''}
-";
+      csv += "${t['data']},${t['category']},${t['tipo']},${t['amount']},${t['author'] ?? 'Utente'},${t['note'] ?? ''}\n";
     }
     showDialog(
       context: context,
@@ -304,7 +304,7 @@ class _HomeScreenState extends State<HomeScreen> {
               Clipboard.setData(ClipboardData(text: csv));
               Navigator.pop(ctx);
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('CSV scaricato e copiato negli appunti!')),
+                const SnackBar(content: Text('CSV copiato con successo negli appunti!')),
               );
             },
             icon: const Icon(Icons.download, color: Colors.white, size: 16),
@@ -318,6 +318,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+
 
 
   
