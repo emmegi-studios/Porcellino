@@ -1061,7 +1061,33 @@ Card(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text("💡 
-    // --- V4.15: Grafico Flusso Finanziario ---
+    // --- V4.15: Grafico 
+            // --- V4.17: Sicurezza Biometrica ---
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Color(0xFF1E1E2C),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: Colors.greenAccent.withOpacity(0.3)),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.fingerprint, color: Colors.greenAccent, size: 24),
+                  const SizedBox(width: 16),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text("Protezione Biometrica", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13)),
+                      const SizedBox(height: 2),
+                      const Text("Sblocco con impronta attivo", style: TextStyle(color: Colors.greenAccent, fontSize: 11)),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+
+Flusso Finanziario ---
     Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       padding: const EdgeInsets.all(16),
@@ -1076,7 +1102,33 @@ Card(
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text("Flusso Finanziario", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14)),
+              const Text("
+            // --- V4.17: Sicurezza Biometrica ---
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Color(0xFF1E1E2C),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: Colors.greenAccent.withOpacity(0.3)),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.fingerprint, color: Colors.greenAccent, size: 24),
+                  const SizedBox(width: 16),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text("Protezione Biometrica", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13)),
+                      const SizedBox(height: 2),
+                      const Text("Sblocco con impronta attivo", style: TextStyle(color: Colors.greenAccent, fontSize: 11)),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+
+Flusso Finanziario", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14)),
               Icon(Icons.bar_chart, color: Colors.pinkAccent, size: 20),
             ],
           ),
