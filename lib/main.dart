@@ -42,6 +42,8 @@ class AuthGate extends StatelessWidget {
 }
 
 class PiggyVaultApp extends StatelessWidget {
+  final String initialTheme;
+  const PiggyVaultApp({super.key, this.initialTheme = 'Piggy Dark'});
   const PiggyVaultApp({super.key});
 
   @override
