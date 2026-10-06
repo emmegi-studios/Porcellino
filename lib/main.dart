@@ -132,7 +132,9 @@ class _LoginScreenState extends State<LoginScreen> {
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Auth: ${e.toString()} - Accesso locale consentito")));
+        SnackBar(content: Text("Auth: ${e.toString()}")));
+      return; // 🔒 Ferma l'esecuzione in caso di errore!
+
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
