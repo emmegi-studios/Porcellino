@@ -59,32 +59,37 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
 
-  final _secureStorage = const FlutterSecureStorage();
-  final LocalAuthentication _localAuth = LocalAuthentication();
+  @override
+  void initState() {
+    super.initState();
+    _loadSavedEmail();
+  }
+
+  Future<void> _loadSavedEmail() async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedEmail = prefs.getString('piggy_last_email');
+    if (savedEmail != null && mounted) {
+      setState(() {
+        _emailController.text = savedEmail;
+      });
+    }
+  }
+
+  Future<void> _saveEmail(String email) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('piggy_last_email', email);
+  }
+
+
+  
+  
 
   Future<void> _saveCredentials(String email, String password) async {
     await _secureStorage.write(key: 'piggy_email', value: email);
     await _secureStorage.write(key: 'piggy_password', value: password);
   }
 
-  Future<void> _loginWithBiometrics() async {
-    try {
-      bool authenticated = await _localAuth.authenticate(
-        localizedReason: 'Usa l\'impronta digitale per accedere a Piggy Vault',
-        options: const AuthenticationOptions(biometricOnly: true, stickyAuth: true),
-      );
-
-      if (authenticated) {
-        String? email = await _secureStorage.read(key: 'piggy_email');
-        String? password = await _secureStorage.read(key: 'piggy_password');
-
-        if (email != null && password != null) {
-          
-        final emailVal = _emailController.text.trim();
-        final passVal = _passwordController.text.trim();
-        await _saveCredentials(emailVal, passVal);
-        await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
-        } else {
+   else {
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Nessuna credenziale salvata. Accedi manualmente la prima volta."), backgroundColor: Colors.orange));
           }
@@ -313,14 +318,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ),
                       if (!_isRegistrazione) const SizedBox(height: 12),
-                      if (!_isRegistrazione) OutlinedButton.icon(
-                        style: OutlinedButton.styleFrom(
-                          side: const BorderSide(color: Colors.pinkAccent),
-                          minimumSize: const Size.fromHeight(52),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                        ),
-                        onPressed: _loginWithBiometrics,
-                        icon: const Icon(Icons.fingerprint, color: Colors.pinkAccent),
+                      if (!_isRegistrazione) 
                         label: const Text("Accedi con Impronta", style: TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold)),
                       ),
                       if (!_isRegistrazione) const SizedBox(height: 8),
