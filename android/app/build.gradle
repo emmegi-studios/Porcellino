@@ -41,3 +41,7 @@ flutter {
 }
 
 apply plugin: 'com.google.gms.google-services'
+// Aggiunta forzata per risolvere il bug di Gradle
+dependencies {
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.4'
+}
