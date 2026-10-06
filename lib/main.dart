@@ -378,6 +378,16 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     setState(() {
       _monthlyBudget = newBudget;
     });
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        await FirebaseFirestore.instance.collection('users_budget').doc(user.uid).set({
+          'monthly_budget': newBudget,
+        }, SetOptions(merge: true));
+      }
+    } catch (e) {
+      print("Errore salvataggio budget cloud: $e");
+    }
   }
 
   void _showBudgetDialog() {
