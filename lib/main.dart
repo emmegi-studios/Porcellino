@@ -159,17 +159,13 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(color: _cardBg, shape: BoxShape.circle),
-                child: Image.asset(
-                'assets/icon/icona_esterna.png',
-                width: 60,
-                height: 60,
-                fit: BoxFit.contain,
-                errorBuilder: (context, error, stackTrace) => Icon(Icons.savings, size: 40, color: _primaryColor),
-              ),
-              ),
+                    Image.asset(
+                      'assets/icon/icona_esterna.png',
+                      width: 80,
+                      height: 80,
+                      fit: BoxFit.contain,
+                      errorBuilder: (context, error, stackTrace) => Icon(Icons.savings, size: 60, color: _primaryColor),
+                    ),
               const SizedBox(height: 16),
               const Text("Piggy Vault", style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white)),
               const SizedBox(height: 8),
