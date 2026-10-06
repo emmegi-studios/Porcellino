@@ -276,6 +276,30 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  bool _isDarkTheme = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadBudget();
+    _loadTheme();
+  }
+
+  Future<void> _loadTheme() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _isDarkTheme = prefs.getBool('piggy_is_dark') ?? true;
+    });
+  }
+
+  Future<void> _saveTheme(bool isDark) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('piggy_is_dark', isDark);
+    setState(() {
+      _isDarkTheme = isDark;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
