@@ -1281,45 +1281,107 @@ Card(
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
             child: Padding(
               padding: const EdgeInsets.all(18.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              child: Builder(
+                builder: (context) {
+                  double rem = patrimonio;
+                  double eProg = (rem >= 1000) ? 1.0 : (rem / 1000).clamp(0.0, 1.0);
+                  rem -= 1000; if (rem < 0) rem = 0;
+                  double cProg = (rem >= 10000) ? 1.0 : (rem / 10000).clamp(0.0, 1.0);
+                  rem -= 10000; if (rem < 0) rem = 0;
+                  double fProg = (rem >= 50000) ? 1.0 : (rem / 50000).clamp(0.0, 1.0);
+                  rem -= 50000; if (rem < 0) rem = 0;
+                  double pProg = (rem >= 100000) ? 1.0 : (rem / 100000).clamp(0.0, 1.0);
+
+                  String aName = "Emergenze";
+                  IconData aIcon = Icons.shield;
+                  Color aColor = Colors.green;
+                  double aCurrent = patrimonio;
+                  double aTarget = 1000;
+                  double aProg = eProg;
+
+                  if (eProg >= 1.0) {
+                    aName = "Cuscino";
+                    aIcon = Icons.weekend;
+                    aColor = Colors.blue;
+                    aCurrent = patrimonio - 1000;
+                    aTarget = 10000;
+                    aProg = cProg;
+                  }
+                  if (cProg >= 1.0) {
+                    aName = "Fortezza";
+                    aIcon = Icons.castle;
+                    aColor = Colors.purple;
+                    aCurrent = patrimonio - 11000;
+                    aTarget = 50000;
+                    aProg = fProg;
+                  }
+                  if (fProg >= 1.0) {
+                    aName = "Porcellone";
+                    aIcon = Icons.savings;
+                    aColor = _primaryColor;
+                    aCurrent = patrimonio - 61000;
+                    aTarget = 100000;
+                    aProg = pProg;
+                  }
+
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Icon(livello['icon'], color: livello['color'], size: 22),
-                          const SizedBox(width: 8),
-                          Text("🏆 Livelli Risparmio", style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: _textColor))]),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                        decoration: BoxDecoration(color: _scaffoldBg, borderRadius: BorderRadius.circular(12)),
-                        child: Text("Livello: ${livello['nome']}", style: TextStyle(fontSize: 11, color: livello['color'], fontWeight: FontWeight.bold)))]),
-                  const SizedBox(height: 10),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text("Obiettivo Attuale", style: TextStyle(fontSize: 11, color: _subtitleColor)),
-                      Text("€ ${patrimonio.toStringAsFixed(0)} / ${livello['target']}", style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: _textColor))]),
-                  const SizedBox(height: 8),
-                  LinearProgressIndicator(value: _getProgresso(), backgroundColor: _scaffoldBg, color: livello['color'], minHeight: 8),
-                  const SizedBox(height: 16),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      GestureDetector(
-                        onTap: () => _mostraDettaglioLivello("1. Emergenze", "1.000€", "Fondo di prima sicurezza per imprevisti urgenti.", Icons.shield, Colors.green),
-                        child: _buildTappaBadge("Emergenze", "1.000€", Icons.shield, Colors.green, patrimonio >= 1000)),
-                      GestureDetector(
-                        onTap: () => _mostraDettaglioLivello("2. Cuscino", "10.000€", "Cuscino finanziario per una tranquillità a medio termine.", Icons.weekend, Colors.blue),
-                        child: _buildTappaBadge("Cuscino", "10.000€", Icons.weekend, Colors.blue, patrimonio >= 10000)),
-                      GestureDetector(
-                        onTap: () => _mostraDettaglioLivello("3. Fortezza", "50.000€", "Solida fortezza patrimoniale per investimenti e stabilità.", Icons.castle, Colors.purple),
-                        child: _buildTappaBadge("Fortezza", "50.000€", Icons.castle, Colors.purple, patrimonio >= 50000)),
-                      GestureDetector(
-                        onTap: () => _mostraDettaglioLivello("4. Porcellone", "100.000€", "Il traguardo supremo del caveau finanziario!", Icons.savings, _primaryColor),
-                        child: _buildTappaBadge("Porcellone", "100.000€", Icons.savings, _primaryColor, patrimonio >= 100000))])]))),
+                          Row(
+                            children: [
+                              Icon(aIcon, color: aColor, size: 22),
+                              const SizedBox(width: 8),
+                              Text("🏆 Livelli Risparmio", style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: _textColor)),
+                            ],
+                          ),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                            decoration: BoxDecoration(color: _scaffoldBg, borderRadius: BorderRadius.circular(12)),
+                            child: Text("Livello: $aName", style: TextStyle(fontSize: 11, color: aColor, fontWeight: FontWeight.bold)),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text("Obiettivo Attuale", style: TextStyle(fontSize: 11, color: _subtitleColor)),
+                          Text("€ ${aCurrent.toStringAsFixed(0)} / ${aTarget.toStringAsFixed(0)}€", style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: _textColor)),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      LinearProgressIndicator(value: aProg, backgroundColor: _scaffoldBg, color: aColor, minHeight: 8),
+                      const SizedBox(height: 16),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          GestureDetector(
+                            onTap: () => _mostraDettaglioLivello("1. Emergenze", "1.000€", "Fondo di prima sicurezza per imprevisti urgenti.", Icons.shield, Colors.green),
+                            child: _buildTappaBadge("Emergenze", "1.000€", Icons.shield, Colors.green, eProg >= 1.0),
+                          ),
+                          GestureDetector(
+                            onTap: () => _mostraDettaglioLivello("2. Cuscino", "10.000€", "Cuscino finanziario per una tranquillità a medio termine.", Icons.weekend, Colors.blue),
+                            child: _buildTappaBadge("Cuscino", "10.000€", Icons.weekend, Colors.blue, cProg >= 1.0),
+                          ),
+                          GestureDetector(
+                            onTap: () => _mostraDettaglioLivello("3. Fortezza", "50.000€", "Solida fortezza patrimoniale per investimenti e stabilità.", Icons.castle, Colors.purple),
+                            child: _buildTappaBadge("Fortezza", "50.000€", Icons.castle, Colors.purple, fProg >= 1.0),
+                          ),
+                          GestureDetector(
+                            onTap: () => _mostraDettaglioLivello("4. Porcellone", "100.000€", "Il traguardo supremo del caveau finanziario!", Icons.savings, _primaryColor),
+                            child: _buildTappaBadge("Porcellone", "100.000€", Icons.savings, _primaryColor, pProg >= 1.0),
+                          ),
+                        ],
+                      ),
+                    ],
+                  );
+                },
+              ),
+            ),
+          ),
           const SizedBox(height: 14),
 
           Card(
