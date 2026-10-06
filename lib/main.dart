@@ -349,6 +349,48 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+
+  bool _isInitialLoad = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _setupRealtimeNotifications();
+  }
+
+  void _setupRealtimeNotifications() {
+    final currentUserEmail = FirebaseAuth.instance.currentUser?.email;
+    FirebaseFirestore.instance.collection('caveau_condiviso').snapshots().listen((snapshot) {
+      if (_isInitialLoad) {
+        _isInitialLoad = false;
+        return;
+      }
+      for (var change in snapshot.docChanges) {
+        if (change.type == DocumentChangeType.added) {
+          final data = change.doc.data() as Map<String, dynamic>?;
+          if (data != null) {
+            final author = data['author'] ?? 'Partner';
+            final amount = data['amount'] ?? '0';
+            final category = data['category'] ?? 'Spesa';
+            final type = data['type'] ?? 'Uscita';
+
+            if (currentUserEmail == null || author != currentUserEmail) {
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text("🔔 Nuova attività da $author: $type di €$amount ($category)"),
+                    backgroundColor: const Color(0xFF3B82F6),
+                    duration: const Duration(seconds: 4),
+                  ),
+                );
+              }
+            }
+          }
+        }
+      }
+    });
+  }
+
   bool get _isDark => _currentTheme == 'Piggy Dark';
   Color get _cardBg => _isDark ? const Color(0xFF1E2235) : Colors.white;
   Color get _textColor => _isDark ? Colors.white : Colors.black87;
