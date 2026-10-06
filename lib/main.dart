@@ -1,3 +1,6 @@
+
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:local_auth/local_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -55,6 +58,45 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+
+  final _secureStorage = const FlutterSecureStorage();
+  final LocalAuthentication _localAuth = LocalAuthentication();
+
+  Future<void> _saveCredentials(String email, String password) async {
+    await _secureStorage.write(key: 'piggy_email', value: email);
+    await _secureStorage.write(key: 'piggy_password', value: password);
+  }
+
+  Future<void> _loginWithBiometrics() async {
+    try {
+      bool authenticated = await _localAuth.authenticate(
+        localizedReason: 'Usa l\'impronta digitale per accedere a Piggy Vault',
+        options: const AuthenticationOptions(biometricOnly: true, stickyAuth: true),
+      );
+
+      if (authenticated) {
+        String? email = await _secureStorage.read(key: 'piggy_email');
+        String? password = await _secureStorage.read(key: 'piggy_password');
+
+        if (email != null && password != null) {
+          
+        final emailVal = _emailController.text.trim();
+        final passVal = _passwordController.text.trim();
+        await _saveCredentials(emailVal, passVal);
+        await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
+        } else {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Nessuna credenziale salvata. Accedi manualmente la prima volta."), backgroundColor: Colors.orange));
+          }
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Errore biometria: ${e.toString()}"), backgroundColor: Colors.red));
+      }
+    }
+  }
+
 
   bool get isDark => _currentTheme == 'Piggy Dark';
   Color get _cardBg => isDark ? const Color(0xFF1E2235) : Colors.white;
