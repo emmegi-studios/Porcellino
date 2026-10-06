@@ -64,6 +64,23 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _isRegistrazione = false;
   bool _isLoading = false;
   bool _obscurePassword = true;
+  bool _isDarkTheme = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadTheme();
+    _loadSavedEmail();
+  }
+
+  Future<void> _loadTheme() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (mounted) {
+      setState(() {
+        _isDarkTheme = prefs.getBool('piggy_is_dark') ?? true;
+      });
+    }
+  }
 
   
 
@@ -145,9 +162,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final _cardBg = const Color(0xFF1E2235);
-    final _scaffoldBg = const Color(0xFF0F111A);
-    final _textColor = Colors.white;
+    final _cardBg = _isDarkTheme ? const Color(0xFF1E2235) : Colors.white;
+    final _scaffoldBg = _isDarkTheme ? const Color(0xFF0F111A) : const Color(0xFFF0F2F5);
+    final _textColor = _isDarkTheme ? Colors.white : Colors.black87;
     final _subtitleColor = Colors.grey.shade400;
     final _primaryColor = Colors.pinkAccent;
 
