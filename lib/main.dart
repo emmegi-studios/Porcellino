@@ -1673,3 +1673,167 @@ class PiggyVaultApp extends StatelessWidget {
     );
   }
 }
+
+class PiggyAiAdvisorWidget extends StatefulWidget {
+  final double patrimonio;
+  const PiggyAiAdvisorWidget({super.key, this.patrimonio = 1500.0});
+
+  @override
+  State<PiggyAiAdvisorWidget> createState() => _PiggyAiAdvisorWidgetState();
+}
+
+class _PiggyAiAdvisorWidgetState extends State<PiggyAiAdvisorWidget> {
+  final TextEditingController _amountController = TextEditingController();
+  int _months = 1;
+  bool _isLoading = false;
+  String _aiResponse = "";
+  bool _isSustainable = true;
+
+  void _analyzePurchase() async {
+    final text = _amountController.text.trim();
+    if (text.isEmpty) return;
+    
+    final double? amount = double.tryParse(text.replaceAll(',', '.'));
+    if (amount == null || amount <= 0) return;
+
+    setState(() {
+      _isLoading = true;
+      _aiResponse = "";
+    });
+
+    // Simulazione elaborazione neurale
+    await Future.delayed(const Duration(milliseconds: 1200));
+
+    final double monthlyInstallment = amount / _months;
+    final double impactPercentage = (amount / (widget.patrimonio > 0 ? widget.patrimonio : 1000.0)) * 100;
+
+    setState(() {
+      _isLoading = false;
+      if (impactPercentage > 40 || monthlyInstallment > 300) {
+        _isSustainable = false;
+        _aiResponse = "⚠️ Attenzione Marco! Una spesa di €${amount.toStringAsFixed(2)} ($(_months > 1 ? 'divisa in $_months rate da €${monthlyInstallment.toStringAsFixed(2)}/mese' : 'in soluzione unica')) assorbe il ${impactPercentage.toStringAsFixed(1)}% del vostro patrimonio condiviso. Ti consiglio una rateizzazione più lunga o di valutare attentamente i flussi del mese.";
+      } else {
+        _isSustainable = true;
+        _aiResponse = "🟢 Ottima mossa, Marco! La spesa di €${amount.toStringAsFixed(2)} ($(_months > 1 ? '$_months rate da €${monthlyInstallment.toStringAsFixed(2)}' : 'unica')) è ampiamente sostenibile con i margini attuali del caveau. Il fondo comune rimane protetto e sicuro!";
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(0xFF1E1E2C),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.pinkAccent.withOpacity(0.4), width: 1.5),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.pinkAccent.withOpacity(0.1),
+            blurRadius: 15,
+            spreadRadius: 2,
+          )
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 50,
+                height: 50,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  image: const DecorationImage(
+                    image: AssetImage('assets/images/piggy_ai_assistant.png'),
+                    fit: BoxFit.cover,
+                  ),
+                  border: Border.all(color: Colors.pinkAccent, width: 2),
+                ),
+              ),
+              const SizedBox(width: 12),
+              const Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Piggy AI Advisor",
+                    style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  Row(
+                    children: [
+                      Icon(Icons.circle, size: 8, color: Colors.greenAccent),
+                      SizedBox(width: 6),
+                      Text("Online • Analisi Caveau Attiva", style: TextStyle(color: Colors.grey, fontSize: 12)),
+                    ],
+                  ),
+                ],
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          TextField(
+            controller: _amountController,
+            keyboardType: TextInputType.number,
+            style: const TextStyle(color: Colors.white),
+            decoration: InputDecoration(
+              labelText: "Costo Totale Acquisto (€)",
+              labelStyle: const TextStyle(color: Colors.grey),
+              filled: true,
+              fillColor: const Color(0xFF13131A),
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+              prefixIcon: const Icon(Icons.euro, color: Colors.pinkAccent),
+            ),
+          ),
+          const SizedBox(height: 12),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text("Rate mensili:", style: TextStyle(color: Colors.white70)),
+              DropdownButton<int>(
+                value: _months,
+                dropdownColor: const Color(0xFF1E1E2C),
+                style: const TextStyle(color: Colors.white),
+                items: [1, 2, 3, 6, 12].map((m) => DropdownMenuItem(value: m, child: Text(m == 1 ? "Soluzione unica" : "$m Rate"))).toList(),
+                onChanged: (val) => setState(() => _months = val ?? 1),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.pinkAccent,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+              onPressed: _isLoading ? null : _analyzePurchase,
+              icon: _isLoading 
+                ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                : const Icon(Icons.psychology),
+              label: Text(_isLoading ? "Analisi neurale in corso..." : "Analizza con Piggy AI"),
+            ),
+          ),
+          if (_aiResponse.isNotEmpty) ...[
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: _isSustainable ? Colors.green.withOpacity(0.1) : Colors.red.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: _isSustainable ? Colors.greenAccent : Colors.redAccent, width: 1),
+              ),
+              child: Text(
+                _aiResponse,
+                style: const TextStyle(color: Colors.white, fontSize: 14, height: 1.4),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
