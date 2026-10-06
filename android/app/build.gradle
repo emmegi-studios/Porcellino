@@ -18,6 +18,8 @@ android {
     }
 
     defaultConfig {
+        multiDexEnabled true
+        coreLibraryDesugaringEnabled true
         applicationId "com.example.family_budget_app"
         minSdk 23
         targetSdk 34
