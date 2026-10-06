@@ -291,6 +291,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
     _loadBudget();
     _loadTheme();
+    _caricaPromemoriaDaCloud();
   }
 
   @override
@@ -308,6 +309,37 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   }
   bool _isDarkTheme = true;
   List<Map<String, dynamic>> _promemoria = [];
+
+  Future<void> _caricaPromemoriaDaCloud() async {
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        final doc = await FirebaseFirestore.instance.collection('users_budget').doc(user.uid).get();
+        if (doc.exists && doc.data()!.containsKey('promemoria')) {
+          List<dynamic> listaCloud = doc.data()!['promemoria'];
+          setState(() {
+            _promemoria = listaCloud.map((e) => Map<String, dynamic>.from(e)).toList();
+          });
+        }
+      }
+    } catch (e) {
+      print("Errore caricamento promemoria cloud: $e");
+    }
+  }
+
+  Future<void> _salvaPromemoriaSuCloud() async {
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        await FirebaseFirestore.instance.collection('users_budget').doc(user.uid).set({
+          'promemoria': _promemoria,
+        }, SetOptions(merge: true));
+      }
+    } catch (e) {
+      print("Errore salvataggio promemoria cloud: $e");
+    }
+  }
+
 
   
 
@@ -1283,7 +1315,64 @@ Card(
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                       ),
                       onPressed: () {
-                        // TODO: Collegare la finestra di aggiunta nel prossimo step
+                        final TextEditingController titoloPromemoriaController = TextEditingController();
+                        final TextEditingController dataPromemoriaController = TextEditingController(
+                          text: "${DateTime.now().day.toString().padLeft(2, '0')}/${DateTime.now().month.toString().padLeft(2, '0')}/${DateTime.now().year}"
+                        );
+
+                        showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            backgroundColor: _cardBg,
+                            title: Text("Aggiungi Scadenza", style: TextStyle(color: _textColor)),
+                            content: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                TextField(
+                                  controller: titoloPromemoriaController,
+                                  style: TextStyle(color: _textColor),
+                                  decoration: InputDecoration(
+                                    labelText: "Titolo Scadenza",
+                                    labelStyle: TextStyle(color: _subtitleColor),
+                                    hintText: "es. Affitto o Bolletta",
+                                    hintStyle: TextStyle(color: _subtitleColor.withOpacity(0.5)),
+                                  ),
+                                ),
+                                const SizedBox(height: 12),
+                                TextField(
+                                  controller: dataPromemoriaController,
+                                  style: TextStyle(color: _textColor),
+                                  decoration: InputDecoration(
+                                    labelText: "Data (DD/MM/YYYY)",
+                                    labelStyle: TextStyle(color: _subtitleColor),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(context),
+                                child: Text("Annulla", style: TextStyle(color: _subtitleColor)),
+                              ),
+                              ElevatedButton(
+                                style: ElevatedButton.styleFrom(backgroundColor: _primaryColor),
+                                onPressed: () {
+                                  if (titoloPromemoriaController.text.trim().isNotEmpty) {
+                                    setState(() {
+                                      _promemoria.add({
+                                        'titolo': titoloPromemoriaController.text.trim(),
+                                        'data': dataPromemoriaController.text.trim(),
+                                      });
+                                    });
+                                    _salvaPromemoriaSuCloud();
+                                    Navigator.pop(context);
+                                  }
+                                },
+                                child: const Text("Salva", style: TextStyle(color: Colors.white)),
+                              ),
+                            ],
+                          ),
+                        );
                       },
                       child: const Text("+ Aggiungi Scadenza", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
                     ),
