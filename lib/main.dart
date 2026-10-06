@@ -492,8 +492,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController _noteController = TextEditingController();
   final TextEditingController _inviteController = TextEditingController();
   String _selectedType = 'Uscita (Spesa)';
-  String _selectedCategory = '🐾 Animali',
-  '📦 Altro';
+  String _selectedCategory = '🐾 Animali';
   final List<String> categorieConEmoji = ['💰 Stipendio / Entrate', '🍔 Cibo & Spesa', '🏠 Casa & Affitto', '🚗 Trasporti', '💡 Bollette & Utenze', '🎉 Svago & Hobby', '🐾 Animali',
   '📦 Altro'];
 
