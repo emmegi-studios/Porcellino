@@ -1013,8 +1013,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 style: TextStyle(color: _textColor),
                 decoration: InputDecoration(labelText: "Categoria", labelStyle: TextStyle(color: _subtitleColor), filled: true, fillColor: _scaffoldBg, border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))),
                 items: categorieConEmoji.map((cat) => DropdownMenuItem(value: cat, child: Text(cat))).toList(),
-                onChanged: (val) => setState(() => _selectedCategory = val ?? '🐾 Animali',
-  '📦 Altro')),
+                onChanged: (val) => setState(() => _selectedCategory = val ?? '🐾 Animali')),
               const SizedBox(height: 12),
               TextField(
                 controller: _noteController,
