@@ -1674,6 +1674,7 @@ class PiggyVaultApp extends StatelessWidget {
   }
 }
 
+
 class PiggyAiAdvisorWidget extends StatefulWidget {
   final double patrimonio;
   const PiggyAiAdvisorWidget({super.key, this.patrimonio = 1500.0});
@@ -1701,20 +1702,27 @@ class _PiggyAiAdvisorWidgetState extends State<PiggyAiAdvisorWidget> {
       _aiResponse = "";
     });
 
-    // Simulazione elaborazione neurale
     await Future.delayed(const Duration(milliseconds: 1200));
 
     final double monthlyInstallment = amount / _months;
     final double impactPercentage = (amount / (widget.patrimonio > 0 ? widget.patrimonio : 1000.0)) * 100;
 
+    final String detailsText = _months > 1 
+        ? "divisa in $_months rate da €" + monthlyInstallment.toStringAsFixed(2) + "/mese" 
+        : "in soluzione unica";
+
+    final String successDetails = _months > 1 
+        ? "$_months rate da €" + monthlyInstallment.toStringAsFixed(2) 
+        : "unica";
+
     setState(() {
       _isLoading = false;
       if (impactPercentage > 40 || monthlyInstallment > 300) {
         _isSustainable = false;
-        _aiResponse = "⚠️ Attenzione Marco! Una spesa di €${amount.toStringAsFixed(2)} ($(_months > 1 ? 'divisa in $_months rate da €${monthlyInstallment.toStringAsFixed(2)}/mese' : 'in soluzione unica')) assorbe il ${impactPercentage.toStringAsFixed(1)}% del vostro patrimonio condiviso. Ti consiglio una rateizzazione più lunga o di valutare attentamente i flussi del mese.";
+        _aiResponse = "⚠️ Attenzione Marco! Una spesa di €" + amount.toStringAsFixed(2) + " (" + detailsText + ") assorbe il " + impactPercentage.toStringAsFixed(1) + "% del vostro patrimonio condiviso. Ti consiglio una rateizzazione più lunga o di valutare attentamente i flussi del mese.";
       } else {
         _isSustainable = true;
-        _aiResponse = "🟢 Ottima mossa, Marco! La spesa di €${amount.toStringAsFixed(2)} ($(_months > 1 ? '$_months rate da €${monthlyInstallment.toStringAsFixed(2)}' : 'unica')) è ampiamente sostenibile con i margini attuali del caveau. Il fondo comune rimane protetto e sicuro!";
+        _aiResponse = "🟢 Ottima mossa, Marco! La spesa di €" + amount.toStringAsFixed(2) + " (" + successDetails + ") è ampiamente sostenibile con i margini attuali del caveau. Il fondo comune rimane protetto e sicuro!";
       }
     });
   }
