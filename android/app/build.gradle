@@ -9,7 +9,6 @@ android {
     compileSdk 34
 
     compileOptions {
-        coreLibraryDesugaringEnabled true
         
         
         sourceCompatibility JavaVersion.VERSION_17
