@@ -277,6 +277,141 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
 
+  double _monthlyBudget = 1500.0;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadBudget();
+  }
+
+  Future<void> _loadBudget() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _monthlyBudget = prefs.getDouble('piggy_monthly_budget') ?? 1500.0;
+    });
+  }
+
+  Future<void> _saveBudget(double newBudget) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setDouble('piggy_monthly_budget', newBudget);
+    setState(() {
+      _monthlyBudget = newBudget;
+    });
+  }
+
+  void _showBudgetDialog() {
+    final controller = TextEditingController(text: _monthlyBudget.toString());
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF1E2235),
+        title: const Text("Imposta Tetto di Spesa Mensile", style: TextStyle(color: Colors.white)),
+        content: TextField(
+          controller: controller,
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          style: const TextStyle(color: Colors.white),
+          decoration: const InputDecoration(
+            labelText: "Budget (€)",
+            labelStyle: TextStyle(color: Colors.grey),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Annulla", style: TextStyle(color: Colors.grey)),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.pinkAccent),
+            onPressed: () {
+              final val = double.tryParse(controller.text);
+              if (val != null && val > 0) {
+                _saveBudget(val);
+              }
+              Navigator.pop(context);
+            },
+            child: const Text("Salva", style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBudgetCard(List<dynamic> docs) {
+    double currentMonthExpenses = 0.0;
+    final now = DateTime.now();
+    for (var doc in docs) {
+      final data = doc.data() as Map<String, dynamic>;
+      final type = data['type'] ?? 'uscita';
+      final amount = (data['amount'] ?? 0.0).toDouble();
+      final dateField = data['date'];
+      DateTime? date;
+      if (dateField is Timestamp) {
+        date = dateField.toDate();
+      } else if (dateField is String) {
+        date = DateTime.tryParse(dateField);
+      }
+      
+      if (date != null && date.year == now.year && date.month == now.month) {
+        if (type == 'uscita' || amount < 0) {
+          currentMonthExpenses += amount.abs();
+        }
+      }
+    }
+
+    final progress = _monthlyBudget > 0 ? (currentMonthExpenses / _monthlyBudget).clamp(0.0, 1.0) : 0.0;
+    Color progressColor = Colors.greenAccent;
+    if (progress >= 1.0) {
+      progressColor = Colors.redAccent;
+    } else if (progress >= 0.8) {
+      progressColor = Colors.orangeAccent;
+    }
+
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(0xFF1E2235),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: progressColor.withOpacity(0.5), width: 1.5),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text("Tetto di Spesa Mensile", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+              IconButton(
+                icon: const Icon(Icons.edit, color: Colors.pinkAccent, size: 20),
+                onPressed: _showBudgetDialog,
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text("Speso: €${currentMonthExpenses.toStringAsFixed(2)}", style: const TextStyle(color: Colors.grey, fontSize: 14)),
+              Text("Budget: €${_monthlyBudget.toStringAsFixed(2)}", style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14)),
+            ],
+          ),
+          const SizedBox(height: 12),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: LinearProgressIndicator(
+              value: progress,
+              minHeight: 10,
+              backgroundColor: Colors.white12,
+              valueColor: AlwaysStoppedAnimation<Color>(progressColor),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+
   bool _isInitialLoad = true;
 
   @override
