@@ -65,11 +65,7 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _isLoading = false;
   bool _obscurePassword = true;
 
-  @override
-  void initState() {
-    super.initState();
-    _loadSavedEmail();
-  }
+  
 
   Future<void> _loadSavedEmail() async {
     final prefs = await SharedPreferences.getInstance();
@@ -276,14 +272,15 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  bool _isDarkTheme = true;
-
   @override
   void initState() {
     super.initState();
     _loadBudget();
     _loadTheme();
   }
+  bool _isDarkTheme = true;
+
+  
 
   Future<void> _loadTheme() async {
     final prefs = await SharedPreferences.getInstance();
@@ -300,11 +297,7 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  @override
-  void initState() {
-    super.initState();
-    _loadBudget();
-  }
+  
 
 
   double _monthlyBudget = 1500.0;
