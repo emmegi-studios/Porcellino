@@ -166,7 +166,7 @@ class _LoginScreenState extends State<LoginScreen> {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(color: _cardBg, shape: BoxShape.circle),
-                child: Icon(Icons.savings, size: 60, color: _primaryColor),
+                child: Image.asset('assets/icona_esterna.png', width: 60, height: 60, fit: BoxFit.contain),
               ),
               const SizedBox(height: 16),
               const Text("Piggy Vault", style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white)),
@@ -213,6 +213,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     labelStyle: TextStyle(color: _subtitleColor),
                     filled: true,
                     fillColor: _cardBg,
+                    suffixIcon: IconButton(
+                      icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility, color: _primaryColor),
+                      onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                    ),
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
                   ),
                 ),
