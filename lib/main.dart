@@ -276,14 +276,16 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-
-  double _monthlyBudget = 1500.0;
-
   @override
   void initState() {
     super.initState();
     _loadBudget();
   }
+
+
+  double _monthlyBudget = 1500.0;
+
+  
 
   Future<void> _loadBudget() async {
     final prefs = await SharedPreferences.getInstance();
@@ -414,11 +416,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   bool _isInitialLoad = true;
 
-  @override
-  void initState() {
-    super.initState();
-    _setupRealtimeNotifications();
-  }
+  
 
   void _setupRealtimeNotifications() {
     final currentUserEmail = FirebaseAuth.instance.currentUser?.email;
@@ -1312,12 +1310,7 @@ class InviteManager extends StatefulWidget {
 class _InviteManagerState extends State<InviteManager> {
   String? currentEmail;
 
-  @override
-  void initState() {
-
-    super.initState();
-    _checkInviti();
-  }
+  
 
   Future<void> _checkInviti() async {
     final user = FirebaseAuth.instance.currentUser;
