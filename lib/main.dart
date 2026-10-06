@@ -166,7 +166,13 @@ class _LoginScreenState extends State<LoginScreen> {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(color: _cardBg, shape: BoxShape.circle),
-                child: Image.asset('assets/icona_esterna.png', width: 60, height: 60, fit: BoxFit.contain),
+                child: Image.asset(
+                'assets/icona_esterna.png',
+                width: 60,
+                height: 60,
+                fit: BoxFit.contain,
+                errorBuilder: (context, error, stackTrace) => Icon(Icons.savings, size: 40, color: _primaryColor),
+              ),
               ),
               const SizedBox(height: 16),
               const Text("Piggy Vault", style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white)),
