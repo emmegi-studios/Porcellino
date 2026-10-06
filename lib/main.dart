@@ -1487,11 +1487,7 @@ Card(
                               Text("🏆 Livelli Risparmio", style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: _textColor)),
                             ],
                           ),
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                            decoration: BoxDecoration(color: _scaffoldBg, borderRadius: BorderRadius.circular(12)),
-                            child: Text("Livello: $aName", style: TextStyle(fontSize: 11, color: aColor, fontWeight: FontWeight.bold)),
-                          ),
+                          const PiggyAiAdvisorWidget(),
                         ],
                       ),
                       const SizedBox(height: 10),
