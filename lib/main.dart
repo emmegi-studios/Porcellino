@@ -132,7 +132,7 @@ class _LoginScreenState extends State<LoginScreen> {
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Auth: ${e.toString()}")));
+        SnackBar(content: Text("Email o password errati. Verifica i dati e riprova.")));
       return; // 🔒 Ferma l'esecuzione in caso di errore!
 
       Navigator.pushReplacement(
@@ -181,6 +181,7 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+    bool _obscurePassword = true;
   Widget build(BuildContext context) {
     final forzaPass = _valutaSicurezzaPassword(_passwordController.text);
 
@@ -224,11 +225,11 @@ class _LoginScreenState extends State<LoginScreen> {
               const SizedBox(height: 14),
               TextField(
                 controller: _passwordController,
-                obscureText: true,
+                obscureText: _obscurePassword,
                 onChanged: (val) => setState(() {}),
                 style: TextStyle(color: _textColor),
                 decoration: InputDecoration(
-                  labelText: "Password",
+                  labelText: "Password", suffixIcon: IconButton(icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility, color: Colors.pinkAccent), onPressed: () { setState(() { _obscurePassword = !_obscurePassword; }); }),
                   labelStyle: TextStyle(color: _subtitleColor),
                   filled: true,
                   fillColor: _cardBg,
@@ -246,7 +247,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 const SizedBox(height: 14),
                 TextField(
                   controller: _confirmPasswordController,
-                  obscureText: true,
+                  obscureText: _obscurePassword,
                   style: TextStyle(color: _textColor),
                   decoration: InputDecoration(
                     labelText: "Conferma Password",
@@ -262,6 +263,11 @@ class _LoginScreenState extends State<LoginScreen> {
                         backgroundColor: _primaryColor,
                         minimumSize: const Size.fromHeight(52),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14))),
+            const SizedBox(height: 16),
+            TextButton(
+              onPressed: _resetPassword,
+              child: const Text("Password smarrita?", style: TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold, fontSize: 15)),
+            ),
                       onPressed: _eseguiAutenticazione,
                       child: Text(
                         _isRegistrazione ? "Registrati e Crea Account" : "Entra nel Caveau Condiviso",
