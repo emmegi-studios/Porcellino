@@ -299,24 +299,38 @@ class _LoginScreenState extends State<LoginScreen> {
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(14))))],
               const SizedBox(height: 24),
               _isLoading
-                  ? const CircularProgressIndicator()
-                  : ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: _primaryColor,
-                        minimumSize: const Size.fromHeight(52),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14))),
-            const SizedBox(height: 16),
-            TextButton(
-              onPressed: _resetPassword,
-              child: const Text("Password smarrita?", style: TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold, fontSize: 15)),
-            ),
-                      onPressed: _eseguiAutenticazione,
-                      child: Text(
-                        _isRegistrazione ? "Registrati e Crea Account" : "Entra nel Caveau Condiviso",
-                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16))),
-              const SizedBox(height: 16),
-              TextButton(
-                onPressed: () => setState(() => _isRegistrazione = !_isRegistrazione),
+                        ? const CircularProgressIndicator()
+                        : ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: _primaryColor,
+                              minimumSize: const Size.fromHeight(52),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                            ),
+                            onPressed: _eseguiAutenticazione,
+                            child: Text(
+                              _isRegistrazione ? "Registrati e Crea Account" : "Entra nel Caveau Condiviso",
+                              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
+                            ),
+                          ),
+                      if (!_isRegistrazione) const SizedBox(height: 12),
+                      if (!_isRegistrazione) OutlinedButton.icon(
+                        style: OutlinedButton.styleFrom(
+                          side: const BorderSide(color: Colors.pinkAccent),
+                          minimumSize: const Size.fromHeight(52),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                        ),
+                        onPressed: _loginWithBiometrics,
+                        icon: const Icon(Icons.fingerprint, color: Colors.pinkAccent),
+                        label: const Text("Accedi con Impronta", style: TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold)),
+                      ),
+                      if (!_isRegistrazione) const SizedBox(height: 8),
+                      if (!_isRegistrazione) TextButton(
+                        onPressed: _resetPassword,
+                        child: const Text("Password smarrita?", style: TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold, fontSize: 14)),
+                      ),
+                      const SizedBox(height: 16),
+                      TextButton(
+                        onPressed: () => setState(() => _isRegistrazione = !_isRegistrazione),
                 child: Text(
                   _isRegistrazione
                       ? "Hai già un account? Accedi"
