@@ -41,20 +41,6 @@ class AuthGate extends StatelessWidget {
   }
 }
 
-class PiggyVaultApp extends StatelessWidget {
-  final String initialTheme;
-  const PiggyVaultApp({super.key, this.initialTheme = 'Piggy Dark'});
-  const PiggyVaultApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      title: 'Piggy Vault',
-      debugShowCheckedModeBanner: false,
-      home: const AuthGate());
-  }
-}
-
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -1666,5 +1652,24 @@ class _InviteManagerState extends State<InviteManager> {
   @override
   Widget build(BuildContext context) {
     return widget.child;
+  }
+}
+
+class PiggyVaultApp extends StatelessWidget {
+  final String initialTheme;
+  const PiggyVaultApp({super.key, this.initialTheme = 'Piggy Dark'});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Piggy Vault',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        brightness: Brightness.dark,
+        scaffoldBackgroundColor: const Color(0xFF13131A),
+        primarySwatch: Colors.pink,
+      ),
+      home: const AuthGate(),
+    );
   }
 }
