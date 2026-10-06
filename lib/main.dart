@@ -290,6 +290,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     }
   }
   bool _isDarkTheme = true;
+  List<Map<String, dynamic>> _promemoria = [];
 
   
 
@@ -1222,6 +1223,58 @@ Card(
             )
           ),
           const SizedBox(height: 16),
+          const SizedBox(height: 14),
+          Card(
+            color: _cardBg,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text("📅 Promemoria e Scadenze", style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: _textColor)),
+                      Icon(Icons.notifications_active, color: _primaryColor, size: 18),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  _promemoria.isEmpty
+                      ? Text("Nessuna scadenza imminente. Aggiungi un promemoria!", style: TextStyle(color: _subtitleColor, fontSize: 11))
+                      : Column(
+                          children: _promemoria.map((p) => Padding(
+                            padding: const EdgeInsets.only(bottom: 8.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(p['titolo'].toString(), style: TextStyle(color: _textColor, fontSize: 12)),
+                                Text(p['data'].toString(), style: TextStyle(color: _primaryColor, fontSize: 12, fontWeight: FontWeight.bold)),
+                              ],
+                            ),
+                          )).toList(),
+                        ),
+                  const SizedBox(height: 12),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 36,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: _primaryColor.withOpacity(0.1),
+                        foregroundColor: _primaryColor,
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      ),
+                      onPressed: () {
+                        // TODO: Collegare la finestra di aggiunta nel prossimo step
+                      },
+                      child: const Text("+ Aggiungi Scadenza", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
           const SizedBox(height: 16),
           Card(
             color: _cardBg,
