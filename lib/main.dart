@@ -167,7 +167,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(color: _cardBg, shape: BoxShape.circle),
                 child: Image.asset(
-                'assets/icona_esterna.png',
+                'assets/icon/icona_esterna.png',
                 width: 60,
                 height: 60,
                 fit: BoxFit.contain,
