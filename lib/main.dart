@@ -58,6 +58,12 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
+  bool _isRegistrazione = false;
+  bool _isLoading = false;
+  bool _obscurePassword = true;
 
   @override
   void initState() {
@@ -80,21 +86,174 @@ class _LoginScreenState extends State<LoginScreen> {
     await prefs.setString('piggy_last_email', email);
   }
 
+  Future<void> _eseguiAutenticazione() async {
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
+    
+    if (email.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Compila tutti i campi"), backgroundColor: Colors.orange)
+      );
+      return;
+    }
 
-  
-  
-
-  Future<void> _saveCredentials(String email, String password) async {
-    await _secureStorage.write(key: 'piggy_email', value: email);
-    await _secureStorage.write(key: 'piggy_password', value: password);
+    setState(() => _isLoading = true);
+    try {
+      if (_isRegistrazione) {
+        if (password != _confirmPasswordController.text.trim()) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Le password non coincidono"), backgroundColor: Colors.red)
+          );
+          setState(() => _isLoading = false);
+          return;
+        }
+        await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: password);
+      } else {
+        await _saveEmail(email);
+        await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Errore: ${e.toString()}"), backgroundColor: Colors.red)
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
   }
 
-   else {
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Nessuna credenziale salvata. Accedi manualmente la prima volta."), backgroundColor: Colors.orange));
-          }
-        }
+  Future<void> _resetPassword() async {
+    final email = _emailController.text.trim();
+    if (email.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Inserisci prima la tua email per il recupero"), backgroundColor: Colors.orange)
+      );
+      return;
+    }
+    try {
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Email di recupero inviata! Controlla la posta."), backgroundColor: Colors.green)
+        );
       }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Errore: ${e.toString()}"), backgroundColor: Colors.red)
+        );
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final _cardBg = const Color(0xFF1E2235);
+    final _scaffoldBg = const Color(0xFF0F111A);
+    final _textColor = Colors.white;
+    final _subtitleColor = Colors.grey.shade400;
+    final _primaryColor = Colors.pinkAccent;
+
+    return Scaffold(
+      backgroundColor: _scaffoldBg,
+      body: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(color: _cardBg, shape: BoxShape.circle),
+                child: Icon(Icons.savings, size: 60, color: _primaryColor),
+              ),
+              const SizedBox(height: 16),
+              const Text("Piggy Vault", style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white)),
+              const SizedBox(height: 8),
+              Text("Accedi al tuo caveau condiviso", style: TextStyle(fontSize: 14, color: _subtitleColor)),
+              const SizedBox(height: 32),
+              TextField(
+                controller: _emailController,
+                style: TextStyle(color: _textColor),
+                keyboardType: TextInputType.emailAddress,
+                decoration: InputDecoration(
+                  labelText: "Email utente",
+                  labelStyle: TextStyle(color: _subtitleColor),
+                  filled: true,
+                  fillColor: _cardBg,
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
+                ),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: _passwordController,
+                obscureText: _obscurePassword,
+                style: TextStyle(color: _textColor),
+                decoration: InputDecoration(
+                  labelText: "Password",
+                  labelStyle: TextStyle(color: _subtitleColor),
+                  filled: true,
+                  fillColor: _cardBg,
+                  suffixIcon: IconButton(
+                    icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility, color: _primaryColor),
+                    onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                  ),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
+                ),
+              ),
+              if (_isRegistrazione) ...[
+                const SizedBox(height: 16),
+                TextField(
+                  controller: _confirmPasswordController,
+                  obscureText: _obscurePassword,
+                  style: TextStyle(color: _textColor),
+                  decoration: InputDecoration(
+                    labelText: "Conferma Password",
+                    labelStyle: TextStyle(color: _subtitleColor),
+                    filled: true,
+                    fillColor: _cardBg,
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
+                  ),
+                ),
+              ],
+              const SizedBox(height: 24),
+              _isLoading
+                  ? const CircularProgressIndicator()
+                  : ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: _primaryColor,
+                        minimumSize: const Size.fromHeight(52),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                      ),
+                      onPressed: _eseguiAutenticazione,
+                      child: Text(
+                        _isRegistrazione ? "Registrati e Crea Account" : "Entra nel Caveau Condiviso",
+                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
+                      ),
+                    ),
+              if (!_isRegistrazione) ...[
+                const SizedBox(height: 12),
+                TextButton(
+                  onPressed: _resetPassword,
+                  child: Text("Password smarrita?", style: TextStyle(color: _primaryColor, fontWeight: FontWeight.bold)),
+                ),
+              ],
+              const SizedBox(height: 16),
+              TextButton(
+                onPressed: () => setState(() => _isRegistrazione = !_isRegistrazione),
+                child: Text(
+                  _isRegistrazione ? "Hai già un account? Accedi" : "Non hai un account? Registrati",
+                  style: TextStyle(color: _subtitleColor),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Errore biometria: ${e.toString()}"), backgroundColor: Colors.red));
