@@ -7,6 +7,7 @@ environment:
   sdk: '>=3.0.0 <4.0.0'
 
 dependencies:
+  flutter_local_notifications: ^17.2.0
   firebase_auth: ^4.17.8
   flutter:
     sdk: flutter
@@ -15,6 +16,7 @@ dependencies:
   cloud_firestore: ^4.14.0
 
 dev_dependencies:
+  flutter_local_notifications: ^17.2.0
   flutter_test:
     sdk: flutter
   local_auth: ^2.1.8

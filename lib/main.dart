@@ -1,3 +1,4 @@
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:local_auth/local_auth.dart';
@@ -285,6 +286,45 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
+
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+
+  Future<void> _initNotifications() async {
+    const AndroidInitializationSettings initializationSettingsAndroid =
+        AndroidInitializationSettings('@mipmap/ic_launcher');
+    
+    const InitializationSettings initializationSettings =
+        InitializationSettings(android: initializationSettingsAndroid);
+
+    await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+
+    // Richiesta permessi Android 13+
+    await flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+        ?.requestNotificationsPermission();
+  }
+
+  Future<void> _mostraNotificaScadenza(String titolo, String data) async {
+    const AndroidNotificationDetails androidPlatformChannelSpecifics =
+        AndroidNotificationDetails(
+      'piggy_vault_scadenze',
+      'Scadenze Finanziarie',
+      channelDescription: 'Notifiche per scadenze e promemoria di Piggy Vault',
+      importance: Importance.max,
+      priority: Priority.high,
+      ticker: 'ticker',
+    );
+    const NotificationDetails platformChannelSpecifics =
+        NotificationDetails(android: androidPlatformChannelSpecifics);
+    
+    await flutterLocalNotificationsPlugin.show(
+      DateTime.now().millisecond,
+      '📅 Nuova Scadenza: $titolo',
+      'Fissata per il giorno $data',
+      platformChannelSpecifics,
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -292,6 +332,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     _loadBudget();
     _loadTheme();
     _caricaPromemoriaDaCloud();
+    _initNotifications();
   }
 
   @override
@@ -1368,13 +1409,16 @@ Card(
                                 style: ElevatedButton.styleFrom(backgroundColor: _primaryColor),
                                 onPressed: () {
                                   if (titoloPromemoriaController.text.trim().isNotEmpty) {
+                                    String titoloScadenza = titoloPromemoriaController.text.trim();
+                                    String dataScadenza = dataPromemoriaController.text.trim();
                                     setState(() {
                                       _promemoria.add({
-                                        'titolo': titoloPromemoriaController.text.trim(),
-                                        'data': dataPromemoriaController.text.trim(),
+                                        'titolo': titoloScadenza,
+                                        'data': dataScadenza,
                                       });
                                     });
                                     _salvaPromemoriaSuCloud();
+                                    _mostraNotificaScadenza(titoloScadenza, dataScadenza);
                                     Navigator.pop(context);
                                   }
                                 },
