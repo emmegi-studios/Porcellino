@@ -492,8 +492,10 @@ class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController _noteController = TextEditingController();
   final TextEditingController _inviteController = TextEditingController();
   String _selectedType = 'Uscita (Spesa)';
-  String _selectedCategory = '📦 Altro';
-  final List<String> categorieConEmoji = ['💰 Stipendio / Entrate', '🍔 Cibo & Spesa', '🏠 Casa & Affitto', '🚗 Trasporti', '💡 Bollette & Utenze', '🎉 Svago & Hobby', '📦 Altro'];
+  String _selectedCategory = '🐾 Animali',
+  '📦 Altro';
+  final List<String> categorieConEmoji = ['💰 Stipendio / Entrate', '🍔 Cibo & Spesa', '🏠 Casa & Affitto', '🚗 Trasporti', '💡 Bollette & Utenze', '🎉 Svago & Hobby', '🐾 Animali',
+  '📦 Altro'];
 
   
   
@@ -1012,7 +1014,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 style: TextStyle(color: _textColor),
                 decoration: InputDecoration(labelText: "Categoria", labelStyle: TextStyle(color: _subtitleColor), filled: true, fillColor: _scaffoldBg, border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))),
                 items: categorieConEmoji.map((cat) => DropdownMenuItem(value: cat, child: Text(cat))).toList(),
-                onChanged: (val) => setState(() => _selectedCategory = val ?? '📦 Altro')),
+                onChanged: (val) => setState(() => _selectedCategory = val ?? '🐾 Animali',
+  '📦 Altro')),
               const SizedBox(height: 12),
               TextField(
                 controller: _noteController,
