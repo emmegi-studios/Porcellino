@@ -17,7 +17,9 @@ void main() async {
   } catch (e) {
     debugPrint("Firebase init notice: $e");
   }
-  runApp(const PiggyVaultApp());
+  final prefs = await SharedPreferences.getInstance();
+  final savedTheme = prefs.getString('currentTheme') ?? 'Piggy Dark';
+  runApp(PiggyVaultApp(initialTheme: savedTheme));
 }
 
 
