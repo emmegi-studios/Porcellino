@@ -1487,7 +1487,7 @@ Card(
                               Text("🏆 Livelli Risparmio", style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: _textColor)),
                             ],
                           ),
-                          const PiggyAiAdvisorWidget(),
+                          
                         ],
                       ),
                       const SizedBox(height: 10),
@@ -1530,26 +1530,8 @@ Card(
           ),
           const SizedBox(height: 14),
 
-          Card(
-            color: _cardBg,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text("💡 Pianificatore Acquisti & Rate", style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: _textColor)),
-                  const SizedBox(height: 8),
-                  Text("Inserisci l'importo (es. 600) per simulare:", style: TextStyle(fontSize: 11, color: _subtitleColor)),
-                  const SizedBox(height: 8),
-                  Row(children: [
-                    Expanded(child: TextField(controller: _itemController, style: TextStyle(color: _textColor), keyboardType: TextInputType.number, decoration: InputDecoration(hintText: "es. 150", hintStyle: TextStyle(color: _subtitleColor)))),
-                    const SizedBox(width: 8),
-                    ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF3B82F6)), onPressed: () => _simulaAI(_itemController.text), child: const Text("Valuta Impatto", style: TextStyle(color: Colors.white)))
-                  ]),
-                  const SizedBox(height: 10),
-                  isAiLoading ? const CircularProgressIndicator() : Text(aiPurchaseResult, style: TextStyle(fontSize: 11, color: _textColor))]))),
-          const SizedBox(height: 14),
+          const PiggyAiAdvisorWidget(),
+        const SizedBox(height: 14),
 
           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
             Text("➕ Nuova Transazione", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: _subtitleColor)),
