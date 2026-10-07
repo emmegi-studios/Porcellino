@@ -18,13 +18,14 @@ void main() async {
     debugPrint("Firebase init notice: $e");
   }
   final prefs = await SharedPreferences.getInstance();
-  final savedTheme = prefs.getString('currentTheme') ?? 'Piggy Dark';
+  final savedTheme = prefs.getString('selectedTheme') ?? 'Piggy Dark';
   runApp(PiggyVaultApp(initialTheme: savedTheme));
 }
 
 
 class AuthGate extends StatelessWidget {
-  const AuthGate({super.key});
+  final String initialTheme;
+  const AuthGate({super.key, required this.initialTheme});
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<User?>(
@@ -36,7 +37,7 @@ class AuthGate extends StatelessWidget {
         if (snapshot.hasData && snapshot.data != null) {
           return InviteManager(child: HomeScreen(userEmail: FirebaseAuth.instance.currentUser?.email ?? 'Nessuna Email')); // Utente già loggato: dritto al caveau
         }
-        return const LoginScreen(); // Utente non loggato: schermata di login
+        return LoginScreen(initialTheme: initialTheme); // Utente non loggato: schermata di login
       });
   }
 }
@@ -675,7 +676,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       patrimonio = prefs.getDouble('patrimonio') ?? 0.00;
       entrateMese = prefs.getDouble('entrateMese') ?? 0.00;
       usciteMese = prefs.getDouble('usciteMese') ?? 0.00;
-      _currentTheme = prefs.getString('currentTheme') ?? 'Piggy Dark';
+      _currentTheme = prefs.getString('selectedTheme') ?? 'Piggy Dark';
     });
   }
 
@@ -709,7 +710,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     await prefs.setDouble('patrimonio', patrimonio);
     await prefs.setDouble('entrateMese', entrateMese);
     await prefs.setDouble('usciteMese', usciteMese);
-    await prefs.setString('currentTheme', _currentTheme);
+    await prefs.setString('selectedTheme', _currentTheme);
 
     try {
       await FirebaseFirestore.instance
@@ -1647,7 +1648,7 @@ class PiggyVaultApp extends StatelessWidget {
         scaffoldBackgroundColor: const Color(0xFF13131A),
         primarySwatch: Colors.pink,
       ),
-      home: const AuthGate(),
+      home: const AuthGate(initialTheme: savedTheme),
     );
   }
 }
