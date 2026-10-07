@@ -1648,7 +1648,7 @@ class PiggyVaultApp extends StatelessWidget {
         scaffoldBackgroundColor: const Color(0xFF13131A),
         primarySwatch: Colors.pink,
       ),
-      home: const AuthGate(initialTheme: initialTheme),
+      home: AuthGate(initialTheme: initialTheme),
     );
   }
 }
