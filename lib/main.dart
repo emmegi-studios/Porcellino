@@ -43,7 +43,8 @@ class AuthGate extends StatelessWidget {
 }
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+  final String initialTheme;
+  const LoginScreen({super.key, this.initialTheme = 'Piggy Dark'});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
