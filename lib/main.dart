@@ -1,3 +1,4 @@
+import 'piggy_ai_ultimate.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -169,6 +170,7 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+            const PiggyAIUltimateWidget(),
                     Image.asset(
                       'assets/icon/icona_esterna.png',
                       width: 80,
