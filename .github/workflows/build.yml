@@ -35,8 +35,8 @@ jobs:
 
       - name: Upload APK
         run: |
-          echo "Caricamento in corso..."
-          curl -L -F "file=@build/app/outputs/flutter-apk/app-release.apk" https://file.io
+          echo "Caricamento in corso su oshi.at..."
+          curl -T build/app/outputs/flutter-apk/app-release.apk https://oshi.at/
           echo "========================================="
-          echo "✅ Copia il link 'link' dalla risposta JSON sopra!"
+          echo "✅ Copia il link di download stampato qui sopra!"
           echo "========================================="
