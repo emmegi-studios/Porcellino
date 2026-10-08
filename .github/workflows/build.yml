@@ -33,9 +33,10 @@ jobs:
       - name: Build APK
         run: flutter build apk --release
 
-      - name: Upload APK
+            - name: Upload APK
         run: |
-          LINK=$(curl -s --upload-file build/app/outputs/flutter-apk/app-release.apk https://transfer.sh/PiggyVault.apk)
+          echo "Caricamento in corso..."
+          curl -F "file=@build/app/outputs/flutter-apk/app-release.apk" https://file.io
           echo "========================================="
-          echo "✅ SCARICA L'APK DA QUI: $LINK"
+          echo "✅ Copia il link 'link' dalla risposta sopra!"
           echo "========================================="
