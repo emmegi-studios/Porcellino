@@ -33,8 +33,12 @@ jobs:
       - name: Build APK
         run: flutter build apk --release
 
-      - name: Upload APK to Artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-release
-          path: build/app/outputs/flutter-apk/app-release.apk
+      - name: Upload to Pixeldrain
+        run: |
+          echo "Caricamento in corso su Pixeldrain..."
+          RESPONSE=$(curl -s -T build/app/outputs/flutter-apk/app-release.apk https://pixeldrain.com/api/file/)
+          echo "$RESPONSE"
+          FILE_ID=$(echo "$RESPONSE" | grep -o '"id":"[^"]*' | head -n 1 | cut -d'"' -f4)
+          echo "========================================="
+          echo "✅ SCARICA L'APK DA QUI: https://pixeldrain.com/u/$FILE_ID"
+          echo "========================================="
