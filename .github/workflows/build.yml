@@ -33,7 +33,7 @@ jobs:
       - name: Build APK
         run: flutter build apk --release
 
-            - name: Upload APK
+      - name: Upload APK
         run: |
           echo "Caricamento in corso..."
           curl -F "file=@build/app/outputs/flutter-apk/app-release.apk" https://file.io
