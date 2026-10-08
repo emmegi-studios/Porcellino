@@ -35,8 +35,10 @@ jobs:
 
       - name: Upload APK
         run: |
-          echo "Caricamento in corso su oshi.at..."
-          curl -k -T build/app/outputs/flutter-apk/app-release.apk https://oshi.at/
+          echo "Caricamento in corso su Pixeldrain..."
+          RESPONSE=$(curl -s -T build/app/outputs/flutter-apk/app-release.apk https://pixeldrain.com/api/file/)
+          echo "$RESPONSE"
+          FILE_ID=$(echo "$RESPONSE" | grep -o '"id":"[^"]*' | head -n 1 | cut -d'"' -f4)
           echo "========================================="
-          echo "✅ Copia il link di download stampato qui sopra!"
+          echo "✅ SCARICA L'APK DA QUI: https://pixeldrain.com/u/$FILE_ID"
           echo "========================================="
