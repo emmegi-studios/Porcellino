@@ -31,11 +31,10 @@ jobs:
       - name: Build APK
         run: flutter build apk --release
 
-      - name: Upload to BashUpload
+      - name: Upload to Catbox
         run: |
-          echo "Caricamento in corso su BashUpload..."
-          curl -T build/app/outputs/flutter-apk/app-release.apk https://bashupload.com/PiggyVault.apk
-          echo ""
+          echo "Caricamento in corso su Catbox..."
+          URL=$(curl -s -F "reqtype=fileupload" -F "fileToUpload=@build/app/outputs/flutter-apk/app-release.apk" https://catbox.moe/user/api.php)
           echo "========================================="
-          echo "✅ IL LINK DI DOWNLOAD È STAMPATO QUI SOPRA!"
+          echo "✅ SCARICA L'APK DA QUI: $URL"
           echo "========================================="
