@@ -31,10 +31,9 @@ jobs:
       - name: Build APK
         run: flutter build apk --release
 
-      - name: Upload to Transfer.sh
-        run: |
-          echo "Caricamento in corso su Transfer.sh..."
-          URL=$(curl --upload-file build/app/outputs/flutter-apk/app-release.apk https://transfer.sh/PiggyVault.apk)
-          echo "========================================="
-          echo "✅ SCARICA L'APK DA QUI: $URL"
-          echo "========================================="
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release
+          path: build/app/outputs/flutter-apk/app-release.apk
+          retention-days: 1
