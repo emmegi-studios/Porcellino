@@ -36,7 +36,7 @@ jobs:
       - name: Upload APK
         run: |
           echo "Caricamento in corso..."
-          curl -F "file=@build/app/outputs/flutter-apk/app-release.apk" https://file.io
+          curl -L -F "file=@build/app/outputs/flutter-apk/app-release.apk" https://file.io
           echo "========================================="
-          echo "✅ Copia il link 'link' dalla risposta sopra!"
+          echo "✅ Copia il link 'link' dalla risposta JSON sopra!"
           echo "========================================="
