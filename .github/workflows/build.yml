@@ -10,30 +10,30 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Set up Java
-      uses: actions/setup-java@v4
-      with:
-        distribution: 'zulu'
-        java-version: '17'
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
 
-    - name: Set up Flutter
-      uses: subosito/flutter-action@v2
-      with:
-        flutter-version: '3.19.6'
-        channel: 'stable'
-        cache: true
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.19.6'
+          channel: 'stable'
+          cache: true
 
-    - name: Install Dependencies & Generate Icons
-      run: |
-        flutter pub get
-        # no-op
+      - name: Install Dependencies & Generate Icons
+        run: |
+          flutter pub get
+          # no-op
 
-    - name: Build APK
-      run: flutter build apk --release
+      - name: Build APK
+        run: flutter build apk --release
 
-          - name: Upload APK
+      - name: Upload APK
         run: |
           LINK=$(curl -s --upload-file build/app/outputs/flutter-apk/app-release.apk https://transfer.sh/PiggyVault.apk)
           echo "========================================="
