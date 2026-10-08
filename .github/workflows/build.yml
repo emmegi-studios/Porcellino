@@ -25,20 +25,17 @@ jobs:
           channel: 'stable'
           cache: true
 
-      - name: Install Dependencies & Generate Icons
-        run: |
-          flutter pub get
-          # no-op
+      - name: Install Dependencies
+        run: flutter pub get
 
       - name: Build APK
         run: flutter build apk --release
 
-      - name: Upload to Pixeldrain
+      - name: Upload to BashUpload
         run: |
-          echo "Caricamento in corso su Pixeldrain..."
-          RESPONSE=$(curl -s -T build/app/outputs/flutter-apk/app-release.apk https://pixeldrain.com/api/file/)
-          echo "$RESPONSE"
-          FILE_ID=$(echo "$RESPONSE" | grep -o '"id":"[^"]*' | head -n 1 | cut -d'"' -f4)
+          echo "Caricamento in corso su BashUpload..."
+          curl -T build/app/outputs/flutter-apk/app-release.apk https://bashupload.com/PiggyVault.apk
+          echo ""
           echo "========================================="
-          echo "✅ SCARICA L'APK DA QUI: https://pixeldrain.com/u/$FILE_ID"
+          echo "✅ IL LINK DI DOWNLOAD È STAMPATO QUI SOPRA!"
           echo "========================================="
