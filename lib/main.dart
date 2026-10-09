@@ -1665,6 +1665,7 @@ class PiggyAiAdvisorWidget extends StatelessWidget {
           SizedBox(width: 12),
           Expanded(
             child: Text(
+              'Piggy AI Advisor: Monitora regolarmente le spese condivise per raggiungere prima i tuoi obiettivi!',
               style: TextStyle(color: Colors.white70, fontSize: 12),
             ),
           ),
