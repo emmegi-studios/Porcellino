@@ -76,13 +76,6 @@ class _LoginScreenState extends State<LoginScreen> {
     _loadSavedEmail();
   }
 
-  @override
-  void initState() {
-    super.initState();
-    _loadTheme();
-    _loadSavedEmail();
-  }
-
   Future<void> _loadTheme() async {
     final prefs = await SharedPreferences.getInstance();
     if (mounted) {
@@ -357,15 +350,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       _loadTheme();
       _loadBudget();
     }
-  }
-  late bool _isDarkTheme;
-
-  @override
-  void initState() {
-    super.initState();
-    _isDarkTheme = (widget.initialTheme == 'Piggy Dark');
-    _loadTheme();
-    _loadSavedEmail();
   }
   List<Map<String, dynamic>> _promemoria = [];
 
