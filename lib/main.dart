@@ -71,7 +71,7 @@ class _LoginScreenState extends State<LoginScreen> {
     final prefs = await SharedPreferences.getInstance();
     if (mounted) {
       setState(() {
-        _isDarkTheme = prefs.getBool('piggy_is_dark') ?? true;
+        _isDarkTheme = prefs.getString('selectedTheme') == 'Piggy Dark';
       });
     }
   }
@@ -381,7 +381,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   Future<void> _loadTheme() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
-      _isDarkTheme = prefs.getBool('piggy_is_dark') ?? true;
+      _isDarkTheme = prefs.getString('selectedTheme') == 'Piggy Dark';
     });
   }
 
@@ -909,13 +909,13 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       children: [
                         ElevatedButton.icon(
                           style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFC2185B)),
-                          onPressed: () { HapticFeedback.lightImpact(); setState(() { _currentTheme = 'Piggy Dark'; }); SharedPreferences.getInstance().then((p) => p.setString("currentTheme", _currentTheme)); Navigator.pop(context); },
+                          onPressed: () { HapticFeedback.lightImpact(); setState(() { _currentTheme = 'Piggy Dark'; }); SharedPreferences.getInstance().then((p) => p.setString("selectedTheme", _currentTheme)); Navigator.pop(context); },
                           icon: const Icon(Icons.dark_mode, color: Colors.white, size: 16),
                           label: const Text('Piggy Dark', style: TextStyle(color: Colors.white)),
                         ),
                         ElevatedButton.icon(
                           style: ElevatedButton.styleFrom(backgroundColor: Colors.grey.shade200),
-                          onPressed: () { HapticFeedback.lightImpact(); setState(() { _currentTheme = 'Piggy White'; }); SharedPreferences.getInstance().then((p) => p.setString("currentTheme", _currentTheme)); Navigator.pop(context); },
+                          onPressed: () { HapticFeedback.lightImpact(); setState(() { _currentTheme = 'Piggy White'; }); SharedPreferences.getInstance().then((p) => p.setString("selectedTheme", _currentTheme)); Navigator.pop(context); },
                           icon: const Icon(Icons.light_mode, color: Colors.black87, size: 16),
                           label: const Text('Piggy White', style: TextStyle(color: Colors.black87)),
                         ),
