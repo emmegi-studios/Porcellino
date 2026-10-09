@@ -540,7 +540,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             child: LinearProgressIndicator(
               value: progress,
               minHeight: 10,
-              backgroundColor: Colors.white12,
+      backgroundColor: const Color(0xFF13131A),
               valueColor: AlwaysStoppedAnimation<Color>(progressColor),
             ),
           ),
@@ -1854,7 +1854,7 @@ class _PiggyAiAdvisorWidgetState extends State<PiggyAiAdvisorWidget> {
                             children: [
                               Text(w['title'], style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
                               const SizedBox(height: 6),
-                              LinearProgressIndicator(value: progress, color: Colors.pinkAccent, backgroundColor: Colors.white10, minHeight: 6),
+      backgroundColor: const Color(0xFF13131A),
                             ],
                           ),
                         ),
