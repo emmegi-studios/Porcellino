@@ -1655,12 +1655,7 @@ class _InviteManagerState extends State<InviteManager> {
 
 
 
-class PiggyAiAdvisorWidget extends StatefulWidget {
-  const PiggyAiAdvisorWidget({super.key});
 
-  @override
-  State<PiggyAiAdvisorWidget> createState() => _PiggyAiAdvisorWidgetState();
-}
 
 class _PiggyAiAdvisorWidgetState extends State<PiggyAiAdvisorWidget> {
   final TextEditingController _costoController = TextEditingController();
@@ -1796,3 +1791,146 @@ class _PiggyAiAdvisorWidgetState extends State<PiggyAiAdvisorWidget> {
   }
 }
 
+
+
+class PiggyAiAdvisorWidget extends StatefulWidget {
+  const PiggyAiAdvisorWidget({super.key});
+
+  @override
+  State<PiggyAiAdvisorWidget> createState() => _PiggyAiAdvisorWidgetState();
+}
+
+class _PiggyAiAdvisorWidgetState extends State<PiggyAiAdvisorWidget> {
+  final TextEditingController _costoController = TextEditingController();
+  String _rateSelezionate = 'Soluzione unica';
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: const Color(0xFF1E1E2C),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.pinkAccent.withOpacity(0.4), width: 1.5),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.pinkAccent.withOpacity(0.1),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.pinkAccent.withOpacity(0.2),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.savings, color: Colors.pinkAccent, size: 24),
+              ),
+              const SizedBox(width: 12),
+              const Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Piggy AI Advisor',
+                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
+                  ),
+                  SizedBox(height: 2),
+                  Text(
+                    '• Online • Analisi Caveau Attiva',
+                    style: TextStyle(color: Colors.greenAccent, fontSize: 11),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          TextField(
+            controller: _costoController,
+            keyboardType: TextInputType.number,
+            style: const TextStyle(color: Colors.white, fontSize: 13),
+            decoration: InputDecoration(
+              hintText: 'Costo Totale Acquisto (€)',
+              hintStyle: const TextStyle(color: Colors.white54),
+              prefixIcon: const Icon(Icons.euro, color: Colors.pinkAccent, size: 20),
+              filled: true,
+              fillColor: const Color(0xFF13131A),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide.none,
+              ),
+              contentPadding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+            ),
+          ),
+          const SizedBox(height: 10),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text('Rate mensili:', style: TextStyle(color: Colors.white70, fontSize: 12)),
+              DropdownButton<String>(
+                value: _rateSelezionate,
+                dropdownColor: const Color(0xFF1E1E2C),
+                style: const TextStyle(color: Colors.white, fontSize: 12),
+                underline: const SizedBox(),
+                items: ['Soluzione unica', '3 Rate', '6 Rate', '12 Rate', '24 Rate']
+                    .map((val) => DropdownMenuItem(value: val, child: Text(val)))
+                    .toList(),
+                onChanged: (val) {
+                  if (val != null) setState(() => _rateSelezionate = val);
+                },
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.pinkAccent,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              ),
+              onPressed: () {
+                final costo = _costoController.text.trim();
+                showDialog(
+                  context: context,
+                  builder: (ctx) => AlertDialog(
+                    backgroundColor: const Color(0xFF1E1E2C),
+                    title: const Text('Analisi Piggy AI 🐷', style: TextStyle(color: Colors.white)),
+                    content: Text(
+                      costo.isEmpty
+                          ? 'Inserisci un importo valido per l\'acquisto!'
+                          : 'Analisi completata per €' + costo + ' (' + _rateSelezionate + ').',
+                      style: const TextStyle(color: Colors.white70),
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(ctx),
+                        child: const Text('Chiudi', style: TextStyle(color: Colors.pinkAccent)),
+                      ),
+                    ],
+                  ),
+                );
+              },
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.psychology, size: 18),
+                  SizedBox(width: 8),
+                  Text('Analizza con Piggy AI', style: TextStyle(fontWeight: FontWeight.bold)),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
