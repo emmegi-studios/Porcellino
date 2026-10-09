@@ -23,7 +23,7 @@ android {
     defaultConfig {
         multiDexEnabled true
         applicationId "com.example.family_budget_app"
-        minSdkVersion flutter.minSdkVersion
+        minSdkVersion 21
         targetSdk 34
         versionCode 1
         versionName "1.0.0"
