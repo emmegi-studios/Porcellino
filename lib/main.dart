@@ -1979,3 +1979,5 @@ class _PiggyAiAdvisorWidgetState extends State<PiggyAiAdvisorWidget> {
 // Fix visivi applicati tramite Regex
 
 // Fix UI Forzato V25
+
+// Fix UI Forzato Definitivo V26
