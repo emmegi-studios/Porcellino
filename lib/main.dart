@@ -31,8 +31,6 @@ class PiggyVaultApp extends StatelessWidget {
           surface: Color(0xFF1E1E2C),
         ),
       ),
-        primarySwatch: Colors.pink,
-      ),
       home: AuthGate(initialTheme: initialTheme),
     );
   }
@@ -1653,29 +1651,12 @@ class _InviteManagerState extends State<InviteManager> {
 }
 
 
+class PiggyAiAdvisorWidget extends StatefulWidget {
+  const PiggyAiAdvisorWidget({super.key});
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  @override
+  State<PiggyAiAdvisorWidget> createState() => _PiggyAiAdvisorWidgetState();
+}
 
 class _PiggyAiAdvisorWidgetState extends State<PiggyAiAdvisorWidget> {
   final FlutterTts _tts = FlutterTts();
@@ -1779,275 +1760,13 @@ class _PiggyAiAdvisorWidgetState extends State<PiggyAiAdvisorWidget> {
               Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.all(6),
-                    decoration: BoxDecoration(
-                      color: Colors.pinkAccent.withOpacity(0.2),
-                      shape: BoxShape.circle,
-                      border: Border.all(color: Colors.pinkAccent, width: 1.5),
-                    ),
-                    child: const Icon(Icons.savings, color: Colors.pinkAccent, size: 24),
-                  ),
-                  const SizedBox(width: 10),
-                  const Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Piggy AI Advisor 🐷',
-                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
-                      ),
-                      Text(
-                        '• Online • Voce & Desideri Attivi',
-                        style: TextStyle(color: Colors.greenAccent, fontSize: 10),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              IconButton(
-                icon: Icon(_isWishlistMode ? Icons.chat : Icons.card_giftcard, color: Colors.pinkAccent, size: 20),
-                tooltip: _isWishlistMode ? 'Vai alla Chat' : 'Wishlist di Coppia',
-                onPressed: () {
-                  setState(() {
-                    _isWishlistMode = !_isWishlistMode;
-                  });
-                },
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          if (_isWishlistMode) ...[
-            const Text(
-              '🎁 Caveau dei Desideri (Coppia)',
-              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
-            ),
-            const SizedBox(height: 8),
-            SizedBox(
-              height: 120,
-              child: ListView.builder(
-                itemCount: _wishes.length,
-                itemBuilder: (ctx, i) {
-                  final w = _wishes[i];
-                  final progress = (w['saved']! / w['cost']!).clamp(0.0, 1.0);
-                  final isCompleted = progress >= 1.0;
-                  return Container(
-                    margin: const EdgeInsets.only(bottom: 6),
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF13131A),
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: isCompleted ? Colors.greenAccent : Colors.white12),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(w['title'], style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold)),
-                              const SizedBox(height: 4),
-                              LinearProgressIndicator(value: progress, color: Colors.pinkAccent, backgroundColor: Colors.white10),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        Text('€${w['saved'].toInt()}/€${w['cost'].toInt()}', style: TextStyle(color: isCompleted ? Colors.greenAccent : Colors.white70, fontSize: 11)),
-                      ],
-                    ),
-                  );
-                },
-              ),
-            ),
-            const SizedBox(height: 6),
-            Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _wishController,
-                    style: const TextStyle(color: Colors.white, fontSize: 11),
-                    decoration: const InputDecoration(hintText: 'Nuovo desiderio...', hintStyle: TextStyle(color: Colors.white54, fontSize: 11), isDense: true),
-                  ),
-                ),
-                const SizedBox(width: 6),
-                SizedBox(
-                  width: 70,
-                  child: TextField(
-                    controller: _wishCostController,
-                    keyboardType: TextInputType.number,
-                    style: const TextStyle(color: Colors.white, fontSize: 11),
-                    decoration: const InputDecoration(hintText: 'Costo €', hintStyle: TextStyle(color: Colors.white54, fontSize: 11), isDense: true),
-                  ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.add_circle, color: Colors.pinkAccent, size: 22),
-                  onPressed: _addWish,
-                ),
-              ],
-            ),
-          ] else ...[
-            Container(
-              height: 120,
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: const Color(0xFF13131A),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: ListView.builder(
-                itemCount: _messages.length,
-                itemBuilder: (context, index) {
-                  final msg = _messages[index];
-                  final isUser = msg['sender'] == 'user';
-                  return Align(
-                    alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
-                    child: Container(
-                      margin: const EdgeInsets.symmetric(vertical: 3),
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
-                      decoration: BoxDecoration(
-                        color: isUser ? Colors.pinkAccent.withOpacity(0.3) : const Color(0xFF2A2A3D),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Text(
-                        msg['text'] ?? '',
-                        style: const TextStyle(color: Colors.white, fontSize: 11),
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _messageController,
-                    style: const TextStyle(color: Colors.white, fontSize: 11),
-                    decoration: InputDecoration(
-                      hintText: 'Chiedi a Piggy o digita spesa...',
-                      hintStyle: const TextStyle(color: Colors.white54, fontSize: 11),
-                      filled: true,
-                      fillColor: const Color(0xFF13131A),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide.none),
-                      contentPadding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
-                    ),
-                    onSubmitted: (_) => _sendMessage(),
-                  ),
-                ),
-                const SizedBox(width: 6),
-                IconButton(
-                  style: IconButton.styleFrom(backgroundColor: Colors.pinkAccent, foregroundColor: Colors.white, padding: const EdgeInsets.all(8)),
-                  icon: const Icon(Icons.send, size: 16),
-                  onPressed: _sendMessage,
-                ),
-              ],
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-}
-
-
-class PiggyAiAdvisorWidget extends StatefulWidget {
-  const PiggyAiAdvisorWidget({super.key});
-
-  @override
-  State<PiggyAiAdvisorWidget> createState() => _PiggyAiAdvisorWidgetState();
-}
-
-class _PiggyAiAdvisorWidgetState extends State<PiggyAiAdvisorWidget> {
-  // Rimuovo temporaneamente flutter_tts per assicurarmi che la UI funzioni prima. 
-  // Lo riaggiungeremo dopo se lo vorrai.
-  final TextEditingController _messageController = TextEditingController();
-  final TextEditingController _wishController = TextEditingController();
-  final TextEditingController _wishCostController = TextEditingController();
-  
-  bool _isWishlistMode = false;
-  final List<Map<String, dynamic>> _wishes = [
-    {'title': 'Weekend Romantico con Marika', 'cost': 350.0, 'saved': 250.0},
-    {'title': 'Upgrade Audio Home Studio', 'cost': 500.0, 'saved': 500.0},
-  ];
-
-  final List<Map<String, String>> _messages = [
-    {
-      'sender': 'piggy',
-      'text': 'Oink! Sono Piggy, il guardiano del caveau di Marco e Marika. Pronto a gestire le spese e i sogni di coppia!'
-    }
-  ];
-
-  void _sendMessage() {
-    final text = _messageController.text.trim();
-    if (text.isEmpty) return;
-
-    setState(() {
-      _messages.add({'sender': 'user', 'text': text});
-      _messageController.clear();
-
-      String reply = "Oink! Nota registrata nel caveau condiviso.";
-      final lower = text.toLowerCase();
-      if (lower.contains('ristorante') || lower.contains('cena') || lower.contains('pizza')) {
-        reply = "Cena fuori? Ottimo per il morale con Marika, ma occhio al budget di questo mese!";
-      } else if (lower.contains('marika')) {
-        reply = "Un saluto a Marika! Il vostro caveau comune è in botte di ferro con me.";
-      } else if (lower.contains('auto') || lower.contains('alfa')) {
-        reply = "Manutenzione per l'Alfa Romeo? Le passioni motoristiche hanno la priorità!";
-      }
-
-      Future.delayed(const Duration(milliseconds: 500), () {
-        if (mounted) {
-          setState(() {
-            _messages.add({'sender': 'piggy', 'text': reply});
-          });
-        }
-      });
-    });
-  }
-
-  void _addWish() {
-    final title = _wishController.text.trim();
-    final cost = double.tryParse(_wishCostController.text.trim()) ?? 100.0;
-    if (title.isNotEmpty) {
-      setState(() {
-        _wishes.add({'title': title, 'cost': cost, 'saved': 0.0});
-        _wishController.clear();
-        _wishCostController.clear();
-      });
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: const Color(0xFF1E1E2C),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.pinkAccent.withOpacity(0.5), width: 1.5),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.pinkAccent.withOpacity(0.15),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  Container(
                     width: 48,
                     height: 48,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       border: Border.all(color: Colors.pinkAccent, width: 2),
                       image: const DecorationImage(
-                        image: AssetImage('assets/piggy_ai_assistant.png'), // L'immagine cyberpunk!
+                        image: AssetImage('assets/piggy_ai_assistant.png'),
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -2061,7 +1780,7 @@ class _PiggyAiAdvisorWidgetState extends State<PiggyAiAdvisorWidget> {
                         style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
                       ),
                       Text(
-                        '• Online • Analisi Caveau Attiva',
+                        '• Online • Voce & Desideri',
                         style: TextStyle(color: Colors.greenAccent, fontSize: 11),
                       ),
                     ],
@@ -2131,8 +1850,8 @@ class _PiggyAiAdvisorWidgetState extends State<PiggyAiAdvisorWidget> {
                     controller: _wishController,
                     style: const TextStyle(color: Colors.white, fontSize: 12),
                     decoration: InputDecoration(
-                      hintText: 'Nuovo desiderio...', 
-                      hintStyle: const TextStyle(color: Colors.white54, fontSize: 12), 
+                      hintText: 'Nuovo desiderio...',
+                      hintStyle: const TextStyle(color: Colors.white54, fontSize: 12),
                       isDense: true,
                       filled: true,
                       fillColor: const Color(0xFF13131A),
@@ -2148,8 +1867,8 @@ class _PiggyAiAdvisorWidgetState extends State<PiggyAiAdvisorWidget> {
                     keyboardType: TextInputType.number,
                     style: const TextStyle(color: Colors.white, fontSize: 12),
                     decoration: InputDecoration(
-                      hintText: 'Costo €', 
-                      hintStyle: const TextStyle(color: Colors.white54, fontSize: 12), 
+                      hintText: 'Costo €',
+                      hintStyle: const TextStyle(color: Colors.white54, fontSize: 12),
                       isDense: true,
                       filled: true,
                       fillColor: const Color(0xFF13131A),
