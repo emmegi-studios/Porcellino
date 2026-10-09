@@ -1645,3 +1645,31 @@ class _InviteManagerState extends State<InviteManager> {
   }
 }
 
+
+
+class PiggyAiAdvisorWidget extends StatelessWidget {
+  const PiggyAiAdvisorWidget({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: const Color(0xFF1E1E2C),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.pink.withOpacity(0.3)),
+      ),
+      child: const Row(
+        children: [
+          Icon(Icons.psychology, color: Colors.pinkAccent, size: 28),
+          SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              style: TextStyle(color: Colors.white70, fontSize: 12),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
