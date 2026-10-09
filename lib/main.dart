@@ -1701,14 +1701,34 @@ class _PiggyAiAdvisorWidgetState extends State<PiggyAiAdvisorWidget> {
       _messages.add({'sender': 'user', 'text': text});
       _messageController.clear();
 
-      String reply = "Oink! Nota registrata nel caveau condiviso.";
+      final regExp = RegExp(r'(\d+(?:[.,]\d+)?)');
+      final match = regExp.firstMatch(text);
+      String amountStr = match != null ? match.group(0)! : '';
+      double? amount = double.tryParse(amountStr.replaceAll(',', '.'));
+
+      String reply = "Oink! Ho registrato l'operazione nel caveau di Marco e Marika.";
       final lower = text.toLowerCase();
-      if (lower.contains('ristorante') || lower.contains('cena') || lower.contains('pizza')) {
-        reply = "Cena fuori? Ottimo per il morale con Marika, ma occhio al budget di questo mese!";
+
+      if (lower.contains('ristorante') || lower.contains('cena') || lower.contains('pizza') || lower.contains('pranzo')) {
+        reply = amount != null 
+            ? "Oink! €$amount bruciati in cibo. Il vostro stomaco ringrazia, ma il salvadanaio di coppia un po' meno!" 
+            : "Cena fuori? Ottimo per il morale di coppia, ma occhio agli sfizi culinari!";
+      } else if (lower.contains('spesa') || lower.contains('supermercato')) {
+        reply = amount != null 
+            ? "Spesa di €$amount catalogata tra i beni essenziali. Bravi ragazzi, priorità intelligenti!" 
+            : "Spesa essenziale registrata. Il caveau approva!";
+      } else if (lower.contains('auto') || lower.contains('alfa') || lower.contains('benzina') || lower.contains('macchina')) {
+        reply = amount != null 
+            ? "€$amount investiti per l'Alfa Romeo. Le passioni si pagano, ma il rombo del motore ripaga tutto!" 
+            : "Capitolo motori aperto! Teniamo d'occhio il serbatoio e il portafoglio.";
+      } else if (lower.contains('risparmio') || lower.contains('mettere via') || lower.contains('desiderio') || lower.contains('wish')) {
+        reply = amount != null 
+            ? "Woooow! €$amount aggiunti dritti al Caveau dei Desideri! Marika sarà fiera di voi!" 
+            : "Ogni centesimo messo via ci avvicina al prossimo traguardo di coppia!";
       } else if (lower.contains('marika')) {
-        reply = "Un saluto a Marika! Il vostro caveau comune è in botte di ferro con me.";
-      } else if (lower.contains('auto') || lower.contains('alfa')) {
-        reply = "Manutenzione per l'Alfa Romeo? Le passioni motoristiche hanno la priorità!";
+        reply = "Un saluto speciale a Marika! State gestendo il budget comune con una sincronia perfetta.";
+      } else if (amount != null) {
+        reply = "Ho intercettato una transazione di €$amount. Operazione archiviata nel caveau!";
       }
 
       Future.delayed(const Duration(milliseconds: 500), () {
