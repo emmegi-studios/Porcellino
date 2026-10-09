@@ -1199,7 +1199,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   decoration: BoxDecoration(
                     color: _primaryColor,
                     borderRadius: BorderRadius.circular(8)),
-                  backgroundImage: const AssetImage('assets/piggy_ai_assistant.png')))),
+                  child: const Image(image: AssetImage('assets/piggy_ai_assistant.png'), width: 24, height: 24)))),
             const SizedBox(width: 8),
             Text("Piggy Vault", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: _textColor))]),
         actions: [
