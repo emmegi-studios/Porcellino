@@ -1854,7 +1854,6 @@ class _PiggyAiAdvisorWidgetState extends State<PiggyAiAdvisorWidget> {
                             children: [
                               Text(w['title'], style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
                               const SizedBox(height: 6),
-      backgroundColor: const Color(0xFF13131A),
                             ],
                           ),
                         ),
