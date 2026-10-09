@@ -1649,26 +1649,50 @@ class _InviteManagerState extends State<InviteManager> {
 
 
 
+
 class PiggyAiAdvisorWidget extends StatelessWidget {
   const PiggyAiAdvisorWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: const Color(0xFF1E1E2C),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.pink.withOpacity(0.3)),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.pinkAccent.withOpacity(0.4), width: 1.5),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.pinkAccent.withOpacity(0.1),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
-      child: const Row(
+      child: Row(
         children: [
-          Icon(Icons.psychology, color: Colors.pinkAccent, size: 28),
-          SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              'Piggy AI Advisor: Monitora regolarmente le spese condivise per raggiungere prima i tuoi obiettivi!',
-              style: TextStyle(color: Colors.white70, fontSize: 12),
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: Colors.pinkAccent.withOpacity(0.15),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(Icons.savings, color: Colors.pinkAccent, size: 28),
+          ),
+          const SizedBox(width: 14),
+          const Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Piggy AI Advisor 🐷",
+                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
+                ),
+                SizedBox(height: 4),
+                Text(
+                  style: TextStyle(color: Colors.white70, fontSize: 11),
+                ),
+              ],
             ),
           ),
         ],
@@ -1676,3 +1700,4 @@ class PiggyAiAdvisorWidget extends StatelessWidget {
     );
   }
 }
+
