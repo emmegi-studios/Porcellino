@@ -1674,7 +1674,7 @@ class _PiggyAiAdvisorWidgetState extends State<PiggyAiAdvisorWidget> {
   final List<Map<String, String>> _messages = [
     {
       'sender': 'piggy',
-      'text': 'Oink! Sono Piggy, il guardiano del caveau di Marco e Marika. Pronto a gestire le spese e i sogni di coppia!'
+      'text': 'Oink! Sono Piggy, il guardiano del caveau del caveau condiviso. Pronto a gestire le spese e i sogni di coppia!'
     }
   ];
 
@@ -1707,7 +1707,7 @@ class _PiggyAiAdvisorWidgetState extends State<PiggyAiAdvisorWidget> {
       String amountStr = match != null ? match.group(0)! : '';
       double? amount = double.tryParse(amountStr.replaceAll(',', '.'));
 
-      String reply = "Oink! Ho registrato l'operazione nel caveau di Marco e Marika.";
+      String reply = "Oink! Ho registrato l'operazione nel caveau del caveau condiviso.";
       final lower = text.toLowerCase();
 
       if (lower.contains('ristorante') || lower.contains('cena') || lower.contains('pizza') || lower.contains('pranzo')) {
