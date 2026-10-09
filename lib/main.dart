@@ -170,7 +170,7 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-            const PiggyAIUltimateWidget(),
+            
                     Image.asset(
                       'assets/icon/icona_esterna.png',
                       width: 80,
