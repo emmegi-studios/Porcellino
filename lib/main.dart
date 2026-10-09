@@ -1,28 +1,35 @@
-import 'piggy_ai_ultimate.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:local_auth/local_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'dart:convert';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/services.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  try {
-    await Firebase.initializeApp();
-  } catch (e) {
-    debugPrint("Firebase init notice: $e");
-  }
   final prefs = await SharedPreferences.getInstance();
   final savedTheme = prefs.getString('selectedTheme') ?? 'Piggy Dark';
   runApp(PiggyVaultApp(initialTheme: savedTheme));
 }
 
+class PiggyVaultApp extends StatelessWidget {
+  final String initialTheme;
+  const PiggyVaultApp({super.key, this.initialTheme = 'Piggy Dark'});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Piggy Vault',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        brightness: Brightness.dark,
+        scaffoldBackgroundColor: const Color(0xFF13131A),
+        primarySwatch: Colors.pink,
+      ),
+      home: AuthGate(initialTheme: initialTheme),
+    );
+  }
+}
 
 class AuthGate extends StatelessWidget {
   final String initialTheme;
@@ -36,12 +43,13 @@ class AuthGate extends StatelessWidget {
           return const Scaffold(body: Center(child: CircularProgressIndicator()));
         }
         if (snapshot.hasData && snapshot.data != null) {
-          return InviteManager(child: HomeScreen(userEmail: FirebaseAuth.instance.currentUser?.email ?? 'Nessuna Email')); // Utente già loggato: dritto al caveau
+          return InviteManager(child: HomeScreen(userEmail: FirebaseAuth.instance.currentUser?.email ?? 'Nessuna Email'));
         }
-        return LoginScreen(initialTheme: initialTheme); // Utente non loggato: schermata di login
+        return LoginScreen(initialTheme: initialTheme);
       });
   }
 }
+
 
 class LoginScreen extends StatefulWidget {
   final String initialTheme;
