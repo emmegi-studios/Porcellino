@@ -1650,6 +1650,10 @@ class _InviteManagerState extends State<InviteManager> {
 
 
 
+
+
+
+
 class PiggyAiAdvisorWidget extends StatelessWidget {
   const PiggyAiAdvisorWidget({super.key});
 
@@ -1661,13 +1665,6 @@ class PiggyAiAdvisorWidget extends StatelessWidget {
         color: const Color(0xFF1E1E2C),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Colors.pinkAccent.withOpacity(0.4), width: 1.5),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.pinkAccent.withOpacity(0.1),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
-          ),
-        ],
       ),
       child: Row(
         children: [
@@ -1685,11 +1682,12 @@ class PiggyAiAdvisorWidget extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Piggy AI Advisor 🐷",
+                  'Piggy AI Advisor 🐷',
                   style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
                 ),
                 SizedBox(height: 4),
                 Text(
+                  'Monitora regolarmente le spese condivise!',
                   style: TextStyle(color: Colors.white70, fontSize: 11),
                 ),
               ],
@@ -1700,4 +1698,3 @@ class PiggyAiAdvisorWidget extends StatelessWidget {
     );
   }
 }
-
