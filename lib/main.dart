@@ -1199,7 +1199,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   decoration: BoxDecoration(
                     color: _primaryColor,
                     borderRadius: BorderRadius.circular(8)),
-                  child: const Icon(Icons.savings, color: Colors.white, size: 20)))),
+                  backgroundImage: const AssetImage('assets/piggy_ai_assistant.png')))),
             const SizedBox(width: 8),
             Text("Piggy Vault", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: _textColor))]),
         actions: [
@@ -1712,7 +1712,7 @@ class _PiggyAiAdvisorWidgetState extends State<PiggyAiAdvisorWidget> {
 
       if (lower.contains('ristorante') || lower.contains('cena') || lower.contains('pizza') || lower.contains('pranzo')) {
         reply = amount != null 
-            ? "Oink! €$amount bruciati in cibo. Il vostro stomaco ringrazia, ma il salvadanaio di coppia un po' meno!" 
+            ? "Oink! €$amount bruciati in cibo. Il vostro stomaco ringrazia, ma il salvadanaio un po' meno!" 
             : "Cena fuori? Ottimo per il morale di coppia, ma occhio agli sfizi culinari!";
       } else if (lower.contains('spesa') || lower.contains('supermercato')) {
         reply = amount != null 
