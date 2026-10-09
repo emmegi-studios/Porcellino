@@ -8,6 +8,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   final prefs = await SharedPreferences.getInstance();
   final savedTheme = prefs.getString('selectedTheme') ?? 'Piggy Dark';
   runApp(PiggyVaultApp(initialTheme: savedTheme));
