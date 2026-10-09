@@ -1975,3 +1975,5 @@ class _PiggyAiAdvisorWidgetState extends State<PiggyAiAdvisorWidget> {
 }
 
 // Login dark fix applied
+
+// Fix visivi applicati tramite Regex
