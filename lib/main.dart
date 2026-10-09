@@ -58,7 +58,15 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _isRegistrazione = false;
   bool _isLoading = false;
   bool _obscurePassword = true;
-  bool _isDarkTheme = true;
+  late bool _isDarkTheme;
+
+  @override
+  void initState() {
+    super.initState();
+    _isDarkTheme = (widget.initialTheme == 'Piggy Dark');
+    _loadTheme();
+    _loadSavedEmail();
+  }
 
   @override
   void initState() {
@@ -342,7 +350,15 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       _loadBudget();
     }
   }
-  bool _isDarkTheme = true;
+  late bool _isDarkTheme;
+
+  @override
+  void initState() {
+    super.initState();
+    _isDarkTheme = (widget.initialTheme == 'Piggy Dark');
+    _loadTheme();
+    _loadSavedEmail();
+  }
   List<Map<String, dynamic>> _promemoria = [];
 
   Future<void> _caricaPromemoriaDaCloud() async {
