@@ -176,6 +176,7 @@ class _LoginScreenState extends State<LoginScreen> {
     final _primaryColor = Colors.pinkAccent;
 
     return Scaffold(
+      backgroundColor: const Color(0xFF13131A),
       backgroundColor: _scaffoldBg,
       body: Center(
         child: SingleChildScrollView(
@@ -928,9 +929,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         ),
                         ElevatedButton.icon(
                           style: ElevatedButton.styleFrom(backgroundColor: Colors.grey.shade200),
-                          onPressed: () { HapticFeedback.lightImpact(); setState(() { _currentTheme = 'Piggy Dark'; }); SharedPreferences.getInstance().then((p) => p.setString("selectedTheme", _currentTheme)); Navigator.pop(context); },
+                          onPressed: () { HapticFeedback.lightImpact(); setState(() { _currentTheme = 'Piggy White'; }); SharedPreferences.getInstance().then((p) => p.setString("selectedTheme", _currentTheme)); Navigator.pop(context); },
                           icon: const Icon(Icons.light_mode, color: Colors.black87, size: 16),
-                          label: const Text('Piggy Dark', style: TextStyle(color: Colors.black87)),
+                          label: const Text('Piggy White', style: TextStyle(color: Colors.black87)),
                         ),
                       ],
                     ),
@@ -1667,14 +1668,14 @@ class _PiggyAiAdvisorWidgetState extends State<PiggyAiAdvisorWidget> {
   
   bool _isWishlistMode = false;
   final List<Map<String, dynamic>> _wishes = [
-    {'title': 'Weekend Romantico con Marika', 'cost': 350.0, 'saved': 250.0},
+    {'title': 'Weekend Romantico di Coppia', 'cost': 350.0, 'saved': 250.0},
     {'title': 'Upgrade Audio Home Studio', 'cost': 500.0, 'saved': 500.0},
   ];
 
   final List<Map<String, String>> _messages = [
     {
       'sender': 'piggy',
-      'text': 'Oink! Sono Piggy, il guardiano del caveau del caveau condiviso. Pronto a gestire le spese e i sogni di coppia!'
+      'text': 'Oink! Sono Piggy, il guardiano del caveau condiviso. Pronto a gestire le spese e i sogni di coppia!'
     }
   ];
 
