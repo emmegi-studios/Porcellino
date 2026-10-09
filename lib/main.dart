@@ -19,6 +19,13 @@ class PiggyVaultApp extends StatelessWidget {
   final String initialTheme;
   const PiggyVaultApp({super.key, this.initialTheme = 'Piggy Dark'});
 
+  
+  // Sezione Promemoria e Scadenze Dinamica
+  final List<Map<String, dynamic>> _reminders = [
+    {'title': 'Assicurazione Alfa Romeo', 'date': '15 Ottobre', 'amount': 280.0},
+    {'title': 'Affitto Condiviso', 'date': '1 Novembre', 'amount': 650.0},
+  ];
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -39,6 +46,13 @@ class PiggyVaultApp extends StatelessWidget {
 class AuthGate extends StatelessWidget {
   final String initialTheme;
   const AuthGate({super.key, required this.initialTheme});
+  
+  // Sezione Promemoria e Scadenze Dinamica
+  final List<Map<String, dynamic>> _reminders = [
+    {'title': 'Assicurazione Alfa Romeo', 'date': '15 Ottobre', 'amount': 280.0},
+    {'title': 'Affitto Condiviso', 'date': '1 Novembre', 'amount': 650.0},
+  ];
+
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<User?>(
@@ -166,6 +180,13 @@ class _LoginScreenState extends State<LoginScreen> {
       }
     }
   }
+
+  
+  // Sezione Promemoria e Scadenze Dinamica
+  final List<Map<String, dynamic>> _reminders = [
+    {'title': 'Assicurazione Alfa Romeo', 'date': '15 Ottobre', 'amount': 280.0},
+    {'title': 'Affitto Condiviso', 'date': '1 Novembre', 'amount': 650.0},
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -1171,6 +1192,13 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       });
   }
 
+  
+  // Sezione Promemoria e Scadenze Dinamica
+  final List<Map<String, dynamic>> _reminders = [
+    {'title': 'Assicurazione Alfa Romeo', 'date': '15 Ottobre', 'amount': 280.0},
+    {'title': 'Affitto Condiviso', 'date': '1 Novembre', 'amount': 650.0},
+  ];
+
   @override
   Widget build(BuildContext context) {
     try {
@@ -1348,7 +1376,39 @@ Card(
                   ),
                   const SizedBox(height: 12),
                   _promemoria.isEmpty
-                      ? Text("Nessuna scadenza imminente. Aggiungi un promemoria!", style: TextStyle(color: _subtitleColor, fontSize: 11))
+                      ? Text("SizedBox(
+      height: 90,
+      child: ListView.builder(
+        itemCount: _reminders.length,
+        itemBuilder: (ctx, index) {
+          final rem = _reminders[index];
+          return Container(
+            margin: const EdgeInsets.only(bottom: 6),
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: const Color(0xFF13131A),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: Colors.pinkAccent.withOpacity(0.3)),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(rem['title'], style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 2),
+                    Text('Scadenza: ${rem['date']}', style: const TextStyle(color: Colors.white54, fontSize: 10)),
+                  ],
+                ),
+                Text('€${rem['amount']}', style: const TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold, fontSize: 12)),
+              ],
+            ),
+          );
+        },
+      ),
+    )", style: TextStyle(color: _subtitleColor, fontSize: 11))
                       : Column(
                           children: _promemoria.map((p) => Padding(
                             padding: const EdgeInsets.only(bottom: 8.0),
@@ -1644,6 +1704,13 @@ class _InviteManagerState extends State<InviteManager> {
     });
   }
 
+  
+  // Sezione Promemoria e Scadenze Dinamica
+  final List<Map<String, dynamic>> _reminders = [
+    {'title': 'Assicurazione Alfa Romeo', 'date': '15 Ottobre', 'amount': 280.0},
+    {'title': 'Affitto Condiviso', 'date': '1 Novembre', 'amount': 650.0},
+  ];
+
   @override
   Widget build(BuildContext context) {
     return widget.child;
@@ -1700,6 +1767,14 @@ class _PiggyAiAdvisorWidgetState extends State<PiggyAiAdvisorWidget> {
 
     setState(() {
       _messages.add({'sender': 'user', 'text': text});
+      
+      if (amount != null) {
+        FirebaseFirestore.instance.collection('shared_transactions').add({
+          'amount': amount,
+          'text': text,
+          'timestamp': FieldValue.serverTimestamp(),
+        }).catchError((e) => print("Firestore error: $e"));
+      }
       _messageController.clear();
 
       final regExp = RegExp(r'(\d+(?:[.,]\d+)?)');
@@ -1755,6 +1830,13 @@ class _PiggyAiAdvisorWidgetState extends State<PiggyAiAdvisorWidget> {
       _speak("Nuovo desiderio aggiunto al Caveau dei Desideri!");
     }
   }
+
+  
+  // Sezione Promemoria e Scadenze Dinamica
+  final List<Map<String, dynamic>> _reminders = [
+    {'title': 'Assicurazione Alfa Romeo', 'date': '15 Ottobre', 'amount': 280.0},
+    {'title': 'Affitto Condiviso', 'date': '1 Novembre', 'amount': 650.0},
+  ];
 
   @override
   Widget build(BuildContext context) {
