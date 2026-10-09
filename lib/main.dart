@@ -1651,6 +1651,7 @@ class _InviteManagerState extends State<InviteManager> {
 }
 
 
+
 class PiggyAiAdvisorWidget extends StatefulWidget {
   const PiggyAiAdvisorWidget({super.key});
 
@@ -1785,9 +1786,12 @@ class _PiggyAiAdvisorWidgetState extends State<PiggyAiAdvisorWidget> {
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       border: Border.all(color: Colors.pinkAccent, width: 2),
-                      image: const DecorationImage(
-                        image: AssetImage('assets/piggy_ai_assistant.png'),
+                    ),
+                    child: ClipOval(
+                      child: Image.asset(
+                        'assets/piggy_ai_assistant.png',
                         fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) => const Icon(Icons.savings, color: Colors.pinkAccent, size: 28),
                       ),
                     ),
                   ),
