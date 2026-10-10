@@ -1769,6 +1769,8 @@ class PiggyAiAdvisorWidget extends StatefulWidget {
 
 class _PiggyAiAdvisorWidgetState extends State<PiggyAiAdvisorWidget> {
   final FlutterTts _tts = FlutterTts();
+  final stt.SpeechToText _speech = stt.SpeechToText();
+  bool _isListening = false;
   final TextEditingController _messageController = TextEditingController();
   final TextEditingController _wishController = TextEditingController();
   final TextEditingController _wishCostController = TextEditingController();
@@ -1800,6 +1802,31 @@ class _PiggyAiAdvisorWidgetState extends State<PiggyAiAdvisorWidget> {
 
   Future<void> _speak(String text) async {
     await _tts.speak(text);
+  }
+
+
+  void _startListening() async {
+    HapticFeedback.mediumImpact(); // Vibrazione quando premi
+    bool available = await _speech.initialize();
+    if (available) {
+      setState(() => _isListening = true);
+      _speech.listen(
+        onResult: (val) => setState(() {
+          _messageController.text = val.recognizedWords;
+        }),
+        localeId: 'it_IT',
+      );
+    }
+  }
+
+  void _stopListening() {
+    if (_isListening) {
+      setState(() => _isListening = false);
+      _speech.stop();
+      if (_messageController.text.isNotEmpty) {
+        _sendMessage(); // Invia il comando in automatico appena rilasci!
+      }
+    }
   }
 
   void _sendMessage() {
@@ -2107,3 +2134,5 @@ class _PiggyAiAdvisorWidgetState extends State<PiggyAiAdvisorWidget> {
 // Fix v1.4.3: Inserimento definitivo e corretto metodi OTA
 
 // Setup V2.0: Fondamenta Motore Push, STT e TTS inserite
+
+// Logica Push-to-Talk STT aggiunta v2.0-beta.2
