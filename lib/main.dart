@@ -1204,7 +1204,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   decoration: BoxDecoration(
                     color: _primaryColor,
                     borderRadius: BorderRadius.circular(8)),
-                  child: const Image(image: AssetImage('assets/piggy_ai_assistant.png'), width: 24, height: 24)))),
+                  child: const Image(image: AssetImage('assets/images/piggy_ai_assistant.png'), width: 24, height: 24)))),
             const SizedBox(width: 8),
             Text("Piggy Vault", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: _textColor))]),
         actions: [
@@ -1252,7 +1252,7 @@ Card(
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("PATRIMONIO CONDIVISO", style: TextStyle(fontSize: 10, color: _subtitleColor, fontWeight: FontWeight.bold)),
+                      Text("PATRIMONIO CONDIVISO", style: TextStyle(fontSize: 10, color: Theme.of(context).brightness == Brightness.light ? Colors.black54 : Colors.white70, fontWeight: FontWeight.bold)),
                       const SizedBox(height: 4),
                       Text("€ ${patrimonio.toStringAsFixed(2)}", style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Color(0xFF10B981)))]),
                   const Icon(Icons.cloud_done, color: Color(0xFF10B981), size: 32)]))),
@@ -1794,7 +1794,7 @@ class _PiggyAiAdvisorWidgetState extends State<PiggyAiAdvisorWidget> {
                     ),
                     child: ClipOval(
                       child: Image.asset(
-                        'assets/piggy_ai_assistant.png',
+                        'assets/images/piggy_ai_assistant.png',
                         fit: BoxFit.cover,
                         errorBuilder: (context, error, stackTrace) => const Icon(Icons.savings, color: Colors.pinkAccent, size: 28),
                       ),
@@ -1806,7 +1806,7 @@ class _PiggyAiAdvisorWidgetState extends State<PiggyAiAdvisorWidget> {
                     children: [
                       Text(
                         'Piggy AI Advisor',
-                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
+                        style: TextStyle(color: Theme.of(context).brightness == Brightness.light ? Colors.black87 : Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
                       ),
                       Text(
                         '• Online • Voce & Desideri',
@@ -1986,3 +1986,5 @@ class _PiggyAiAdvisorWidgetState extends State<PiggyAiAdvisorWidget> {
 // Fix UI Forzato V25
 
 // Fix UI Forzato Definitivo V26
+
+// Fix ultra-mirato Avatar e Colori AI v1.3.16
