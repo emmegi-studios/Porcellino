@@ -69,6 +69,13 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
@@ -2017,3 +2024,5 @@ class _PiggyAiAdvisorWidgetState extends State<PiggyAiAdvisorWidget> {
 // Fix definitivo Colori Getters Tema Bianco v1.3.20
 
 // Fix visibilità floating label Login v1.3.21
+
+// Release Definitiva v1.4.0: Fix Memory Leak
