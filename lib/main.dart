@@ -1801,14 +1801,14 @@ class _PiggyAiAdvisorWidgetState extends State<PiggyAiAdvisorWidget> {
                     ),
                   ),
                   const SizedBox(width: 10),
-                  const Column(
+                  Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         'Piggy AI Advisor',
                         style: TextStyle(color: Theme.of(context).brightness == Brightness.light ? Colors.black87 : Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
                       ),
-                      Text(
+                      const Text(
                         '• Online • Voce & Desideri',
                         style: TextStyle(color: Colors.greenAccent, fontSize: 11),
                       ),
@@ -1988,3 +1988,5 @@ class _PiggyAiAdvisorWidgetState extends State<PiggyAiAdvisorWidget> {
 // Fix UI Forzato Definitivo V26
 
 // Fix ultra-mirato Avatar e Colori AI v1.3.16
+
+// Fix const per tema dinamico AI v1.3.17
