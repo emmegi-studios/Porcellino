@@ -2077,6 +2077,7 @@ class _PiggyAiAdvisorWidgetState extends State<PiggyAiAdvisorWidget> {
                 Expanded(
                   child: TextField(
                     controller: _messageController,
+                    onChanged: (val) => setState(() {}),
                     style: const TextStyle(color: Colors.white, fontSize: 12),
                     decoration: InputDecoration(
                       hintText: 'Chiedi a Piggy o digita spesa...',
@@ -2090,14 +2091,31 @@ class _PiggyAiAdvisorWidgetState extends State<PiggyAiAdvisorWidget> {
                   ),
                 ),
                 const SizedBox(width: 8),
-                Container(
-                  decoration: const BoxDecoration(
-                    color: Colors.pinkAccent,
-                    shape: BoxShape.circle,
-                  ),
-                  child: IconButton(
-                    icon: const Icon(Icons.send, size: 20, color: Colors.white),
-                    onPressed: _sendMessage,
+                GestureDetector(
+                  onLongPressStart: (_) => _startListening(),
+                  onLongPressEnd: (_) => _stopListening(),
+                  onTap: () {
+                    if (_messageController.text.isNotEmpty) {
+                      _sendMessage();
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Tieni premuto per parlare! 🎙️')));
+                    }
+                  },
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: _isListening ? Colors.redAccent : Colors.pinkAccent,
+                      shape: BoxShape.circle,
+                      boxShadow: _isListening 
+                          ? [BoxShadow(color: Colors.redAccent.withOpacity(0.6), blurRadius: 10, spreadRadius: 3)] 
+                          : [],
+                    ),
+                    child: Icon(
+                      _isListening ? Icons.mic : (_messageController.text.isEmpty ? Icons.mic_none : Icons.send),
+                      size: 20, 
+                      color: Colors.white
+                    ),
                   ),
                 ),
               ],
@@ -2136,3 +2154,5 @@ class _PiggyAiAdvisorWidgetState extends State<PiggyAiAdvisorWidget> {
 // Setup V2.0: Fondamenta Motore Push, STT e TTS inserite
 
 // Logica Push-to-Talk STT aggiunta v2.0-beta.2
+
+// Fix v2.0-beta.3: Grafica e animazioni pulsante Walkie-Talkie
