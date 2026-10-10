@@ -279,7 +279,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 onPressed: () => setState(() => _isRegistrazione = !_isRegistrazione),
                 child: Text(
                   _isRegistrazione ? "Hai già un account? Accedi" : "Non hai un account? Registrati",
-                  style: TextStyle(color: _subtitleColor),
+                  style: const TextStyle(color: Colors.white70),
                 ),
               ),
             ],
@@ -941,6 +941,18 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                           label: const Text('Piggy White', style: TextStyle(color: Colors.black87)),
                         ),
                       ],
+                    ),
+                    const SizedBox(height: 16),
+                    Divider(color: _textColor.withOpacity(0.2)),
+                    ListTile(
+                      leading: Icon(Icons.info_outline, color: _textColor.withOpacity(0.7)),
+                      title: Text('Info & Crediti', style: TextStyle(color: _textColor)),
+                      onTap: () => _mostraInfoApp(context),
+                    ),
+                    ListTile(
+                      leading: const Icon(Icons.system_update, color: Colors.greenAccent),
+                      title: Text('Cerca Aggiornamenti', style: TextStyle(color: _textColor)),
+                      onTap: () => _verificaAggiornamentiOTA(context),
                     ),
                     const SizedBox(height: 24),
                   ],
