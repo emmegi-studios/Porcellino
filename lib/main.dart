@@ -208,6 +208,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 decoration: InputDecoration(
                   labelText: "Email utente",
                   labelStyle: TextStyle(color: _subtitleColor),
+                  floatingLabelStyle: const TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold),
                   filled: true,
                   fillColor: _cardBg,
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
@@ -221,6 +222,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 decoration: InputDecoration(
                   labelText: "Password",
                   labelStyle: TextStyle(color: _subtitleColor),
+                  floatingLabelStyle: const TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold),
                   filled: true,
                   fillColor: _cardBg,
                   suffixIcon: IconButton(
@@ -239,6 +241,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   decoration: InputDecoration(
                     labelText: "Conferma Password",
                     labelStyle: TextStyle(color: _subtitleColor),
+                  floatingLabelStyle: const TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold),
                     filled: true,
                     fillColor: _cardBg,
                     suffixIcon: IconButton(
@@ -965,9 +968,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             children: [
               Text("🎯 Nuovo Obiettivo", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: _textColor)),
               const SizedBox(height: 16),
-              TextField(controller: _goalNameController, style: TextStyle(color: _textColor), decoration: InputDecoration(labelText: 'Nome Obiettivo (es. Viaggio)', labelStyle: TextStyle(color: _subtitleColor), fillColor: _scaffoldBg, filled: true)),
+              TextField(controller: _goalNameController, style: TextStyle(color: _textColor), decoration: InputDecoration(labelText: 'Nome Obiettivo (es. Viaggio)', labelStyle: TextStyle(color: _subtitleColor),
+                  floatingLabelStyle: const TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold), fillColor: _scaffoldBg, filled: true)),
               const SizedBox(height: 12),
-              TextField(controller: _goalTargetController, keyboardType: TextInputType.number, style: TextStyle(color: _textColor), decoration: InputDecoration(labelText: 'Target in € (es. 1500)', labelStyle: TextStyle(color: _subtitleColor), fillColor: _scaffoldBg, filled: true)),
+              TextField(controller: _goalTargetController, keyboardType: TextInputType.number, style: TextStyle(color: _textColor), decoration: InputDecoration(labelText: 'Target in € (es. 1500)', labelStyle: TextStyle(color: _subtitleColor),
+                  floatingLabelStyle: const TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold), fillColor: _scaffoldBg, filled: true)),
               const SizedBox(height: 24),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(backgroundColor: _primaryColor, minimumSize: const Size(double.infinity, 50)),
@@ -1119,7 +1124,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 value: _selectedType,
                 dropdownColor: _cardBg,
                 style: TextStyle(color: _textColor),
-                decoration: InputDecoration(labelText: "Tipo", labelStyle: TextStyle(color: _subtitleColor), filled: true, fillColor: _scaffoldBg, border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))),
+                decoration: InputDecoration(labelText: "Tipo", labelStyle: TextStyle(color: _subtitleColor),
+                  floatingLabelStyle: const TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold), filled: true, fillColor: _scaffoldBg, border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))),
                 items: const [
                   DropdownMenuItem(value: 'Uscita (Spesa)', child: Text("🔴 Uscita (Spesa)")),
                   DropdownMenuItem(value: 'Entrata (Guadagno)', child: Text("🟢 Entrata (Guadagno)"))],
@@ -1129,20 +1135,23 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 controller: _amountController,
                 style: TextStyle(color: _textColor),
                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                decoration: InputDecoration(labelText: "Importo (€)", labelStyle: TextStyle(color: _subtitleColor), filled: true, fillColor: _scaffoldBg, border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)))),
+                decoration: InputDecoration(labelText: "Importo (€)", labelStyle: TextStyle(color: _subtitleColor),
+                  floatingLabelStyle: const TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold), filled: true, fillColor: _scaffoldBg, border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)))),
               const SizedBox(height: 12),
               DropdownButtonFormField<String>(
                 value: _selectedCategory,
                 dropdownColor: _cardBg,
                 style: TextStyle(color: _textColor),
-                decoration: InputDecoration(labelText: "Categoria", labelStyle: TextStyle(color: _subtitleColor), filled: true, fillColor: _scaffoldBg, border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))),
+                decoration: InputDecoration(labelText: "Categoria", labelStyle: TextStyle(color: _subtitleColor),
+                  floatingLabelStyle: const TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold), filled: true, fillColor: _scaffoldBg, border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))),
                 items: categorieConEmoji.map((cat) => DropdownMenuItem(value: cat, child: Text(cat))).toList(),
                 onChanged: (val) => setState(() => _selectedCategory = val ?? '🐾 Animali')),
               const SizedBox(height: 12),
               TextField(
                 controller: _noteController,
                 style: TextStyle(color: _textColor),
-                decoration: InputDecoration(labelText: "Note / Descrizione", labelStyle: TextStyle(color: _subtitleColor), filled: true, fillColor: _scaffoldBg, border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)))),
+                decoration: InputDecoration(labelText: "Note / Descrizione", labelStyle: TextStyle(color: _subtitleColor),
+                  floatingLabelStyle: const TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold), filled: true, fillColor: _scaffoldBg, border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)))),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(backgroundColor: _primaryColor, padding: const EdgeInsets.symmetric(vertical: 16), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
                 onPressed: () { HapticFeedback.lightImpact();
@@ -1397,6 +1406,7 @@ Card(
                                   decoration: InputDecoration(
                                     labelText: "Titolo Scadenza",
                                     labelStyle: TextStyle(color: _subtitleColor),
+                  floatingLabelStyle: const TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold),
                                     hintText: "es. Affitto o Bolletta",
                                     hintStyle: TextStyle(color: _subtitleColor.withOpacity(0.5)),
                                   ),
@@ -1408,6 +1418,7 @@ Card(
                                   decoration: InputDecoration(
                                     labelText: "Data (DD/MM/YYYY)",
                                     labelStyle: TextStyle(color: _subtitleColor),
+                  floatingLabelStyle: const TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold),
                                   ),
                                 ),
                               ],
@@ -1992,3 +2003,5 @@ class _PiggyAiAdvisorWidgetState extends State<PiggyAiAdvisorWidget> {
 // Fix const per tema dinamico AI v1.3.17
 
 // Fix definitivo Colori Getters Tema Bianco v1.3.20
+
+// Fix visibilità floating label Login v1.3.21
