@@ -6,6 +6,10 @@ import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
 
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:speech_to_text/speech_to_text.dart' as stt;
+import 'package:flutter_tts/flutter_tts.dart';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -15,6 +19,14 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+
+  try {
+    FirebaseMessaging messaging = FirebaseMessaging.instance;
+    await messaging.requestPermission(alert: true, badge: true, sound: true);
+  } catch(e) {
+    print("Errore init notifiche: $e");
+  }
+
   final prefs = await SharedPreferences.getInstance();
   final savedTheme = prefs.getString('selectedTheme') ?? 'Piggy Dark';
   runApp(PiggyVaultApp(initialTheme: savedTheme));
@@ -2093,3 +2105,5 @@ class _PiggyAiAdvisorWidgetState extends State<PiggyAiAdvisorWidget> {
 // Fix v1.4.2: Ripristino e scope corretto metodi OTA
 
 // Fix v1.4.3: Inserimento definitivo e corretto metodi OTA
+
+// Setup V2.0: Fondamenta Motore Push, STT e TTS inserite
