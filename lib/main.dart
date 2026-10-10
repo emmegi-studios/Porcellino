@@ -424,6 +424,40 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
+
+    // Ascoltatore Notifiche Push in Foreground (In tempo reale)
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      if (message.notification != null) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Row(
+                children: [
+                  const Icon(Icons.notifications_active, color: Colors.white),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(message.notification!.title ?? 'Nuova attività nel Caveau 🐷', style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
+                        Text(message.notification!.body ?? '', style: const TextStyle(color: Colors.white)),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              backgroundColor: Colors.green.shade600,
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+              duration: const Duration(seconds: 4),
+              margin: const EdgeInsets.only(bottom: 20, left: 16, right: 16),
+            ),
+          );
+        }
+      }
+    });
+
     WidgetsBinding.instance.addObserver(this);
     _loadBudget();
     _loadTheme();
@@ -2156,3 +2190,5 @@ class _PiggyAiAdvisorWidgetState extends State<PiggyAiAdvisorWidget> {
 // Logica Push-to-Talk STT aggiunta v2.0-beta.2
 
 // Fix v2.0-beta.3: Grafica e animazioni pulsante Walkie-Talkie
+
+// Fix v2.0-beta.4: Iniezione listener Firebase in Foreground
