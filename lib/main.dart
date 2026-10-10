@@ -177,7 +177,7 @@ class _LoginScreenState extends State<LoginScreen> {
     final _cardBg = _isDarkTheme ? const Color(0xFF1E2235) : Colors.white;
     final _scaffoldBg = _isDarkTheme ? const Color(0xFF0F111A) : const Color(0xFFF0F2F5);
     final _textColor = _isDarkTheme ? Colors.white : Colors.black87;
-    final _subtitleColor = Colors.grey.shade400;
+    final _subtitleColor = _isDarkTheme ? Colors.grey.shade400 : Colors.black54;
     final _primaryColor = Colors.pinkAccent;
 
     return Scaffold(
@@ -594,8 +594,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   bool get _isDark => _currentTheme == 'Piggy Dark';
   Color get _cardBg => _isDark ? const Color(0xFF1E2235) : Colors.white;
-  Color get _textColor => _isDark ? Colors.white : Colors.black87;
-  Color get _subtitleColor => _isDark ? Colors.grey.shade400 : Colors.grey.shade600;
+  Color get _textColor => _currentTheme == 'Piggy White' ? Colors.black87 : Colors.white;
+  Color get _subtitleColor => _currentTheme == 'Piggy White' ? Colors.black54 : Colors.grey.shade400;
   Color get _primaryColor => Colors.pinkAccent;
   Color get _scaffoldBg => _isDark ? const Color(0xFF0F111A) : Colors.grey.shade100;
 
@@ -1990,3 +1990,5 @@ class _PiggyAiAdvisorWidgetState extends State<PiggyAiAdvisorWidget> {
 // Fix ultra-mirato Avatar e Colori AI v1.3.16
 
 // Fix const per tema dinamico AI v1.3.17
+
+// Fix definitivo Colori Getters Tema Bianco v1.3.20
