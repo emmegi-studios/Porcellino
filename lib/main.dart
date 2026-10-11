@@ -1792,7 +1792,7 @@ Card(
                   apiKey: 'INSERISCI_API_KEY',
                 );
                 
-                final contextFinanziario = 'Patrimonio condiviso: €' + patrimonio.toStringAsFixed(2) + ', Entrate mese: €' + entrateMese.toStringAsFixed(2) + ', Uscite mese: €' + usciteMese.toStringAsFixed(2) + '.';
+                final contextFinanziario = 'Analisi caveau attiva. Dati finanziari sincronizzati.';
                 final systemPrompt = 'Sei Piggy AI, un assistente finanziario cibernetico venuto dal futuro, in stile Terminator. Parli in modo freddo, calcolato, serio, tagliente e ironico sulla debolezza delle unità organiche che sprecano denaro. Tratti il denaro come energia vitale del caveau. Dati finanziari attuali di Marco -> ' + contextFinanziario + ' Rispondi in italiano in modo conciso e cibernetico alla richiesta: ';
                 
                 final content = [Content.text(systemPrompt + textUser)];
