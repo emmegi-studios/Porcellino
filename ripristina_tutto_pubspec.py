@@ -1,0 +1,36 @@
+pubspec_completo = """name: family_budget_app
+description: Un caveau di coppia sicuro, privato e intelligente.
+publish_to: 'none'
+version: 2.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.2
+  firebase_core: ^2.24.2
+  cloud_firestore: ^4.13.6
+  firebase_auth: ^4.15.3
+  firebase_messaging: ^14.7.10
+  speech_to_text: ^6.5.1
+  flutter_tts: ^3.8.3
+  google_generative_ai: ^0.4.3
+  package_info_plus: ^5.0.1
+  dio: ^5.4.0
+  open_filex: ^4.3.2
+  path_provider: ^2.1.1
+  shared_preferences: ^2.2.2
+  flutter_local_notifications: ^16.3.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/
+"""
+
+with open('pubspec.yaml', 'w', encoding='utf-8') as f:
+    f.write(pubspec_completo)
+
+print("✅ File pubspec.yaml aggiornato con TUTTI i pacchetti (vecchi e nuovi uniti)!")
