@@ -324,22 +324,34 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
-  Future<void> _mostraInfoApp(BuildContext context) async {
-    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    Future<void> _mostraInfoApp(BuildContext context) async {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: const Color(0xFF1E2235),
-        title: const Text('Info & Crediti 🐷', style: TextStyle(color: Colors.white)),
-        content: Text(
-          'Piggy Vault v' + packageInfo.version + '\n\nIdeato e progettato da EmmeGi13.\nUn caveau sicuro, privato e intelligente.',
-          style: const TextStyle(color: Colors.white70)
+        title: const Row(
+          children: [
+            Icon(Icons.savings, color: Colors.pinkAccent),
+            SizedBox(width: 8),
+            Text('Piggy Vault', style: TextStyle(color: Colors.white)),
+          ],
+        ),
+        content: const Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Versione: 2.5 Ultimate', style: TextStyle(color: Colors.white70)),
+            SizedBox(height: 8),
+            Text('Sviluppato da EmmeGi Studios', style: TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold)),
+            SizedBox(height: 8),
+            Text('Assistente Cibernetico: Cyber-Piggy (Modello Terminator v2.5)', style: TextStyle(color: Colors.white60, fontSize: 13)),
+          ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: const Text('Chiudi', style: TextStyle(color: Colors.pinkAccent)),
-          )
+          ),
         ],
       ),
     );
