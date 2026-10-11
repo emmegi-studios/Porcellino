@@ -1,5 +1,6 @@
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:flutter/material.dart';
+import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:open_filex/open_filex.dart';
@@ -2192,3 +2193,7 @@ class _PiggyAiAdvisorWidgetState extends State<PiggyAiAdvisorWidget> {
 // Fix v2.0-beta.3: Grafica e animazioni pulsante Walkie-Talkie
 
 // Fix v2.0-beta.4: Iniezione listener Firebase in Foreground
+
+// Versione 2.0.0 con Gemini AI integrato
+
+// Versione 2.0.0 con Personalità Piggy AI & Gemini
