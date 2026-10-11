@@ -1372,7 +1372,7 @@ Card(
                 children: [
                   const Icon(Icons.cloud_sync, color: Color(0xFF3B82F6), size: 20),
                   const SizedBox(width: 8),
-                  Text("Modalità Sincronizzazione Cloud Attiva", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: _textColor))]))),
+                  Text("", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: _textColor))]))),
           const SizedBox(height: 14),
 
           Card(
@@ -1739,6 +1739,7 @@ Card(
 
 
 
+  
   void _mostraPiggyAI(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -1748,42 +1749,97 @@ Card(
         final _isDarkTheme = Theme.of(context).brightness == Brightness.dark;
         final _cardBg = _isDarkTheme ? const Color(0xFF1E2235) : Colors.white;
         final _textColor = _isDarkTheme ? Colors.white : Colors.black87;
-        return DraggableScrollableSheet(
-          initialChildSize: 0.75,
-          minChildSize: 0.5,
-          maxChildSize: 0.95,
-          builder: (_, controller) => Container(
-            decoration: BoxDecoration(
-              color: _cardBg,
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-              boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 10, spreadRadius: 2)],
-            ),
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              children: [
-                Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey[400], borderRadius: BorderRadius.circular(2))),
-                const SizedBox(height: 12),
-                Text('Piggy AI Assistant', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: _textColor)),
-                const Divider(),
-                Expanded(
-                  child: ListView(
-                    controller: controller,
-                    children: [
-                      ListTile(
-                        leading: const CircleAvatar(backgroundColor: Colors.pinkAccent, child: Icon(Icons.savings, color: Colors.white)),
-                        title: Text('Ciao Marco! Sono il tuo assistente finanziario.', style: TextStyle(color: _textColor)),
-                        subtitle: Text('Chiedimi qualsiasi cosa sui tuoi risparmi o sul budget.', style: TextStyle(color: _textColor.withOpacity(0.7))),
-                      ),
-                    ],
-                  ),
+        
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setStateModal) {
+            return DraggableScrollableSheet(
+              initialChildSize: 0.8,
+              minChildSize: 0.5,
+              maxChildSize: 0.95,
+              builder: (_, controller) => Container(
+                decoration: BoxDecoration(
+                  color: _cardBg,
+                  borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+                  boxShadow: [BoxShadow(color: Colors.black45, blurRadius: 15, spreadRadius: 3)],
                 ),
-              ],
-            ),
-          ),
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  children: [
+                    Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey[400], borderRadius: BorderRadius.circular(2))),
+                    const SizedBox(height: 12),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const CircleAvatar(backgroundColor: Colors.pinkAccent, radius: 16, child: Icon(Icons.savings, color: Colors.white, size: 18)),
+                        const SizedBox(width: 8),
+                        Text('Piggy AI Assistant', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: _textColor)),
+                      ],
+                    ),
+                    const Divider(),
+                    Expanded(
+                      child: ListView(
+                        controller: controller,
+                        children: [
+                          ListTile(
+                            leading: const CircleAvatar(backgroundColor: Colors.pinkAccent, child: Icon(Icons.smart_toy, color: Colors.white)),
+                            title: Text('Ciao Marco! Sono Piggy, il tuo assistente finanziario personale.', style: TextStyle(color: _textColor, fontWeight: FontWeight.bold)),
+                            subtitle: Text('Ho analizzato i tuoi conti. Sono pronto a gestire le tue finanze con polso e a consigliarti dove tagliare le spese superflue!', style: TextStyle(color: _textColor.withOpacity(0.8))),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Divider(height: 1),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            controller: _messageController,
+                            style: TextStyle(color: _textColor),
+                            decoration: InputDecoration(
+                              hintText: 'Chiedi a Piggy o registra vocale...',
+                              hintStyle: TextStyle(color: _textColor.withOpacity(0.4)),
+                              filled: true,
+                              fillColor: _isDarkTheme ? const Color(0xFF2A2E43) : Colors.grey[200],
+                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(24), borderSide: BorderSide.none),
+                              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        FloatingActionButton.small(
+                          heroTag: 'mic_ai_btn',
+                          backgroundColor: Colors.pinkAccent,
+                          onPressed: () {
+                            // Attivazione Push-to-Talk vocale
+                          },
+                          child: const Icon(Icons.mic, color: Colors.white),
+                        ),
+                        const SizedBox(width: 4),
+                        FloatingActionButton.small(
+                          heroTag: 'send_ai_btn',
+                          backgroundColor: Colors.pinkAccent,
+                          onPressed: () {
+                            if (_messageController.text.isNotEmpty) {
+                              setStateModal(() {
+                                _messageController.clear();
+                              });
+                            }
+                          },
+                          child: const Icon(Icons.send, color: Colors.white),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
         );
       },
     );
   }
+
 
 
 class InviteManager extends StatefulWidget {
