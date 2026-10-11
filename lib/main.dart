@@ -63,7 +63,20 @@ class AuthGate extends StatelessWidget {
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Scaffold(body: Center(child: CircularProgressIndicator()));
+          return const Scaffold(
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => _mostraPiggyAI(context),
+        backgroundColor: Colors.pinkAccent,
+        elevation: 6,
+        child: ClipOval(
+          child: Image.asset(
+            'assets/images/piggy_ai_assistant.png',
+            width: 48, height: 48, fit: BoxFit.cover,
+            errorBuilder: (c, e, s) => const Icon(Icons.savings, color: Colors.white, size: 28),
+          ),
+        ),
+      ),
+      body: Center(child: CircularProgressIndicator()));
         }
         if (snapshot.hasData && snapshot.data != null) {
           return InviteManager(child: HomeScreen(userEmail: FirebaseAuth.instance.currentUser?.email ?? 'Nessuna Email'));
@@ -202,6 +215,32 @@ class _LoginScreenState extends State<LoginScreen> {
 
     return Scaffold(
       backgroundColor: const Color(0xFF13131A),
+
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => _mostraPiggyAI(context),
+        backgroundColor: Colors.pinkAccent,
+        elevation: 6,
+        child: ClipOval(
+          child: Image.asset(
+            'assets/images/piggy_ai_assistant.png',
+            width: 48, height: 48, fit: BoxFit.cover,
+            errorBuilder: (c, e, s) => const Icon(Icons.savings, color: Colors.white, size: 28),
+          ),
+        ),
+      ),
+      
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => _mostraPiggyAI(context),
+        backgroundColor: Colors.pinkAccent,
+        elevation: 6,
+        child: ClipOval(
+          child: Image.asset(
+            'assets/images/piggy_ai_assistant.png',
+            width: 48, height: 48, fit: BoxFit.cover,
+            errorBuilder: (c, e, s) => const Icon(Icons.savings, color: Colors.white, size: 28),
+          ),
+        ),
+      ),
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
@@ -330,7 +369,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         backgroundColor: const Color(0xFF1E2235),
         title: const Text('Info & Crediti 🐷', style: TextStyle(color: Colors.white)),
         content: Text(
-          'Piggy Vault v' + packageInfo.version + '\n\nIdeato e progettato da EmmeGi13.\nUn caveau di coppia sicuro, privato e intelligente.',
+          'Piggy Vault v' + packageInfo.version + '\n\nIdeato e progettato da EmmeGi13.\nUn caveau sicuro, privato e intelligente.',
           style: const TextStyle(color: Colors.white70)
         ),
         actions: [
@@ -1803,7 +1842,7 @@ class _PiggyAiAdvisorWidgetState extends State<PiggyAiAdvisorWidget> {
   final List<Map<String, String>> _messages = [
     {
       'sender': 'piggy',
-      'text': 'Oink! Sono Piggy, il guardiano del caveau condiviso. Pronto a gestire le spese e i sogni di coppia!'
+      'text': 'Oink! Sono Piggy, il tuo AI Advisor. Pronto a gestire le tue finanze, le spese e i tuoi obiettivi!'
     }
   ];
 
@@ -1846,6 +1885,128 @@ class _PiggyAiAdvisorWidgetState extends State<PiggyAiAdvisorWidget> {
         _sendMessage(); // Invia il comando in automatico appena rilasci!
       }
     }
+  }
+
+
+  void _mostraPiggyAI(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        final _isDarkTheme = Theme.of(context).brightness == Brightness.dark;
+        final _cardBg = _isDarkTheme ? const Color(0xFF1E2235) : Colors.white;
+        final _textColor = _isDarkTheme ? Colors.white : Colors.black87;
+        
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setModalState) {
+            return Padding(
+              padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+              child: Container(
+                height: MediaQuery.of(context).size.height * 0.75,
+                decoration: BoxDecoration(
+                  color: _cardBg,
+                  borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+                ),
+                child: Column(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: _cardBg,
+                        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+                        boxShadow: [const BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, 2))],
+                      ),
+                      child: Row(
+                        children: [
+                          ClipOval(child: Image.asset('assets/images/piggy_ai_assistant.png', width: 40, height: 40, fit: BoxFit.cover, errorBuilder: (c, e, s) => const Icon(Icons.savings, color: Colors.pinkAccent))),
+                          const SizedBox(width: 12),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Piggy AI Advisor', style: TextStyle(color: _textColor, fontWeight: FontWeight.bold, fontSize: 18)),
+                              const Text('• Online • Intelligenza Artificiale', style: TextStyle(color: Colors.greenAccent, fontSize: 12)),
+                            ],
+                          ),
+                          const Spacer(),
+                          IconButton(icon: const Icon(Icons.close, color: Colors.grey), onPressed: () => Navigator.pop(context)),
+                        ],
+                      ),
+                    ),
+                    Expanded(
+                      child: ListView.builder(
+                        padding: const EdgeInsets.all(16),
+                        itemCount: _messages.length,
+                        itemBuilder: (context, index) {
+                          final msg = _messages[index];
+                          final isUser = msg['sender'] == 'user';
+                          return Align(
+                            alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
+                            child: Container(
+                              margin: const EdgeInsets.symmetric(vertical: 6),
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                              decoration: BoxDecoration(
+                                color: isUser ? Colors.pinkAccent.withOpacity(0.2) : (_isDarkTheme ? const Color(0xFF2A2E45) : Colors.grey.shade200),
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(color: isUser ? Colors.pinkAccent.withOpacity(0.5) : Colors.transparent),
+                              ),
+                              child: Text(msg['text'] ?? '', style: TextStyle(color: _textColor, fontSize: 15)),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      decoration: BoxDecoration(
+                        color: _cardBg,
+                        border: Border(top: BorderSide(color: Colors.grey.withOpacity(0.2))),
+                      ),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              controller: _messageController,
+                              style: TextStyle(color: _textColor),
+                              decoration: InputDecoration(
+                                hintText: 'Chiedi a Piggy...',
+                                hintStyle: TextStyle(color: _textColor.withOpacity(0.5)),
+                                filled: true,
+                                fillColor: _isDarkTheme ? const Color(0xFF0F111A) : Colors.grey.shade100,
+                                border: OutlineInputBorder(borderRadius: BorderRadius.circular(24), borderSide: BorderSide.none),
+                                contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                              ),
+                              onSubmitted: (_) { 
+                                _sendMessage(); 
+                                Future.delayed(const Duration(milliseconds: 500), () => setModalState((){}));
+                                Future.delayed(const Duration(milliseconds: 2500), () => setModalState((){}));
+                              },
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          GestureDetector(
+                            onTapDown: (_) { _startListening(); setModalState((){}); },
+                            onTapUp: (_) { _stopListening(); setModalState((){}); Future.delayed(const Duration(milliseconds: 2500), () => setModalState((){})); },
+                            child: Container(
+                              padding: const EdgeInsets.all(14),
+                              decoration: BoxDecoration(
+                                color: _isListening ? Colors.redAccent : Colors.pinkAccent,
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(_isListening ? Icons.mic : Icons.mic_none, color: Colors.white),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }
+        );
+      },
+    );
   }
 
   void _sendMessage() {
@@ -1954,11 +2115,11 @@ class _PiggyAiAdvisorWidgetState extends State<PiggyAiAdvisorWidget> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Piggy AI Advisor',
+                        'Piggy AI (Spostato)',
                         style: TextStyle(color: Theme.of(context).brightness == Brightness.light ? Colors.black87 : Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
                       ),
                       const Text(
-                        '• Online • Voce & Desideri',
+                        'Usa l'icona in basso a destra 👉',
                         style: TextStyle(color: Colors.greenAccent, fontSize: 11),
                       ),
                     ],
