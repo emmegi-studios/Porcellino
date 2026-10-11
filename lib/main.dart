@@ -1688,7 +1688,6 @@ Card(
           ),
           const SizedBox(height: 14),
 
-          const PiggyAiAdvisorWidget(),
         const SizedBox(height: 14),
 
           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
@@ -1740,6 +1739,52 @@ Card(
         _sendMessage();
       }
     }
+  }
+
+  void _mostraPiggyAI(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        final _isDarkTheme = Theme.of(context).brightness == Brightness.dark;
+        final _cardBg = _isDarkTheme ? const Color(0xFF1E2235) : Colors.white;
+        final _textColor = _isDarkTheme ? Colors.white : Colors.black87;
+        return DraggableScrollableSheet(
+          initialChildSize: 0.75,
+          minChildSize: 0.5,
+          maxChildSize: 0.95,
+          builder: (_, controller) => Container(
+            decoration: BoxDecoration(
+              color: _cardBg,
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+              boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 10, spreadRadius: 2)],
+            ),
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              children: [
+                Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey[400], borderRadius: BorderRadius.circular(2))),
+                const SizedBox(height: 12),
+                Text('Piggy AI Assistant', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: _textColor)),
+                const Divider(),
+                Expanded(
+                  child: ListView(
+                    controller: controller,
+                    children: [
+                      ListTile(
+                        leading: const CircleAvatar(backgroundColor: Colors.pinkAccent, child: Icon(Icons.savings, color: Colors.white)),
+                        title: Text('Ciao Marco! Sono il tuo assistente finanziario.', style: TextStyle(color: _textColor)),
+                        subtitle: Text('Chiedimi qualsiasi cosa sui tuoi risparmi o sul budget.', style: TextStyle(color: _textColor.withOpacity(0.7))),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 
   void _mostraPiggyAI(BuildContext context) {
