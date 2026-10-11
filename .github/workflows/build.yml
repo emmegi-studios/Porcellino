@@ -1,8 +1,7 @@
 name: Build Flutter APK
 
 
-permissions:
-  contents: write
+
 
 on:
 
@@ -12,9 +11,10 @@ on:
 
 jobs:
   build:
+    permissions:
+      contents: write
     runs-
-permissions:
-  contents: write
+
 
 on:
  ubuntu-latest
@@ -27,14 +27,12 @@ on:
         uses: actions/setup-java@v3
         with:
           distributi
-permissions:
-  contents: write
+
 
 on:
  'zulu'
           java-versi
-permissions:
-  contents: write
+
 
 on:
  '17'
@@ -43,8 +41,7 @@ on:
         uses: subosito/flutter-action@v2
         with:
           flutter-versi
-permissions:
-  contents: write
+
 
 on:
  '3.19.6'
