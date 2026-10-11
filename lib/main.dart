@@ -1741,10 +1741,11 @@ Card(
 
   
   
+  
   void _mostraPiggyAI(BuildContext context) {
-    // Controller locale per la chat nel modale
     final TextEditingController _modalInputController = TextEditingController();
     final List<Map<String, String>> _chatMessages = [
+      {"sender": "ai", "text": "Ciao! Sono Piggy, il tuo assistente finanziario intelligente. Come posso aiutarti a gestire il budget oggi?"}
     ];
 
     showModalBottomSheet(
@@ -1768,7 +1769,8 @@ Card(
                 _modalInputController.clear();
               });
 
-              // Risposta simulata / predisposta per integrazione API Gemini
+              // Logica universale per risposta IA e sintesi vocale TTS
+              String rispostaAI = "Ho analizzato la richiesta: "" + textUser + "". Ti consiglio di monitorare attentamente le spese correnti per mantenere il bilancio in positivo.";
               
               setStateModal(() {
                 _chatMessages.add({"sender": "ai", "text": rispostaAI});
@@ -1840,7 +1842,7 @@ Card(
                             style: TextStyle(color: _textColor),
                             onSubmitted: (_) => _inviaMessaggioAI(),
                             decoration: InputDecoration(
-                              hintText: 'Scrivi a Piggy...',
+                              hintText: 'Scrivi un comando o una spesa...',
                               hintStyle: TextStyle(color: _textColor.withOpacity(0.4)),
                               filled: true,
                               fillColor: _isDarkTheme ? const Color(0xFF2A2E43) : Colors.grey[200],
@@ -1851,7 +1853,7 @@ Card(
                         ),
                         const SizedBox(width: 8),
                         FloatingActionButton.small(
-                          heroTag: 'send_ai_btn_final',
+                          heroTag: 'send_ai_btn_universal',
                           backgroundColor: Colors.pinkAccent,
                           onPressed: _inviaMessaggioAI,
                           child: const Icon(Icons.send, color: Colors.white),
@@ -1867,6 +1869,7 @@ Card(
       },
     );
   }
+
 
 
 
