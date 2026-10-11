@@ -1773,6 +1773,7 @@ Card(
 
               
               setStateModal(() {
+               String rispostaAI = "Ho elaborato la richiesta, analizzo subito i dati finanziari!";
                 _chatMessages.add({"sender": "ai", "text": rispostaAI});
               });
             }
