@@ -1899,7 +1899,7 @@ class _PiggyAiAdvisorWidgetState extends State<PiggyAiAdvisorWidget> {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Piggy AI Advisor', style: TextStyle(color: _textColor, fontWeight: FontWeight.bold, fontSize: 18)),
+                              Text('Piggy AI (Spostato)', style: TextStyle(color: _textColor, fontWeight: FontWeight.bold, fontSize: 18)),
                               const Text('• Online • Intelligenza Artificiale', style: TextStyle(color: Colors.greenAccent, fontSize: 12)),
                             ],
                           ),
