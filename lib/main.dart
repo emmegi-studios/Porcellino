@@ -1372,9 +1372,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       body: ListView(
         padding: const EdgeInsets.all(16.0),
         children: [
-
-
-
           Card(
             color: _cardBg,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
@@ -1777,7 +1774,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               try {
                 final model = GenerativeModel(
                   model: 'gemini-1.5-flash',
-                  apiKey: 'AQ.Ab8RN6LoZq1C32hj4UpiZqX3BfM8EUvMJnYMgW5MfUUG-t5z5g',
+                  apiKey: 'AIzaSy_PLACEHOLDER_SAFE_KEY',
                 );
                 
                 final contextFinanziario = 'Analisi caveau attiva. Dati finanziari sincronizzati.';
