@@ -1729,6 +1729,65 @@ Card(
 
 
 
+  bool _isListening = false;
+  final Set<String> _readMessages = {};
+
+  void _stopListening() {
+    if (_isListening) {
+      setState(() => _isListening = false);
+      _speech.stop();
+      if (_messageController.text.isNotEmpty) {
+        _sendMessage();
+      }
+    }
+  }
+
+  void _mostraPiggyAI(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        final _isDarkTheme = Theme.of(context).brightness == Brightness.dark;
+        final _cardBg = _isDarkTheme ? const Color(0xFF1E2235) : Colors.white;
+        final _textColor = _isDarkTheme ? Colors.white : Colors.black87;
+        return DraggableScrollableSheet(
+          initialChildSize: 0.75,
+          minChildSize: 0.5,
+          maxChildSize: 0.95,
+          builder: (_, controller) => Container(
+            decoration: BoxDecoration(
+              color: _cardBg,
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+              boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 10, spreadRadius: 2)],
+            ),
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              children: [
+                Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey[400], borderRadius: BorderRadius.circular(2))),
+                const SizedBox(height: 12),
+                Text('Piggy AI Assistant', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: _textColor)),
+                const Divider(),
+                Expanded(
+                  child: ListView(
+                    controller: controller,
+                    children: [
+                      ListTile(
+                        leading: const CircleAvatar(backgroundColor: Colors.pinkAccent, child: Icon(Icons.savings, color: Colors.white)),
+                        title: Text('Ciao Marco! Sono il tuo assistente finanziario.', style: TextStyle(color: _textColor)),
+                        subtitle: Text('Chiedimi qualsiasi cosa sui tuoi risparmi o sul budget.', style: TextStyle(color: _textColor.withOpacity(0.7))),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
 
 class InviteManager extends StatefulWidget {
   final Widget child;
@@ -1793,527 +1852,3 @@ class _InviteManagerState extends State<InviteManager> {
 
 
 
-class PiggyAiAdvisorWidget extends StatefulWidget {
-  const PiggyAiAdvisorWidget({super.key});
-
-  @override
-  State<PiggyAiAdvisorWidget> createState() => _PiggyAiAdvisorWidgetState();
-}
-
-class _PiggyAiAdvisorWidgetState extends State<PiggyAiAdvisorWidget> {
-  final FlutterTts _tts = FlutterTts();
-  final stt.SpeechToText _speech = stt.SpeechToText();
-  bool _isListening = false;
-  final TextEditingController _messageController = TextEditingController();
-  final TextEditingController _wishController = TextEditingController();
-  final TextEditingController _wishCostController = TextEditingController();
-  
-  bool _isWishlistMode = false;
-  final List<Map<String, dynamic>> _wishes = [
-    {'title': 'Weekend Romantico di Coppia', 'cost': 350.0, 'saved': 250.0},
-    {'title': 'Upgrade Audio Home Studio', 'cost': 500.0, 'saved': 500.0},
-  ];
-
-  final List<Map<String, String>> _messages = [
-    {
-      'sender': 'piggy',
-      'text': 'Oink! Sono Piggy, il tuo AI Advisor. Pronto a gestire le tue finanze, le spese e i tuoi obiettivi!'
-    }
-  ];
-
-  @override
-  void initState() {
-    super.initState();
-    _initTts();
-  }
-
-  Future<void> _initTts() async {
-    await _tts.setLanguage('it-IT');
-    await _tts.setSpeechRate(0.5);
-    await _tts.setPitch(1.0);
-  }
-
-  Future<void> _speak(String text) async {
-    await _tts.speak(text);
-  }
-
-
-  void _startListening() async {
-    HapticFeedback.mediumImpact(); // Vibrazione quando premi
-    bool available = await _speech.initialize();
-    if (available) {
-      setState(() => _isListening = true);
-      _speech.listen(
-        onResult: (val) => setState(() {
-          _messageController.text = val.recognizedWords;
-        }),
-        localeId: 'it_IT',
-      );
-    }
-  }
-
-  void _stopListening() {
-    if (_isListening) {
-      setState(() => _isListening = false);
-      _speech.stop();
-      if (_messageController.text.isNotEmpty) {
-        _sendMessage(); // Invia il comando in automatico appena rilasci!
-      }
-    }
-  }
-
-
-  void _mostraPiggyAI(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) {
-        final _isDarkTheme = Theme.of(context).brightness == Brightness.dark;
-        final _cardBg = _isDarkTheme ? const Color(0xFF1E2235) : Colors.white;
-        final _textColor = _isDarkTheme ? Colors.white : Colors.black87;
-        
-        return StatefulBuilder(
-          builder: (BuildContext context, StateSetter setModalState) {
-            return Padding(
-              padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-              child: Container(
-                height: MediaQuery.of(context).size.height * 0.75,
-                decoration: BoxDecoration(
-                  color: _cardBg,
-                  borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-                ),
-                child: Column(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: _cardBg,
-                        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-                        boxShadow: [const BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, 2))],
-                      ),
-                      child: Row(
-                        children: [
-                          ClipOval(child: Image.asset('assets/images/piggy_ai_assistant.png', width: 40, height: 40, fit: BoxFit.cover, errorBuilder: (c, e, s) => const Icon(Icons.savings, color: Colors.pinkAccent))),
-                          const SizedBox(width: 12),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('Piggy AI (Spostato)', style: TextStyle(color: _textColor, fontWeight: FontWeight.bold, fontSize: 18)),
-                              const Text('• Online • Intelligenza Artificiale', style: TextStyle(color: Colors.greenAccent, fontSize: 12)),
-                            ],
-                          ),
-                          const Spacer(),
-                          IconButton(icon: const Icon(Icons.close, color: Colors.grey), onPressed: () => Navigator.pop(context)),
-                        ],
-                      ),
-                    ),
-                    Expanded(
-                      child: ListView.builder(
-                        padding: const EdgeInsets.all(16),
-                        itemCount: _messages.length,
-                        itemBuilder: (context, index) {
-                          final msg = _messages[index];
-                          final isUser = msg['sender'] == 'user';
-                          return Align(
-                            alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
-                            child: Container(
-                              margin: const EdgeInsets.symmetric(vertical: 6),
-                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                              decoration: BoxDecoration(
-                                color: isUser ? Colors.pinkAccent.withOpacity(0.2) : (_isDarkTheme ? const Color(0xFF2A2E45) : Colors.grey.shade200),
-                                borderRadius: BorderRadius.circular(20),
-                                border: Border.all(color: isUser ? Colors.pinkAccent.withOpacity(0.5) : Colors.transparent),
-                              ),
-                              child: Text(msg['text'] ?? '', style: TextStyle(color: _textColor, fontSize: 15)),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                      decoration: BoxDecoration(
-                        color: _cardBg,
-                        border: Border(top: BorderSide(color: Colors.grey.withOpacity(0.2))),
-                      ),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: TextField(
-                              controller: _messageController,
-                              style: TextStyle(color: _textColor),
-                              decoration: InputDecoration(
-                                hintText: 'Chiedi a Piggy...',
-                                hintStyle: TextStyle(color: _textColor.withOpacity(0.5)),
-                                filled: true,
-                                fillColor: _isDarkTheme ? const Color(0xFF0F111A) : Colors.grey.shade100,
-                                border: OutlineInputBorder(borderRadius: BorderRadius.circular(24), borderSide: BorderSide.none),
-                                contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-                              ),
-                              onSubmitted: (_) { 
-                                _sendMessage(); 
-                                Future.delayed(const Duration(milliseconds: 500), () => setModalState((){}));
-                                Future.delayed(const Duration(milliseconds: 2500), () => setModalState((){}));
-                              },
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          GestureDetector(
-                            onTapDown: (_) { _startListening(); setModalState((){}); },
-                            onTapUp: (_) { _stopListening(); setModalState((){}); Future.delayed(const Duration(milliseconds: 2500), () => setModalState((){})); },
-                            child: Container(
-                              padding: const EdgeInsets.all(14),
-                              decoration: BoxDecoration(
-                                color: _isListening ? Colors.redAccent : Colors.pinkAccent,
-                                shape: BoxShape.circle,
-                              ),
-                              child: Icon(_isListening ? Icons.mic : Icons.mic_none, color: Colors.white),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          }
-        );
-      },
-    );
-  }
-
-  void _sendMessage() {
-    final text = _messageController.text.trim();
-    if (text.isEmpty) return;
-
-    setState(() {
-      _messages.add({'sender': 'user', 'text': text});
-      _messageController.clear();
-
-      final regExp = RegExp(r'(\d+(?:[.,]\d+)?)');
-      final match = regExp.firstMatch(text);
-      String amountStr = match != null ? match.group(0)! : '';
-      double? amount = double.tryParse(amountStr.replaceAll(',', '.'));
-
-      String reply = "Oink! Ho registrato l'operazione nel caveau del caveau condiviso.";
-      final lower = text.toLowerCase();
-
-      if (lower.contains('ristorante') || lower.contains('cena') || lower.contains('pizza') || lower.contains('pranzo')) {
-        reply = amount != null 
-            ? "Oink! €$amount bruciati in cibo. Il vostro stomaco ringrazia, ma il salvadanaio un po' meno!" 
-            : "Cena fuori? Ottimo per il morale di coppia, ma occhio agli sfizi culinari!";
-      } else if (lower.contains('spesa') || lower.contains('supermercato')) {
-        reply = amount != null 
-            ? "Spesa di €$amount catalogata tra i beni essenziali. Bravi ragazzi, priorità intelligenti!" 
-            : "Spesa essenziale registrata. Il caveau approva!";
-      } else if (lower.contains('auto') || lower.contains('alfa') || lower.contains('benzina') || lower.contains('macchina')) {
-        reply = amount != null 
-            ? "€$amount investiti per l'Alfa Romeo. Le passioni si pagano, ma il rombo del motore ripaga tutto!" 
-            : "Capitolo motori aperto! Teniamo d'occhio il serbatoio e il portafoglio.";
-      } else if (lower.contains('risparmio') || lower.contains('mettere via') || lower.contains('desiderio') || lower.contains('wish')) {
-        reply = amount != null 
-            ? "Woooow! €$amount aggiunti dritti al Caveau dei Desideri! Marika sarà fiera di voi!" 
-            : "Ogni centesimo messo via ci avvicina al prossimo traguardo di coppia!";
-      } else if (lower.contains('marika')) {
-        reply = "Un saluto speciale a Marika! State gestendo il budget comune con una sincronia perfetta.";
-      } else if (amount != null) {
-        reply = "Ho intercettato una transazione di €$amount. Operazione archiviata nel caveau!";
-      }
-
-      Future.delayed(const Duration(milliseconds: 500), () {
-        if (mounted) {
-          setState(() {
-            _messages.add({'sender': 'piggy', 'text': reply});
-          });
-          _speak(reply);
-        }
-      });
-    });
-  }
-
-  void _addWish() {
-    final title = _wishController.text.trim();
-    final cost = double.tryParse(_wishCostController.text.trim()) ?? 100.0;
-    if (title.isNotEmpty) {
-      setState(() {
-        _wishes.add({'title': title, 'cost': cost, 'saved': 0.0});
-        _wishController.clear();
-        _wishCostController.clear();
-      });
-      _speak("Nuovo desiderio aggiunto al Caveau dei Desideri!");
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: const Color(0xFF1E1E2C),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.pinkAccent.withOpacity(0.5), width: 1.5),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.pinkAccent.withOpacity(0.15),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  Container(
-                    width: 48,
-                    height: 48,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(color: Colors.pinkAccent, width: 2),
-                    ),
-                    child: ClipOval(
-                      child: Image.asset(
-                        'assets/images/piggy_ai_assistant.png',
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) => const Icon(Icons.savings, color: Colors.pinkAccent, size: 28),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Piggy AI (Spostato)',
-                        style: TextStyle(color: Theme.of(context).brightness == Brightness.light ? Colors.black87 : Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
-                      ),
-                      const Text(
-                        "Usa l'icona in basso a destra 👉",
-                        style: TextStyle(color: Colors.greenAccent, fontSize: 11),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              IconButton(
-                icon: Icon(_isWishlistMode ? Icons.chat : Icons.card_giftcard, color: Colors.pinkAccent, size: 24),
-                tooltip: _isWishlistMode ? 'Vai alla Chat' : 'Wishlist di Coppia',
-                onPressed: () {
-                  setState(() {
-                    _isWishlistMode = !_isWishlistMode;
-                  });
-                },
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          if (_isWishlistMode) ...[
-            const Text(
-              '🎁 Caveau dei Desideri (Coppia)',
-              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
-            ),
-            const SizedBox(height: 8),
-            SizedBox(
-              height: 140,
-              child: ListView.builder(
-                itemCount: _wishes.length,
-                itemBuilder: (ctx, i) {
-                  final w = _wishes[i];
-                  final progress = (w['saved']! / w['cost']!).clamp(0.0, 1.0);
-                  final isCompleted = progress >= 1.0;
-                  return Container(
-                    margin: const EdgeInsets.only(bottom: 8),
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF13131A),
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: isCompleted ? Colors.greenAccent : Colors.white12),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(w['title'], style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
-                              const SizedBox(height: 6),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Text('€${w['saved'].toInt()}/€${w['cost'].toInt()}', style: TextStyle(color: isCompleted ? Colors.greenAccent : Colors.white70, fontSize: 12)),
-                      ],
-                    ),
-                  );
-                },
-              ),
-            ),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _wishController,
-                    style: const TextStyle(color: Colors.white, fontSize: 12),
-                    decoration: InputDecoration(
-                      hintText: 'Nuovo desiderio...',
-                      hintStyle: const TextStyle(color: Colors.white54, fontSize: 12),
-                      isDense: true,
-                      filled: true,
-                      fillColor: const Color(0xFF13131A),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide.none),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                SizedBox(
-                  width: 80,
-                  child: TextField(
-                    controller: _wishCostController,
-                    keyboardType: TextInputType.number,
-                    style: const TextStyle(color: Colors.white, fontSize: 12),
-                    decoration: InputDecoration(
-                      hintText: 'Costo €',
-                      hintStyle: const TextStyle(color: Colors.white54, fontSize: 12),
-                      isDense: true,
-                      filled: true,
-                      fillColor: const Color(0xFF13131A),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide.none),
-                    ),
-                  ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.add_circle, color: Colors.pinkAccent, size: 28),
-                  onPressed: _addWish,
-                ),
-              ],
-            ),
-          ] else ...[
-            Container(
-              height: 160,
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: const Color(0xFF13131A),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: ListView.builder(
-                itemCount: _messages.length,
-                itemBuilder: (context, index) {
-                  final msg = _messages[index];
-                  final isUser = msg['sender'] == 'user';
-                  return Align(
-                    alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
-                    child: Container(
-                      margin: const EdgeInsets.symmetric(vertical: 4),
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                      decoration: BoxDecoration(
-                        color: isUser ? Colors.pinkAccent.withOpacity(0.3) : const Color(0xFF2A2A3D),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        msg['text'] ?? '',
-                        style: const TextStyle(color: Colors.white, fontSize: 12),
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
-            const SizedBox(height: 10),
-            Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _messageController,
-                    onChanged: (val) => setState(() {}),
-                    style: const TextStyle(color: Colors.white, fontSize: 12),
-                    decoration: InputDecoration(
-                      hintText: 'Chiedi a Piggy o digita spesa...',
-                      hintStyle: const TextStyle(color: Colors.white54, fontSize: 12),
-                      filled: true,
-                      fillColor: const Color(0xFF13131A),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
-                      contentPadding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
-                    ),
-                    onSubmitted: (_) => _sendMessage(),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                GestureDetector(
-                  onLongPressStart: (_) => _startListening(),
-                  onLongPressEnd: (_) => _stopListening(),
-                  onTap: () {
-                    if (_messageController.text.isNotEmpty) {
-                      _sendMessage();
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Tieni premuto per parlare! 🎙️')));
-                    }
-                  },
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 200),
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: _isListening ? Colors.redAccent : Colors.pinkAccent,
-                      shape: BoxShape.circle,
-                      boxShadow: _isListening 
-                          ? [BoxShadow(color: Colors.redAccent.withOpacity(0.6), blurRadius: 10, spreadRadius: 3)] 
-                          : [],
-                    ),
-                    child: Icon(
-                      _isListening ? Icons.mic : (_messageController.text.isEmpty ? Icons.mic_none : Icons.send),
-                      size: 20, 
-                      color: Colors.white
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-}
-
-// Login dark fix applied
-
-// Fix visivi applicati tramite Regex
-
-// Fix UI Forzato V25
-
-// Fix UI Forzato Definitivo V26
-
-// Fix ultra-mirato Avatar e Colori AI v1.3.16
-
-// Fix const per tema dinamico AI v1.3.17
-
-// Fix definitivo Colori Getters Tema Bianco v1.3.20
-
-// Fix visibilità floating label Login v1.3.21
-
-// Release Definitiva v1.4.0: Fix Memory Leak
-
-// Fix: Spostamento metodi OTA in HomeScreen
-
-// Fix v1.4.2: Ripristino e scope corretto metodi OTA
-
-// Fix v1.4.3: Inserimento definitivo e corretto metodi OTA
-
-// Setup V2.0: Fondamenta Motore Push, STT e TTS inserite
-
-// Logica Push-to-Talk STT aggiunta v2.0-beta.2
-
-// Fix v2.0-beta.3: Grafica e animazioni pulsante Walkie-Talkie
-
-// Fix v2.0-beta.4: Iniezione listener Firebase in Foreground
-
-// Versione 2.0.0 con Gemini AI integrato
-
-// Versione 2.0.0 con Personalità Piggy AI & Gemini
