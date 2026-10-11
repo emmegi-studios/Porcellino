@@ -64,18 +64,6 @@ class AuthGate extends StatelessWidget {
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _mostraPiggyAI(context),
-        backgroundColor: Colors.pinkAccent,
-        elevation: 6,
-        child: ClipOval(
-          child: Image.asset(
-            'assets/images/piggy_ai_assistant.png',
-            width: 48, height: 48, fit: BoxFit.cover,
-            errorBuilder: (c, e, s) => const Icon(Icons.savings, color: Colors.white, size: 28),
-          ),
-        ),
-      ),
       body: Center(child: CircularProgressIndicator()));
         }
         if (snapshot.hasData && snapshot.data != null) {
@@ -216,31 +204,6 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFF13131A),
 
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _mostraPiggyAI(context),
-        backgroundColor: Colors.pinkAccent,
-        elevation: 6,
-        child: ClipOval(
-          child: Image.asset(
-            'assets/images/piggy_ai_assistant.png',
-            width: 48, height: 48, fit: BoxFit.cover,
-            errorBuilder: (c, e, s) => const Icon(Icons.savings, color: Colors.white, size: 28),
-          ),
-        ),
-      ),
-      
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _mostraPiggyAI(context),
-        backgroundColor: Colors.pinkAccent,
-        elevation: 6,
-        child: ClipOval(
-          child: Image.asset(
-            'assets/images/piggy_ai_assistant.png',
-            width: 48, height: 48, fit: BoxFit.cover,
-            errorBuilder: (c, e, s) => const Icon(Icons.savings, color: Colors.white, size: 28),
-          ),
-        ),
-      ),
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
@@ -1382,6 +1345,18 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             icon: Icon(Icons.settings, color: _primaryColor),
             tooltip: "Impostazioni e Temi",
             onPressed: _mostraModalImpostazioni)]),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => _mostraPiggyAI(context),
+        backgroundColor: Colors.pinkAccent,
+        elevation: 6,
+        child: ClipOval(
+          child: Image.asset(
+            'assets/images/piggy_ai_assistant.png',
+            width: 48, height: 48, fit: BoxFit.cover,
+            errorBuilder: (c, e, s) => const Icon(Icons.savings, color: Colors.white, size: 28),
+          ),
+        ),
+      ),
       body: ListView(
         padding: const EdgeInsets.all(16.0),
         children: [
@@ -2119,7 +2094,7 @@ class _PiggyAiAdvisorWidgetState extends State<PiggyAiAdvisorWidget> {
                         style: TextStyle(color: Theme.of(context).brightness == Brightness.light ? Colors.black87 : Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
                       ),
                       const Text(
-                        'Usa l'icona in basso a destra 👉',
+                        "Usa l'icona in basso a destra 👉",
                         style: TextStyle(color: Colors.greenAccent, fontSize: 11),
                       ),
                     ],
