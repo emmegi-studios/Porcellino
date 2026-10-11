@@ -1776,6 +1776,7 @@ Card(
               // Risposta integrata con logica dinamica
               
               setStateModal(() {
+                String rispostaAI = "Ho elaborato la tua richiesta, analizzo subito i dati finanziari!";
                 _chatMessages.add({"sender": "ai", "text": rispostaAI});
               });
             }
