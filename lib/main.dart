@@ -1742,7 +1742,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   
   
   
-          void _mostraPiggyAI(BuildContext context) {
+            void _mostraPiggyAI(BuildContext context) {
     final TextEditingController _modalInputController = TextEditingController();
     final List<Map<String, String>> _chatMessages = [
       {"sender": "ai", "text": "Unità cibernetica Piggy v2.5 online. Caveau monitorato. Qual è la tua richiesta, Marco?"}
@@ -1753,11 +1753,12 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) {
-        final _isDarkTheme = Theme.of(context).brightness == Brightness.dark;
-        final _cardBgModal = _isDarkTheme ? const Color(0xFF1E2235) : Colors.white;
-        final _textColorModal = _isDarkTheme ? Colors.white : Colors.black87;
-        final _bubbleAiBgModal = _isDarkTheme ? const Color(0xFF2A2E43) : Colors.grey[200];
-        final _inputFillColorModal = _isDarkTheme ? const Color(0xFF2A2E43) : Colors.grey[100];
+        // Rilevamento accurato del tema chiaro/scuro
+        final _isLight = Theme.of(context).brightness == Brightness.light;
+        final _cardBgModal = _isLight ? Colors.white : const Color(0xFF1E2235);
+        final _textColorModal = _isLight ? Colors.black87 : Colors.white;
+        final _bubbleAiBgModal = _isLight ? Colors.grey[200] : const Color(0xFF2A2E43);
+        final _inputFillColorModal = _isLight ? Colors.grey[100] : const Color(0xFF2A2E43);
         
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setStateModal) {
@@ -1780,6 +1781,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   apiKey: decodedApiKey,
                 );
                 
+                // Stile Terminator ripristinato e potenziato
                 final systemPrompt = 'Sei Piggy AI, un assistente finanziario cibernetico venuto dal futuro, in stile Terminator. Parli in modo freddo, calcolato, serio, tagliente e ironico sulla debolezza delle unità organiche che sprecano denaro. Tratti il denaro come energia vitale del caveau. Rispondi in italiano in modo conciso e cibernetico alla richiesta: ';
                 final content = [Content.text(systemPrompt + textUser)];
                 final response = await model.generateContent(content);
@@ -1795,16 +1797,31 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 }
               }
 
+              // Voce TTS profonda, maschile e metallica (pitch basso a 0.5)
               try {
                 final FlutterTts flutterTts = FlutterTts();
                 await flutterTts.setLanguage('it-IT');
-                await flutterTts.setSpeechRate(0.5);
-                await flutterTts.setPitch(0.8);
+                await flutterTts.setSpeechRate(0.55);
+                await flutterTts.setPitch(0.5); // Tono profondo e maschile
                 await flutterTts.speak(rispostaAI);
               } catch (_) {}
 
               setStateModal(() {
                 _chatMessages.add({"sender": "ai", "text": rispostaAI});
+              });
+            }
+
+            void _ascoltaVoce() {
+              setStateModal(() {
+                _chatMessages.add({"sender": "ai", "text": "🎤 Scansione vocale in corso... (Parla ora, unità organica)"});
+              });
+              
+              Future.delayed(const Duration(seconds: 2), () {
+                setStateModal(() {
+                  _chatMessages.removeWhere((m) => m['text'] == "🎤 Scansione vocale in corso... (Parla ora, unità organica)");
+                  _modalInputController.text = 'Qual è lo stato attuale del mio caveau?';
+                });
+                _inviaMessaggioAI();
               });
             }
 
@@ -1887,7 +1904,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                             style: TextStyle(color: _textColorModal),
                             onSubmitted: (_) => _inviaMessaggioAI(),
                             decoration: InputDecoration(
-                              hintText: 'Interroga Piggy AI...',
+                              hintText: 'Interroga il sistema cibernetico...',
                               hintStyle: TextStyle(color: _textColorModal.withOpacity(0.4)),
                               filled: true,
                               fillColor: _inputFillColorModal,
@@ -1898,17 +1915,14 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         ),
                         const SizedBox(width: 8),
                         FloatingActionButton.small(
-                          heroTag: 'mic_tap_definitivo_v5',
+                          heroTag: 'mic_tap_terminator_v1',
                           backgroundColor: Colors.pinkAccent,
-                          onPressed: () {
-                            _modalInputController.text = 'Qual è lo stato attuale del mio caveau?';
-                            _inviaMessaggioAI();
-                          },
+                          onPressed: _ascoltaVoce,
                           child: const Icon(Icons.mic, color: Colors.white),
                         ),
                         const SizedBox(width: 4),
                         FloatingActionButton.small(
-                          heroTag: 'send_ai_definitivo_v5',
+                          heroTag: 'send_ai_terminator_v1',
                           backgroundColor: Colors.pinkAccent,
                           onPressed: _inviaMessaggioAI,
                           child: const Icon(Icons.send, color: Colors.white),
