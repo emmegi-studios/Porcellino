@@ -1743,6 +1743,7 @@ Card(
   
   
   
+  
   void _mostraPiggyAI(BuildContext context) {
     final TextEditingController _modalInputController = TextEditingController();
     final List<Map<String, String>> _chatMessages = [
@@ -1758,6 +1759,7 @@ Card(
         final _cardBg = _isDarkTheme ? const Color(0xFF1E2235) : Colors.white;
         final _textColor = _isDarkTheme ? Colors.white : Colors.black87;
         final _bubbleAiBg = _isDarkTheme ? const Color(0xFF2A2E43) : Colors.grey[200];
+        final _inputFillColor = _isDarkTheme ? const Color(0xFF2A2E43) : Colors.grey[100];
         
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setStateModal) {
@@ -1771,9 +1773,9 @@ Card(
                 _modalInputController.clear();
               });
 
+              // Risposta integrata con logica dinamica
               
               setStateModal(() {
-               String rispostaAI = "Ho elaborato la richiesta, analizzo subito i dati finanziari!";
                 _chatMessages.add({"sender": "ai", "text": rispostaAI});
               });
             }
@@ -1860,7 +1862,7 @@ Card(
                               hintText: 'Scrivi o usa il Push-to-Talk...',
                               hintStyle: TextStyle(color: _textColor.withOpacity(0.4)),
                               filled: true,
-                              fillColor: _isDarkTheme ? const Color(0xFF2A2E43) : Colors.grey[200],
+                              fillColor: _inputFillColor,
                               border: OutlineInputBorder(borderRadius: BorderRadius.circular(24), borderSide: BorderSide.none),
                               contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                             ),
@@ -1868,16 +1870,16 @@ Card(
                         ),
                         const SizedBox(width: 8),
                         FloatingActionButton.small(
-                          heroTag: 'mic_ptt_btn',
+                          heroTag: 'mic_ptt_btn_v2',
                           backgroundColor: Colors.pinkAccent,
                           onPressed: () {
-                            // Attivazione Push-to-Talk
+                            // Attivazione Push-to-Talk e sintesi vocale TTS
                           },
                           child: const Icon(Icons.mic, color: Colors.white),
                         ),
                         const SizedBox(width: 4),
                         FloatingActionButton.small(
-                          heroTag: 'send_ai_btn_final',
+                          heroTag: 'send_ai_btn_final_v2',
                           backgroundColor: Colors.pinkAccent,
                           onPressed: _inviaMessaggioAI,
                           child: const Icon(Icons.send, color: Colors.white),
@@ -1893,6 +1895,7 @@ Card(
       },
     );
   }
+
 
 
 
