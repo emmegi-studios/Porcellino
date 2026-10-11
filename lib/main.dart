@@ -1756,7 +1756,7 @@ Card(
   
   
   
-    void _mostraPiggyAI(BuildContext context) {
+      void _mostraPiggyAI(BuildContext context) {
     final TextEditingController _modalInputController = TextEditingController();
     final List<Map<String, String>> _chatMessages = [
       {"sender": "ai", "text": "Unità cibernetica Piggy v2.5 online. Caveau monitorato. Qual è la tua richiesta, Marco?"}
@@ -1792,8 +1792,8 @@ Card(
                   apiKey: 'INSERISCI_API_KEY',
                 );
                 
-                final contextFinanziario = 'Patrimonio condiviso: €_patrimonioTotale, Entrate mese: €_entrateMese, Uscite mese: €_usciteMese.';
-                final systemPrompt = 'Sei Piggy, un assistente finanziario cibernetico venuto dal futuro, in stile Terminator. Parli in modo freddo, calcolato, serio, tagliente e ironico sulla debolezza delle unità organiche che sprecano denaro. Tratti il denaro come energia vitale del caveau. Dati finanziari attuali di Marco -> ' + contextFinanziario + ' Rispondi in italiano in modo conciso e cibernetico alla richiesta: ';
+                final contextFinanziario = 'Patrimonio condiviso: €' + patrimonio.toStringAsFixed(2) + ', Entrate mese: €' + entrateMese.toStringAsFixed(2) + ', Uscite mese: €' + usciteMese.toStringAsFixed(2) + '.';
+                final systemPrompt = 'Sei Piggy AI, un assistente finanziario cibernetico venuto dal futuro, in stile Terminator. Parli in modo freddo, calcolato, serio, tagliente e ironico sulla debolezza delle unità organiche che sprecano denaro. Tratti il denaro come energia vitale del caveau. Dati finanziari attuali di Marco -> ' + contextFinanziario + ' Rispondi in italiano in modo conciso e cibernetico alla richiesta: ';
                 
                 final content = [Content.text(systemPrompt + textUser)];
                 final response = await model.generateContent(content);
@@ -1904,18 +1904,17 @@ Card(
                         ),
                         const SizedBox(width: 8),
                         FloatingActionButton.small(
-                          heroTag: 'mic_tap_cyber',
+                          heroTag: 'mic_tap_definitivo',
                           backgroundColor: Colors.pinkAccent,
                           onPressed: () {
-                            setStateModal(() {
-                              _chatMessages.add({"sender": "ai", "text": "Ascolto canali audio attivato. Parla, unità organica."});
-                            });
+                            _modalInputController.text = 'Qual è lo stato attuale del mio caveau?';
+                            _inviaMessaggioAI();
                           },
                           child: const Icon(Icons.mic, color: Colors.white),
                         ),
                         const SizedBox(width: 4),
                         FloatingActionButton.small(
-                          heroTag: 'send_ai_cyber',
+                          heroTag: 'send_ai_definitivo',
                           backgroundColor: Colors.pinkAccent,
                           onPressed: _inviaMessaggioAI,
                           child: const Icon(Icons.send, color: Colors.white),
