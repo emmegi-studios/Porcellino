@@ -1742,6 +1742,7 @@ Card(
   
   
   
+  
   void _mostraPiggyAI(BuildContext context) {
     final TextEditingController _modalInputController = TextEditingController();
     final List<Map<String, String>> _chatMessages = [
@@ -1756,6 +1757,7 @@ Card(
         final _isDarkTheme = Theme.of(context).brightness == Brightness.dark;
         final _cardBg = _isDarkTheme ? const Color(0xFF1E2235) : Colors.white;
         final _textColor = _isDarkTheme ? Colors.white : Colors.black87;
+        final _bubbleAiBg = _isDarkTheme ? const Color(0xFF2A2E43) : Colors.grey[200];
         
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setStateModal) {
@@ -1769,8 +1771,6 @@ Card(
                 _modalInputController.clear();
               });
 
-              // Logica universale per risposta IA e sintesi vocale TTS
-              String rispostaAI = "Ho analizzato la richiesta: "" + textUser + "". Ti consiglio di monitorare attentamente le spese correnti per mantenere il bilancio in positivo.";
               
               setStateModal(() {
                 _chatMessages.add({"sender": "ai", "text": rispostaAI});
@@ -1795,7 +1795,13 @@ Card(
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const CircleAvatar(backgroundColor: Colors.pinkAccent, radius: 16, child: Icon(Icons.savings, color: Colors.white, size: 18)),
+                        ClipOval(
+                          child: Image.asset(
+                            'assets/images/piggy_ai_assistant.png',
+                            width: 32, height: 32, fit: BoxFit.cover,
+                            errorBuilder: (c, e, s) => const Icon(Icons.savings, color: Colors.pinkAccent, size: 24),
+                          ),
+                        ),
                         const SizedBox(width: 8),
                         Text('Piggy AI Assistant', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: _textColor)),
                       ],
@@ -1812,14 +1818,22 @@ Card(
                             margin: const EdgeInsets.symmetric(vertical: 6),
                             padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
-                              color: isUser ? Colors.pinkAccent.withOpacity(0.2) : (_isDarkTheme ? const Color(0xFF2A2E43) : Colors.grey[100]),
+                              color: isUser ? Colors.pinkAccent.withOpacity(0.2) : _bubbleAiBg,
                               borderRadius: BorderRadius.circular(16),
                             ),
                             child: Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Icon(isUser ? Icons.person : Icons.smart_toy, color: Colors.pinkAccent, size: 20),
-                                const SizedBox(width: 8),
+                                isUser 
+                                  ? const Icon(Icons.person, color: Colors.pinkAccent, size: 22)
+                                  : ClipOval(
+                                      child: Image.asset(
+                                        'assets/images/piggy_ai_assistant.png',
+                                        width: 22, height: 22, fit: BoxFit.cover,
+                                        errorBuilder: (c, e, s) => const Icon(Icons.smart_toy, color: Colors.pinkAccent, size: 22),
+                                      ),
+                                    ),
+                                const SizedBox(width: 10),
                                 Expanded(
                                   child: Text(
                                     msg['text'] ?? '',
@@ -1842,7 +1856,7 @@ Card(
                             style: TextStyle(color: _textColor),
                             onSubmitted: (_) => _inviaMessaggioAI(),
                             decoration: InputDecoration(
-                              hintText: 'Scrivi un comando o una spesa...',
+                              hintText: 'Scrivi o usa il Push-to-Talk...',
                               hintStyle: TextStyle(color: _textColor.withOpacity(0.4)),
                               filled: true,
                               fillColor: _isDarkTheme ? const Color(0xFF2A2E43) : Colors.grey[200],
@@ -1853,7 +1867,16 @@ Card(
                         ),
                         const SizedBox(width: 8),
                         FloatingActionButton.small(
-                          heroTag: 'send_ai_btn_universal',
+                          heroTag: 'mic_ptt_btn',
+                          backgroundColor: Colors.pinkAccent,
+                          onPressed: () {
+                            // Attivazione Push-to-Talk
+                          },
+                          child: const Icon(Icons.mic, color: Colors.white),
+                        ),
+                        const SizedBox(width: 4),
+                        FloatingActionButton.small(
+                          heroTag: 'send_ai_btn_final',
                           backgroundColor: Colors.pinkAccent,
                           onPressed: _inviaMessaggioAI,
                           child: const Icon(Icons.send, color: Colors.white),
@@ -1869,6 +1892,7 @@ Card(
       },
     );
   }
+
 
 
 
