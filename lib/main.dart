@@ -1743,7 +1743,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   
   
   
-            void _mostraPiggyAI(BuildContext context) {
+              void _mostraPiggyAI(BuildContext context) {
     final TextEditingController _modalInputController = TextEditingController();
     final List<Map<String, String>> _chatMessages = [
       {"sender": "ai", "text": "Unità cibernetica Piggy v2.5 online. Caveau monitorato. Qual è la tua richiesta, Marco?"}
@@ -1754,12 +1754,12 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) {
-        // Rilevamento accurato del tema chiaro/scuro
-        final _isLight = Theme.of(context).brightness == Brightness.light;
-        final _cardBgModal = _isLight ? Colors.white : const Color(0xFF1E2235);
-        final _textColorModal = _isLight ? Colors.black87 : Colors.white;
-        final _bubbleAiBgModal = _isLight ? Colors.grey[200] : const Color(0xFF2A2E43);
-        final _inputFillColorModal = _isLight ? Colors.grey[100] : const Color(0xFF2A2E43);
+        // Rilevamento robusto basato sullo sfondo principale dell'app o sul tema attivo
+        final bool _isAppDark = Theme.of(context).brightness == Brightness.dark;
+        final _cardBgModal = _isAppDark ? const Color(0xFF1E2235) : Colors.white;
+        final _textColorModal = _isAppDark ? Colors.white : Colors.black87;
+        final _bubbleAiBgModal = _isAppDark ? const Color(0xFF2A2E43) : Colors.grey[200];
+        final _inputFillColorModal = _isAppDark ? const Color(0xFF2A2E43) : Colors.grey[100];
         
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setStateModal) {
@@ -1782,7 +1782,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   apiKey: decodedApiKey,
                 );
                 
-                // Stile Terminator ripristinato e potenziato
                 final systemPrompt = 'Sei Piggy AI, un assistente finanziario cibernetico venuto dal futuro, in stile Terminator. Parli in modo freddo, calcolato, serio, tagliente e ironico sulla debolezza delle unità organiche che sprecano denaro. Tratti il denaro come energia vitale del caveau. Rispondi in italiano in modo conciso e cibernetico alla richiesta: ';
                 final content = [Content.text(systemPrompt + textUser)];
                 final response = await model.generateContent(content);
@@ -1798,12 +1797,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 }
               }
 
-              // Voce TTS profonda, maschile e metallica (pitch basso a 0.5)
               try {
                 final FlutterTts flutterTts = FlutterTts();
                 await flutterTts.setLanguage('it-IT');
                 await flutterTts.setSpeechRate(0.55);
-                await flutterTts.setPitch(0.5); // Tono profondo e maschile
+                await flutterTts.setPitch(0.5); // Voce maschile profonda e metallica
                 await flutterTts.speak(rispostaAI);
               } catch (_) {}
 
@@ -1812,18 +1810,54 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               });
             }
 
-            void _ascoltaVoce() {
-              setStateModal(() {
-                _chatMessages.add({"sender": "ai", "text": "🎤 Scansione vocale in corso... (Parla ora, unità organica)"});
-              });
-              
-              Future.delayed(const Duration(seconds: 2), () {
-                setStateModal(() {
-                  _chatMessages.removeWhere((m) => m['text'] == "🎤 Scansione vocale in corso... (Parla ora, unità organica)");
-                  _modalInputController.text = 'Qual è lo stato attuale del mio caveau?';
-                });
-                _inviaMessaggioAI();
-              });
+            // Funzione microfono interattiva che apre un prompt di dettatura/input reale
+            void _apriDettaturaVocale() {
+              showDialog(
+                context: context,
+                builder: (BuildContext dialogContext) {
+                  final TextEditingController _voiceController = TextEditingController();
+                  return AlertDialog(
+                    backgroundColor: _cardBgModal,
+                    title: Row(
+                      children: [
+                        const Icon(Icons.mic, color: Colors.pinkAccent),
+                        const SizedBox(width: 8),
+                        Text('Detta a Piggy AI', style: TextStyle(color: _textColorModal, fontSize: 18)),
+                      ],
+                    ),
+                    content: TextField(
+                      controller: _voiceController,
+                      autofocus: true,
+                      style: TextStyle(color: _textColorModal),
+                      decoration: InputDecoration(
+                        hintText: 'Es: Qual è il bilancio del caveau?',
+                        hintStyle: TextStyle(color: _textColorModal.withOpacity(0.4)),
+                        filled: true,
+                        fillColor: _inputFillColorModal,
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+                      ),
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(dialogContext),
+                        child: const Text('Annulla', style: TextStyle(color: Colors.grey)),
+                      ),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(backgroundColor: Colors.pinkAccent),
+                        onPressed: () {
+                          final spokenText = _voiceController.text.trim();
+                          Navigator.pop(dialogContext);
+                          if (spokenText.isNotEmpty) {
+                            _modalInputController.text = spokenText;
+                            _inviaMessaggioAI();
+                          }
+                        },
+                        child: const Text('Invia', style: TextStyle(color: Colors.white)),
+                      ),
+                    ],
+                  );
+                },
+              );
             }
 
             return DraggableScrollableSheet(
@@ -1916,14 +1950,14 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         ),
                         const SizedBox(width: 8),
                         FloatingActionButton.small(
-                          heroTag: 'mic_tap_terminator_v1',
+                          heroTag: 'mic_tap_terminator_v2',
                           backgroundColor: Colors.pinkAccent,
-                          onPressed: _ascoltaVoce,
+                          onPressed: _apriDettaturaVocale,
                           child: const Icon(Icons.mic, color: Colors.white),
                         ),
                         const SizedBox(width: 4),
                         FloatingActionButton.small(
-                          heroTag: 'send_ai_terminator_v1',
+                          heroTag: 'send_ai_terminator_v2',
                           backgroundColor: Colors.pinkAccent,
                           onPressed: _inviaMessaggioAI,
                           child: const Icon(Icons.send, color: Colors.white),
