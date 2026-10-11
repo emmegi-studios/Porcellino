@@ -1760,9 +1760,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         final _textColor = _isDarkTheme ? Colors.white : Colors.black87;
         final _bubbleAiBg = _isDarkTheme ? const Color(0xFF2A2E43) : Colors.grey[200];
         final _inputFillColor = _isDarkTheme ? const Color(0xFF2A2E43) : Colors.grey[100];
-        final _bubbleAiBg = _isDarkTheme ? const Color(0xFF2A2E43) : Colors.grey[200];
-        final _inputFillColor = _isDarkTheme ? const Color(0xFF2A2E43) : Colors.grey[100];
-        
+                                                                
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setStateModal) {
             
