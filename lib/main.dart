@@ -1756,10 +1756,10 @@ Card(
   
   
   
-  void _mostraPiggyAI(BuildContext context) {
+    void _mostraPiggyAI(BuildContext context) {
     final TextEditingController _modalInputController = TextEditingController();
     final List<Map<String, String>> _chatMessages = [
-      {"sender": "ai", "text": "Ciao! Sono Piggy, il tuo assistente finanziario intelligente. Come posso aiutarti a gestire il budget oggi?"}
+      {"sender": "ai", "text": "Unità cibernetica Piggy v2.5 online. Caveau monitorato. Qual è la tua richiesta, Marco?"}
     ];
 
     showModalBottomSheet(
@@ -1785,10 +1785,31 @@ Card(
                 _modalInputController.clear();
               });
 
-              // Risposta integrata con logica dinamica
-              
+              String rispostaAI = '';
+              try {
+                final model = GenerativeModel(
+                  model: 'gemini-1.5-flash',
+                  apiKey: 'INSERISCI_API_KEY',
+                );
+                
+                final contextFinanziario = 'Patrimonio condiviso: €_patrimonioTotale, Entrate mese: €_entrateMese, Uscite mese: €_usciteMese.';
+                final systemPrompt = 'Sei Piggy, un assistente finanziario cibernetico venuto dal futuro, in stile Terminator. Parli in modo freddo, calcolato, serio, tagliente e ironico sulla debolezza delle unità organiche che sprecano denaro. Tratti il denaro come energia vitale del caveau. Dati finanziari attuali di Marco -> ' + contextFinanziario + ' Rispondi in italiano in modo conciso e cibernetico alla richiesta: ';
+                
+                final content = [Content.text(systemPrompt + textUser)];
+                final response = await model.generateContent(content);
+                rispostaAI = response.text ?? 'Analisi completata. Nessun flusso vocale rilevato.';
+                
+                final FlutterTts flutterTts = FlutterTts();
+                await flutterTts.setLanguage('it-IT');
+                await flutterTts.setSpeechRate(0.5);
+                await flutterTts.setPitch(0.8);
+                await flutterTts.speak(rispostaAI);
+                
+              } catch (e) {
+                rispostaAI = 'ERRORE SISTEMA CIBERNETICO: ' + e.toString();
+              }
+
               setStateModal(() {
-                String rispostaAI = "Ho elaborato la tua richiesta, analizzo subito i dati finanziari!";
                 _chatMessages.add({"sender": "ai", "text": rispostaAI});
               });
             }
@@ -1819,7 +1840,7 @@ Card(
                           ),
                         ),
                         const SizedBox(width: 8),
-                        Text('Piggy AI Assistant', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: _textColor)),
+                        Text('Cyber-Piggy AI', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: _textColor)),
                       ],
                     ),
                     const Divider(),
@@ -1872,7 +1893,7 @@ Card(
                             style: TextStyle(color: _textColor),
                             onSubmitted: (_) => _inviaMessaggioAI(),
                             decoration: InputDecoration(
-                              hintText: 'Scrivi o usa il Push-to-Talk...',
+                              hintText: 'Interroga il sistema cibernetico...',
                               hintStyle: TextStyle(color: _textColor.withOpacity(0.4)),
                               filled: true,
                               fillColor: _inputFillColor,
@@ -1883,16 +1904,18 @@ Card(
                         ),
                         const SizedBox(width: 8),
                         FloatingActionButton.small(
-                          heroTag: 'mic_ptt_btn_v2',
+                          heroTag: 'mic_tap_cyber',
                           backgroundColor: Colors.pinkAccent,
                           onPressed: () {
-                            // Attivazione Push-to-Talk e sintesi vocale TTS
+                            setStateModal(() {
+                              _chatMessages.add({"sender": "ai", "text": "Ascolto canali audio attivato. Parla, unità organica."});
+                            });
                           },
                           child: const Icon(Icons.mic, color: Colors.white),
                         ),
                         const SizedBox(width: 4),
                         FloatingActionButton.small(
-                          heroTag: 'send_ai_btn_final_v2',
+                          heroTag: 'send_ai_cyber',
                           backgroundColor: Colors.pinkAccent,
                           onPressed: _inviaMessaggioAI,
                           child: const Icon(Icons.send, color: Colors.white),
