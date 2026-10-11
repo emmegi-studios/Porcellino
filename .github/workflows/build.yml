@@ -1,13 +1,23 @@
 name: Build Flutter APK
 
+
+permissions:
+  contents: write
+
 on:
+
   push:
     branches: [ main ]
   workflow_dispatch:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-
+permissions:
+  contents: write
+
+on:
+ ubuntu-latest
 
     steps:
       - name: Checkout repository
@@ -16,13 +26,28 @@ jobs:
       - name: Set up Java
         uses: actions/setup-java@v3
         with:
-          distribution: 'zulu'
-          java-version: '17'
+          distributi
+permissions:
+  contents: write
+
+on:
+ 'zulu'
+          java-versi
+permissions:
+  contents: write
+
+on:
+ '17'
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.19.6'
+          flutter-versi
+permissions:
+  contents: write
+
+on:
+ '3.19.6'
           channel: 'stable'
           cache: true
 
