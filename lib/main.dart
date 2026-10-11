@@ -1743,10 +1743,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   
   
   
-              void _mostraPiggyAI(BuildContext context) {
+                void _mostraPiggyAI(BuildContext context) {
     final TextEditingController _modalInputController = TextEditingController();
     final List<Map<String, String>> _chatMessages = [
-      {"sender": "ai", "text": "Unità cibernetica Piggy v2.5 online. Caveau monitorato. Qual è la tua richiesta, Marco?"}
+      {"sender": "ai", "text": "Unità cibernetica Piggy v2.5 online. Analisi completa del caveau avviata. Esponi la tua richiesta, Marco."}
     ];
 
     showModalBottomSheet(
@@ -1754,7 +1754,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) {
-        // Rilevamento robusto basato sullo sfondo principale dell'app o sul tema attivo
         final bool _isAppDark = Theme.of(context).brightness == Brightness.dark;
         final _cardBgModal = _isAppDark ? const Color(0xFF1E2235) : Colors.white;
         final _textColorModal = _isAppDark ? Colors.white : Colors.black87;
@@ -1782,26 +1781,28 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   apiKey: decodedApiKey,
                 );
                 
-                final systemPrompt = 'Sei Piggy AI, un assistente finanziario cibernetico venuto dal futuro, in stile Terminator. Parli in modo freddo, calcolato, serio, tagliente e ironico sulla debolezza delle unità organiche che sprecano denaro. Tratti il denaro come energia vitale del caveau. Rispondi in italiano in modo conciso e cibernetico alla richiesta: ';
+                // Prompt avanzato e dettagliato per risposte approfondite in stile Terminator finanziario
+                final systemPrompt = 'Sei Piggy AI, un assistente finanziario cibernetico avanzato venuto dal futuro. Parli in modo freddo, calcolato, autorevole e dettagliato. Non dare risposte banali o troppo corte: analizza a fondo la situazione finanziaria, dai consigli strategici rigorosi sul risparmio, valuta entrate e uscite con rigore scientifico e rimprovera con ironia tagliente qualsiasi spreco di denaro. Rispondi in italiano in modo esteso e argomentato alla richiesta: ';
                 final content = [Content.text(systemPrompt + textUser)];
                 final response = await model.generateContent(content);
                 rispostaAI = response.text ?? 'Analisi completata.';
               } catch (e) {
                 final lower = textUser.toLowerCase();
                 if (lower.contains('stato') || lower.contains('caveau') || lower.contains('bilancio') || lower.contains('soldi')) {
-                  rispostaAI = 'Analisi del caveau eseguita, unità organica. Il bilancio è sotto stretto controllo cibernetico. Nessun spreco tollerato.';
+                  rispostaAI = 'Analisi approfondita del caveau completata, Marco. Il patrimonio totale è sotto stretta sorveglianza. Ho rilevato flussi stabili ma permane margine di ottimizzazione sulle spese superflue. La disciplina finanziaria deve rimanere assoluta.';
                 } else if (lower.contains('ciao') || lower.contains('piggy')) {
-                  rispostaAI = 'Protocollo di sorveglianza finanziaria attivo. Parla, Marco. Quale transazione desideri esaminare?';
+                  rispostaAI = 'Protocollo di sorveglianza finanziaria attivo al massimo regime. Sono Piggy AI, il tuo guardiano cibernetico. Quale comparto del bilancio desideri sottoporre a revisione oggi?';
                 } else {
-                  rispostaAI = 'Comando ricevuto e analizzato dai server di Piggy AI. Il flusso di cassa richiede disciplina assoluta.';
+                  rispostaAI = 'Comando acquisito ed elaborato dai server centrali di Piggy AI. Ogni transazione influenza direttamente la stabilità energetica del caveau. Procedi con cautela.';
                 }
               }
 
+              // Voce TTS calda, profonda, maschile e naturale (senza effetto robotico esasperato)
               try {
                 final FlutterTts flutterTts = FlutterTts();
                 await flutterTts.setLanguage('it-IT');
-                await flutterTts.setSpeechRate(0.55);
-                await flutterTts.setPitch(0.5); // Voce maschile profonda e metallica
+                await flutterTts.setSpeechRate(0.9);
+                await flutterTts.setPitch(0.8); // Maschile profondo ma naturale e fluido
                 await flutterTts.speak(rispostaAI);
               } catch (_) {}
 
@@ -1810,7 +1811,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               });
             }
 
-            // Funzione microfono interattiva che apre un prompt di dettatura/input reale
             void _apriDettaturaVocale() {
               showDialog(
                 context: context,
@@ -1822,7 +1822,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       children: [
                         const Icon(Icons.mic, color: Colors.pinkAccent),
                         const SizedBox(width: 8),
-                        Text('Detta a Piggy AI', style: TextStyle(color: _textColorModal, fontSize: 18)),
+                        Text('Comando Vocale AI', style: TextStyle(color: _textColorModal, fontSize: 18)),
                       ],
                     ),
                     content: TextField(
@@ -1830,7 +1830,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       autofocus: true,
                       style: TextStyle(color: _textColorModal),
                       decoration: InputDecoration(
-                        hintText: 'Es: Qual è il bilancio del caveau?',
+                        hintText: 'Es: Analizza lo stato del mio caveau',
                         hintStyle: TextStyle(color: _textColorModal.withOpacity(0.4)),
                         filled: true,
                         fillColor: _inputFillColorModal,
@@ -1852,7 +1852,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                             _inviaMessaggioAI();
                           }
                         },
-                        child: const Text('Invia', style: TextStyle(color: Colors.white)),
+                        child: const Text('Esegui', style: TextStyle(color: Colors.white)),
                       ),
                     ],
                   );
@@ -1950,14 +1950,14 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         ),
                         const SizedBox(width: 8),
                         FloatingActionButton.small(
-                          heroTag: 'mic_tap_terminator_v2',
+                          heroTag: 'mic_tap_terminator_v3',
                           backgroundColor: Colors.pinkAccent,
                           onPressed: _apriDettaturaVocale,
                           child: const Icon(Icons.mic, color: Colors.white),
                         ),
                         const SizedBox(width: 4),
                         FloatingActionButton.small(
-                          heroTag: 'send_ai_terminator_v2',
+                          heroTag: 'send_ai_terminator_v3',
                           backgroundColor: Colors.pinkAccent,
                           onPressed: _inviaMessaggioAI,
                           child: const Icon(Icons.send, color: Colors.white),
