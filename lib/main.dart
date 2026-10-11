@@ -1755,8 +1755,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) {
-        final _cardBg = _cardBg;
-        final _textColor = _textColor;
+        final _isDarkTheme = Theme.of(context).brightness == Brightness.dark;
+        final _cardBg = _isDarkTheme ? const Color(0xFF1E2235) : Colors.white;
+        final _textColor = _isDarkTheme ? Colors.white : Colors.black87;
+        final _bubbleAiBg = _isDarkTheme ? const Color(0xFF2A2E43) : Colors.grey[200];
+        final _inputFillColor = _isDarkTheme ? const Color(0xFF2A2E43) : Colors.grey[100];
         final _bubbleAiBg = _isDarkTheme ? const Color(0xFF2A2E43) : Colors.grey[200];
         final _inputFillColor = _isDarkTheme ? const Color(0xFF2A2E43) : Colors.grey[100];
         
