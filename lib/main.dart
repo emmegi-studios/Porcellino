@@ -1740,7 +1740,13 @@ Card(
 
 
   
+  
   void _mostraPiggyAI(BuildContext context) {
+    // Controller locale per la chat nel modale
+    final TextEditingController _modalInputController = TextEditingController();
+    final List<Map<String, String>> _chatMessages = [
+    ];
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -1752,8 +1758,25 @@ Card(
         
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setStateModal) {
+            
+            void _inviaMessaggioAI() async {
+              final textUser = _modalInputController.text.trim();
+              if (textUser.isEmpty) return;
+
+              setStateModal(() {
+                _chatMessages.add({"sender": "user", "text": textUser});
+                _modalInputController.clear();
+              });
+
+              // Risposta simulata / predisposta per integrazione API Gemini
+              
+              setStateModal(() {
+                _chatMessages.add({"sender": "ai", "text": rispostaAI});
+              });
+            }
+
             return DraggableScrollableSheet(
-              initialChildSize: 0.8,
+              initialChildSize: 0.85,
               minChildSize: 0.5,
               maxChildSize: 0.95,
               builder: (_, controller) => Container(
@@ -1777,15 +1800,34 @@ Card(
                     ),
                     const Divider(),
                     Expanded(
-                      child: ListView(
+                      child: ListView.builder(
                         controller: controller,
-                        children: [
-                          ListTile(
-                            leading: const CircleAvatar(backgroundColor: Colors.pinkAccent, child: Icon(Icons.smart_toy, color: Colors.white)),
-                            title: Text('Ciao Marco! Sono Piggy, il tuo assistente finanziario personale.', style: TextStyle(color: _textColor, fontWeight: FontWeight.bold)),
-                            subtitle: Text('Ho analizzato i tuoi conti. Sono pronto a gestire le tue finanze con polso e a consigliarti dove tagliare le spese superflue!', style: TextStyle(color: _textColor.withOpacity(0.8))),
-                          ),
-                        ],
+                        itemCount: _chatMessages.length,
+                        itemBuilder: (context, index) {
+                          final msg = _chatMessages[index];
+                          final isUser = msg['sender'] == 'user';
+                          return Container(
+                            margin: const EdgeInsets.symmetric(vertical: 6),
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: isUser ? Colors.pinkAccent.withOpacity(0.2) : (_isDarkTheme ? const Color(0xFF2A2E43) : Colors.grey[100]),
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Icon(isUser ? Icons.person : Icons.smart_toy, color: Colors.pinkAccent, size: 20),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    msg['text'] ?? '',
+                                    style: TextStyle(color: _textColor),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
                       ),
                     ),
                     const Divider(height: 1),
@@ -1794,10 +1836,11 @@ Card(
                       children: [
                         Expanded(
                           child: TextField(
-                            controller: _messageController,
+                            controller: _modalInputController,
                             style: TextStyle(color: _textColor),
+                            onSubmitted: (_) => _inviaMessaggioAI(),
                             decoration: InputDecoration(
-                              hintText: 'Chiedi a Piggy o registra vocale...',
+                              hintText: 'Scrivi a Piggy...',
                               hintStyle: TextStyle(color: _textColor.withOpacity(0.4)),
                               filled: true,
                               fillColor: _isDarkTheme ? const Color(0xFF2A2E43) : Colors.grey[200],
@@ -1808,24 +1851,9 @@ Card(
                         ),
                         const SizedBox(width: 8),
                         FloatingActionButton.small(
-                          heroTag: 'mic_ai_btn',
+                          heroTag: 'send_ai_btn_final',
                           backgroundColor: Colors.pinkAccent,
-                          onPressed: () {
-                            // Attivazione Push-to-Talk vocale
-                          },
-                          child: const Icon(Icons.mic, color: Colors.white),
-                        ),
-                        const SizedBox(width: 4),
-                        FloatingActionButton.small(
-                          heroTag: 'send_ai_btn',
-                          backgroundColor: Colors.pinkAccent,
-                          onPressed: () {
-                            if (_messageController.text.isNotEmpty) {
-                              setStateModal(() {
-                                _messageController.clear();
-                              });
-                            }
-                          },
+                          onPressed: _inviaMessaggioAI,
                           child: const Icon(Icons.send, color: Colors.white),
                         ),
                       ],
@@ -1839,6 +1867,7 @@ Card(
       },
     );
   }
+
 
 
 
