@@ -2005,6 +2005,25 @@ class _InviteManagerState extends State<InviteManager> {
   Widget build(BuildContext context) {
     return widget.child;
   }
+
+  // Aggiornamento sicuro del Widget in base allo stato di autenticazione
+  Future<void> _updateAndroidWidget(bool isLoggedIn, double patrimonio) async {
+    try {
+      if (isLoggedIn) {
+        await HomeWidget.saveWidgetData<String>('widget_patrimonio', 'Caveau: € ' + patrimonio.toStringAsFixed(2));
+        await HomeWidget.saveWidgetData<String>('widget_status', 'Stato: Monitoraggio Attivo');
+        await HomeWidget.saveWidgetData<bool>('widget_logged', true);
+      } else {
+        await HomeWidget.saveWidgetData<String>('widget_patrimonio', '🔒 Caveau Bloccato');
+        await HomeWidget.saveWidgetData<String>('widget_status', 'Effettua il login in app');
+        await HomeWidget.saveWidgetData<bool>('widget_logged', false);
+      }
+      await HomeWidget.updateWidget(
+        name: 'PiggyWidgetProvider',
+        androidName: 'PiggyWidgetProvider',
+      );
+    } catch (_) {}
+  }
 }
 
 
