@@ -1373,19 +1373,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         padding: const EdgeInsets.all(16.0),
         children: [
 
-Card(
-            color: _cardBg,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            elevation: 2,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.cloud_sync, color: Color(0xFF3B82F6), size: 20),
-                  const SizedBox(width: 8),
-                  Text("", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: _textColor))]))),
-          const SizedBox(height: 14),
+
 
           Card(
             color: _cardBg,
@@ -1767,9 +1755,8 @@ Card(
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) {
-        final _isDarkTheme = Theme.of(context).brightness == Brightness.dark;
-        final _cardBg = _isDarkTheme ? const Color(0xFF1E2235) : Colors.white;
-        final _textColor = _isDarkTheme ? Colors.white : Colors.black87;
+        final _cardBg = _cardBg;
+        final _textColor = _textColor;
         final _bubbleAiBg = _isDarkTheme ? const Color(0xFF2A2E43) : Colors.grey[200];
         final _inputFillColor = _isDarkTheme ? const Color(0xFF2A2E43) : Colors.grey[100];
         
@@ -1789,7 +1776,7 @@ Card(
               try {
                 final model = GenerativeModel(
                   model: 'gemini-1.5-flash',
-                  apiKey: 'INSERISCI_API_KEY',
+                  apiKey: 'AQ.Ab8RN6LoZq1C32hj4UpiZqX3BfM8EUvMJnYMgW5MfUUG-t5z5g',
                 );
                 
                 final contextFinanziario = 'Analisi caveau attiva. Dati finanziari sincronizzati.';
