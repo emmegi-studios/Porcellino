@@ -1840,7 +1840,7 @@ Card(
                           ),
                         ),
                         const SizedBox(width: 8),
-                        Text('Cyber-Piggy AI', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: _textColor)),
+                        Text('Piggy AI', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: _textColor)),
                       ],
                     ),
                     const Divider(),
