@@ -1743,10 +1743,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   
   
   
-                void _mostraPiggyAI(BuildContext context) {
+                  void _mostraPiggyAI(BuildContext context) {
     final TextEditingController _modalInputController = TextEditingController();
     final List<Map<String, String>> _chatMessages = [
-      {"sender": "ai", "text": "Unità cibernetica Piggy v2.5 online. Analisi completa del caveau avviata. Esponi la tua richiesta, Marco."}
+      {"sender": "ai", "text": "Unità cibernetica Piggy v2.5 online. Caveau monitorato. Pronto a erogare consigli finanziari o a valutare i tuoi desideri a sorpresa, Marco."}
     ];
 
     showModalBottomSheet(
@@ -1763,13 +1763,13 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setStateModal) {
             
-            void _inviaMessaggioAI() async {
-              final textUser = _modalInputController.text.trim();
+            void _inviaMessaggioAI({String? promptPersonalizzato}) async {
+              final textUser = promptPersonalizzato ?? _modalInputController.text.trim();
               if (textUser.isEmpty) return;
 
               setStateModal(() {
                 _chatMessages.add({"sender": "user", "text": textUser});
-                _modalInputController.clear();
+                if (promptPersonalizzato == null) _modalInputController.clear();
               });
 
               String rispostaAI = '';
@@ -1781,83 +1781,36 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   apiKey: decodedApiKey,
                 );
                 
-                // Prompt avanzato e dettagliato per risposte approfondite in stile Terminator finanziario
-                final systemPrompt = 'Sei Piggy AI, un assistente finanziario cibernetico avanzato venuto dal futuro. Parli in modo freddo, calcolato, autorevole e dettagliato. Non dare risposte banali o troppo corte: analizza a fondo la situazione finanziaria, dai consigli strategici rigorosi sul risparmio, valuta entrate e uscite con rigore scientifico e rimprovera con ironia tagliente qualsiasi spreco di denaro. Rispondi in italiano in modo esteso e argomentato alla richiesta: ';
+                final systemPrompt = 'Sei Piggy AI, un assistente finanziario cibernetico avanzato in stile Terminator. Dai sempre consigli finanziari taglienti, analizza le spese e gestisci la funzione "Sorpresa" calcolando l'impatto sul patrimonio totale e sul livello di rischio. Rispondi in italiano in modo esteso, argomentato e con personalità: ';
                 final content = [Content.text(systemPrompt + textUser)];
                 final response = await model.generateContent(content);
                 rispostaAI = response.text ?? 'Analisi completata.';
               } catch (e) {
                 final lower = textUser.toLowerCase();
-                if (lower.contains('stato') || lower.contains('caveau') || lower.contains('bilancio') || lower.contains('soldi')) {
-                  rispostaAI = 'Analisi approfondita del caveau completata, Marco. Il patrimonio totale è sotto stretta sorveglianza. Ho rilevato flussi stabili ma permane margine di ottimizzazione sulle spese superflue. La disciplina finanziaria deve rimanere assoluta.';
-                } else if (lower.contains('ciao') || lower.contains('piggy')) {
-                  rispostaAI = 'Protocollo di sorveglianza finanziaria attivo al massimo regime. Sono Piggy AI, il tuo guardiano cibernetico. Quale comparto del bilancio desideri sottoporre a revisione oggi?';
+                if (lower.contains('sorpresa') || lower.contains('svizi') || lower.contains('desideri')) {
+                  rispostaAI = '🎁 PROTOCOLLO SORPRESA ATTIVATO (Modalità Coppia/Desideri):
+1. Esperienza di coppia raccomandata: Cena degustazione in un locale intimo (Impatto stimato: 1.8% sul patrimonio totale, rischio caveau: +2%).
+2. Desiderio personale (Svizio singolo): Upgrade hardware / attrezzatura audio (Impatto stimato: 3.5% sul patrimonio totale, rischio caveau: +4%).
+Giudizio cibernetico: Entrambi i desideri sono sostenibili ma richiedono disciplina ferrea nei prossimi cicli di risparmio.';
+                } else if (lower.contains('consiglio') || lower.contains('finanziario')) {
+                  rispostaAI = '💡 CONSIGLIO FINANZIARIO DI PIGGY AI:
+Le unità organiche tendono a sottovalutare i micro-sprechi quotidiani. Il mio suggerimento algoritmico è di destinare almeno il 20% delle entrate a un fondo di emergenza blindato. Riduci le spese non essenziali e proteggi l'energia vitale del caveau.';
                 } else {
-                  rispostaAI = 'Comando acquisito ed elaborato dai server centrali di Piggy AI. Ogni transazione influenza direttamente la stabilità energetica del caveau. Procedi con cautela.';
+                  rispostaAI = 'Analisi completata, Marco. Il flusso di cassa è monitorato. Ricorda che ogni scelta economica definisce la solidità del tuo futuro.';
                 }
               }
 
-              // Voce TTS calda, profonda, maschile e naturale (senza effetto robotico esasperato)
               try {
                 final FlutterTts flutterTts = FlutterTts();
                 await flutterTts.setLanguage('it-IT');
                 await flutterTts.setSpeechRate(0.9);
-                await flutterTts.setPitch(0.8); // Maschile profondo ma naturale e fluido
+                await flutterTts.setPitch(0.8);
                 await flutterTts.speak(rispostaAI);
               } catch (_) {}
 
               setStateModal(() {
                 _chatMessages.add({"sender": "ai", "text": rispostaAI});
               });
-            }
-
-            void _apriDettaturaVocale() {
-              showDialog(
-                context: context,
-                builder: (BuildContext dialogContext) {
-                  final TextEditingController _voiceController = TextEditingController();
-                  return AlertDialog(
-                    backgroundColor: _cardBgModal,
-                    title: Row(
-                      children: [
-                        const Icon(Icons.mic, color: Colors.pinkAccent),
-                        const SizedBox(width: 8),
-                        Text('Comando Vocale AI', style: TextStyle(color: _textColorModal, fontSize: 18)),
-                      ],
-                    ),
-                    content: TextField(
-                      controller: _voiceController,
-                      autofocus: true,
-                      style: TextStyle(color: _textColorModal),
-                      decoration: InputDecoration(
-                        hintText: 'Es: Analizza lo stato del mio caveau',
-                        hintStyle: TextStyle(color: _textColorModal.withOpacity(0.4)),
-                        filled: true,
-                        fillColor: _inputFillColorModal,
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
-                      ),
-                    ),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(dialogContext),
-                        child: const Text('Annulla', style: TextStyle(color: Colors.grey)),
-                      ),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(backgroundColor: Colors.pinkAccent),
-                        onPressed: () {
-                          final spokenText = _voiceController.text.trim();
-                          Navigator.pop(dialogContext);
-                          if (spokenText.isNotEmpty) {
-                            _modalInputController.text = spokenText;
-                            _inviaMessaggioAI();
-                          }
-                        },
-                        child: const Text('Esegui', style: TextStyle(color: Colors.white)),
-                      ),
-                    ],
-                  );
-                },
-              );
             }
 
             return DraggableScrollableSheet(
@@ -1887,6 +1840,36 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         ),
                         const SizedBox(width: 8),
                         Text('Piggy AI', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: _textColorModal)),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    // Pulsanti rapidi: Consigli Finanziari & Sorpresa (Coppia/Desideri)
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.pinkAccent.withOpacity(0.2),
+                            foregroundColor: Colors.pinkAccent,
+                            elevation: 0,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          ),
+                          onPressed: () => _inviaMessaggioAI(promptPersonalizzato: 'Dammi un consiglio finanziario strategico per il mio caveau.'),
+                          icon: const Icon(Icons.lightbulb, size: 16),
+                          label: const Text('Consiglio AI', style: TextStyle(fontSize: 12)),
+                        ),
+                        const SizedBox(width: 8),
+                        ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.pinkAccent,
+                            foregroundColor: Colors.white,
+                            elevation: 0,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          ),
+                          onPressed: () => _inviaMessaggioAI(promptPersonalizzato: 'Genera 2 svizi a sorpresa personalizzati (spesa di coppia e desideri singoli) calcolando l'impatto sul totale e sul livello di rischio.'),
+                          icon: const Icon(Icons.card_giftcard, size: 16),
+                          label: const Text('🎁 Sorpresa', style: TextStyle(fontSize: 12)),
+                        ),
                       ],
                     ),
                     const Divider(),
@@ -1939,7 +1922,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                             style: TextStyle(color: _textColorModal),
                             onSubmitted: (_) => _inviaMessaggioAI(),
                             decoration: InputDecoration(
-                              hintText: 'Interroga il sistema cibernetico...',
+                              hintText: 'Chiedi un consiglio o scrivi...',
                               hintStyle: TextStyle(color: _textColorModal.withOpacity(0.4)),
                               filled: true,
                               fillColor: _inputFillColorModal,
@@ -1950,16 +1933,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         ),
                         const SizedBox(width: 8),
                         FloatingActionButton.small(
-                          heroTag: 'mic_tap_terminator_v3',
+                          heroTag: 'send_ai_sorpresa_v1',
                           backgroundColor: Colors.pinkAccent,
-                          onPressed: _apriDettaturaVocale,
-                          child: const Icon(Icons.mic, color: Colors.white),
-                        ),
-                        const SizedBox(width: 4),
-                        FloatingActionButton.small(
-                          heroTag: 'send_ai_terminator_v3',
-                          backgroundColor: Colors.pinkAccent,
-                          onPressed: _inviaMessaggioAI,
+                          onPressed: () => _inviaMessaggioAI(),
                           child: const Icon(Icons.send, color: Colors.white),
                         ),
                       ],
