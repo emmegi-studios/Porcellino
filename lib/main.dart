@@ -19,7 +19,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
-final String _geminiApiKey = utf8.decode(base64Decode("QVEuQWI4Uk42SlFNcG1pejViQ0ZzZWFZUDJ4VUdFQ1JxNEN6Vzl2QUtvd2JUUExtTXRvVEE="));
+final String _geminiApiKey = utf8.decode(base64Decode("QVEuQWI4Uk42TFgtcG1lVDNQVWVDMkJRSXVQU0V2QV9JTnk5QlpDOEpfVjIwbDd4MEF0MGc="));
+
+
 
 
 
@@ -1765,13 +1767,13 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   
   
   
-                                                  void _mostraPiggyAI(BuildContext context, [bool? isDarkOverride]) {
+                                                    void _mostraPiggyAI(BuildContext context, [bool? isDarkOverride]) {
     final TextEditingController _modalInputController = TextEditingController();
     final List<Map<String, String>> _chatMessages = [
       {'sender': 'ai', 'text': 'Unità cibernetica Piggy v2.5 online. Inserisci qualsiasi richiesta, attiva il comando vocale o richiedi un analisi a sorpresa, Marco.'}
     ];
 
-    // REGOLA D ORO TEMA: Sincronizzazione istantanea con lo sfondo reale dell app
+    // Sincronizzazione tema reale immediata
     final bool isDark = isDarkOverride ?? (Theme.of(context).brightness == Brightness.dark);
     final Color _cardBgModal = isDark ? const Color(0xFF1E2235) : Colors.white;
     final Color _textColorModal = isDark ? Colors.white : const Color(0xFF0F172A);
@@ -1815,7 +1817,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 rispostaAI = response.text ?? '';
                 if (rispostaAI.trim().isEmpty) throw Exception('Risposta vuota');
               } catch (e) {
-                // Risposta di fallback fluida e dinamica senza blocchi
                 final lower = textUser.toLowerCase();
                 if (isSorpresa || lower.contains('sorpresa')) {
                   rispostaAI = '🎁 ANALISI SVIZIO AI: 1. Smartwatch Sport (Impatto: -1.8%, Rischio: Basso). 2. Cena Gourmet nel weekend (Impatto: -0.9%, Rischio: Nullo). Il caveau rispetta i margini di sicurezza, Marco.';
@@ -1975,7 +1976,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                   : ClipOval(
                                       child: Image.asset(
                                         'assets/images/piggy_ai_assistant.png',
-                                        width: 22, height: 22, fit: BoxFit.cover,
+                                        width: 32, height: 32, fit: BoxFit.cover,
                                         errorBuilder: (c, e, s) => const Icon(Icons.smart_toy, color: Colors.pinkAccent, size: 22),
                                       ),
                                     ),
@@ -2080,7 +2081,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         
                         const SizedBox(width: 4),
                         FloatingActionButton.small(
-                          heroTag: 'send_btn_v26',
+                          heroTag: 'send_btn_v27',
                           backgroundColor: Colors.pinkAccent,
                           onPressed: () => _inviaMessaggioAI(),
                           child: const Icon(Icons.send, color: Colors.white),
