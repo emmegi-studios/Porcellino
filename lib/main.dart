@@ -24,6 +24,8 @@ final String _geminiApiKey = utf8.decode(base64Decode("QVEuQWI4Uk42S194akZNenVLZ
 
 
 
+
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
@@ -1759,13 +1761,12 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   
   
   
-                                            void _mostraPiggyAI(BuildContext context, [bool? isDarkOverride]) {
+                                              void _mostraPiggyAI(BuildContext context, [bool? isDarkOverride]) {
     final TextEditingController _modalInputController = TextEditingController();
     final List<Map<String, String>> _chatMessages = [
-      {'sender': 'ai', 'text': 'Unità cibernetica Piggy v2.5 con core Gemini 1.5 online. Inserisci qualsiasi richiesta, attiva il comando vocale o richiedi un analisi a sorpresa, Marco.'}
+      {'sender': 'ai', 'text': 'Unità cibernetica Piggy v2.5 online. Inserisci qualsiasi richiesta, attiva il comando vocale o richiedi un analisi a sorpresa, Marco.'}
     ];
 
-    // REGOLA D ORO TEMA: Sfondo ereditato direttamente dallo Scaffold dell app
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
     final Color _cardBgModal = Theme.of(context).scaffoldBackgroundColor;
     final Color _textColorModal = isDark ? Colors.white : const Color(0xFF0F172A);
@@ -1799,16 +1800,19 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   apiKey: _geminiApiKey,
                 );
                 
-                String systemPrompt = 'Sei Piggy AI, assistente finanziario cibernetico Gemini. Rispondi in italiano con stile preciso, intelligente e dinamico. ';
+                String systemPrompt = 'Sei Piggy AI, un intelligenza artificiale finanziaria cibernetica e avanzata. Rispondi sempre in modo naturale, intelligente e personalizzato in italiano a qualsiasi messaggio dell utente. Non usare mai risposte predefinite standard. ';
                 if (isSorpresa) {
                   systemPrompt += 'Genera 2 idee di svizi o desideri a sorpresa completamente originali calcolando l impatto percentuale sul patrimonio e la variazione del livello di rischio del caveau. ';
                 }
 
-                final content = [Content.text(systemPrompt + ' Richiesta utente: ' + textUser)];
+                final content = [Content.text(systemPrompt + ' Utente: ' + textUser)];
                 final response = await model.generateContent(content);
-                rispostaAI = response.text ?? 'Impossibile elaborare il flusso dati.';
+                rispostaAI = response.text ?? '';
+                if (rispostaAI.trim().isEmpty) {
+                  rispostaAI = 'Elaborazione completata. Come posso aiutarti ulteriormente nella gestione del tuo caveau, Marco?';
+                }
               } catch (e) {
-                rispostaAI = '⚠️ Impossibile contattare i server Gemini. Verifica la connessione di rete e riprova.';
+                rispostaAI = 'Connessione AI temporaneamente non disponibile. Verifica la connessione e riprova.';
               }
 
               setStateModal(() {
@@ -1819,8 +1823,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               try {
                 final FlutterTts flutterTts = FlutterTts();
                 await flutterTts.setLanguage('it-IT');
-                await flutterTts.setSpeechRate(0.60);
-                await flutterTts.setPitch(0.75);
+                await flutterTts.setSpeechRate(0.52);
+                await flutterTts.setPitch(0.95);
                 
                 flutterTts.setCompletionHandler(() {
                   setStateModal(() {
@@ -1857,11 +1861,13 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     onResult: (val) {
                       setStateModal(() {
                         _modalInputController.text = val.recognizedWords;
-                        if (val.finalResult && val.recognizedWords.isNotEmpty) {
-                          _isListening = false;
-                          _inviaMessaggioAI();
-                        }
                       });
+                      if (val.finalResult && val.recognizedWords.isNotEmpty) {
+                        setStateModal(() {
+                          _isListening = false;
+                        });
+                        _inviaMessaggioAI();
+                      }
                     },
                     localeId: 'it_IT',
                   );
@@ -1899,7 +1905,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                           ),
                         ),
                         const SizedBox(width: 8),
-                        Text('Piggy AI (Gemini 1.5)', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: _textColorModal)),
+                        Text('Piggy AI', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: _textColorModal)),
                       ],
                     ),
                     const SizedBox(height: 8),
@@ -2017,7 +2023,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                             style: TextStyle(color: _textColorModal),
                             onSubmitted: (_) => _inviaMessaggioAI(),
                             decoration: InputDecoration(
-                              hintText: 'Interroga Gemini AI...',
+                              hintText: 'Interroga Piggy AI...',
                               hintStyle: TextStyle(color: _textColorModal.withOpacity(0.4)),
                               filled: true,
                               fillColor: _inputFillColorModal,
@@ -2059,7 +2065,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         
                         const SizedBox(width: 4),
                         FloatingActionButton.small(
-                          heroTag: 'send_btn_v23',
+                          heroTag: 'send_btn_v24',
                           backgroundColor: Colors.pinkAccent,
                           onPressed: () => _inviaMessaggioAI(),
                           child: const Icon(Icons.send, color: Colors.white),
