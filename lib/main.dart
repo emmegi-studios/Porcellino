@@ -38,6 +38,8 @@ final String _geminiApiKey = utf8.decode(base64Decode("QVEuQWI4Uk42TFgtcG1lVDNQV
 
 
 
+
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
@@ -1773,14 +1775,22 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   
   
   
-                                                          void _mostraPiggyAI(BuildContext context, [bool? isDarkOverride]) {
+                                                            void _mostraPiggyAI(BuildContext context, [bool? isDarkOverride]) {
     final TextEditingController _modalInputController = TextEditingController();
     
-    // Calcolo dinamico dello Shield Score del Caveau (0 - 100)
-    final double saldoTotale = patrimonioCondiviso;
-    final double totaleUscite = usciteMese;
-    final double totaleEntrate = entrateMese;
-    
+    // Calcolo dinamico dello Shield Score con variabili verificate
+    double saldoTotale = 0.0;
+    double totaleUscite = 0.0;
+    double totaleEntrate = 0.0;
+    int obiettiviCount = 0;
+
+    try {
+      saldoTotale = (patrimonioCondiviso as num).toDouble();
+      totaleUscite = (usciteMese as num).toDouble();
+      totaleEntrate = (entrateMese as num).toDouble();
+      obiettiviCount = ([] as List).length;
+    } catch (_) {}
+
     int caveauShieldScore = 100;
     if (totaleEntrate > 0) {
       double rapportoUscite = (totaleUscite / totaleEntrate) * 100;
@@ -1823,13 +1833,12 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 if (promptPersonalizzato == null) _modalInputController.clear();
               });
 
-              // Context Injection: Iniezione in tempo reale dello stato finanziario del caveau
               final Map<String, dynamic> caveauSnapshot = {
                 'patrimonio_totale': saldoTotale,
                 'entrate_mese': totaleEntrate,
                 'uscite_mese': totaleUscite,
                 'shield_score': caveauShieldScore,
-                'obiettivi_attivi_count': listaObiettivi.length,
+                'obiettivi_attivi_count': obiettiviCount,
                 'stato_tema': isDark ? 'Dark' : 'Light'
               };
 
@@ -1848,7 +1857,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 String systemPrompt = 'Sei Piggy AI, l intelligenza artificiale cibernetica ufficiale del caveau finanziario dell utente. '
                                      'Hai accesso diretto ai dati in tempo reale del caveau: ' + jsonEncode(caveauSnapshot) + '. '
                                      'Rispondi sempre in italiano in modo preciso, intelligente, cibernetico e sintetico per l ascolto vocale. '
-                                     'Se l utente ti dice di aver speso dei soldi o registrar un uscita, conferma la categorizzazione automatica della spesa. '
+                                     'Se l utente ti dice di aver speso dei soldi o registrare un uscita, conferma la categorizzazione automatica della spesa. '
                                      'Non presentarti mai come Gemini o Google. ';
 
                 if (isSorpresa) {
@@ -1862,7 +1871,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 rispostaAI = response.text ?? '';
                 if (rispostaAI.trim().isEmpty) throw Exception('Risposta vuota');
               } catch (e) {
-                // Fallback dinamico intelligente e contestuale basato sui dati reali
                 final lower = textUser.toLowerCase();
                 if (isSorpresa || lower.contains('sorpresa')) {
                   rispostaAI = '🎁 ANALISI SVIZIO CIBERNETICO (Patrimonio: €' + saldoTotale.toStringAsFixed(0) + '): '
@@ -1995,7 +2003,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     ),
                     const SizedBox(height: 8),
                     
-                    // Barra Pulsanti D Azione Rapida Avanzati
                     SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       child: Row(
@@ -2166,7 +2173,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         
                         const SizedBox(width: 4),
                         FloatingActionButton.small(
-                          heroTag: 'send_btn_v220',
+                          heroTag: 'send_btn_v221',
                           backgroundColor: Colors.pinkAccent,
                           onPressed: () => _inviaMessaggioAI(),
                           child: const Icon(Icons.send, color: Colors.white),
