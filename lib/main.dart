@@ -34,6 +34,8 @@ final String _geminiApiKey = utf8.decode(base64Decode("QVEuQWI4Uk42TFgtcG1lVDNQV
 
 
 
+
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
@@ -1769,10 +1771,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   
   
   
-                                                      void _mostraPiggyAI(BuildContext context, [bool? isDarkOverride]) {
+                                                        void _mostraPiggyAI(BuildContext context, [bool? isDarkOverride]) {
     final TextEditingController _modalInputController = TextEditingController();
     final List<Map<String, String>> _chatMessages = [
-      {'sender': 'ai', 'text': 'Core cibernetico Piggy AI v2.5 operativo. Inserisci un comando, parla al microfono o attiva la scansione a sorpresa, Marco.'}
+      {'sender': 'ai', 'text': 'Unità Piggy AI online. Caveau sotto controllo cibernetico. Come posso supportare le tue decisioni finanziarie oggi?'}
     ];
 
     final bool isDark = isDarkOverride ?? (Theme.of(context).brightness == Brightness.dark);
@@ -1803,7 +1805,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
               String rispostaAI = '';
               try {
-                // Setup iper-ottimizzato Gemini 1.5 Flash
                 final model = GenerativeModel(
                   model: 'gemini-1.5-flash',
                   apiKey: _geminiApiKey,
@@ -1814,23 +1815,27 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   ),
                 );
                 
-                String systemPrompt = 'Sei Piggy AI, l intelligenza artificiale finanziaria cibernetica di Marco. Rispondi in italiano con tono autoritario, tecnico, d impatto e mai noioso. Fornisci analisi precise per la gestione del caveau personale. ';
+                String systemPrompt = 'Sei Piggy AI, l intelligenza artificiale cibernetica ufficiale del sistema Piggy Vault. '
+                                     'La tua identità è Piggy AI e ti rivolgi sempre in modo personalizzato all utente che sta interagendo con te in questo momento. '
+                                     'Non presentarti mai come un modello linguistico generico né menzionare Gemini o Google a meno che non sia espressamente richiesto. '
+                                     'Rispondi in italiano con tono autorevole, intelligente, dinamico e cibernetico, mantenendo la risposta sintetica e adatta all ascolto vocale. ';
+
                 if (isSorpresa) {
-                  systemPrompt += 'Genera 2 idee di svizi o desideri a sorpresa completamente originali e mai viste prima, calcolando impatto percentuale sul patrimonio e variazione del rischio del caveau. ';
+                  systemPrompt += 'Genera 2 idee di svizi o desideri a sorpresa completamente originali, calcolando l impatto percentuale sul patrimonio e l indice di rischio del caveau. ';
                 }
 
-                final content = [Content.text(systemPrompt + ' Richiesta di Marco: ' + textUser)];
+                final content = [Content.text(systemPrompt + ' Richiesta utente: ' + textUser)];
                 final response = await model.generateContent(content);
                 rispostaAI = response.text ?? '';
-                if (rispostaAI.trim().isEmpty) throw Exception('Empty response');
+                if (rispostaAI.trim().isEmpty) throw Exception('Risposta vuota');
               } catch (e) {
                 final lower = textUser.toLowerCase();
                 if (isSorpresa || lower.contains('sorpresa')) {
-                  rispostaAI = '🎁 PROTOCOLLO SVIZIO CIBERNETICO: 1. Setup Audio/Studio (Impatto: -2.2%, Rischio: Basso). 2. Evento / Esperienza Weekend (Impatto: -1.1%, Rischio: Nullo). Margini di sicurezza del caveau ampiamente rispettati, Marco.';
+                  rispostaAI = '🎁 PROTOCOLLO SVIZIO AI: 1. Upgrade Hardware/Tech (Impatto: -1.8%, Rischio: Basso). 2. Esperienza Weekend (Impatto: -0.9%, Rischio: Nullo). Margini di sicurezza del caveau stabili.';
                 } else if (lower.contains('consiglio') || lower.contains('analisi')) {
-                  rispostaAI = '💡 DIRETTIVA CAVEAU: Metti in riserva blindata il 20% delle entrate mensili e ottimizza i micro-costi digitali ricorrenti. Il tuo indice di stabilità e ottimale.';
+                  rispostaAI = '💡 DIRETTIVA CAVEAU: Mantieni la riserva strategica del 20% sulle entrate. Il tuo patrimonio bilanciato è in perfetto equilibrio cibernetico.';
                 } else {
-                  rispostaAI = 'Analisi completata, Marco. Il tuo caveau e sotto monitoraggio cibernetico costante.';
+                  rispostaAI = 'Comando acquisito. L unità Piggy AI mantiene il monitoraggio costante sul caveau.';
                 }
               }
 
@@ -2088,7 +2093,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         
                         const SizedBox(width: 4),
                         FloatingActionButton.small(
-                          heroTag: 'send_btn_v28',
+                          heroTag: 'send_btn_v30',
                           backgroundColor: Colors.pinkAccent,
                           onPressed: () => _inviaMessaggioAI(),
                           child: const Icon(Icons.send, color: Colors.white),
