@@ -1743,10 +1743,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   
   
   
-                  void _mostraPiggyAI(BuildContext context) {
+                    void _mostraPiggyAI(BuildContext context) {
     final TextEditingController _modalInputController = TextEditingController();
     final List<Map<String, String>> _chatMessages = [
-      {"sender": "ai", "text": "Unità cibernetica Piggy v2.5 online. Caveau monitorato. Pronto a erogare consigli finanziari o a valutare i tuoi desideri a sorpresa, Marco."}
+      {'sender': 'ai', 'text': 'Unità cibernetica Piggy v2.5 online. Caveau monitorato. Pronto a erogare consigli finanziari o a valutare i tuoi desideri a sorpresa, Marco.'}
     ];
 
     showModalBottomSheet(
@@ -1768,7 +1768,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               if (textUser.isEmpty) return;
 
               setStateModal(() {
-                _chatMessages.add({"sender": "user", "text": textUser});
+                _chatMessages.add({'sender': 'user', 'text': textUser});
                 if (promptPersonalizzato == null) _modalInputController.clear();
               });
 
@@ -1781,7 +1781,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   apiKey: decodedApiKey,
                 );
                 
-                final systemPrompt = 'Sei Piggy AI, un assistente finanziario cibernetico avanzato in stile Terminator. Dai sempre consigli finanziari taglienti, analizza le spese e gestisci la funzione "Sorpresa" calcolando l'impatto sul patrimonio totale e sul livello di rischio. Rispondi in italiano in modo esteso, argomentato e con personalità: ';
+                final systemPrompt = 'Sei Piggy AI, un assistente finanziario cibernetico avanzato in stile Terminator. Dai sempre consigli finanziari taglienti, analizza le spese e gestisci la funzione Sorpresa calcolando impatto sul patrimonio totale e livello di rischio. Rispondi in italiano in modo esteso e argomentato: ';
                 final content = [Content.text(systemPrompt + textUser)];
                 final response = await model.generateContent(content);
                 rispostaAI = response.text ?? 'Analisi completata.';
@@ -1789,14 +1789,14 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 final lower = textUser.toLowerCase();
                 if (lower.contains('sorpresa') || lower.contains('svizi') || lower.contains('desideri')) {
                   rispostaAI = '🎁 PROTOCOLLO SORPRESA ATTIVATO (Modalità Coppia/Desideri):
-1. Esperienza di coppia raccomandata: Cena degustazione in un locale intimo (Impatto stimato: 1.8% sul patrimonio totale, rischio caveau: +2%).
-2. Desiderio personale (Svizio singolo): Upgrade hardware / attrezzatura audio (Impatto stimato: 3.5% sul patrimonio totale, rischio caveau: +4%).
-Giudizio cibernetico: Entrambi i desideri sono sostenibili ma richiedono disciplina ferrea nei prossimi cicli di risparmio.';
+1. Esperienza di coppia raccomandata: Cena degustazione in locale intimo (Impatto stimato: 1.8% sul patrimonio totale, rischio caveau: +2%).
+2. Desiderio personale (Svizio singolo): Upgrade attrezzatura audio/video (Impatto stimato: 3.5% sul patrimonio totale, rischio caveau: +4%).
+Giudizio cibernetico: Entrambi i desideri sono sostenibili ma richiedono disciplina ferrea.';
                 } else if (lower.contains('consiglio') || lower.contains('finanziario')) {
                   rispostaAI = '💡 CONSIGLIO FINANZIARIO DI PIGGY AI:
-Le unità organiche tendono a sottovalutare i micro-sprechi quotidiani. Il mio suggerimento algoritmico è di destinare almeno il 20% delle entrate a un fondo di emergenza blindato. Riduci le spese non essenziali e proteggi l'energia vitale del caveau.';
+Le unità organiche tendono a sottovalutare i micro-sprechi. Destina almeno il 20% delle entrate a un fondo di emergenza blindato. Riduci le spese non essenziali e proteggi l'energia vitale del caveau.';
                 } else {
-                  rispostaAI = 'Analisi completata, Marco. Il flusso di cassa è monitorato. Ricorda che ogni scelta economica definisce la solidità del tuo futuro.';
+                  rispostaAI = 'Analisi completata, Marco. Il flusso di cassa è monitorato. Ogni scelta economica definisce la solidità del tuo futuro.';
                 }
               }
 
@@ -1809,7 +1809,7 @@ Le unità organiche tendono a sottovalutare i micro-sprechi quotidiani. Il mio s
               } catch (_) {}
 
               setStateModal(() {
-                _chatMessages.add({"sender": "ai", "text": rispostaAI});
+                _chatMessages.add({'sender': 'ai', 'text': rispostaAI});
               });
             }
 
@@ -1843,7 +1843,6 @@ Le unità organiche tendono a sottovalutare i micro-sprechi quotidiani. Il mio s
                       ],
                     ),
                     const SizedBox(height: 8),
-                    // Pulsanti rapidi: Consigli Finanziari & Sorpresa (Coppia/Desideri)
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -1866,7 +1865,7 @@ Le unità organiche tendono a sottovalutare i micro-sprechi quotidiani. Il mio s
                             elevation: 0,
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                           ),
-                          onPressed: () => _inviaMessaggioAI(promptPersonalizzato: 'Genera 2 svizi a sorpresa personalizzati (spesa di coppia e desideri singoli) calcolando l'impatto sul totale e sul livello di rischio.'),
+                          onPressed: () => _inviaMessaggioAI(promptPersonalizzato: 'Genera 2 svizi a sorpresa personalizzati spesa di coppia e desideri singoli calcolando impatto sul totale e rischio.'),
                           icon: const Icon(Icons.card_giftcard, size: 16),
                           label: const Text('🎁 Sorpresa', style: TextStyle(fontSize: 12)),
                         ),
@@ -1933,7 +1932,7 @@ Le unità organiche tendono a sottovalutare i micro-sprechi quotidiani. Il mio s
                         ),
                         const SizedBox(width: 8),
                         FloatingActionButton.small(
-                          heroTag: 'send_ai_sorpresa_v1',
+                          heroTag: 'send_ai_sorpresa_v2',
                           backgroundColor: Colors.pinkAccent,
                           onPressed: () => _inviaMessaggioAI(),
                           child: const Icon(Icons.send, color: Colors.white),
