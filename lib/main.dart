@@ -57,6 +57,8 @@ final String _geminiApiKey = utf8.decode(base64Decode("QVEuQWI4Uk42SVhvTDBpcEIwM
 
 
 
+
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
