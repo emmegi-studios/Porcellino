@@ -22,6 +22,8 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 final String _geminiApiKey = utf8.decode(base64Decode("QVEuQWI4Uk42S194akZNenVLZm5vRU1DeEIzTHR1ZldEeExjTFExM2s3aktYdm42Z003cnc="));
 
 
+
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
@@ -1757,34 +1759,18 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   
   
   
-                                          void _mostraPiggyAI(BuildContext context, [bool? isDarkOverride]) {
+                                            void _mostraPiggyAI(BuildContext context, [bool? isDarkOverride]) {
     final TextEditingController _modalInputController = TextEditingController();
     final List<Map<String, String>> _chatMessages = [
       {'sender': 'ai', 'text': 'Unità cibernetica Piggy v2.5 con core Gemini 1.5 online. Inserisci qualsiasi richiesta, attiva il comando vocale o richiedi un analisi a sorpresa, Marco.'}
     ];
 
-    // REGOLA D ORO TEMA: Eredita direttamente lo sfondo e la luminosità esatta dello Scaffold dell app
+    // REGOLA D ORO TEMA: Sfondo ereditato direttamente dallo Scaffold dell app
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
     final Color _cardBgModal = Theme.of(context).scaffoldBackgroundColor;
     final Color _textColorModal = isDark ? Colors.white : const Color(0xFF0F172A);
     final Color _bubbleAiBgModal = isDark ? const Color(0xFF2A2E43) : const Color(0xFFF1F5F9);
     final Color _inputFillColorModal = isDark ? const Color(0xFF2A2E43) : const Color(0xFFF8FAFC);
-
-    int _sorpresaIndex = DateTime.now().millisecondsSinceEpoch;
-    final List<String> _sorpreseVarianti = [
-      '🎁 PROTOCOLLO SORPRESA #1: 1. Tech/Hobby: Smartwatch per monitoraggio quotidiano (Impatto: 2.1%, Rischio: +2%). 2. Tempo Libero: Sessione Karting amatoriale (Impatto: 1.2%, Rischio: +1%). Valutazione: Ottimo margine di cassa.',
-      '🎁 PROTOCOLLO SORPRESA #2: 1. Studio Audio/Tech: Microfono USB o Cuffie monitor (Impatto: 3.4%, Rischio: +3%). 2. Relax: Fuga fuori porta nel weekend (Impatto: 2.8%, Rischio: +2%). Valutazione: Sostenibile con disciplina.',
-      '🎁 PROTOCOLLO SORPRESA #3: 1. Accessori Auto: Kit manutenzione o dettagli interni (Impatto: 1.8%, Rischio: +1%). 2. Gastronomia: Cena degustazione (Impatto: 2.0%, Rischio: +2%). Valutazione: Ampiamente nei limiti.',
-      '🎁 PROTOCOLLO SORPRESA #4: 1. Retro Gaming: Consolina portatile di emulazione (Impatto: 2.5%, Rischio: +2%). 2. Digital: Abbonamento annuale cloud/storage (Impatto: 1.1%, Rischio: +1%). Valutazione: Rientra nel budget riserva.'
-    ];
-
-    int _consiglioIndex = DateTime.now().millisecondsSinceEpoch;
-    final List<String> _consigliAILocali = [
-      '💡 CONSIGLIO PIGGY AI: Analisi micro-sprechi: disattiva gli abbonamenti digitali inutilizzati. Risparmio stimato: 15-25€/mese.',
-      '💡 CONSIGLIO PIGGY AI: Regola del caveau 50/30/20: 50% spese fisse, 30% stile di vita, 20% risparmio blindato.',
-      '💡 CONSIGLIO PIGGY AI: Mantieni un fondo di emergenza pari a 3 mesi di spese fisse prima di concederti svizi ad alto impatto.',
-      '💡 CONSIGLIO PIGGY AI: Attenzione ai picchi di spesa del weekend. Pianifica un budget limite per le uscite ricreative.'
-    ];
 
     showModalBottomSheet(
       context: context,
@@ -1813,26 +1799,16 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   apiKey: _geminiApiKey,
                 );
                 
-                String systemPrompt = 'Sei Piggy AI, assistente finanziario cibernetico Gemini. Rispondi in modo chiaro e autorevole in italiano. ';
+                String systemPrompt = 'Sei Piggy AI, assistente finanziario cibernetico Gemini. Rispondi in italiano con stile preciso, intelligente e dinamico. ';
                 if (isSorpresa) {
-                  systemPrompt += 'Genera 2 idee di svizi o desideri a sorpresa completamente originali calcolando impatto percentuale sul patrimonio e variazione del livello di rischio. ';
+                  systemPrompt += 'Genera 2 idee di svizi o desideri a sorpresa completamente originali calcolando l impatto percentuale sul patrimonio e la variazione del livello di rischio del caveau. ';
                 }
 
                 final content = [Content.text(systemPrompt + ' Richiesta utente: ' + textUser)];
                 final response = await model.generateContent(content);
-                rispostaAI = response.text ?? '';
-                if (rispostaAI.trim().isEmpty) throw Exception('Fallback');
+                rispostaAI = response.text ?? 'Impossibile elaborare il flusso dati.';
               } catch (e) {
-                final lower = textUser.toLowerCase();
-                if (isSorpresa || lower.contains('sorpresa') || lower.contains('svizi') || lower.contains('desideri')) {
-                  _sorpresaIndex++;
-                  rispostaAI = _sorpreseVarianti[_sorpresaIndex % _sorpreseVarianti.length];
-                } else if (lower.contains('consiglio') || lower.contains('finanziario') || lower.contains('caveau') || lower.contains('strategico')) {
-                  _consiglioIndex++;
-                  rispostaAI = _consigliAILocali[_consiglioIndex % _consigliAILocali.length];
-                } else {
-                  rispostaAI = 'Richiesta acquisita e analizzata, Marco. Il bilancio del caveau e sotto costante controllo cibernetico per garantire la massima stabilità economica.';
-                }
+                rispostaAI = '⚠️ Impossibile contattare i server Gemini. Verifica la connessione di rete e riprova.';
               }
 
               setStateModal(() {
@@ -1996,7 +1972,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       ),
                     ),
                     
-                    // Equalizzatore Animato di Modulazione Vocale in Tempo Reale
                     if (_isListening || _isSpeaking)
                       Container(
                         margin: const EdgeInsets.only(bottom: 8),
@@ -2009,7 +1984,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            // Equalizzatore animato a barre oscillanti
                             Row(
                               children: List.generate(5, (barIndex) {
                                 return AnimatedContainer(
@@ -2085,7 +2059,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         
                         const SizedBox(width: 4),
                         FloatingActionButton.small(
-                          heroTag: 'send_btn_v21',
+                          heroTag: 'send_btn_v23',
                           backgroundColor: Colors.pinkAccent,
                           onPressed: () => _inviaMessaggioAI(),
                           child: const Icon(Icons.send, color: Colors.white),
