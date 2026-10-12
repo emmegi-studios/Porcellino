@@ -1788,15 +1788,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               } catch (e) {
                 final lower = textUser.toLowerCase();
                 if (lower.contains('sorpresa') || lower.contains('svizi') || lower.contains('desideri')) {
-                  rispostaAI = '🎁 PROTOCOLLO SORPRESA ATTIVATO (Modalità Coppia/Desideri):
-1. Esperienza di coppia raccomandata: Cena degustazione in locale intimo (Impatto stimato: 1.8% sul patrimonio totale, rischio caveau: +2%).
-2. Desiderio personale (Svizio singolo): Upgrade attrezzatura audio/video (Impatto stimato: 3.5% sul patrimonio totale, rischio caveau: +4%).
-Giudizio cibernetico: Entrambi i desideri sono sostenibili ma richiedono disciplina ferrea.';
+                  rispostaAI = 'PROTOCOLLO SORPRESA: 1. Coppia: Cena degustazione (Impatto 1.8%, Rischio +2%). 2. Singolo: Upgrade audio/video (Impatto 3.5%, Rischio +4%). Sostenibili con disciplina ferrea.';
                 } else if (lower.contains('consiglio') || lower.contains('finanziario')) {
-                  rispostaAI = '💡 CONSIGLIO FINANZIARIO DI PIGGY AI:
-Le unità organiche tendono a sottovalutare i micro-sprechi. Destina almeno il 20% delle entrate a un fondo di emergenza blindato. Riduci le spese non essenziali e proteggi l'energia vitale del caveau.';
+                  rispostaAI = 'CONSIGLIO DI PIGGY AI: Riduci i micro-sprechi e destina almeno il 20% a un fondo blindato.';
                 } else {
-                  rispostaAI = 'Analisi completata, Marco. Il flusso di cassa è monitorato. Ogni scelta economica definisce la solidità del tuo futuro.';
+                  rispostaAI = 'Analisi completata, Marco. Il flusso di cassa del caveau è sotto controllo.';
                 }
               }
 
