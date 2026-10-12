@@ -31,9 +31,9 @@
         android:layout_height="wrap_content"
         android:text="Patrimonio: € 12.450,00"
         android:textColor="#34D399"
-        android:textSize="14sp"
+        android:textSize="15sp"
         android:textStyle="bold"
-        android:layout_marginTop="6dp" />
+        android:layout_marginTop="8dp" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -41,7 +41,7 @@
         android:text="Livello Rischio Caveau"
         android:textColor="#9CA3AF"
         android:textSize="11sp"
-        android:layout_marginTop="4dp" />
+        android:layout_marginTop="6dp" />
 
     <ProgressBar
         android:id="@+id/widget_risk_progress"
@@ -51,14 +51,33 @@
         android:progress="35"
         android:progressTint="#EC4899"
         android:backgroundTint="#374151"
-        android:layout_marginTop="2dp" />
+        android:layout_marginTop="3dp" />
 
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="🎤 Tocca per parlare con Piggy AI"
-        android:textColor="#F472B6"
-        android:textSize="11sp"
-        android:layout_marginTop="6dp"
-        android:gravity="center" />
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:layout_marginTop="6dp">
+
+        <ImageView
+            android:id="@+id/widget_piggy_btn"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@mipmap/ic_launcher"
+            android:background="@drawable/circle_pink_bg"
+            android:padding="8dp"
+            android:scaleType="fitCenter" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Piggy AI Chat"
+            android:textColor="#F472B6"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:layout_marginTop="4dp" />
+    </LinearLayout>
+
 </LinearLayout>

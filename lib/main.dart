@@ -103,6 +103,17 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
+    HomeWidget.initiallyLaunchedFromHomeWidget.then((Uri? uri) {
+      if (uri != null) {
+        Future.delayed(const Duration(milliseconds: 300), () {
+          if (mounted) _mostraPiggyAI(context);
+        });
+      }
+    });
+    HomeWidget.widgetClicked.clicks.listen((Uri? uri) {
+      if (mounted) _mostraPiggyAI(context);
+    });
+
     _isDarkTheme = (widget.initialTheme == 'Piggy Dark');
     _loadTheme();
     _loadSavedEmail();
@@ -1743,13 +1754,12 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   
   
   
-                      void _mostraPiggyAI(BuildContext context) {
+                        void _mostraPiggyAI(BuildContext context) {
     final TextEditingController _modalInputController = TextEditingController();
     final List<Map<String, String>> _chatMessages = [
       {'sender': 'ai', 'text': 'Unità cibernetica Piggy v2.5 online. Caveau monitorato. Inserisci un comando vocale, chiedi un consiglio o attiva il protocollo Sorpresa, Marco.'}
     ];
 
-    // Rilevamento accurato del tema chiaro/scuro reale dell app
     final bool isDarkTheme = Theme.of(context).brightness == Brightness.dark && 
         Theme.of(context).scaffoldBackgroundColor.computeLuminance() < 0.5;
 
@@ -1998,14 +2008,14 @@ Valutazione: Entrambi i desideri rientrano nei margini di sicurezza.';
                         ),
                         const SizedBox(width: 6),
                         FloatingActionButton.small(
-                          heroTag: 'mic_btn_v9',
+                          heroTag: 'mic_btn_v10',
                           backgroundColor: Colors.pinkAccent,
                           onPressed: _apriDettaturaVocale,
                           child: const Icon(Icons.mic, color: Colors.white),
                         ),
                         const SizedBox(width: 4),
                         FloatingActionButton.small(
-                          heroTag: 'send_btn_v9',
+                          heroTag: 'send_btn_v10',
                           backgroundColor: Colors.pinkAccent,
                           onPressed: () => _inviaMessaggioAI(),
                           child: const Icon(Icons.send, color: Colors.white),
