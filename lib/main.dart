@@ -128,16 +128,7 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
 
-  String _sanitizeTextForTTS(String input) {
-    String clean = input;
-    clean = clean.replaceAll(RegExp(r'\*+'), '');
-    clean = clean.replaceAll(RegExp(r'#+'), '');
-    clean = clean.replaceAll(RegExp(r'\.exe', caseSensitive: false), '');
-    clean = clean.replaceAll(RegExp(r'[\-\_]+'), ' ');
-    clean = clean.replaceAll(RegExp(r'^\s*[\d\.\)]+\s*', multiLine: true), '');
-    return clean.trim();
-  }
-
+  
   @override
   void dispose() {
     _emailController.dispose();
@@ -2393,5 +2384,12 @@ class _InviteManagerState extends State<InviteManager> {
   }
 }
 
-
-
+String _sanitizeTextForTTS(String input) {
+  String clean = input;
+  clean = clean.replaceAll(RegExp(r'\*+'), '');
+  clean = clean.replaceAll(RegExp(r'#+'), '');
+  clean = clean.replaceAll(RegExp(r'\.exe', caseSensitive: false), '');
+  clean = clean.replaceAll(RegExp(r'[\-\_]+'), ' ');
+  clean = clean.replaceAll(RegExp(r'^\s*[\d\.\)]+\s*', multiLine: true), '');
+  return clean.trim();
+}
