@@ -106,12 +106,12 @@ class _LoginScreenState extends State<LoginScreen> {
     HomeWidget.initiallyLaunchedFromHomeWidget().then((Uri? uri) {
       if (uri != null) {
         Future.delayed(const Duration(milliseconds: 300), () {
-          if (mounted) _mostraPiggyAI(context, isDark: _isDarkTheme);
+          if (mounted) _mostraPiggyAI(context, _isDarkTheme);
         });
       }
     });
     HomeWidget.widgetClicked.listen((Uri? uri) {
-      if (mounted) _mostraPiggyAI(context, isDark: _isDarkTheme);
+      if (mounted) _mostraPiggyAI(context, _isDarkTheme);
     });
 
     _isDarkTheme = (widget.initialTheme == 'Piggy Dark');
@@ -1371,7 +1371,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             tooltip: "Impostazioni e Temi",
             onPressed: _mostraModalImpostazioni)]),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => _mostraPiggyAI(context, isDark: _isDarkTheme),
+        onPressed: () => _mostraPiggyAI(context, _isDarkTheme),
         backgroundColor: Colors.pinkAccent,
         elevation: 6,
         child: ClipOval(
@@ -1754,19 +1754,27 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   
   
   
-                              void _mostraPiggyAI(BuildContext context, {bool isDark = true}) {
+                                void _mostraPiggyAI(BuildContext context, bool isDark) {
     final TextEditingController _modalInputController = TextEditingController();
     final List<Map<String, String>> _chatMessages = [
       {'sender': 'ai', 'text': 'Unità cibernetica Piggy v2.5 online. Caveau monitorato. Inserisci un comando vocale, chiedi un consiglio o attiva il protocollo Sorpresa, Marco.'}
     ];
 
-    // Rispetto assoluto della regola d oro del tema chiaro/scuro
+    // Rispetto assoluto dello stato del tema reale dell app (_isDarkTheme)
     final Color _cardBgModal = isDark ? const Color(0xFF1E2235) : Colors.white;
     final Color _textColorModal = isDark ? Colors.white : const Color(0xFF0F172A);
     final Color _bubbleAiBgModal = isDark ? const Color(0xFF2A2E43) : const Color(0xFFF1F5F9);
     final Color _inputFillColorModal = isDark ? const Color(0xFF2A2E43) : const Color(0xFFF8FAFC);
 
-    int _consiglioIndex = 0;
+    int _sorpresaIndex = DateTime.now().millisecondsSinceEpoch;
+    final List<String> _sorpreseVarianti = [
+      '🎁 PROTOCOLLO SORPRESA #1: 1. Tech/Hobby: Smartwatch per monitoraggio fitness (Impatto: 2.1%, Rischio: +2%). 2. Corsa in Pista: Sessione karting amatoriale (Impatto: 1.2%, Rischio: +1%). Valutazione: Ottimo margine di cassa.',
+      '🎁 PROTOCOLLO SORPRESA #2: 1. Studio Audio: Microfono USB / Cuffie monitor (Impatto: 3.4%, Rischio: +3%). 2. Weekend Relax: Fuga fuori porta (Impatto: 2.8%, Rischio: +2%). Valutazione: Sostenibile con minima disciplina.',
+      '🎁 PROTOCOLLO SORPRESA #3: 1. Accessori Auto: Kit manutenzione / Dettaglio interni (Impatto: 1.8%, Rischio: +1%). 2. Ristorante Gourmet: Cena degustazione (Impatto: 2.0%, Rischio: +2%). Valutazione: Pienamente nei limiti.',
+      '🎁 PROTOCOLLO SORPRESA #4: 1. Gaming/Retro: Device portatile emulation (Impatto: 2.5%, Rischio: +2%). 2. Abbonamento Annuale: Servizio Cloud/Streaming (Impatto: 1.1%, Rischio: +1%). Valutazione: Rientra nel budget riserva.'
+    ];
+
+    int _consiglioIndex = DateTime.now().millisecondsSinceEpoch;
     final List<String> _consigliAILocali = [
       '💡 CONSIGLIO PIGGY AI: Analisi micro-sprechi: disattiva gli abbonamenti digitali inutilizzati. Risparmio stimato: 15-25€/mese.',
       '💡 CONSIGLIO PIGGY AI: Regola del caveau 50/30/20: 50% spese fisse, 30% stile di vita, 20% risparmio blindato.',
@@ -1798,22 +1806,19 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   model: 'gemini-1.5-flash',
                   apiKey: decodedApiKey,
                 );
-                final systemPrompt = 'Sei Piggy AI, assistente finanziario cibernetico. Dai consigli dinamici e personalizzati sulla gestione del caveau. Se la condivisione del caveau non e attiva, tratta l utente come singolo e consiglia 2 desideri personali. Se attiva, consiglia spese di coppia. Rispondi in italiano in modo chiaro e articulated: ';
-                final content = [Content.text(systemPrompt + textUser)];
+                final systemPrompt = 'Sei Piggy AI, assistente finanziario cibernetico Gemini. Rispondi in modo dinamico e sempre DIVERSO. Se richiesto il protocollo Sorpresa, genera 2 idee di svizi/desideri sempre NUOVE con impatto percentuale ed aumento di rischio. Rispondi in italiano con tono autoritario e cibernetico: ';
+                final content = [Content.text(systemPrompt + textUser + ' (Genera risposta originale timestamp: ' + DateTime.now().millisecondsSinceEpoch.toString() + ')')];
                 final response = await model.generateContent(content);
-                rispostaAI = response.text ?? 'Analisi completata.';
+                rispostaAI = response.text ?? '';
+                if (rispostaAI.trim().isEmpty) throw Exception('Empty response');
               } catch (e) {
                 final lower = textUser.toLowerCase();
                 if (isSorpresa || lower.contains('sorpresa') || lower.contains('svizi') || lower.contains('desideri')) {
-                  bool isCaveauCondiviso = false; 
-                  if (isCaveauCondiviso) {
-                    rispostaAI = '🎁 PROTOCOLLO SORPRESA (Caveau Condiviso): 1. Coppia: Cena o esperienza fuori (Impatto: 1.8%, Rischio: +2%). 2. Personale: Svizio hobby/tech (Impatto: 1.5%, Rischio: +1%). Valutazione: Sostenibili.';
-                  } else {
-                    rispostaAI = '🎁 PROTOCOLLO SORPRESA (Caveau Personale): 1. Desiderio Tech/Hobby: Upgrade attrezzatura personale (Impatto: 2.5%, Rischio: +3%). 2. Esperienza Singola: Corso o evento ricreativo (Impatto: 1.5%, Rischio: +1%). Valutazione: Entrambi i desideri rientrano nei margini di sicurezza.';
-                  }
+                  _sorpresaIndex++;
+                  rispostaAI = _sorpreseVarianti[_sorpresaIndex % _sorpreseVarianti.length];
                 } else if (lower.contains('consiglio') || lower.contains('finanziario')) {
-                  rispostaAI = _consigliAILocali[_consiglioIndex % _consigliAILocali.length];
                   _consiglioIndex++;
+                  rispostaAI = _consigliAILocali[_consiglioIndex % _consigliAILocali.length];
                 } else {
                   rispostaAI = 'Analisi completata. Il flusso di cassa del caveau e sotto controllo cibernetico.';
                 }
@@ -1921,7 +1926,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                             elevation: 0,
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                           ),
-                          onPressed: () => _inviaMessaggioAI(promptPersonalizzato: 'Dammi un consiglio finanziario strategico per il mio caveau.'),
+                          onPressed: () => _inviaMessaggioAI(promptPersonalizzato: 'Dammi un consiglio finanziario strategico e nuovo per il mio caveau.'),
                           icon: const Icon(Icons.lightbulb, size: 16),
                           label: const Text('Consiglio AI', style: TextStyle(fontSize: 12)),
                         ),
@@ -1933,7 +1938,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                             elevation: 0,
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                           ),
-                          onPressed: () => _inviaMessaggioAI(promptPersonalizzato: 'Genera 2 svizi a sorpresa personalizzati calcolando impatto e rischio.', isSorpresa: true),
+                          onPressed: () => _inviaMessaggioAI(promptPersonalizzato: 'Genera 2 svizi a sorpresa personalizzati e sempre diversi calcolando impatto e rischio.', isSorpresa: true),
                           icon: const Icon(Icons.card_giftcard, size: 16),
                           label: const Text('🎁 Sorpresa', style: TextStyle(fontSize: 12)),
                         ),
@@ -1962,7 +1967,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                   : ClipOval(
                                       child: Image.asset(
                                         'assets/images/piggy_ai_assistant.png',
-                                        width: 22, height: 22, fit: BoxFit.cover,
+                                        width: 32, height: 32, fit: BoxFit.cover,
                                         errorBuilder: (c, e, s) => const Icon(Icons.smart_toy, color: Colors.pinkAccent, size: 22),
                                       ),
                                     ),
@@ -2000,14 +2005,14 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         ),
                         const SizedBox(width: 6),
                         FloatingActionButton.small(
-                          heroTag: 'mic_btn_v13',
+                          heroTag: 'mic_btn_v15',
                           backgroundColor: Colors.pinkAccent,
                           onPressed: _apriDettaturaVocale,
                           child: const Icon(Icons.mic, color: Colors.white),
                         ),
                         const SizedBox(width: 4),
                         FloatingActionButton.small(
-                          heroTag: 'send_btn_v13',
+                          heroTag: 'send_btn_v15',
                           backgroundColor: Colors.pinkAccent,
                           onPressed: () => _inviaMessaggioAI(),
                           child: const Icon(Icons.send, color: Colors.white),
