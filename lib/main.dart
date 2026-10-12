@@ -1,3 +1,4 @@
+const String _geminiApiKey = "INSERISCI_QUI_LA_TUA_GEMINI_API_KEY";
 import 'package:home_widget/home_widget.dart';
 import 'dart:convert';
 import 'package:flutter_tts/flutter_tts.dart';
@@ -1754,13 +1755,13 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   
   
   
-                                    void _mostraPiggyAI(BuildContext context, [bool? isDarkOverride]) {
+                                      void _mostraPiggyAI(BuildContext context, [bool? isDarkOverride]) {
     final TextEditingController _modalInputController = TextEditingController();
     final List<Map<String, String>> _chatMessages = [
       {'sender': 'ai', 'text': 'Unità cibernetica Piggy v2.5 con core Gemini 1.5 online. Inserisci qualsiasi richiesta, attiva il comando vocale o richiedi un analisi a sorpresa, Marco.'}
     ];
 
-    // Tema Scuro di Default (#1E2235) in linea con Login e Dashboard
+    // Tema Scuro di Default (#1E2235) perfettamente coordinato
     final bool isDark = isDarkOverride ?? true;
     final Color _cardBgModal = isDark ? const Color(0xFF1E2235) : Colors.white;
     final Color _textColorModal = isDark ? Colors.white : const Color(0xFF0F172A);
@@ -1789,22 +1790,23 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
               String rispostaAI = '';
               try {
-                final decodedApiKey = utf8.decode(base64Decode('QUl6YVN5X01PQ0tfRkFMTEJBQ0tfS0VZX1BFUl9FVklUQVJFX0NSQVNI'));
+                // Chiamata diretta ed esclusiva al motore Gemini 1.5 Flash
                 final model = GenerativeModel(
                   model: 'gemini-1.5-flash',
-                  apiKey: decodedApiKey,
+                  apiKey: _geminiApiKey,
                 );
                 
-                String systemPrompt = 'Sei Piggy AI, assistente finanziario cibernetico Gemini. Rispondi in modo dinamico in italiano. ';
+                String systemPrompt = 'Sei Piggy AI, un intelligenza artificiale finanziaria cibernetica onnisciente alimentata da Gemini. Rispondi in italiano con tono cibernetico, autorevole e preciso. ';
                 if (isSorpresa) {
-                  systemPrompt += 'Genera 2 idee di svizi o desideri a sorpresa completamente originali e nuove calcolando impatto percentuale sul patrimonio e variazione del livello di rischio del caveau. ';
+                  systemPrompt += 'Genera 2 idee di svizi o desideri a sorpresa completamente originali e nuove per Marco, calcolando l impatto percentuale sul patrimonio e la variazione del livello di rischio del caveau. ';
                 }
 
                 final content = [Content.text(systemPrompt + ' Richiesta utente: ' + textUser)];
                 final response = await model.generateContent(content);
                 rispostaAI = response.text ?? 'Impossibile elaborare il flusso dati.';
               } catch (e) {
-                rispostaAI = '⚠️ Connessione al Core Gemini interrotta. Riprova tra un istante per ripristinare il collegamento con Piggy AI.';
+                // Avviso trasparente di assenza connessione o API key mancante
+                rispostaAI = '⚠️ Nessuna connessione a Internet o chiave API non valida. Impossibile contattare Gemini AI. Verifica la rete del dispositivo e riprova.';
               }
 
               setStateModal(() {
@@ -1837,34 +1839,35 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 _isListening = true;
               });
 
-              final SpeechToText speech = SpeechToText();
-              bool available = await speech.initialize(
-                onError: (val) => setStateModal(() => _isListening = false),
-                onStatus: (val) {
-                  if (val == 'done' || val == 'notListening') {
-                    setStateModal(() => _isListening = false);
-                  }
-                },
-              );
-
-              if (available) {
-                speech.listen(
-                  onResult: (val) {
-                    setStateModal(() {
-                      _modalInputController.text = val.recognizedWords;
-                      if (val.finalResult && val.recognizedWords.isNotEmpty) {
-                        _isListening = false;
-                        _inviaMessaggioAI();
-                      }
-                    });
+              try {
+                final SpeechToText speech = SpeechToText();
+                bool available = await speech.initialize(
+                  onError: (val) => setStateModal(() => _isListening = false),
+                  onStatus: (val) {
+                    if (val == 'done' || val == 'notListening') {
+                      setStateModal(() => _isListening = false);
+                    }
                   },
-                  localeId: 'it_IT',
                 );
-              } else {
-                setStateModal(() {
-                  _isListening = false;
-                });
-                _inviaMessaggioAI(promptPersonalizzato: 'Analisi rapida stato del caveau');
+
+                if (available) {
+                  speech.listen(
+                    onResult: (val) {
+                      setStateModal(() {
+                        _modalInputController.text = val.recognizedWords;
+                        if (val.finalResult && val.recognizedWords.isNotEmpty) {
+                          _isListening = false;
+                          _inviaMessaggioAI();
+                        }
+                      });
+                    },
+                    localeId: 'it_IT',
+                  );
+                } else {
+                  setStateModal(() => _isListening = false);
+                }
+              } catch (_) {
+                setStateModal(() => _isListening = false);
               }
             }
 
@@ -2041,7 +2044,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         
                         const SizedBox(width: 4),
                         FloatingActionButton.small(
-                          heroTag: 'send_btn_v17',
+                          heroTag: 'send_btn_v19',
                           backgroundColor: Colors.pinkAccent,
                           onPressed: () => _inviaMessaggioAI(),
                           child: const Icon(Icons.send, color: Colors.white),
