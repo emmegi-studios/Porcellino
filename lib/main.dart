@@ -106,12 +106,12 @@ class _LoginScreenState extends State<LoginScreen> {
     HomeWidget.initiallyLaunchedFromHomeWidget().then((Uri? uri) {
       if (uri != null) {
         Future.delayed(const Duration(milliseconds: 300), () {
-          if (mounted) _mostraPiggyAI(context);
+          if (mounted) _mostraPiggyAI(context, isDark: _isDarkTheme);
         });
       }
     });
     HomeWidget.widgetClicked.listen((Uri? uri) {
-      if (mounted) _mostraPiggyAI(context);
+      if (mounted) _mostraPiggyAI(context, isDark: _isDarkTheme);
     });
 
     _isDarkTheme = (widget.initialTheme == 'Piggy Dark');
@@ -1371,7 +1371,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             tooltip: "Impostazioni e Temi",
             onPressed: _mostraModalImpostazioni)]),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => _mostraPiggyAI(context),
+        onPressed: () => _mostraPiggyAI(context, isDark: _isDarkTheme),
         backgroundColor: Colors.pinkAccent,
         elevation: 6,
         child: ClipOval(
@@ -1754,19 +1754,17 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   
   
   
-                            void _mostraPiggyAI(BuildContext context) {
+                              void _mostraPiggyAI(BuildContext context, {bool isDark = true}) {
     final TextEditingController _modalInputController = TextEditingController();
     final List<Map<String, String>> _chatMessages = [
       {'sender': 'ai', 'text': 'Unità cibernetica Piggy v2.5 online. Caveau monitorato. Inserisci un comando vocale, chiedi un consiglio o attiva il protocollo Sorpresa, Marco.'}
     ];
 
-    final bool isDarkTheme = Theme.of(context).brightness == Brightness.dark && 
-        Theme.of(context).scaffoldBackgroundColor.computeLuminance() < 0.5;
-
-    final Color _cardBgModal = isDarkTheme ? const Color(0xFF1E2235) : Colors.white;
-    final Color _textColorModal = isDarkTheme ? Colors.white : Colors.black87;
-    final Color _bubbleAiBgModal = isDarkTheme ? const Color(0xFF2A2E43) : Colors.grey[200]!;
-    final Color _inputFillColorModal = isDarkTheme ? const Color(0xFF2A2E43) : Colors.grey[100]!;
+    // Rispetto assoluto della regola d oro del tema chiaro/scuro
+    final Color _cardBgModal = isDark ? const Color(0xFF1E2235) : Colors.white;
+    final Color _textColorModal = isDark ? Colors.white : const Color(0xFF0F172A);
+    final Color _bubbleAiBgModal = isDark ? const Color(0xFF2A2E43) : const Color(0xFFF1F5F9);
+    final Color _inputFillColorModal = isDark ? const Color(0xFF2A2E43) : const Color(0xFFF8FAFC);
 
     int _consiglioIndex = 0;
     final List<String> _consigliAILocali = [
@@ -1800,7 +1798,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   model: 'gemini-1.5-flash',
                   apiKey: decodedApiKey,
                 );
-                final systemPrompt = 'Sei Piggy AI, assistente finanziario cibernetico. Dai consigli dinamici e personalizzati sulla gestione del caveau. Se la condivisione del caveau non e attiva, tratta l utente come singolo e consiglia 2 desideri personali. Se attiva, consiglia spese di coppia. Rispondi in italiano in modo chiaro e articolato: ';
+                final systemPrompt = 'Sei Piggy AI, assistente finanziario cibernetico. Dai consigli dinamici e personalizzati sulla gestione del caveau. Se la condivisione del caveau non e attiva, tratta l utente come singolo e consiglia 2 desideri personali. Se attiva, consiglia spese di coppia. Rispondi in italiano in modo chiaro e articulated: ';
                 final content = [Content.text(systemPrompt + textUser)];
                 final response = await model.generateContent(content);
                 rispostaAI = response.text ?? 'Analisi completata.';
@@ -1964,7 +1962,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                   : ClipOval(
                                       child: Image.asset(
                                         'assets/images/piggy_ai_assistant.png',
-                                        width: 32, height: 32, fit: BoxFit.cover,
+                                        width: 22, height: 22, fit: BoxFit.cover,
                                         errorBuilder: (c, e, s) => const Icon(Icons.smart_toy, color: Colors.pinkAccent, size: 22),
                                       ),
                                     ),
@@ -2002,14 +2000,14 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         ),
                         const SizedBox(width: 6),
                         FloatingActionButton.small(
-                          heroTag: 'mic_btn_v12',
+                          heroTag: 'mic_btn_v13',
                           backgroundColor: Colors.pinkAccent,
                           onPressed: _apriDettaturaVocale,
                           child: const Icon(Icons.mic, color: Colors.white),
                         ),
                         const SizedBox(width: 4),
                         FloatingActionButton.small(
-                          heroTag: 'send_btn_v12',
+                          heroTag: 'send_btn_v13',
                           backgroundColor: Colors.pinkAccent,
                           onPressed: () => _inviaMessaggioAI(),
                           child: const Icon(Icons.send, color: Colors.white),

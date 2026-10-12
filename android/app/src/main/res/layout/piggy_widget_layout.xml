@@ -29,7 +29,7 @@
         android:id="@+id/widget_patrimonio"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Patrimonio: € 12.450,00"
+        android:text="Patrimonio: € --,--"
         android:textColor="#34D399"
         android:textSize="15sp"
         android:textStyle="bold"
@@ -63,11 +63,11 @@
 
         <ImageView
             android:id="@+id/widget_piggy_btn"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:src="@mipmap/ic_launcher"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:src="@drawable/ic_piggy_ai"
             android:background="@drawable/circle_pink_bg"
-            android:padding="8dp"
+            android:padding="6dp"
             android:scaleType="fitCenter" />
 
         <TextView
