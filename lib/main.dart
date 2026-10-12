@@ -53,6 +53,8 @@ final String _geminiApiKey = utf8.decode(base64Decode("QVEuQWI4Uk42TFgtcG1lVDNQV
 
 
 
+
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
@@ -1788,7 +1790,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   
   
   
-                                                                        void _mostraPiggyAI(BuildContext context, [bool? isDarkOverride]) {
+                                                                          void _mostraPiggyAI(BuildContext context, [bool? isDarkOverride]) {
     final TextEditingController _modalInputController = TextEditingController();
     final SpeechToText _speechToText = SpeechToText();
     
@@ -1815,7 +1817,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     final List<Map<String, String>> _chatMessages = [
       {
         'sender': 'ai', 
-        'text': '🛡️ Core Piggy AI v2.2.8 operativo. Caveau Shield Score: ' + caveauShieldScore.toString() + '%. Inserisci un comando, parla al microfono o avvia una simulazione.'
+        'text': '🛡️ Unità Piggy AI v2.2.9 collegata a Gemini 1.5 Flash. Caveau Shield Score: ' + caveauShieldScore.toString() + '%.'
       }
     ];
 
@@ -1855,58 +1857,45 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
               String rispostaAI = '';
               
-              // Chiamata Gemini 1.5 Flash 100% dinamica
+              // CHIAMATA ESCLUSIVA A GEMINI 1.5 FLASH
               try {
-                String systemPrompt = 'Sei Piggy AI, l intelligenza artificiale finanziaria cibernetica del caveau Piggy Vault. '
-                                     'Dati in tempo reale del caveau: ' + jsonEncode(caveauSnapshot) + '. '
-                                     'Rispondi sempre in italiano in modo fluido, intelligente, diretto e cibernetico ad ogni messaggio dell utente. '
-                                     'Rispondi in modo dinamico e naturale anche a saluti, conversazioni generali e comandi di spesa. Non usare mai risposte predefinite. ';
+                String systemPrompt = 'Sei Piggy AI, l intelligenza artificiale cibernetica ufficiale del sistema Piggy Vault. '
+                                     'I tuoi dati reali finanziari del caveau dell utente sono: ' + jsonEncode(caveauSnapshot) + '. '
+                                     'Rispondi sempre in italiano in modo intelligente, dinamico, cibernetico ed empatico. '
+                                     'Interpreta qualsiasi messaggio dell utente in tempo reale. Non usare mai frasi o template predefiniti. ';
 
                 if (isSorpresa) {
-                  systemPrompt += 'Genera 2 idee di svizi a sorpresa calcolando l impatto percentuale sul patrimonio attuale. ';
+                  systemPrompt += 'Proponi 2 idee di svizi a sorpresa calcolando l impatto percentuale sul patrimonio attuale. ';
                 } else if (isWhatIf) {
-                  systemPrompt += 'Esegui una simulazione What-If calcolando l impatto di questa spesa sul patrimonio e sugli obiettivi. ';
+                  systemPrompt += 'Esegui una simulazione What-If calcolando l impatto economico di questa spesa. ';
                 }
 
-                final model = GenerativeModel(
-                  model: 'gemini-1.5-flash',
-                  apiKey: _geminiApiKey,
-                  systemInstruction: Content.system(systemPrompt),
-                  generationConfig: GenerationConfig(
-                    temperature: 0.80,
-                    maxOutputTokens: 500,
-                  ),
-                );
+                final url = Uri.parse('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' + _geminiApiKey);
+                final httpResponse = await http.post(
+                  url,
+                  headers: {'Content-Type': 'application/json'},
+                  body: jsonEncode({
+                    'contents': [
+                      {
+                        'parts': [{'text': systemPrompt + ' Richiesta Utente: ' + textUser}]
+                      }
+                    ],
+                    'generationConfig': {
+                      'temperature': 0.8,
+                      'maxOutputTokens': 500
+                    }
+                  }),
+                ).timeout(const Duration(seconds: 10));
 
-                final response = await model.generateContent([Content.text(textUser)]);
-                rispostaAI = response.text ?? '';
+                if (httpResponse.statusCode == 200) {
+                  final responseData = jsonDecode(httpResponse.body);
+                  rispostaAI = responseData['candidates'][0]['content']['parts'][0]['text'] ?? '';
+                }
               } catch (_) {}
 
-              // Fallback HTTP REST diretto se il pacchetto SDK trova blocchi locali
+              // SE GEMINI NON RISPONDE O NON C E RETE: NESSUNA RISPOSTA FINTA, SOLO ERRORE DI RETE
               if (rispostaAI.trim().isEmpty) {
-                try {
-                  String systemPrompt = 'Sei Piggy AI, intelligenza artificiale cibernetica del caveau. Dati caveau: ' + jsonEncode(caveauSnapshot) + '. Rispondi in italiano in modo fluido e intelligente. ';
-                  final url = Uri.parse('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' + _geminiApiKey);
-                  final httpResponse = await http.post(
-                    url,
-                    headers: {'Content-Type': 'application/json'},
-                    body: jsonEncode({
-                      'contents': [
-                        {
-                          'parts': [{'text': systemPrompt + ' Utente: ' + textUser}]
-                        }
-                      ]
-                    }),
-                  );
-                  if (httpResponse.statusCode == 200) {
-                    final responseData = jsonDecode(httpResponse.body);
-                    rispostaAI = responseData['candidates'][0]['content']['parts'][0]['text'] ?? '';
-                  }
-                } catch (_) {}
-              }
-
-              if (rispostaAI.trim().isEmpty) {
-                rispostaAI = 'Core cibernetico Piggy AI connesso. Patrimonio registrato: €' + saldoTotale.toStringAsFixed(2) + '. Come posso ottimizzare le tue risorse?';
+                rispostaAI = '⚠️ Assenza di rete o servizio Piggy AI temporaneamente non raggiungibile. Verificare la connessione internet e riprovare.';
               }
 
               setStateModal(() {
@@ -2047,7 +2036,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                 padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                               ),
-                              onPressed: () => _inviaMessaggioAI(promptPersonalizzato: 'Analisi finanziaria dello stato attuale del mio caveau.'),
+                              onPressed: () => _inviaMessaggioAI(promptPersonalizzato: 'Analizza la situazione finanziaria del caveau.'),
                               icon: const Icon(Icons.auto_awesome, size: 12),
                               label: const Text('Consiglio', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold), overflow: TextOverflow.ellipsis),
                             ),
@@ -2064,7 +2053,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                 padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                               ),
-                              onPressed: () => _inviaMessaggioAI(promptPersonalizzato: 'Analisi What-If su un acquisto ipotetico.', isWhatIf: true),
+                              onPressed: () => _inviaMessaggioAI(promptPersonalizzato: 'Esegui simulazione What-If su una spesa ipotetica.', isWhatIf: true),
                               icon: const Icon(Icons.psychology, size: 12),
                               label: const Text('What-If', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold), overflow: TextOverflow.ellipsis),
                             ),
@@ -2081,7 +2070,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                 padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                               ),
-                              onPressed: () => _inviaMessaggioAI(promptPersonalizzato: 'Genera 2 svizi a sorpresa personalizzati.', isSorpresa: true),
+                              onPressed: () => _inviaMessaggioAI(promptPersonalizzato: 'Genera 2 svizi a sorpresa calcolando impatto e rischio.', isSorpresa: true),
                               icon: const Icon(Icons.card_giftcard, size: 12),
                               label: const Text('🎁 Sorpresa', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold), overflow: TextOverflow.ellipsis),
                             ),
@@ -2219,7 +2208,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         
                         const SizedBox(width: 4),
                         FloatingActionButton.small(
-                          heroTag: 'send_btn_v228',
+                          heroTag: 'send_btn_v229',
                           backgroundColor: Colors.pinkAccent,
                           onPressed: () => _inviaMessaggioAI(),
                           child: const Icon(Icons.send, color: Colors.white),
