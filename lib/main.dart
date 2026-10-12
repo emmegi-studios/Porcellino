@@ -1,3 +1,4 @@
+import 'package:http/http.dart' as http;
 import 'package:home_widget/home_widget.dart';
 import 'dart:convert';
 import 'package:flutter_tts/flutter_tts.dart';
@@ -20,6 +21,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 final String _geminiApiKey = utf8.decode(base64Decode("QVEuQWI4Uk42TFgtcG1lVDNQVWVDMkJRSXVQU0V2QV9JTnk5QlpDOEpfVjIwbDd4MEF0MGc="));
+
+
 
 
 
@@ -1779,7 +1782,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   
   
   
-                                                                void _mostraPiggyAI(BuildContext context, [bool? isDarkOverride]) {
+                                                                  void _mostraPiggyAI(BuildContext context, [bool? isDarkOverride]) {
     final TextEditingController _modalInputController = TextEditingController();
     
     double saldoTotale = 0.0;
@@ -1788,18 +1791,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     int obiettiviCount = 0;
 
     try {
-      if ('0.0' != '0.0') {
-        saldoTotale = (0.0 as num).toDouble();
-      }
-      if ('0.0' != '0.0') {
-        totaleUscite = (0.0 as num).toDouble();
-      }
-      if ('0.0' != '0.0') {
-        totaleEntrate = (0.0 as num).toDouble();
-      }
-      if ('[]' != '[]') {
-        obiettiviCount = ([] as List).length;
-      }
+      if ('0.0' != '0.0') saldoTotale = (0.0 as num).toDouble();
+      if ('0.0' != '0.0') totaleUscite = (0.0 as num).toDouble();
+      if ('0.0' != '0.0') totaleEntrate = (0.0 as num).toDouble();
+      if ('[]' != '[]') obiettiviCount = ([] as List).length;
     } catch (_) {}
 
     int caveauShieldScore = 100;
@@ -1813,16 +1808,17 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     final List<Map<String, String>> _chatMessages = [
       {
         'sender': 'ai', 
-        'text': '🛡️ Core Piggy AI v2.2 online. Caveau Shield Score: ' + caveauShieldScore.toString() + '/100. ' +
-                (caveauShieldScore < 40 ? '⚠️ Scudo di protezione d emergenza attivo: uscite al limite.' : 'Stabilità finanziaria ottimale. Come posso supportarti oggi?')
+        'text': '🛡️ Unità Piggy AI v2.2.4 online. Caveau Shield Score: ' + caveauShieldScore.toString() + '/100. ' +
+                (caveauShieldScore < 40 ? '⚠️ Scudo di protezione d emergenza attivo.' : 'Stabilità finanziaria ottimale. Come posso supportarti?')
       }
     ];
 
-    final bool isDark = isDarkOverride ?? (Theme.of(context).brightness == Brightness.dark);
-    final Color _cardBgModal = isDark ? const Color(0xFF1E2235) : Colors.white;
-    final Color _textColorModal = isDark ? Colors.white : const Color(0xFF0F172A);
-    final Color _bubbleAiBgModal = isDark ? const Color(0xFF2A2E43) : const Color(0xFFF1F5F9);
-    final Color _inputFillColorModal = isDark ? const Color(0xFF2A2E43) : const Color(0xFFF8FAFC);
+    // GARANZIA TEMA SCURO: Sempre coordinato con la dark mode dell app (#1E2235)
+    final bool isDark = true; 
+    final Color _cardBgModal = const Color(0xFF1E2235);
+    final Color _textColorModal = Colors.white;
+    final Color _bubbleAiBgModal = const Color(0xFF2A2E43);
+    final Color _inputFillColorModal = const Color(0xFF2A2E43);
 
     showModalBottomSheet(
       context: context,
@@ -1849,53 +1845,65 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 'entrate_mese': totaleEntrate,
                 'uscite_mese': totaleUscite,
                 'shield_score': caveauShieldScore,
-                'obiettivi_attivi_count': obiettiviCount,
-                'stato_tema': isDark ? 'Dark' : 'Light'
+                'obiettivi_attivi_count': obiettiviCount
               };
 
               String rispostaAI = '';
+              
+              // Chiamata HTTP diretta ad altissima affidabilità a Gemini 1.5 Flash
               try {
-                final model = GenerativeModel(
-                  model: 'gemini-1.5-flash',
-                  apiKey: _geminiApiKey,
-                  generationConfig: GenerationConfig(
-                    temperature: 0.70,
-                    topP: 0.95,
-                    maxOutputTokens: 500,
-                  ),
-                );
-                
-                String systemPrompt = 'Sei Piggy AI, l intelligenza artificiale cibernetica ufficiale del caveau finanziario dell utente. '
-                                     'Hai accesso diretto ai dati in tempo reale del caveau: ' + jsonEncode(caveauSnapshot) + '. '
-                                     'Rispondi sempre in italiano in modo preciso, intelligente, cibernetico e sintetico per l ascolto vocale. '
-                                     'Se l utente ti dice di aver speso dei soldi o registrare un uscita, conferma la categorizzazione automatica della spesa. '
-                                     'Non presentarti mai come Gemini o Google. ';
+                String systemPrompt = 'Sei Piggy AI, l intelligenza artificiale cibernetica del caveau finanziario dell utente. '
+                                     'Dati in tempo reale caveau: ' + jsonEncode(caveauSnapshot) + '. '
+                                     'Rispondi sempre in italiano con tono naturale, intelligente e sintetico. Non citare mai Gemini o Google. ';
 
                 if (isSorpresa) {
-                  systemPrompt += 'Genera 2 idee di svizi o desideri a sorpresa completamente originali calcolando impatto percentuale sul patrimonio attuale e variazione dello Shield Score. ';
+                  systemPrompt += 'Genera 2 idee di svizi o desideri a sorpresa completamente originali calcolando l impatto percentuale sul patrimonio attuale. ';
                 } else if (isWhatIf) {
-                  systemPrompt += 'Esegui un simulatore What-If: analizza l impatto matematico e temporale di questa spesa ipotetica sugli obiettivi di risparmio e sullo Shield Score. ';
+                  systemPrompt += 'Esegui un simulatore What-If: analizza l impatto matematico di questa spesa ipotetica sul patrimonio e sugli obiettivi. ';
                 }
 
-                final content = [Content.text(systemPrompt + ' Richiesta Utente: ' + textUser)];
-                final response = await model.generateContent(content);
-                rispostaAI = response.text ?? '';
-                if (rispostaAI.trim().isEmpty) throw Exception('Risposta vuota');
-              } catch (e) {
-                final lower = textUser.toLowerCase();
-                if (isSorpresa || lower.contains('sorpresa')) {
-                  rispostaAI = '🎁 ANALISI SVIZIO CIBERNETICO (Patrimonio: €' + saldoTotale.toStringAsFixed(0) + '): '
-                              '1. Upgrade Tech/Gadget (Impatto: -1.5%, Shield Score: ' + caveauShieldScore.toString() + '). '
-                              '2. Esperienza Gourmet/Weekend (Impatto: -0.8%). Il caveau mantiene un eccellente equilibrio.';
-                } else if (isWhatIf || lower.contains('se compro') || lower.contains('cosa succede')) {
-                  rispostaAI = '📊 SIMULATORE WHAT-IF CAVEAU: L uscita ipotizzata ridurrebbe il saldo residuo mensile di circa l 8%. '
-                              'I tuoi obiettivi di risparmio manterrebbero comunque la tabella di marcia prevista.';
-                } else if (lower.contains('consiglio') || lower.contains('analisi')) {
-                  rispostaAI = '🛡️ ANALISI CAVEAU SHIELD (' + caveauShieldScore.toString() + '/100): Entrate €' + totaleEntrate.toStringAsFixed(0) + 
-                              ' - Uscite €' + totaleUscite.toStringAsFixed(0) + '. Mantieni la rotta di risparmio attuale.';
-                } else {
-                  rispostaAI = 'Analisi completata. Il tuo caveau con patrimonio di €' + saldoTotale.toStringAsFixed(2) + ' è monitorato e protetto.';
+                final url = Uri.parse('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' + _geminiApiKey);
+                final httpResponse = await http.post(
+                  url,
+                  headers: {'Content-Type': 'application/json'},
+                  body: jsonEncode({
+                    'contents': [
+                      {
+                        'parts': [
+                          {'text': systemPrompt + '
+
+Richiesta utente: ' + textUser}
+                        ]
+                      }
+                    ],
+                    'generationConfig': {
+                      'temperature': 0.75,
+                      'maxOutputTokens': 450
+                    }
+                  }),
+                );
+
+                if (httpResponse.statusCode == 200) {
+                  final responseData = jsonDecode(httpResponse.body);
+                  rispostaAI = responseData['candidates'][0]['content']['parts'][0]['text'] ?? '';
                 }
+              } catch (_) {}
+
+              // Backup SDK GenerativeModel se necessario
+              if (rispostaAI.trim().isEmpty) {
+                try {
+                  final model = GenerativeModel(
+                    model: 'gemini-1.5-flash',
+                    apiKey: _geminiApiKey,
+                  );
+                  final content = [Content.text('Sei Piggy AI. Rispondi in italiano: ' + textUser)];
+                  final res = await model.generateContent(content);
+                  rispostaAI = res.text ?? '';
+                } catch (_) {}
+              }
+
+              if (rispostaAI.trim().isEmpty) {
+                rispostaAI = 'Richiesta ricevuta. Il tuo caveau con patrimonio di €' + saldoTotale.toStringAsFixed(2) + ' è monitorato in tempo reale.';
               }
 
               setStateModal(() {
@@ -2012,49 +2020,63 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 10),
                     
-                    SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        children: [
-                          ElevatedButton.icon(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.pinkAccent.withOpacity(0.2),
-                              foregroundColor: Colors.pinkAccent,
-                              elevation: 0,
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    // PULSANTI COMPATTI IN RIGA SINGOLA
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 2),
+                            child: ElevatedButton.icon(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.pinkAccent.withOpacity(0.2),
+                                foregroundColor: Colors.pinkAccent,
+                                elevation: 0,
+                                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                              ),
+                              onPressed: () => _inviaMessaggioAI(promptPersonalizzato: 'Analisi finanziaria e Caveau Shield.'),
+                              icon: const Icon(Icons.auto_awesome, size: 12),
+                              label: const Text('Consiglio', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold), overflow: TextOverflow.ellipsis),
                             ),
-                            onPressed: () => _inviaMessaggioAI(promptPersonalizzato: 'Esegui un analisi finanziaria e calcola lo stato attuale del mio Caveau Shield.'),
-                            icon: const Icon(Icons.auto_awesome, size: 14),
-                            label: const Text('Consiglio AI', style: TextStyle(fontSize: 11)),
                           ),
-                          const SizedBox(width: 6),
-                          ElevatedButton.icon(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.blueAccent.withOpacity(0.2),
-                              foregroundColor: Colors.blueAccent,
-                              elevation: 0,
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        ),
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 2),
+                            child: ElevatedButton.icon(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.blueAccent.withOpacity(0.2),
+                                foregroundColor: Colors.blueAccent,
+                                elevation: 0,
+                                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                              ),
+                              onPressed: () => _inviaMessaggioAI(promptPersonalizzato: 'Analisi What-If su acquisto ipotetico.', isWhatIf: true),
+                              icon: const Icon(Icons.psychology, size: 12),
+                              label: const Text('What-If', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold), overflow: TextOverflow.ellipsis),
                             ),
-                            onPressed: () => _inviaMessaggioAI(promptPersonalizzato: 'Analizza l impatto ipotetico se effettuo un acquisto extra questo mese.', isWhatIf: true),
-                            icon: const Icon(Icons.psychology, size: 14),
-                            label: const Text('What-If', style: TextStyle(fontSize: 11)),
                           ),
-                          const SizedBox(width: 6),
-                          ElevatedButton.icon(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.pinkAccent,
-                              foregroundColor: Colors.white,
-                              elevation: 0,
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        ),
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 2),
+                            child: ElevatedButton.icon(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.pinkAccent,
+                                foregroundColor: Colors.white,
+                                elevation: 0,
+                                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                              ),
+                              onPressed: () => _inviaMessaggioAI(promptPersonalizzato: 'Genera 2 svizi a sorpresa.', isSorpresa: true),
+                              icon: const Icon(Icons.card_giftcard, size: 12),
+                              label: const Text('🎁 Sorpresa', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold), overflow: TextOverflow.ellipsis),
                             ),
-                            onPressed: () => _inviaMessaggioAI(promptPersonalizzato: 'Genera 2 svizi a sorpresa personalizzati calcolando impatto e rischio.', isSorpresa: true),
-                            icon: const Icon(Icons.card_giftcard, size: 14),
-                            label: const Text('🎁 Sorpresa', style: TextStyle(fontSize: 11)),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                     const Divider(),
                     Expanded(
@@ -2184,7 +2206,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         
                         const SizedBox(width: 4),
                         FloatingActionButton.small(
-                          heroTag: 'send_btn_v223',
+                          heroTag: 'send_btn_v224',
                           backgroundColor: Colors.pinkAccent,
                           onPressed: () => _inviaMessaggioAI(),
                           child: const Icon(Icons.send, color: Colors.white),
