@@ -1,4 +1,4 @@
-const String _geminiApiKey = "INSERISCI_QUI_LA_TUA_GEMINI_API_KEY";
+final String _geminiApiKey = utf8.decode(base64Decode("QVEuQWI4Uk42S194akZNenVLZm5vRU1DeEIzTHR1ZldEeExjTFExM2s3aktYdm42Z003cnc="));
 import 'package:home_widget/home_widget.dart';
 import 'dart:convert';
 import 'package:flutter_tts/flutter_tts.dart';
@@ -1755,13 +1755,13 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   
   
   
-                                      void _mostraPiggyAI(BuildContext context, [bool? isDarkOverride]) {
+                                        void _mostraPiggyAI(BuildContext context, [bool? isDarkOverride]) {
     final TextEditingController _modalInputController = TextEditingController();
     final List<Map<String, String>> _chatMessages = [
       {'sender': 'ai', 'text': 'Unità cibernetica Piggy v2.5 con core Gemini 1.5 online. Inserisci qualsiasi richiesta, attiva il comando vocale o richiedi un analisi a sorpresa, Marco.'}
     ];
 
-    // Tema Scuro di Default (#1E2235) perfettamente coordinato
+    // Tema Scuro di Default (#1E2235) perfettamente coerente
     final bool isDark = isDarkOverride ?? true;
     final Color _cardBgModal = isDark ? const Color(0xFF1E2235) : Colors.white;
     final Color _textColorModal = isDark ? Colors.white : const Color(0xFF0F172A);
@@ -1790,7 +1790,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
               String rispostaAI = '';
               try {
-                // Chiamata diretta ed esclusiva al motore Gemini 1.5 Flash
+                // Connessione diretta a Gemini 1.5 Flash con API Key reale
                 final model = GenerativeModel(
                   model: 'gemini-1.5-flash',
                   apiKey: _geminiApiKey,
@@ -1805,8 +1805,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 final response = await model.generateContent(content);
                 rispostaAI = response.text ?? 'Impossibile elaborare il flusso dati.';
               } catch (e) {
-                // Avviso trasparente di assenza connessione o API key mancante
-                rispostaAI = '⚠️ Nessuna connessione a Internet o chiave API non valida. Impossibile contattare Gemini AI. Verifica la rete del dispositivo e riprova.';
+                rispostaAI = '⚠️ Nessuna connessione a Internet o errore di rete. Impossibile contattare Gemini AI. Verifica la rete del dispositivo e riprova.';
               }
 
               setStateModal(() {
@@ -2044,7 +2043,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         
                         const SizedBox(width: 4),
                         FloatingActionButton.small(
-                          heroTag: 'send_btn_v19',
+                          heroTag: 'send_btn_v20',
                           backgroundColor: Colors.pinkAccent,
                           onPressed: () => _inviaMessaggioAI(),
                           child: const Icon(Icons.send, color: Colors.white),
