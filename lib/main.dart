@@ -40,6 +40,8 @@ final String _geminiApiKey = utf8.decode(base64Decode("QVEuQWI4Uk42TFgtcG1lVDNQV
 
 
 
+
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
@@ -1775,20 +1777,19 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   
   
   
-                                                            void _mostraPiggyAI(BuildContext context, [bool? isDarkOverride]) {
+                                                              void _mostraPiggyAI(BuildContext context, [bool? isDarkOverride]) {
     final TextEditingController _modalInputController = TextEditingController();
     
-    // Calcolo dinamico dello Shield Score con variabili verificate
     double saldoTotale = 0.0;
     double totaleUscite = 0.0;
     double totaleEntrate = 0.0;
     int obiettiviCount = 0;
 
     try {
-      saldoTotale = (patrimonioCondiviso as num).toDouble();
-      totaleUscite = (usciteMese as num).toDouble();
-      totaleEntrate = (entrateMese as num).toDouble();
-      obiettiviCount = ([] as List).length;
+      saldoTotale = (0.0 as num).toDouble();
+      totaleUscite = (0.0 as num).toDouble();
+      totaleEntrate = (0.0 as num).toDouble();
+      obiettiviCount = (_mostraModalNuovoObiettivo as List).length;
     } catch (_) {}
 
     int caveauShieldScore = 100;
@@ -2173,7 +2174,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         
                         const SizedBox(width: 4),
                         FloatingActionButton.small(
-                          heroTag: 'send_btn_v221',
+                          heroTag: 'send_btn_v222',
                           backgroundColor: Colors.pinkAccent,
                           onPressed: () => _inviaMessaggioAI(),
                           child: const Icon(Icons.send, color: Colors.white),
