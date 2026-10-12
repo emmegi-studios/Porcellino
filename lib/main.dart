@@ -103,14 +103,14 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
-    HomeWidget.initiallyLaunchedFromHomeWidget.then((Uri? uri) {
+    HomeWidget.initiallyLaunchedFromHomeWidget().then((Uri? uri) {
       if (uri != null) {
         Future.delayed(const Duration(milliseconds: 300), () {
           if (mounted) _mostraPiggyAI(context);
         });
       }
     });
-    HomeWidget.widgetClicked.clicks.listen((Uri? uri) {
+    HomeWidget.widgetClicked.listen((Uri? uri) {
       if (mounted) _mostraPiggyAI(context);
     });
 
@@ -1754,7 +1754,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   
   
   
-                          void _mostraPiggyAI(BuildContext context) {
+                            void _mostraPiggyAI(BuildContext context) {
     final TextEditingController _modalInputController = TextEditingController();
     final List<Map<String, String>> _chatMessages = [
       {'sender': 'ai', 'text': 'Unità cibernetica Piggy v2.5 online. Caveau monitorato. Inserisci un comando vocale, chiedi un consiglio o attiva il protocollo Sorpresa, Marco.'}
@@ -2002,14 +2002,14 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         ),
                         const SizedBox(width: 6),
                         FloatingActionButton.small(
-                          heroTag: 'mic_btn_v11',
+                          heroTag: 'mic_btn_v12',
                           backgroundColor: Colors.pinkAccent,
                           onPressed: _apriDettaturaVocale,
                           child: const Icon(Icons.mic, color: Colors.white),
                         ),
                         const SizedBox(width: 4),
                         FloatingActionButton.small(
-                          heroTag: 'send_btn_v11',
+                          heroTag: 'send_btn_v12',
                           backgroundColor: Colors.pinkAccent,
                           onPressed: () => _inviaMessaggioAI(),
                           child: const Icon(Icons.send, color: Colors.white),
