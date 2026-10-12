@@ -47,6 +47,8 @@ final String _geminiApiKey = utf8.decode(base64Decode("QVEuQWI4Uk42TFgtcG1lVDNQV
 
 
 
+
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
@@ -1782,7 +1784,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   
   
   
-                                                                  void _mostraPiggyAI(BuildContext context, [bool? isDarkOverride]) {
+                                                                    void _mostraPiggyAI(BuildContext context, [bool? isDarkOverride]) {
     final TextEditingController _modalInputController = TextEditingController();
     
     double saldoTotale = 0.0;
@@ -1808,13 +1810,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     final List<Map<String, String>> _chatMessages = [
       {
         'sender': 'ai', 
-        'text': '🛡️ Unità Piggy AI v2.2.4 online. Caveau Shield Score: ' + caveauShieldScore.toString() + '/100. ' +
+        'text': '🛡️ Unità Piggy AI v2.2.5 online. Caveau Shield Score: ' + caveauShieldScore.toString() + '/100. ' +
                 (caveauShieldScore < 40 ? '⚠️ Scudo di protezione d emergenza attivo.' : 'Stabilità finanziaria ottimale. Come posso supportarti?')
       }
     ];
 
-    // GARANZIA TEMA SCURO: Sempre coordinato con la dark mode dell app (#1E2235)
-    final bool isDark = true; 
     final Color _cardBgModal = const Color(0xFF1E2235);
     final Color _textColorModal = Colors.white;
     final Color _bubbleAiBgModal = const Color(0xFF2A2E43);
@@ -1850,7 +1850,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
               String rispostaAI = '';
               
-              // Chiamata HTTP diretta ad altissima affidabilità a Gemini 1.5 Flash
               try {
                 String systemPrompt = 'Sei Piggy AI, l intelligenza artificiale cibernetica del caveau finanziario dell utente. '
                                      'Dati in tempo reale caveau: ' + jsonEncode(caveauSnapshot) + '. '
@@ -1870,9 +1869,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     'contents': [
                       {
                         'parts': [
-                          {'text': systemPrompt + '
-
-Richiesta utente: ' + textUser}
+                          {'text': systemPrompt + ' Richiesta utente: ' + textUser}
                         ]
                       }
                     ],
@@ -1889,7 +1886,6 @@ Richiesta utente: ' + textUser}
                 }
               } catch (_) {}
 
-              // Backup SDK GenerativeModel se necessario
               if (rispostaAI.trim().isEmpty) {
                 try {
                   final model = GenerativeModel(
@@ -2022,7 +2018,6 @@ Richiesta utente: ' + textUser}
                     ),
                     const SizedBox(height: 10),
                     
-                    // PULSANTI COMPATTI IN RIGA SINGOLA
                     Row(
                       children: [
                         Expanded(
@@ -2206,7 +2201,7 @@ Richiesta utente: ' + textUser}
                         
                         const SizedBox(width: 4),
                         FloatingActionButton.small(
-                          heroTag: 'send_btn_v224',
+                          heroTag: 'send_btn_v225',
                           backgroundColor: Colors.pinkAccent,
                           onPressed: () => _inviaMessaggioAI(),
                           child: const Icon(Icons.send, color: Colors.white),
