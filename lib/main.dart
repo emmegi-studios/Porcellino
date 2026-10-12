@@ -20,7 +20,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
-final String _geminiApiKey = utf8.decode(base64Decode("QVEuQWI4Uk42SVhvTDBpcEIwM1FvLWk0bTNSX192d1hEWXpGNDlfS1ZLQktmNTBRSEotOUE="));
+final String _geminiApiKey = utf8.decode(base64Decode("QVEuQWI4Uk42SWVuaHUyOVV5Um1neV9xQXd0bmdkUEJ1OURhc204Q0F1Q2gyTDE0YXhULVE="));
+
+
 
 
 
@@ -1874,7 +1876,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   systemPrompt += 'Esegui una simulazione What-If calcolando l impatto economico di questa spesa. ';
                 }
 
-                final url = Uri.parse('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' + _geminiApiKey);
+                final url = Uri.parse('https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=' + _geminiApiKey);
                 final httpResponse = await http.post(
                   url,
                   headers: {'Content-Type': 'application/json'},
