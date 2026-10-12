@@ -1754,13 +1754,14 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   
   
   
-                                  void _mostraPiggyAI(BuildContext context, bool isDark) {
+                                    void _mostraPiggyAI(BuildContext context, [bool? isDarkOverride]) {
     final TextEditingController _modalInputController = TextEditingController();
     final List<Map<String, String>> _chatMessages = [
       {'sender': 'ai', 'text': 'Unità cibernetica Piggy v2.5 con core Gemini 1.5 online. Inserisci qualsiasi richiesta, attiva il comando vocale o richiedi un analisi a sorpresa, Marco.'}
     ];
 
-    // Controllo tema coerente con lo stato reale dell app
+    // Tema Scuro di Default (#1E2235) in linea con Login e Dashboard
+    final bool isDark = isDarkOverride ?? true;
     final Color _cardBgModal = isDark ? const Color(0xFF1E2235) : Colors.white;
     final Color _textColorModal = isDark ? Colors.white : const Color(0xFF0F172A);
     final Color _bubbleAiBgModal = isDark ? const Color(0xFF2A2E43) : const Color(0xFFF1F5F9);
@@ -1772,6 +1773,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       backgroundColor: Colors.transparent,
       builder: (context) {
         bool _isSpeaking = false;
+        bool _isListening = false;
 
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setStateModal) {
@@ -1793,16 +1795,16 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   apiKey: decodedApiKey,
                 );
                 
-                String systemPrompt = 'Sei Piggy AI, un intelligenza artificiale finanziaria cibernetica e onnisciente alimentata da Gemini. Parli in italiano con stile cibernetico, autorevole e tagliente. Analizza qualsiasi domanda con la massima intelligenza e precisione. ';
+                String systemPrompt = 'Sei Piggy AI, assistente finanziario cibernetico Gemini. Rispondi in modo dinamico in italiano. ';
                 if (isSorpresa) {
-                  systemPrompt += 'Genera 2 idee di svizi o desideri a sorpresa completamente originali e nuove per Marco, calcolando impatto percentuale sul patrimonio e variazione del livello di rischio del caveau. ';
+                  systemPrompt += 'Genera 2 idee di svizi o desideri a sorpresa completamente originali e nuove calcolando impatto percentuale sul patrimonio e variazione del livello di rischio del caveau. ';
                 }
 
                 final content = [Content.text(systemPrompt + ' Richiesta utente: ' + textUser)];
                 final response = await model.generateContent(content);
                 rispostaAI = response.text ?? 'Impossibile elaborare il flusso dati.';
               } catch (e) {
-                rispostaAI = '⚠️ Connessione al Core Gemini interrotta. Modalità di emergenza attiva. Riprova tra un istante per ripristinare il collegamento neurale con Piggy AI.';
+                rispostaAI = '⚠️ Connessione al Core Gemini interrotta. Riprova tra un istante per ripristinare il collegamento con Piggy AI.';
               }
 
               setStateModal(() {
@@ -1810,7 +1812,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 _isSpeaking = true;
               });
 
-              // Voce TTS con modulazione
               try {
                 final FlutterTts flutterTts = FlutterTts();
                 await flutterTts.setLanguage('it-IT');
@@ -1831,75 +1832,40 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               }
             }
 
-            void _apriDettaturaVocale() {
-              showDialog(
-                context: context,
-                builder: (BuildContext dialogContext) {
-                  final TextEditingController _voiceController = TextEditingController();
-                  return AlertDialog(
-                    backgroundColor: _cardBgModal,
-                    title: Row(
-                      children: [
-                        const Icon(Icons.graphic_eq, color: Colors.pinkAccent),
-                        const SizedBox(width: 8),
-                        Text('Modulazione Vocale AI', style: TextStyle(color: _textColorModal, fontSize: 18, fontWeight: FontWeight.bold)),
-                      ],
-                    ),
-                    content: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: Colors.pinkAccent.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(16),
-                            border: Border.all(color: Colors.pinkAccent.withOpacity(0.4)),
-                          ),
-                          child: const Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.mic, color: Colors.pinkAccent),
-                              SizedBox(width: 8),
-                              Text('Ascolto canale neurale attivo...', style: TextStyle(color: Colors.pinkAccent, fontSize: 12, fontWeight: FontWeight.bold)),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        TextField(
-                          controller: _voiceController,
-                          autofocus: true,
-                          style: TextStyle(color: _textColorModal),
-                          decoration: InputDecoration(
-                            hintText: 'Parla o digita il comando per Gemini...',
-                            hintStyle: TextStyle(color: _textColorModal.withOpacity(0.4)),
-                            filled: true,
-                            fillColor: _inputFillColorModal,
-                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
-                          ),
-                        ),
-                      ],
-                    ),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(dialogContext),
-                        child: const Text('Annulla', style: TextStyle(color: Colors.grey)),
-                      ),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(backgroundColor: Colors.pinkAccent),
-                        onPressed: () {
-                          final spokenText = _voiceController.text.trim();
-                          Navigator.pop(dialogContext);
-                          if (spokenText.isNotEmpty) {
-                            _modalInputController.text = spokenText;
-                            _inviaMessaggioAI();
-                          }
-                        },
-                        child: const Text('Trasmetti', style: TextStyle(color: Colors.white)),
-                      ),
-                    ],
-                  );
+            void _avviaRiconoscimentoVocale() async {
+              setStateModal(() {
+                _isListening = true;
+              });
+
+              final SpeechToText speech = SpeechToText();
+              bool available = await speech.initialize(
+                onError: (val) => setStateModal(() => _isListening = false),
+                onStatus: (val) {
+                  if (val == 'done' || val == 'notListening') {
+                    setStateModal(() => _isListening = false);
+                  }
                 },
               );
+
+              if (available) {
+                speech.listen(
+                  onResult: (val) {
+                    setStateModal(() {
+                      _modalInputController.text = val.recognizedWords;
+                      if (val.finalResult && val.recognizedWords.isNotEmpty) {
+                        _isListening = false;
+                        _inviaMessaggioAI();
+                      }
+                    });
+                  },
+                  localeId: 'it_IT',
+                );
+              } else {
+                setStateModal(() {
+                  _isListening = false;
+                });
+                _inviaMessaggioAI(promptPersonalizzato: 'Analisi rapida stato del caveau');
+              }
             }
 
             return DraggableScrollableSheet(
@@ -1932,7 +1898,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       ],
                     ),
                     const SizedBox(height: 8),
-                    // Pulsanti d azione rapida Gemini
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -2002,8 +1967,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       ),
                     ),
                     
-                    // Indicatore di Modulazione Vocale Futuristico durante l ascolto o la risposta parla
-                    if (_isSpeaking)
+                    if (_isListening || _isSpeaking)
                       Container(
                         margin: const EdgeInsets.only(bottom: 8),
                         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -2012,12 +1976,15 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(color: Colors.pinkAccent),
                         ),
-                        child: const Row(
+                        child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.graphic_eq, color: Colors.pinkAccent, size: 20),
-                            SizedBox(width: 8),
-                            Text('Modulazione Vocale AI in corso...', style: TextStyle(color: Colors.pinkAccent, fontSize: 12, fontWeight: FontWeight.bold)),
+                            const Icon(Icons.graphic_eq, color: Colors.pinkAccent, size: 20),
+                            const SizedBox(width: 8),
+                            Text(
+                              _isListening ? 'Ascolto canale vocale in corso...' : 'Modulazione Vocale AI in corso...',
+                              style: const TextStyle(color: Colors.pinkAccent, fontSize: 12, fontWeight: FontWeight.bold),
+                            ),
                           ],
                         ),
                       ),
@@ -2043,9 +2010,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         ),
                         const SizedBox(width: 6),
                         
-                        // Tasto VOCE AI Futuristico
                         InkWell(
-                          onTap: _apriDettaturaVocale,
+                          onTap: _avviaRiconoscimentoVocale,
                           borderRadius: BorderRadius.circular(24),
                           child: AnimatedContainer(
                             duration: const Duration(milliseconds: 300),
@@ -2075,7 +2041,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         
                         const SizedBox(width: 4),
                         FloatingActionButton.small(
-                          heroTag: 'send_btn_v16',
+                          heroTag: 'send_btn_v17',
                           backgroundColor: Colors.pinkAccent,
                           onPressed: () => _inviaMessaggioAI(),
                           child: const Icon(Icons.send, color: Colors.white),
