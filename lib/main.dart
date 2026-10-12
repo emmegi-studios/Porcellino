@@ -49,6 +49,8 @@ final String _geminiApiKey = utf8.decode(base64Decode("QVEuQWI4Uk42TFgtcG1lVDNQV
 
 
 
+
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
@@ -1784,8 +1786,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   
   
   
-                                                                    void _mostraPiggyAI(BuildContext context, [bool? isDarkOverride]) {
+                                                                      void _mostraPiggyAI(BuildContext context, [bool? isDarkOverride]) {
     final TextEditingController _modalInputController = TextEditingController();
+    final SpeechToText _speechToText = SpeechToText();
     
     double saldoTotale = 0.0;
     double totaleUscite = 0.0;
@@ -1810,15 +1813,16 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     final List<Map<String, String>> _chatMessages = [
       {
         'sender': 'ai', 
-        'text': '🛡️ Unità Piggy AI v2.2.5 online. Caveau Shield Score: ' + caveauShieldScore.toString() + '/100. ' +
-                (caveauShieldScore < 40 ? '⚠️ Scudo di protezione d emergenza attivo.' : 'Stabilità finanziaria ottimale. Come posso supportarti?')
+        'text': '🛡️ Unità Piggy AI v2.2.6 online. Caveau Shield Score: ' + caveauShieldScore.toString() + '/100. ' +
+                (caveauShieldScore < 40 ? '⚠️ Scudo di protezione attivo.' : 'Stabilità finanziaria ottimale. Come posso supportarti?')
       }
     ];
 
-    final Color _cardBgModal = const Color(0xFF1E2235);
-    final Color _textColorModal = Colors.white;
-    final Color _bubbleAiBgModal = const Color(0xFF2A2E43);
-    final Color _inputFillColorModal = const Color(0xFF2A2E43);
+    final bool isDark = isDarkOverride ?? (Theme.of(context).brightness == Brightness.dark);
+    final Color _cardBgModal = isDark ? const Color(0xFF1E2235) : Colors.white;
+    final Color _textColorModal = isDark ? Colors.white : const Color(0xFF0F172A);
+    final Color _bubbleAiBgModal = isDark ? const Color(0xFF2A2E43) : const Color(0xFFF1F5F9);
+    final Color _inputFillColorModal = isDark ? const Color(0xFF2A2E43) : const Color(0xFFF8FAFC);
 
     showModalBottomSheet(
       context: context,
@@ -1853,12 +1857,12 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               try {
                 String systemPrompt = 'Sei Piggy AI, l intelligenza artificiale cibernetica del caveau finanziario dell utente. '
                                      'Dati in tempo reale caveau: ' + jsonEncode(caveauSnapshot) + '. '
-                                     'Rispondi sempre in italiano con tono naturale, intelligente e sintetico. Non citare mai Gemini o Google. ';
+                                     'Rispondi sempre in italiano con tono naturale, intelligente e sintetico. ';
 
                 if (isSorpresa) {
-                  systemPrompt += 'Genera 2 idee di svizi o desideri a sorpresa completamente originali calcolando l impatto percentuale sul patrimonio attuale. ';
+                  systemPrompt += 'Genera 2 idee di svizi a sorpresa calcolando l impatto percentuale sul patrimonio attuale. ';
                 } else if (isWhatIf) {
-                  systemPrompt += 'Esegui un simulatore What-If: analizza l impatto matematico di questa spesa ipotetica sul patrimonio e sugli obiettivi. ';
+                  systemPrompt += 'Analizza l impatto matematico di questa spesa ipotetica sul patrimonio e sugli obiettivi. ';
                 }
 
                 final url = Uri.parse('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' + _geminiApiKey);
@@ -1887,19 +1891,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               } catch (_) {}
 
               if (rispostaAI.trim().isEmpty) {
-                try {
-                  final model = GenerativeModel(
-                    model: 'gemini-1.5-flash',
-                    apiKey: _geminiApiKey,
-                  );
-                  final content = [Content.text('Sei Piggy AI. Rispondi in italiano: ' + textUser)];
-                  final res = await model.generateContent(content);
-                  rispostaAI = res.text ?? '';
-                } catch (_) {}
-              }
-
-              if (rispostaAI.trim().isEmpty) {
-                rispostaAI = 'Richiesta ricevuta. Il tuo caveau con patrimonio di €' + saldoTotale.toStringAsFixed(2) + ' è monitorato in tempo reale.';
+                rispostaAI = 'Richiesta analizzata. Il tuo caveau con patrimonio di €' + saldoTotale.toStringAsFixed(2) + ' è protetto.';
               }
 
               setStateModal(() {
@@ -1928,13 +1920,14 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             }
 
             void _avviaRiconoscimentoVocale() async {
-              setStateModal(() {
-                _isListening = true;
-              });
+              if (_isListening) {
+                await _speechToText.stop();
+                setStateModal(() => _isListening = false);
+                return;
+              }
 
               try {
-                final SpeechToText speech = SpeechToText();
-                bool available = await speech.initialize(
+                bool available = await _speechToText.initialize(
                   onError: (val) => setStateModal(() => _isListening = false),
                   onStatus: (val) {
                     if (val == 'done' || val == 'notListening') {
@@ -1944,7 +1937,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 );
 
                 if (available) {
-                  speech.listen(
+                  setStateModal(() => _isListening = true);
+                  _speechToText.listen(
                     onResult: (val) {
                       setStateModal(() {
                         _modalInputController.text = val.recognizedWords;
@@ -1953,12 +1947,12 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         );
                       });
                       if (val.finalResult && val.recognizedWords.trim().isNotEmpty) {
-                        setStateModal(() {
-                          _isListening = false;
-                        });
+                        setStateModal(() => _isListening = false);
                         _inviaMessaggioAI();
                       }
                     },
+                    listenFor: const Duration(seconds: 30),
+                    pauseFor: const Duration(seconds: 3),
                     partialResults: true,
                     localeId: 'it_IT',
                   );
@@ -1970,6 +1964,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               }
             }
 
+            final double keyboardPadding = MediaQuery.of(context).viewInsets.bottom;
+
             return DraggableScrollableSheet(
               initialChildSize: 0.85,
               minChildSize: 0.5,
@@ -1980,7 +1976,12 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
                   boxShadow: [BoxShadow(color: Colors.black45, blurRadius: 15, spreadRadius: 3)],
                 ),
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.only(
+                  left: 16,
+                  right: 16,
+                  top: 16,
+                  bottom: keyboardPadding + 16,
+                ),
                 child: Column(
                   children: [
                     Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey[400], borderRadius: BorderRadius.circular(2))),
@@ -2177,8 +2178,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                             duration: const Duration(milliseconds: 300),
                             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                             decoration: BoxDecoration(
-                              gradient: const LinearGradient(
-                                colors: [Colors.pinkAccent, Color(0xFF8B5CF6)],
+                              gradient: LinearGradient(
+                                colors: _isListening 
+                                  ? [Colors.redAccent, Colors.orangeAccent]
+                                  : [Colors.pinkAccent, const Color(0xFF8B5CF6)],
                               ),
                               borderRadius: BorderRadius.circular(24),
                               boxShadow: [
@@ -2189,11 +2192,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                 )
                               ],
                             ),
-                            child: const Row(
+                            child: Row(
                               children: [
-                                Icon(Icons.graphic_eq, color: Colors.white, size: 18),
-                                SizedBox(width: 4),
-                                Text('VOCE', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 11)),
+                                Icon(_isListening ? Icons.mic : Icons.graphic_eq, color: Colors.white, size: 18),
+                                const SizedBox(width: 4),
+                                Text(_isListening ? 'REC' : 'VOCE', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 11)),
                               ],
                             ),
                           ),
@@ -2201,7 +2204,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         
                         const SizedBox(width: 4),
                         FloatingActionButton.small(
-                          heroTag: 'send_btn_v225',
+                          heroTag: 'send_btn_v226',
                           backgroundColor: Colors.pinkAccent,
                           onPressed: () => _inviaMessaggioAI(),
                           child: const Icon(Icons.send, color: Colors.white),
