@@ -1,4 +1,3 @@
-final String _geminiApiKey = utf8.decode(base64Decode("QVEuQWI4Uk42S194akZNenVLZm5vRU1DeEIzTHR1ZldEeExjTFExM2s3aktYdm42Z003cnc="));
 import 'package:home_widget/home_widget.dart';
 import 'dart:convert';
 import 'package:flutter_tts/flutter_tts.dart';
@@ -11,7 +10,7 @@ import 'package:path_provider/path_provider.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:speech_to_text/speech_to_text.dart' as stt;
+import 'package:speech_to_text/speech_to_text.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -19,6 +18,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+
+final String _geminiApiKey = utf8.decode(base64Decode("QVEuQWI4Uk42S194akZNenVLZm5vRU1DeEIzTHR1ZldEeExjTFExM2s3aktYdm42Z003cnc="));
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
