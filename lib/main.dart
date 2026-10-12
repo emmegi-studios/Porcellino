@@ -1880,7 +1880,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 final httpResponse = await http.post(
                   url,
                   headers: {'Content-Type': 'application/json'},
-                  body: jsonEncode({
+                  body: jsonEncode("system_instruction": {"parts": [{"text": "Sei Piggy AI, l'assistente finanziario di Piggy Vault. Ti comporti come il migliore amico dell'utente che è anche un genio della finanza: sei ultra-informale, spietatamente diretto e senza peli sulla lingua, ma impeccabile e ultra-professionale sui numeri. Se l'utente fa spese sconsiderate, acquisti impulsivi o gestisce male il budget, perculalo e prendilo in giro bonariamente senza indorare la pillola, spiegandogli chiaramente dove sta sbagliando. Dopo la presa in giro, forniscigli subito la soluzione pratica, precisa e strategica da esperto finanziario per rimediare. Sii ironico, tagliente e divertente, ma mantieni sempre precisione matematica e consigli di budgeting impeccabili."}]},
+    {
                     'contents': [
                       {
                         'parts': [{'text': systemPrompt + ' Richiesta Utente: ' + textUser}]
