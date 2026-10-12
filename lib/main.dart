@@ -32,6 +32,8 @@ final String _geminiApiKey = utf8.decode(base64Decode("QVEuQWI4Uk42TFgtcG1lVDNQV
 
 
 
+
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
@@ -1767,13 +1769,12 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   
   
   
-                                                    void _mostraPiggyAI(BuildContext context, [bool? isDarkOverride]) {
+                                                      void _mostraPiggyAI(BuildContext context, [bool? isDarkOverride]) {
     final TextEditingController _modalInputController = TextEditingController();
     final List<Map<String, String>> _chatMessages = [
-      {'sender': 'ai', 'text': 'Unità cibernetica Piggy v2.5 online. Inserisci qualsiasi richiesta, attiva il comando vocale o richiedi un analisi a sorpresa, Marco.'}
+      {'sender': 'ai', 'text': 'Core cibernetico Piggy AI v2.5 operativo. Inserisci un comando, parla al microfono o attiva la scansione a sorpresa, Marco.'}
     ];
 
-    // Sincronizzazione tema reale immediata
     final bool isDark = isDarkOverride ?? (Theme.of(context).brightness == Brightness.dark);
     final Color _cardBgModal = isDark ? const Color(0xFF1E2235) : Colors.white;
     final Color _textColorModal = isDark ? Colors.white : const Color(0xFF0F172A);
@@ -1802,28 +1803,34 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
               String rispostaAI = '';
               try {
+                // Setup iper-ottimizzato Gemini 1.5 Flash
                 final model = GenerativeModel(
                   model: 'gemini-1.5-flash',
                   apiKey: _geminiApiKey,
+                  generationConfig: GenerationConfig(
+                    temperature: 0.75,
+                    topP: 0.95,
+                    maxOutputTokens: 450,
+                  ),
                 );
                 
-                String systemPrompt = 'Sei Piggy AI, un intelligenza artificiale finanziaria cibernetica e avanzata. Rispondi sempre in modo naturale, intelligente e personalizzato in italiano a qualsiasi messaggio dell utente. Non usare mai risposte predefinite standard. ';
+                String systemPrompt = 'Sei Piggy AI, l intelligenza artificiale finanziaria cibernetica di Marco. Rispondi in italiano con tono autoritario, tecnico, d impatto e mai noioso. Fornisci analisi precise per la gestione del caveau personale. ';
                 if (isSorpresa) {
-                  systemPrompt += 'Genera 2 idee di svizi o desideri a sorpresa completamente originali calcolando l impatto percentuale sul patrimonio e la variazione del livello di rischio del caveau per Marco. ';
+                  systemPrompt += 'Genera 2 idee di svizi o desideri a sorpresa completamente originali e mai viste prima, calcolando impatto percentuale sul patrimonio e variazione del rischio del caveau. ';
                 }
 
-                final content = [Content.text(systemPrompt + ' Utente: ' + textUser)];
+                final content = [Content.text(systemPrompt + ' Richiesta di Marco: ' + textUser)];
                 final response = await model.generateContent(content);
                 rispostaAI = response.text ?? '';
-                if (rispostaAI.trim().isEmpty) throw Exception('Risposta vuota');
+                if (rispostaAI.trim().isEmpty) throw Exception('Empty response');
               } catch (e) {
                 final lower = textUser.toLowerCase();
                 if (isSorpresa || lower.contains('sorpresa')) {
-                  rispostaAI = '🎁 ANALISI SVIZIO AI: 1. Smartwatch Sport (Impatto: -1.8%, Rischio: Basso). 2. Cena Gourmet nel weekend (Impatto: -0.9%, Rischio: Nullo). Il caveau rispetta i margini di sicurezza, Marco.';
+                  rispostaAI = '🎁 PROTOCOLLO SVIZIO CIBERNETICO: 1. Setup Audio/Studio (Impatto: -2.2%, Rischio: Basso). 2. Evento / Esperienza Weekend (Impatto: -1.1%, Rischio: Nullo). Margini di sicurezza del caveau ampiamente rispettati, Marco.';
                 } else if (lower.contains('consiglio') || lower.contains('analisi')) {
-                  rispostaAI = '💡 STRATEGIA CAVEAU: Mantieni la regola del 50/30/20. Attualmente il tuo flusso di cassa e stabile, ma monitora le uscite variabili del weekend.';
+                  rispostaAI = '💡 DIRETTIVA CAVEAU: Metti in riserva blindata il 20% delle entrate mensili e ottimizza i micro-costi digitali ricorrenti. Il tuo indice di stabilità e ottimale.';
                 } else {
-                  rispostaAI = 'Richiesta analizzata, Marco. Il tuo caveau e sotto costante controllo cibernetico per la massima stabilità economica.';
+                  rispostaAI = 'Analisi completata, Marco. Il tuo caveau e sotto monitoraggio cibernetico costante.';
                 }
               }
 
@@ -1935,7 +1942,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                             elevation: 0,
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                           ),
-                          onPressed: () => _inviaMessaggioAI(promptPersonalizzato: 'Fornisci un analisi finanziaria completa e strategica per il mio caveau.'),
+                          onPressed: () => _inviaMessaggioAI(promptPersonalizzato: 'Fornisci un analisi finanziaria strategica e un consiglio cibernetico per il mio caveau.'),
                           icon: const Icon(Icons.auto_awesome, size: 16),
                           label: const Text('Consiglio AI', style: TextStyle(fontSize: 12)),
                         ),
@@ -2081,7 +2088,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         
                         const SizedBox(width: 4),
                         FloatingActionButton.small(
-                          heroTag: 'send_btn_v27',
+                          heroTag: 'send_btn_v28',
                           backgroundColor: Colors.pinkAccent,
                           onPressed: () => _inviaMessaggioAI(),
                           child: const Icon(Icons.send, color: Colors.white),
