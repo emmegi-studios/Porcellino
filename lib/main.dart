@@ -1754,7 +1754,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   
   
   
-                        void _mostraPiggyAI(BuildContext context) {
+                          void _mostraPiggyAI(BuildContext context) {
     final TextEditingController _modalInputController = TextEditingController();
     final List<Map<String, String>> _chatMessages = [
       {'sender': 'ai', 'text': 'Unità cibernetica Piggy v2.5 online. Caveau monitorato. Inserisci un comando vocale, chiedi un consiglio o attiva il protocollo Sorpresa, Marco.'}
@@ -1809,15 +1809,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 if (isSorpresa || lower.contains('sorpresa') || lower.contains('svizi') || lower.contains('desideri')) {
                   bool isCaveauCondiviso = false; 
                   if (isCaveauCondiviso) {
-                    rispostaAI = '🎁 PROTOCOLLO SORPRESA (Caveau Condiviso):
-1. Coppia: Cena o esperienza fuori (Impatto: 1.8%, Rischio: +2%).
-2. Personale: Svizio hobby/tech (Impatto: 1.5%, Rischio: +1%).
-Valutazione: Sostenibili.';
+                    rispostaAI = '🎁 PROTOCOLLO SORPRESA (Caveau Condiviso): 1. Coppia: Cena o esperienza fuori (Impatto: 1.8%, Rischio: +2%). 2. Personale: Svizio hobby/tech (Impatto: 1.5%, Rischio: +1%). Valutazione: Sostenibili.';
                   } else {
-                    rispostaAI = '🎁 PROTOCOLLO SORPRESA (Caveau Personale):
-1. Desiderio Tech/Hobby: Upgrade attrezzatura personale (Impatto: 2.5%, Rischio: +3%).
-2. Esperienza Singola: Corso o evento ricreativo (Impatto: 1.5%, Rischio: +1%).
-Valutazione: Entrambi i desideri rientrano nei margini di sicurezza.';
+                    rispostaAI = '🎁 PROTOCOLLO SORPRESA (Caveau Personale): 1. Desiderio Tech/Hobby: Upgrade attrezzatura personale (Impatto: 2.5%, Rischio: +3%). 2. Esperienza Singola: Corso o evento ricreativo (Impatto: 1.5%, Rischio: +1%). Valutazione: Entrambi i desideri rientrano nei margini di sicurezza.';
                   }
                 } else if (lower.contains('consiglio') || lower.contains('finanziario')) {
                   rispostaAI = _consigliAILocali[_consiglioIndex % _consigliAILocali.length];
@@ -2008,14 +2002,14 @@ Valutazione: Entrambi i desideri rientrano nei margini di sicurezza.';
                         ),
                         const SizedBox(width: 6),
                         FloatingActionButton.small(
-                          heroTag: 'mic_btn_v10',
+                          heroTag: 'mic_btn_v11',
                           backgroundColor: Colors.pinkAccent,
                           onPressed: _apriDettaturaVocale,
                           child: const Icon(Icons.mic, color: Colors.white),
                         ),
                         const SizedBox(width: 4),
                         FloatingActionButton.small(
-                          heroTag: 'send_btn_v10',
+                          heroTag: 'send_btn_v11',
                           backgroundColor: Colors.pinkAccent,
                           onPressed: () => _inviaMessaggioAI(),
                           child: const Icon(Icons.send, color: Colors.white),
