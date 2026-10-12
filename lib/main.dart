@@ -2034,6 +2034,69 @@ class _InviteManagerState extends State<InviteManager> {
       );
     } catch (_) {}
   }
+
+  // Widget indicatore di rischio dinamico per il budget
+  Widget _buildBarraRischioBudget(double speseCorrenti, double budgetTotale) {
+    double percentuale = budgetTotale > 0 ? (speseCorrenti / budgetTotale) : 0.0;
+    if (percentuale > 1.0) percentuale = 1.0;
+
+    Color coloreRischio;
+    String statoRischio;
+    String messaggioRischio;
+
+    if (percentuale < 0.6) {
+      coloreRischio = Colors.greenAccent;
+      statoRischio = 'VERDE: Puoi spendere';
+      messaggioRischio = 'Il caveau è in piena sicurezza. I flussi sono stabili.';
+    } else if (percentuale < 0.85) {
+      coloreRischio = Colors.amberAccent;
+      statoRischio = 'GIALLO: Spendi con moderazione';
+      messaggioRischio = 'Attenzione alle unità organiche: le spese si avvicinano alla soglia di guardia.';
+    } else {
+      coloreRischio = Colors.redAccent;
+      statoRischio = 'ROSSO: Pericolo stabilità!';
+      messaggioRischio = 'Spendere ancora potrebbe compromettere la stabilità energetica del caveau!';
+    }
+
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: const Color(0xFF1E2235),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: coloreRischio.withOpacity(0.5), width: 1.5),
+        boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 8, spreadRadius: 2)],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text('Stato Rischio Caveau', style: TextStyle(color: Colors.white70, fontSize: 13, fontWeight: FontWeight.bold)),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                decoration: BoxDecoration(color: coloreRischio.withOpacity(0.2), borderRadius: BorderRadius.circular(8)),
+                child: Text(statoRischio, style: TextStyle(color: coloreRischio, fontSize: 11, fontWeight: FontWeight.bold)),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: LinearProgressIndicator(
+              value: percentuale,
+              minHeight: 10,
+              backgroundColor: Colors.grey[800],
+              valueColor: AlwaysStoppedAnimation<Color>(coloreRischio),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(messaggioRischio, style: TextStyle(color: Colors.grey[400], fontSize: 11)),
+        ],
+      ),
+    );
+  }
 }
 
 
