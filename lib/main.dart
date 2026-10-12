@@ -20,7 +20,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
-final String _geminiApiKey = utf8.decode(base64Decode("QVEuQWI4Uk42TFgtcG1lVDNQVWVDMkJRSXVQU0V2QV9JTnk5QlpDOEpfVjIwbDd4MEF0MGc="));
+final String _geminiApiKey = utf8.decode(base64Decode("QVEuQWI4Uk42SVhvTDBpcEIwM1FvLWk0bTNSX192d1hEWXpGNDlfS1ZLQktmNTBRSEotOUE="));
+
+
 
 
 
