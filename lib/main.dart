@@ -1913,8 +1913,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               try {
                 final FlutterTts flutterTts = FlutterTts();
                 await flutterTts.setLanguage('it-IT');
-                await flutterTts.setSpeechRate(0.52);
-                await flutterTts.setPitch(0.95);
+                await flutterTts.setSpeechRate(0.54);
+                await flutterTts.setPitch(1.48);
                 
                 flutterTts.setCompletionHandler(() {
                   setStateModal(() {
