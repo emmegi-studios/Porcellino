@@ -357,7 +357,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 onPressed: () => setState(() => _isRegistrazione = !_isRegistrazione),
                 child: Text(
                   _isRegistrazione ? "Hai già un account? Accedi" : "Non hai un account? Registrati",
-                  style: const TextStyle(color: Colors.white70),
+                  style: TextStyle(color: _isDarkTheme ? Colors.white70 : const Color(0xFF444444)),
                 ),
               ),
             ],
@@ -379,6 +379,49 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
+
+  void _generaConsiglioDinamico(String tipo) {
+    double entrate = entrateMese;
+    double uscite = usciteMese;
+    double saldo = patrimonioCondiviso;
+    
+    String promptPulsante = "";
+    if (tipo == "Consiglio") {
+      promptPulsante = "Dammi un consiglio finanziario d'impatto basato sui miei dati attuali: Saldo " + saldo.toString() + " Euro, Entrate Mese " + entrate.toString() + " Euro, Uscite Mese " + uscite.toString() + " Euro.";
+    } else if (tipo == "What-If") {
+      promptPulsante = "Fai una simulazione finanziaria What-If su cosa succede al mio caveau se taglio del 20% le mie uscite mensili attuali di " + uscite.toString() + " Euro.";
+    } else {
+      promptPulsante = "Dimmi una pillola di saggezza finanziaria a sorpresa o un trucco da genio del risparmio per migliorare il mio patrimonio di " + saldo.toString() + " Euro.";
+    }
+    
+    _inviaMessaggioGemini(promptPulsante);
+  }
+
+  void _eseguiComandoAISePresente(String testoIn) {
+    String lower = testoIn.toLowerCase();
+    
+    // Cambio Tema
+    if (lower.contains("tema chiaro") || lower.contains("modalità chiara") || lower.contains("piggy white")) {
+      setState(() => _isDarkTheme = false);
+    } else if (lower.contains("tema scuro") || lower.contains("modalità scura") || lower.contains("piggy dark")) {
+      setState(() => _isDarkTheme = true);
+    }
+
+    // Parsing vocale veloce spese/entrate
+    RegExp expSpesa = RegExp(r'(?:speso|uscita|pagato)\s*(\d+(?:[\.,]\d+)?)\s*(?:euro|€)?(?:\s*per\s*(.*))?', caseSensitive: false);
+    Match? matchSpesa = expSpesa.firstMatch(lower);
+    if (matchSpesa != null) {
+      try {
+        double val = double.parse(matchSpesa.group(1)!.replaceAll(',', '.'));
+        String cat = matchSpesa.group(2) ?? "Generale";
+        setState(() {
+          usciteMese += val;
+          patrimonioCondiviso -= val;
+        });
+      } catch (e) {}
+    }
+  }
+
 
     Future<void> _mostraInfoApp(BuildContext context) async {
     showDialog(
@@ -998,7 +1041,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   void _mostraModalProfilo() {
     showModalBottomSheet(context: context,
       isScrollControlled: true,
-      backgroundColor: const Color(0xFF1A1528),
+      backgroundColor: _isDarkTheme ? const Color(0xFF1A1528) : Colors.white,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder: (BuildContext context) {
         return Padding(
@@ -1049,7 +1092,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   void _mostraModalImpostazioni() {
     showModalBottomSheet(context: context,
       isScrollControlled: true,
-      backgroundColor: const Color(0xFF1A1528),
+      backgroundColor: _isDarkTheme ? const Color(0xFF1A1528) : Colors.white,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder: (BuildContext context) {
         return StatefulBuilder(
@@ -1132,7 +1175,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   void _mostraModalNuovoObiettivo() {
     showModalBottomSheet(context: context,
       isScrollControlled: true,
-      backgroundColor: const Color(0xFF1A1528),
+      backgroundColor: _isDarkTheme ? const Color(0xFF1A1528) : Colors.white,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder: (BuildContext context) {
         return Padding(
@@ -1204,7 +1247,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   void _mostraFoglioResoconto() {
     double bilancioNetto = entrateMese - usciteMese;
     showModalBottomSheet(context: context,
-      isScrollControlled: true, backgroundColor: const Color(0xFF1A1528),
+      isScrollControlled: true, backgroundColor: _isDarkTheme ? const Color(0xFF1A1528) : Colors.white,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
       builder: (context) {
         return Container(
@@ -1280,7 +1323,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   void _mostraModalInserimento() {
     showModalBottomSheet(context: context,
-      isScrollControlled: true, backgroundColor: const Color(0xFF1A1528),
+      isScrollControlled: true, backgroundColor: _isDarkTheme ? const Color(0xFF1A1528) : Colors.white,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
       builder: (context) {
         return Padding(
@@ -1813,7 +1856,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     final List<Map<String, String>> _chatMessages = [
       {
         'sender': 'ai', 
-        'text': '🛡️ Unità Piggy AI v2.2.9 collegata a Gemini 1.5 Flash. Caveau Shield Score: ' + caveauShieldScore.toString() + '%.'
+: ' + caveauShieldScore.toString() + '%.'
       }
     ];
 
@@ -1903,8 +1946,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               try {
                 final FlutterTts flutterTts = FlutterTts();
                 await flutterTts.setLanguage('it-IT');
-                await flutterTts.setSpeechRate(0.58);
-                await flutterTts.setPitch(1.35);
+                await flutterTts.setSpeechRate(0.50);
+                await flutterTts.setPitch(1.08);
                 
                 flutterTts.setCompletionHandler(() {
                   setStateModal(() {
@@ -2027,7 +2070,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                             padding: const EdgeInsets.symmetric(horizontal: 2),
                             child: ElevatedButton.icon(
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.pinkAccent.withOpacity(0.2),
+                                backgroundColor: Theme.of(context).primaryColor.withOpacity(0.15),
                                 foregroundColor: Colors.pinkAccent,
                                 elevation: 0,
                                 padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
@@ -2087,7 +2130,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                             margin: const EdgeInsets.symmetric(vertical: 6),
                             padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
-                              color: isUser ? Colors.pinkAccent.withOpacity(0.2) : _bubbleAiBgModal,
+                              color: isUser ? Theme.of(context).primaryColor.withOpacity(0.15) : _bubbleAiBgModal,
                               borderRadius: BorderRadius.circular(16),
                             ),
                             child: Row(
@@ -2373,13 +2416,15 @@ class _InviteManagerState extends State<InviteManager> {
 
 String _sanitizeTextForTTS(String input) {
   String clean = input;
+  clean = clean.replaceAll(RegExp(r'\\rightarrow|\\infty|\\|\$', caseSensitive: false), '');
+  clean = clean.replaceAll(RegExp(r'\*.*?\*'), '');
+  clean = clean.replaceAll(RegExp(r'\[.*?\]'), '');
   clean = clean.replaceAll(RegExp(r'\.exe', caseSensitive: false), '');
   clean = clean.replaceAll(RegExp(r'\*+'), '');
   clean = clean.replaceAll(RegExp(r'#+'), '');
-  clean = clean.replaceAll(RegExp(r'\$+'), '');
-  clean = clean.replaceAll(RegExp(r'\\[a-zA-Z]+'), '');
   clean = clean.replaceAll(RegExp(r'[\-\_]+'), ' ');
   clean = clean.replaceAll(RegExp(r'^\s*[\d\.\)]+\s*', multiLine: true), '');
+  clean = clean.replaceAll(RegExp(r'\b\d+\.\s*'), '');
   clean = clean.replaceAll(RegExp(r'[\(\)]'), '');
   return clean.trim();
 }
