@@ -253,7 +253,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final _cardBg = _isDarkTheme ? const Color(0xFF1E2235) : Colors.white;
-    final _scaffoldBg = _isDarkTheme ? const Color(0xFF0F111A) : const Color(0xFFF0F2F5);
+    final _scaffoldBg = _isDarkTheme ? const Color(0xFF0F111A) : const Color(0xFF282035);
     final _textColor = _isDarkTheme ? Colors.white : Colors.black87;
     final _subtitleColor = _isDarkTheme ? Colors.grey.shade400 : Colors.black54;
     final _primaryColor = Colors.pinkAccent;
@@ -999,8 +999,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   }
 
   void _mostraModalProfilo() {
-    showModalBottomSheet(
-      context: context,
+    showModalBottomSheet(backgroundColor: const Color(0xFF1A1528), context: context,
       isScrollControlled: true,
       backgroundColor: _cardBg,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
@@ -1052,8 +1051,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   }
 
   void _mostraModalImpostazioni() {
-    showModalBottomSheet(
-      context: context,
+    showModalBottomSheet(backgroundColor: const Color(0xFF1A1528), context: context,
       isScrollControlled: true,
       backgroundColor: _cardBg,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
@@ -1137,8 +1135,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
 
   void _mostraModalNuovoObiettivo() {
-    showModalBottomSheet(
-      context: context,
+    showModalBottomSheet(backgroundColor: const Color(0xFF1A1528), context: context,
       isScrollControlled: true,
       backgroundColor: _cardBg,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
@@ -1212,7 +1209,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   void _mostraFoglioResoconto() {
     double bilancioNetto = entrateMese - usciteMese;
-    showModalBottomSheet( context: context,
+    showModalBottomSheet(backgroundColor: const Color(0xFF1A1528), context: context,
       isScrollControlled: true, backgroundColor: _cardBg,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
       builder: (context) {
@@ -1288,7 +1285,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   }
 
   void _mostraModalInserimento() {
-    showModalBottomSheet( context: context,
+    showModalBottomSheet(backgroundColor: const Color(0xFF1A1528), context: context,
       isScrollControlled: true, backgroundColor: _cardBg,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
       builder: (context) {
@@ -1835,8 +1832,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     final Color _bubbleAiBgModal = isDark ? const Color(0xFF2A2E43) : const Color(0xFFF1F5F9);
     final Color _inputFillColorModal = isDark ? const Color(0xFF2A2E43) : const Color(0xFFF8FAFC);
 
-    showModalBottomSheet(
-      context: context,
+    showModalBottomSheet(backgroundColor: const Color(0xFF1A1528), context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) {
@@ -2386,10 +2382,13 @@ class _InviteManagerState extends State<InviteManager> {
 
 String _sanitizeTextForTTS(String input) {
   String clean = input;
+  clean = clean.replaceAll(RegExp(r'\.exe', caseSensitive: false), '');
   clean = clean.replaceAll(RegExp(r'\*+'), '');
   clean = clean.replaceAll(RegExp(r'#+'), '');
-  clean = clean.replaceAll(RegExp(r'\.exe', caseSensitive: false), '');
+  clean = clean.replaceAll(RegExp(r'\$+'), '');
+  clean = clean.replaceAll(RegExp(r'\\[a-zA-Z]+'), '');
   clean = clean.replaceAll(RegExp(r'[\-\_]+'), ' ');
   clean = clean.replaceAll(RegExp(r'^\s*[\d\.\)]+\s*', multiLine: true), '');
+  clean = clean.replaceAll(RegExp(r'[\(\)]'), '');
   return clean.trim();
 }
