@@ -380,6 +380,117 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
+  Widget _buildSubscriptionTracker() {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: _isDarkTheme ? const Color(0xFF282035) : const Color(0xFFF8F9FA),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text("Abbonamenti & Uscite Ricorrenti", style: TextStyle(fontWeight: FontWeight.bold, color: _isDarkTheme ? Colors.white : Colors.black87)),
+              Icon(Icons.event_repeat_rounded, color: Theme.of(context).primaryColor, size: 18),
+            ],
+          ),
+          const SizedBox(height: 8),
+          const Text("Nessuna scadenza fissa imminente per questo mese.", style: TextStyle(fontSize: 12, color: Colors.grey)),
+        ],
+      ),
+    );
+  }
+
+
+  String _piggyTone = "Spietato"; // Spietato, Ironico, Fiscale, Chill
+
+  String _getSystemPromptForCurrentTone() {
+    switch (_piggyTone) {
+      case "Ironico":
+        return "Sei Piggy AI in modalità Ironica e Pungente. Parli con sarcasmo affilato, battute brillanti e umorismo nero sui vizi finanziari dell'utente. TASSATIVO: Scrivi SEMPRE ed ESCLUSIVAMENTE in testo fluido in italiano, senza elenchi o markdown.";
+      case "Fiscale":
+        return "Sei Piggy AI in modalità Fiscale e Pignola. Parli come un commercialista ultra-preciso, formale ed analitico. Metti al centro percentuali, numeri ed efficienza. TASSATIVO: Scrivi SEMPRE ed ESCLUSIVAMENTE in testo fluido in italiano, senza elenchi o markdown.";
+      case "Chill":
+        return "Sei Piggy AI in modalità Chill e Amiccone. Parli come un migliore amico ultra-rilassato, empatico e rassicurante, smorzando l'ansia finanziaria. TASSATIVO: Scrivi SEMPRE ed ESCLUSIVAMENTE in testo fluido in italiano, senza elenchi o markdown.";
+      default:
+        return "Sei Piggy AI in modalità Spietata e Diretta. Parli in modo spietatamente diretto, ultra-informale e cinico. Sgridi l'utente se spende troppo. TASSATIVO: Scrivi SEMPRE ed ESCLUSIVAMENTE in testo fluido in italiano, senza elenchi o markdown.";
+    }
+  }
+
+  void _cambiaPersonalitaAI(String nuovaTone) {
+    HapticFeedback.mediumImpact();
+    setState(() {
+      _piggyTone = nuovaTone;
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text("Piggy AI impostato su modalità: " + nuovaTone),
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
+
+  Widget _buildSezionePersonalitaAI() {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: _isDarkTheme ? const Color(0xFF282035) : const Color(0xFFF8F9FA),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: _isDarkTheme ? Colors.white10 : Colors.black12),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.psychology_rounded, color: Theme.of(context).primaryColor, size: 20),
+              const SizedBox(width: 8),
+              Text(
+                "Personalità & Tono Piggy AI",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 15,
+                  color: _isDarkTheme ? Colors.white : Colors.black87,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              _buildToneChip("Spietato", Colors.redAccent, Icons.bolt_rounded),
+              _buildToneChip("Ironico", Colors.purpleAccent, Icons.sentiment_very_satisfied_rounded),
+              _buildToneChip("Fiscale", Colors.blueAccent, Icons.analytics_rounded),
+              _buildToneChip("Chill", Colors.greenAccent, Icons.spa_rounded),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildToneChip(String toneName, Color color, IconData icon) {
+    bool isSelected = _piggyTone == toneName;
+    return ChoiceChip(
+      avatar: Icon(icon, color: isSelected ? Colors.white : color, size: 16),
+      label: Text(toneName, style: TextStyle(color: isSelected ? Colors.white : (_isDarkTheme ? Colors.white70 : Colors.black87))),
+      selected: isSelected,
+      selectedColor: color,
+      backgroundColor: _isDarkTheme ? Colors.white12 : Colors.black.withOpacity(0.05),
+      onSelected: (selected) {
+        if (selected) _cambiaPersonalitaAI(toneName);
+      },
+    );
+  }
+
+
   bool _showPrivacyOverlay = false;
   bool _isLockedByBiometrics = false;
 
