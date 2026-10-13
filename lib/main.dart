@@ -380,6 +380,113 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
+  bool _showPrivacyOverlay = false;
+  bool _isLockedByBiometrics = false;
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    if (state == AppLifecycleState.paused || state == AppLifecycleState.inactive) {
+      setState(() {
+        _showPrivacyOverlay = true;
+      });
+    } else if (state == AppLifecycleState.resumed) {
+      if (_isBiometricEnabled) {
+        setState(() {
+          _isLockedByBiometrics = true;
+          _showPrivacyOverlay = false;
+        });
+      } else {
+        setState(() {
+          _showPrivacyOverlay = false;
+        });
+      }
+    }
+  }
+
+  void _sbloccaBiometria() {
+    HapticFeedback.mediumImpact();
+    setState(() {
+      _isLockedByBiometrics = false;
+    });
+  }
+
+  Widget _buildPrivacyOverlay() {
+    if (!_showPrivacyOverlay && !_isLockedByBiometrics) return const SizedBox.shrink();
+    return Positioned.fill(
+      child: Container(
+        color: _isDarkTheme ? const Color(0xFF1A1528) : Colors.white,
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.security_rounded, size: 64, color: Theme.of(context).primaryColor),
+              const SizedBox(height: 16),
+              Text(
+                "Piggy Vault Protected",
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: _isDarkTheme ? Colors.white : Colors.black87,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                _isLockedByBiometrics ? "Sblocca con impronta per accedere al Caveau" : "Dati finanziari protetti",
+                style: TextStyle(
+                  fontSize: 14,
+                  color: _isDarkTheme ? Colors.white70 : Colors.black54,
+                ),
+              ),
+              if (_isLockedByBiometrics) ...[
+                const SizedBox(height: 24),
+                ElevatedButton.icon(
+                  onPressed: _sbloccaBiometria,
+                  icon: const Icon(Icons.fingerprint_rounded),
+                  label: const Text("Sblocca Caveau"),
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  ),
+                ),
+              ]
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEmptyState({required String titolo, required String messaggio, required IconData icona}) {
+    return Padding(
+      padding: const EdgeInsets.all(24.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(icona, size: 48, color: Theme.of(context).primaryColor.withOpacity(0.5)),
+          const SizedBox(height: 12),
+          Text(
+            titolo,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+              color: _isDarkTheme ? Colors.white : Colors.black87,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            messaggio,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 13,
+              color: _isDarkTheme ? Colors.white54 : Colors.black54,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+
   Widget _buildPiggyAIAvatarFX({bool isBig = false}) {
     return Container(
       decoration: BoxDecoration(
