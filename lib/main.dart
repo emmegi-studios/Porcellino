@@ -1873,7 +1873,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                      'Interpreta qualsiasi messaggio dell utente in tempo reale. Non usare mai frasi o template predefiniti. ';
 
                 if (isSorpresa) {
-                  systemPrompt += 'Proponi 2 idee di svizi a sorpresa calcolando l impatto percentuale sul patrimonio attuale. ';
+                  systemPrompt += 'Proponi 2 idee di vizi a sorpresa calcolando l impatto percentuale sul patrimonio attuale. ';
                 } else if (isWhatIf) {
                   systemPrompt += 'Esegui una simulazione What-If calcolando l impatto economico di questa spesa. ';
                 }
@@ -1916,8 +1916,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               try {
                 final FlutterTts flutterTts = FlutterTts();
                 await flutterTts.setLanguage('it-IT');
-                await flutterTts.setSpeechRate(0.54);
-                await flutterTts.setPitch(1.48);
+                await flutterTts.setSpeechRate(0.58);
+                await flutterTts.setPitch(1.35);
                 
                 flutterTts.setCompletionHandler(() {
                   setStateModal(() {
@@ -2080,7 +2080,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                 padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                               ),
-                              onPressed: () => _inviaMessaggioAI(promptPersonalizzato: 'Genera 2 svizi a sorpresa calcolando impatto e rischio.', isSorpresa: true),
+                              onPressed: () => _inviaMessaggioAI(promptPersonalizzato: 'Genera 2 vizi a sorpresa calcolando impatto e rischio.', isSorpresa: true),
                               icon: const Icon(Icons.card_giftcard, size: 12),
                               label: const Text('🎁 Sorpresa', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold), overflow: TextOverflow.ellipsis),
                             ),
