@@ -2373,6 +2373,8 @@ class _InviteManagerState extends State<InviteManager> {
 
 String _sanitizeTextForTTS(String input) {
   String clean = input;
+  clean = clean.replaceAll(RegExp(r'\*.*?\*'), '');
+  clean = clean.replaceAll(RegExp(r'\[.*?\]'), '');
   clean = clean.replaceAll(RegExp(r'\.exe', caseSensitive: false), '');
   clean = clean.replaceAll(RegExp(r'\*+'), '');
   clean = clean.replaceAll(RegExp(r'#+'), '');
@@ -2380,6 +2382,7 @@ String _sanitizeTextForTTS(String input) {
   clean = clean.replaceAll(RegExp(r'\\[a-zA-Z]+'), '');
   clean = clean.replaceAll(RegExp(r'[\-\_]+'), ' ');
   clean = clean.replaceAll(RegExp(r'^\s*[\d\.\)]+\s*', multiLine: true), '');
+  clean = clean.replaceAll(RegExp(r'\b\d+\.\s*'), '');
   clean = clean.replaceAll(RegExp(r'[\(\)]'), '');
   return clean.trim();
 }
