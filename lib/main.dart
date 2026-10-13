@@ -334,7 +334,6 @@ class _LoginScreenState extends State<LoginScreen> {
               const SizedBox(height: 24),
               _isLoading
                   ? const CircularProgressIndicator()
-                  : ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         minimumSize: const Size.fromHeight(52),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
@@ -2393,7 +2392,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   const SizedBox(height: 12),
                   _promemoria.isEmpty
                       ? Text("Nessuna scadenza imminente. Aggiungi un promemoria!", style: TextStyle(color: _subtitleColor, fontSize: 11))
-                      : Column(
                           children: _promemoria.map((p) => Padding(
                             padding: const EdgeInsets.only(bottom: 8.0),
                             child: Row(
@@ -2664,18 +2662,15 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       if ('[]' != '[]') obiettiviCount = ([] as List).length;
     } catch (_) {}
 
-    int caveauShieldScore = 100;
     if (totaleEntrate > 0) {
       double rapportoUscite = (totaleUscite / totaleEntrate) * 100;
-      caveauShieldScore = (100 - rapportoUscite).clamp(10, 100).toInt();
     } else if (saldoTotale <= 0) {
-      caveauShieldScore = 20;
     }
 
     final List<Map<String, String>> _chatMessages = [
       {
         'sender': 'ai', 
-: ' + caveauShieldScore.toString() + '%.'
+
       }
     ];
 
@@ -2708,7 +2703,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 'patrimonio_totale': saldoTotale,
                 'entrate_mese': totaleEntrate,
                 'uscite_mese': totaleUscite,
-                'shield_score': caveauShieldScore,
                 'obiettivi_attivi_count': obiettiviCount
               };
 
@@ -2865,14 +2859,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                           decoration: BoxDecoration(
-                            color: caveauShieldScore > 50 ? Colors.green.withOpacity(0.2) : Colors.orange.withOpacity(0.2),
                             borderRadius: BorderRadius.circular(10),
-                            border: Border.all(color: caveauShieldScore > 50 ? Colors.green : Colors.orange, width: 1),
                           ),
                           child: Text(
-                            '🛡️ ' + caveauShieldScore.toString() + '%',
                             style: TextStyle(
-                              color: caveauShieldScore > 50 ? Colors.green : Colors.orange,
                               fontSize: 11,
                               fontWeight: FontWeight.bold,
                             ),
@@ -2957,7 +2947,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                               children: [
                                 isUser 
                                   ? const Icon(Icons.person, color: Colors.pinkAccent, size: 22)
-                                  : ClipOval(
                                       child: Image.asset(
                                         'assets/images/piggy_ai_assistant.png',
                                         width: 22, height: 22, fit: BoxFit.cover,
@@ -3044,7 +3033,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                               gradient: LinearGradient(
                                 colors: _isListening 
                                   ? [Colors.redAccent, Colors.orangeAccent]
-                                  : [Colors.pinkAccent, const Color(0xFF8B5CF6)],
                               ),
                               borderRadius: BorderRadius.circular(24),
                               boxShadow: [
