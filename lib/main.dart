@@ -1097,7 +1097,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       margin: const EdgeInsets.symmetric(vertical: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: _isDarkTheme ? const Color(0xFF282035) : const _isDarkTheme ? const Color(0xFF282035) : const Color(0xFFF8F9FA),
+        color: _isDarkTheme ? const Color(0xFF282035) :  const Color(0xFFF8F9FA),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: _isDarkTheme ? Colors.white10 : Colors.black12,
