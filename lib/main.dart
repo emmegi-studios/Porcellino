@@ -380,6 +380,181 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
+  String _userPin = "1234";
+  bool _showPinInput = false;
+  String _enteredPin = "";
+
+  Widget _buildPinDialog() {
+    if (!_showPinInput) return const SizedBox.shrink();
+    return Positioned.fill(
+      child: Container(
+        color: _isDarkTheme ? const Color(0xFF1A1528) : Colors.white,
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.lock_rounded, size: 56, color: Theme.of(context).primaryColor),
+                const SizedBox(height: 16),
+                Text(
+                  "Inserisci PIN di Backup",
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: _isDarkTheme ? Colors.white : Colors.black87,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  "PIN a 4 cifre per accedere al Caveau",
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: _isDarkTheme ? Colors.white70 : Colors.black54,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: List.generate(4, (index) {
+                    bool filled = index < _enteredPin.length;
+                    return Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 8),
+                      width: 16,
+                      height: 16,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: filled ? Theme.of(context).primaryColor : Colors.grey.withOpacity(0.3),
+                      ),
+                    );
+                  }),
+                ),
+                const SizedBox(height: 32),
+                Wrap(
+                  spacing: 16,
+                  runSpacing: 16,
+                  alignment: WrapAlignment.center,
+                  children: [
+                    for (var i = 1; i <= 9; i++) _buildPinKey(i.toString()),
+                    _buildPinKey("C", isAction: true),
+                    _buildPinKey("0"),
+                    _buildPinKey("OK", isAction: true),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPinKey(String val, {bool isAction = false}) {
+    return InkWell(
+      onTap: () {
+        HapticFeedback.lightImpact();
+        setState(() {
+          if (val == "C") {
+            if (_enteredPin.isNotEmpty) _enteredPin = _enteredPin.substring(0, _enteredPin.length - 1);
+          } else if (val == "OK") {
+            if (_enteredPin == _userPin) {
+              _isLockedByBiometrics = false;
+              _showPinInput = false;
+              _enteredPin = "";
+              HapticFeedback.mediumImpact();
+            } else {
+              _enteredPin = "";
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text("PIN errato! Riprova.")),
+              );
+            }
+          } else {
+            if (_enteredPin.length < 4) _enteredPin += val;
+          }
+        });
+      },
+      borderRadius: BorderRadius.circular(36),
+      child: Container(
+        width: 64,
+        height: 64,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: _isDarkTheme ? Colors.white10 : Colors.black.withOpacity(0.05),
+        ),
+        child: Center(
+          child: Text(
+            val,
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: _isDarkTheme ? Colors.white : Colors.black87,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+
+  bool _isOnline = true;
+
+  Widget _buildLiveSyncBadge() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        color: (_isOnline ? Colors.green : Colors.orange).withOpacity(0.15),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: (_isOnline ? Colors.green : Colors.orange).withOpacity(0.4)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 8,
+            height: 8,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: _isOnline ? Colors.greenAccent : Colors.orangeAccent,
+            ),
+          ),
+          const SizedBox(width: 6),
+          Text(
+            _isOnline ? "Sincronizzato" : "Offline",
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              color: _isOnline ? Colors.greenAccent : Colors.orangeAccent,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+
+  String _formatValuta(double importo) {
+    bool isNegative = importo < 0;
+    double absVal = importo.abs();
+    List<String> parts = absVal.toStringAsFixed(2).split('.');
+    String intPart = parts[0];
+    String decPart = parts[1];
+
+    RegExp reg = RegExp(r'(\d+?)(?=(\d{3})+(?!\d))');
+    String formattedInt = intPart.replaceAllMapped(reg, (Match m) => '${m[1]}.');
+
+    String result = "${formattedInt},${decPart} €";
+    return isNegative ? "-$result" : result;
+  }
+
+  double? _parseImportoInput(String input) {
+    if (input.trim().isEmpty) return null;
+    String clean = input.replaceAll(' ', '').replaceAll('.', '').replaceAll(',', '.');
+    double? val = double.tryParse(clean);
+    if (val == null || val.isNaN || val.isInfinite || val < 0) return null;
+    return val;
+  }
+
+
   Widget _buildSubscriptionTracker() {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8),
@@ -554,6 +729,12 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               ),
               if (_isLockedByBiometrics) ...[
                 const SizedBox(height: 24),
+                TextButton.icon(
+                  onPressed: () => setState(() => _showPinInput = true),
+                  icon: const Icon(Icons.pin_rounded),
+                  label: const Text("Usa PIN di Backup"),
+                ),
+                const SizedBox(height: 12),
                 ElevatedButton.icon(
                   onPressed: _sbloccaBiometria,
                   icon: const Icon(Icons.fingerprint_rounded),
