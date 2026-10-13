@@ -380,6 +380,51 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
+  bool _isBiometricEnabled = false;
+
+  void _toggleBiometria(bool value) {
+    setState(() {
+      _isBiometricEnabled = value;
+    });
+  }
+
+  void _confermaResetGDPR() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: _isDarkTheme ? const Color(0xFF282035) : Colors.white,
+        title: Text(
+          "Cancellazione Dati (GDPR)",
+          style: TextStyle(color: _isDarkTheme ? Colors.white : Colors.black87),
+        ),
+        content: Text(
+          "Sei sicuro di voler eliminare tutti i dati locali ed il collegamento al caveau? L'azione è irreversibile.",
+          style: TextStyle(color: _isDarkTheme ? Colors.white70 : Colors.black54),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Annulla"),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
+            onPressed: () {
+              setState(() {
+                patrimonioCondiviso = 0.0;
+                entrateMese = 0.0;
+                usciteMese = 0.0;
+                _partnerEmail = "";
+              });
+              Navigator.pop(context);
+            },
+            child: const Text("Elimina Tutto", style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+  }
+
+
   Widget _buildSezioneMembriCaveau() {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 12),
