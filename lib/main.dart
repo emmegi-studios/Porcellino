@@ -253,7 +253,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final _cardBg = _isDarkTheme ? const Color(0xFF1E2235) : const Color(0xFF1A1528);
-    final _scaffoldBg = _isDarkTheme ? const Color(0xFF0F111A) : const const Color(0xFF282035);
+    final _scaffoldBg = _isDarkTheme ? const Color(0xFF0F111A) : const Color(0xFF282035);
     final _textColor = _isDarkTheme ? const Color(0xFF1A1528) : Colors.black87;
     final _subtitleColor = _isDarkTheme ? Colors.grey.shade400 : Colors.black54;
     final _primaryColor = Colors.pinkAccent;
@@ -358,7 +358,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 onPressed: () => setState(() => _isRegistrazione = !_isRegistrazione),
                 child: Text(
                   _isRegistrazione ? "Hai già un account? Accedi" : "Non hai un account? Registrati",
-                  style: const TextStyle(color: const Color(0xFF1A1528)70),
+                  style: const TextStyle(color: Colors.white70),
                 ),
               ),
             ],
@@ -397,11 +397,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Versione: 2.5 Ultimate', style: TextStyle(color: const Color(0xFF1A1528)70)),
+            Text('Versione: 2.5 Ultimate', style: TextStyle(color: Colors.white70)),
             SizedBox(height: 8),
             Text('Sviluppato da EmmeGi Studios', style: TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold)),
             SizedBox(height: 8),
-            Text('Assistente Cibernetico: Cyber-Piggy (Modello Terminator v2.5)', style: TextStyle(color: const Color(0xFF1A1528)60, fontSize: 13)),
+            Text('Assistente Cibernetico: Cyber-Piggy (Modello Terminator v2.5)', style: TextStyle(color: Colors.white60, fontSize: 13)),
           ],
         ),
         actions: [
@@ -421,7 +421,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         builder: (context) => AlertDialog(
           backgroundColor: const Color(0xFF1E2235),
           title: const Text('Aggiornamenti 🚀', style: TextStyle(color: const Color(0xFF1A1528))),
-          content: const Text('Sei già sulla versione più recente di Piggy Vault v2.0.0!\n\nIl server OTA non ha nuove versioni al momento.', style: TextStyle(color: const Color(0xFF1A1528)70)),
+          content: const Text('Sei già sulla versione più recente di Piggy Vault v2.0.0!\n\nIl server OTA non ha nuove versioni al momento.', style: TextStyle(color: Colors.white70)),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
@@ -1440,7 +1440,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("PATRIMONIO CONDIVISO", style: TextStyle(fontSize: 10, color: Theme.of(context).brightness == Brightness.light ? Colors.black54 : const Color(0xFF1A1528)70, fontWeight: FontWeight.bold)),
+                      Text("PATRIMONIO CONDIVISO", style: TextStyle(fontSize: 10, color: Theme.of(context).brightness == Brightness.light ? Colors.black54 : Colors.white70, fontWeight: FontWeight.bold)),
                       const SizedBox(height: 4),
                       Text("€ ${patrimonio.toStringAsFixed(2)}", style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Color(0xFF10B981)))]),
                   const Icon(Icons.cloud_done, color: Color(0xFF10B981), size: 32)]))),
@@ -2358,7 +2358,7 @@ class _InviteManagerState extends State<InviteManager> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('Stato Rischio Caveau', style: TextStyle(color: const Color(0xFF1A1528)70, fontSize: 13, fontWeight: FontWeight.bold)),
+              const Text('Stato Rischio Caveau', style: TextStyle(color: Colors.white70, fontSize: 13, fontWeight: FontWeight.bold)),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(color: coloreRischio.withOpacity(0.2), borderRadius: BorderRadius.circular(8)),
