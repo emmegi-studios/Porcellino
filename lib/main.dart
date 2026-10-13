@@ -380,6 +380,70 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
+  Widget _buildPiggyAIAvatarFX({bool isBig = false}) {
+    return Container(
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        boxShadow: [
+          BoxShadow(
+            color: Theme.of(context).primaryColor.withOpacity(0.4),
+            blurRadius: isBig ? 20 : 10,
+            spreadRadius: isBig ? 4 : 2,
+          ),
+        ],
+      ),
+      child: CircleAvatar(
+        radius: isBig ? 24 : 18,
+        backgroundColor: Theme.of(context).primaryColor,
+        child: const Icon(Icons.smart_toy_rounded, color: Colors.white, size: 22),
+      ),
+    );
+  }
+
+
+  Widget _buildHealthScoreBadge() {
+    double risparmio = entrateMese - usciteMese;
+    String stato = "Caveau Solido";
+    Color coloreStato = Colors.greenAccent;
+    IconData iconaStato = Icons.verified_user_rounded;
+
+    if (usciteMese > entrateMese && entrateMese > 0) {
+      stato = "Attento alle Spese";
+      coloreStato = Colors.orangeAccent;
+      iconaStato = Icons.warning_amber_rounded;
+    } else if (risparmio == 0 && usciteMese == 0) {
+      stato = "Pronto per iniziare";
+      coloreStato = Theme.of(context).primaryColor;
+      iconaStato = Icons.stars_rounded;
+    }
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: coloreStato.withOpacity(0.12),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: coloreStato.withOpacity(0.3)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(iconaStato, color: coloreStato, size: 16),
+          const SizedBox(width: 6),
+          Text(
+            stato,
+            style: TextStyle(
+              color: coloreStato,
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+
   Future<void> _aggiornaHomeWidget() async {
     try {
       await HomeWidget.saveWidgetData<double>('patrimonio', patrimonioCondiviso);
