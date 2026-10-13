@@ -357,7 +357,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 onPressed: () => setState(() => _isRegistrazione = !_isRegistrazione),
                 child: Text(
                   _isRegistrazione ? "Hai già un account? Accedi" : "Non hai un account? Registrati",
-                  style: const TextStyle(color: Colors.white70),
+                  style: TextStyle(color: Theme.of(context).brightness == Brightness.dark ? Colors.white70 : Color(0xFF666666)),
                 ),
               ),
             ],
@@ -998,7 +998,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   void _mostraModalProfilo() {
     showModalBottomSheet(context: context,
       isScrollControlled: true,
-      backgroundColor: const Color(0xFF1A1528),
+      backgroundColor: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF1A1528) : Colors.white,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder: (BuildContext context) {
         return Padding(
@@ -1049,7 +1049,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   void _mostraModalImpostazioni() {
     showModalBottomSheet(context: context,
       isScrollControlled: true,
-      backgroundColor: const Color(0xFF1A1528),
+      backgroundColor: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF1A1528) : Colors.white,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder: (BuildContext context) {
         return StatefulBuilder(
@@ -1132,7 +1132,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   void _mostraModalNuovoObiettivo() {
     showModalBottomSheet(context: context,
       isScrollControlled: true,
-      backgroundColor: const Color(0xFF1A1528),
+      backgroundColor: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF1A1528) : Colors.white,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder: (BuildContext context) {
         return Padding(
@@ -1204,7 +1204,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   void _mostraFoglioResoconto() {
     double bilancioNetto = entrateMese - usciteMese;
     showModalBottomSheet(context: context,
-      isScrollControlled: true, backgroundColor: const Color(0xFF1A1528),
+      isScrollControlled: true, backgroundColor: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF1A1528) : Colors.white,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
       builder: (context) {
         return Container(
@@ -1280,7 +1280,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   void _mostraModalInserimento() {
     showModalBottomSheet(context: context,
-      isScrollControlled: true, backgroundColor: const Color(0xFF1A1528),
+      isScrollControlled: true, backgroundColor: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF1A1528) : Colors.white,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
       builder: (context) {
         return Padding(
@@ -1825,7 +1825,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
     showModalBottomSheet(context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.transparent,
+      backgroundColor: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF1A1528) : Colors.white,
       builder: (context) {
         bool _isSpeaking = false;
         bool _isListening = false;
@@ -2373,13 +2373,15 @@ class _InviteManagerState extends State<InviteManager> {
 
 String _sanitizeTextForTTS(String input) {
   String clean = input;
+  clean = clean.replaceAll(RegExp(r'\\rightarrow|\\infty|\\|\$', caseSensitive: false), '');
+  clean = clean.replaceAll(RegExp(r'\*.*?\*'), '');
+  clean = clean.replaceAll(RegExp(r'\[.*?\]'), '');
   clean = clean.replaceAll(RegExp(r'\.exe', caseSensitive: false), '');
   clean = clean.replaceAll(RegExp(r'\*+'), '');
   clean = clean.replaceAll(RegExp(r'#+'), '');
-  clean = clean.replaceAll(RegExp(r'\$+'), '');
-  clean = clean.replaceAll(RegExp(r'\\[a-zA-Z]+'), '');
   clean = clean.replaceAll(RegExp(r'[\-\_]+'), ' ');
   clean = clean.replaceAll(RegExp(r'^\s*[\d\.\)]+\s*', multiLine: true), '');
+  clean = clean.replaceAll(RegExp(r'\b\d+\.\s*'), '');
   clean = clean.replaceAll(RegExp(r'[\(\)]'), '');
   return clean.trim();
 }
