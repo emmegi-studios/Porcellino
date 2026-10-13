@@ -336,7 +336,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   ? const CircularProgressIndicator()
                   : ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: _primaryColor,
                         minimumSize: const Size.fromHeight(52),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                       ),
@@ -638,7 +637,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             child: const Text("Annulla", style: TextStyle(color: Colors.grey)),
           ),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.pinkAccent),
             onPressed: () {
               final val = double.tryParse(controller.text);
               if (val != null && val > 0) {
@@ -819,7 +817,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         ),
         actions: [
           ElevatedButton.icon(
-            style: ElevatedButton.styleFrom(backgroundColor: _primaryColor),
             onPressed: () { HapticFeedback.lightImpact();
               Clipboard.setData(ClipboardData(text: csv));
               Navigator.pop(ctx);
@@ -999,9 +996,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   }
 
   void _mostraModalProfilo() {
-    showModalBottomSheet(backgroundColor: const Color(0xFF1A1528), context: context,
+    showModalBottomSheet(context: context,
       isScrollControlled: true,
-      backgroundColor: _cardBg,
+      backgroundColor: const Color(0xFF1A1528),
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder: (BuildContext context) {
         return Padding(
@@ -1050,9 +1047,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   }
 
   void _mostraModalImpostazioni() {
-    showModalBottomSheet(backgroundColor: const Color(0xFF1A1528), context: context,
+    showModalBottomSheet(context: context,
       isScrollControlled: true,
-      backgroundColor: _cardBg,
+      backgroundColor: const Color(0xFF1A1528),
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder: (BuildContext context) {
         return StatefulBuilder(
@@ -1096,7 +1093,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         ElevatedButton.icon(
-                          style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFC2185B)),
                           onPressed: () { HapticFeedback.lightImpact(); setState(() { _currentTheme = 'Piggy Dark'; }); SharedPreferences.getInstance().then((p) => p.setString("selectedTheme", _currentTheme)); Navigator.pop(context); },
                           icon: const Icon(Icons.dark_mode, color: Colors.white, size: 16),
                           label: const Text('Piggy Dark', style: TextStyle(color: Colors.white)),
@@ -1134,9 +1130,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
 
   void _mostraModalNuovoObiettivo() {
-    showModalBottomSheet(backgroundColor: const Color(0xFF1A1528), context: context,
+    showModalBottomSheet(context: context,
       isScrollControlled: true,
-      backgroundColor: _cardBg,
+      backgroundColor: const Color(0xFF1A1528),
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder: (BuildContext context) {
         return Padding(
@@ -1189,7 +1185,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         actions: [
           TextButton(onPressed: () => Navigator.pop(ctx), child: Text("Annulla", style: TextStyle(color: _subtitleColor))),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: _primaryColor),
             onPressed: () { HapticFeedback.lightImpact();
               double val = double.tryParse(fundController.text.replaceAll(',', '.')) ?? 0.0;
               if (val > 0) {
@@ -1208,8 +1203,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   void _mostraFoglioResoconto() {
     double bilancioNetto = entrateMese - usciteMese;
-    showModalBottomSheet(backgroundColor: const Color(0xFF1A1528), context: context,
-      isScrollControlled: true, backgroundColor: _cardBg,
+    showModalBottomSheet(context: context,
+      isScrollControlled: true, backgroundColor: const Color(0xFF1A1528),
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
       builder: (context) {
         return Container(
@@ -1284,8 +1279,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   }
 
   void _mostraModalInserimento() {
-    showModalBottomSheet(backgroundColor: const Color(0xFF1A1528), context: context,
-      isScrollControlled: true, backgroundColor: _cardBg,
+    showModalBottomSheet(context: context,
+      isScrollControlled: true, backgroundColor: const Color(0xFF1A1528),
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
       builder: (context) {
         return Padding(
@@ -1602,7 +1597,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                 child: Text("Annulla", style: TextStyle(color: _subtitleColor)),
                               ),
                               ElevatedButton(
-                                style: ElevatedButton.styleFrom(backgroundColor: _primaryColor),
                                 onPressed: () {
                                   if (titoloPromemoriaController.text.trim().isNotEmpty) {
                                     String titoloScadenza = titoloPromemoriaController.text.trim();
@@ -1829,7 +1823,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     final Color _bubbleAiBgModal = isDark ? const Color(0xFF2A2E43) : const Color(0xFFF1F5F9);
     final Color _inputFillColorModal = isDark ? const Color(0xFF2A2E43) : const Color(0xFFF8FAFC);
 
-    showModalBottomSheet(backgroundColor: const Color(0xFF1A1528), context: context,
+    showModalBottomSheet(context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) {
