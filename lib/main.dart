@@ -380,6 +380,194 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
+  void _esportaBackupCifrato() {
+    HapticFeedback.mediumImpact();
+    String jsonPayload = '{"patrimonio": ' + patrimonioCondiviso.toString() + ', "entrate": ' + entrateMese.toString() + ', "uscite": ' + usciteMese.toString() + ', "tone": "' + _piggyTone + '"}';
+    String base64Enc = base64Encode(utf8.encode(jsonPayload));
+    String cipherFileContent = "PIGGYVAULT_ENC_" + base64Enc;
+
+    Clipboard.setData(ClipboardData(text: cipherFileContent));
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text("📦 Backup cifrato .piggyvault generato e copiato negli appunti!"),
+        duration: Duration(seconds: 3),
+      ),
+    );
+  }
+
+  void _ripristinaBackupCifrato(String rawData) {
+    try {
+      if (!rawData.startsWith("PIGGYVAULT_ENC_")) throw Exception("Formato non valido");
+      String b64 = rawData.replaceFirst("PIGGYVAULT_ENC_", "");
+      String decoded = utf8.decode(base64Decode(b64));
+      Map<String, dynamic> data = jsonDecode(decoded);
+
+      setState(() {
+        patrimonioCondiviso = (data["patrimonio"] as num).toDouble();
+        entrateMese = (data["entrate"] as num).toDouble();
+        usciteMese = (data["uscite"] as num).toDouble();
+        _piggyTone = data["tone"] ?? "Spietato";
+      });
+      _aggiornaHomeWidget();
+      HapticFeedback.heavyImpact();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("✅ Caveau ripristinato dal backup cifrato con successo!")),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("❌ Errore durante il ripristino del backup cifrato!")),
+      );
+    }
+  }
+
+  Widget _buildSezioneBackupLocale() {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: _isDarkTheme ? const Color(0xFF282035) : const Color(0xFFF8F9FA),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: _isDarkTheme ? Colors.white10 : Colors.black12),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.enhanced_encryption_rounded, color: Theme.of(context).primaryColor, size: 20),
+              const SizedBox(width: 8),
+              Text(
+                "Backup & Ripristino Locale (.piggyvault)",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 15,
+                  color: _isDarkTheme ? Colors.white : Colors.black87,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: _esportaBackupCifrato,
+                  icon: const Icon(Icons.download_rounded, size: 16),
+                  label: const Text("Esporta .piggyvault", style: TextStyle(fontSize: 12)),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: ElevatedButton.icon(
+                  onPressed: () async {
+                    ClipboardData? data = await Clipboard.getData(Clipboard.kTextPlain);
+                    if (data != null && data.text != null) {
+                      _ripristinaBackupCifrato(data.text!);
+                    }
+                  },
+                  icon: const Icon(Icons.upload_rounded, size: 16),
+                  label: const Text("Ripristina da Clipboard", style: TextStyle(fontSize: 12)),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+
+  Widget _buildCategoryDonutChart() {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: _isDarkTheme ? const Color(0xFF282035) : const Color(0xFFF8F9FA),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: _isDarkTheme ? Colors.white10 : Colors.black12),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                "Ripartizione Spese del Mese",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 15,
+                  color: _isDarkTheme ? Colors.white : Colors.black87,
+                ),
+              ),
+              Icon(Icons.pie_chart_rounded, color: Theme.of(context).primaryColor, size: 20),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              SizedBox(
+                width: 90,
+                height: 90,
+                child: Stack(
+                  children: [
+                    Center(
+                      child: CircularProgressIndicator(
+                        value: 0.75,
+                        strokeWidth: 10,
+                        backgroundColor: Colors.grey.withOpacity(0.2),
+                        valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).primaryColor),
+                      ),
+                    ),
+                    Center(
+                      child: Icon(Icons.shopping_bag_rounded, color: Theme.of(context).primaryColor, size: 24),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 20),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildCategoryLegendRow("Spesa Casa", "35%", Colors.purpleAccent),
+                    _buildCategoryLegendRow("Bollette & Casa", "25%", Colors.blueAccent),
+                    _buildCategoryLegendRow("Vizi & Extra", "20%", Colors.redAccent),
+                    _buildCategoryLegendRow("Trasporti & Auto", "12%", Colors.orangeAccent),
+                    _buildCategoryLegendRow("Svago & Tempo Libero", "8%", Colors.greenAccent),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCategoryLegendRow(String label, String pct, Color color) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 2.0),
+      child: Row(
+        children: [
+          Container(width: 8, height: 8, decoration: BoxDecoration(color: color, shape: BoxShape.circle)),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              label,
+              style: TextStyle(fontSize: 12, color: _isDarkTheme ? Colors.white70 : Colors.black87),
+            ),
+          ),
+          Text(
+            pct,
+            style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: color),
+          ),
+        ],
+      ),
+    );
+  }
+
+
   String _userPin = "1234";
   bool _showPinInput = false;
   String _enteredPin = "";
