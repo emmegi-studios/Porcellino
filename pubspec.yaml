@@ -31,3 +31,11 @@ flutter:
     - assets/
     - assets/icon/
     - assets/images/
+
+
+flutter_native_splash:
+  color: "#1A1528"
+  color_dark: "#1A1528"
+  android_12:
+    color: "#1A1528"
+    color_dark: "#1A1528"
