@@ -1034,7 +1034,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 const SizedBox(height: 24),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.redAccent,
                     minimumSize: const Size(double.infinity, 50),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
@@ -1154,7 +1153,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   floatingLabelStyle: const TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold), fillColor: _scaffoldBg, filled: true)),
               const SizedBox(height: 24),
               ElevatedButton(
-                style: ElevatedButton.styleFrom(backgroundColor: _primaryColor, minimumSize: const Size(double.infinity, 50)),
+                style: ElevatedButton.styleFrom(minimumSize: const Size(double.infinity, 50)),
                 onPressed: () { HapticFeedback.lightImpact();
                   if (_goalNameController.text.isNotEmpty && _goalTargetController.text.isNotEmpty) {
                     setState(() {
@@ -1332,7 +1331,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 decoration: InputDecoration(labelText: "Note / Descrizione", labelStyle: TextStyle(color: _subtitleColor),
                   floatingLabelStyle: const TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold), filled: true, fillColor: _scaffoldBg, border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)))),
               ElevatedButton(
-                style: ElevatedButton.styleFrom(backgroundColor: _primaryColor, padding: const EdgeInsets.symmetric(vertical: 16), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
+                style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
                 onPressed: () { HapticFeedback.lightImpact();
                   final note = _noteController.text.trim();
                   final amount = double.tryParse(_amountController.text.trim().replaceAll(',', '.')) ?? 0.0;
@@ -1377,7 +1376,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     return Scaffold(
       backgroundColor: _scaffoldBg,
       appBar: AppBar(
-        backgroundColor: _cardBg,
         title: Row(
           children: [
             ClipRRect(
@@ -1413,7 +1411,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             onPressed: _mostraModalImpostazioni)]),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _mostraPiggyAI(context, _isDarkTheme),
-        backgroundColor: Colors.pinkAccent,
         elevation: 6,
         child: ClipOval(
           child: Image.asset(
@@ -1497,7 +1494,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                           ]
                         ),
                         const SizedBox(height: 4),
-                        LinearProgressIndicator(value: goal['target'] > 0 ? (goal['attuale'] / goal['target']).clamp(0.0, 1.0) : 0.0, backgroundColor: _scaffoldBg, color: _primaryColor, minHeight: 6),
+                        LinearProgressIndicator(value: goal['target'] > 0 ? (goal['attuale'] / goal['target']).clamp(0.0, 1.0) : 0.0, color: _primaryColor, minHeight: 6),
                         Align(
                           alignment: Alignment.centerRight,
                           child: TextButton(
