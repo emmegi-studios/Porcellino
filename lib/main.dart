@@ -1573,7 +1573,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
                         showDialog(
                           context: context,
-                          builder: (context) => AlertDialog(
+                          builder: (context) => Container(color: const Color(0xFF1A1528)), AlertDialog(
                             backgroundColor: _cardBg,
                             title: Text("Aggiungi Scadenza", style: TextStyle(color: _textColor)),
                             content: Column(
