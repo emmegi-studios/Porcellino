@@ -380,6 +380,19 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
+  Future<void> _aggiornaHomeWidget() async {
+    try {
+      await HomeWidget.saveWidgetData<double>('patrimonio', patrimonioCondiviso);
+      await HomeWidget.saveWidgetData<double>('uscite', usciteMese);
+      await HomeWidget.saveWidgetData<double>('entrate', entrateMese);
+      await HomeWidget.updateWidget(
+        name: 'PiggyVaultWidgetProvider',
+        iOSName: 'PiggyVaultWidget',
+      );
+    } catch (_) {}
+  }
+
+
   bool _isBiometricEnabled = false;
 
   void _toggleBiometria(bool value) {
@@ -430,7 +443,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       margin: const EdgeInsets.symmetric(vertical: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: _isDarkTheme ? const Color(0xFF282035) : const Color(0xFFF8F9FA),
+        color: _isDarkTheme ? const Color(0xFF282035) : const _isDarkTheme ? const Color(0xFF282035) : const Color(0xFFF8F9FA),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: _isDarkTheme ? Colors.white10 : Colors.black12,
@@ -532,26 +545,44 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   void _eseguiComandoAISePresente(String testoIn) {
     String lower = testoIn.toLowerCase();
     
-    // Cambio Tema
+    // A. Controllo Cambio Tema
     if (lower.contains("tema chiaro") || lower.contains("modalità chiara") || lower.contains("piggy white")) {
       setState(() => _isDarkTheme = false);
     } else if (lower.contains("tema scuro") || lower.contains("modalità scura") || lower.contains("piggy dark")) {
       setState(() => _isDarkTheme = true);
     }
 
-    // Parsing vocale veloce spese/entrate
-    RegExp expSpesa = RegExp(r'(?:speso|uscita|pagato)\s*(\d+(?:[\.,]\d+)?)\s*(?:euro|€)?(?:\s*per\s*(.*))?', caseSensitive: false);
+    // B. Parsing Spese / Uscite Vocali
+    RegExp expSpesa = RegExp(r'(?:speso|uscita|pagato|comprato)\s*(\d+(?:[\.,]\d+)?)\s*(?:euro|€)?(?:\s*per\s*(.*))?', caseSensitive: false);
     Match? matchSpesa = expSpesa.firstMatch(lower);
     if (matchSpesa != null) {
       try {
         double val = double.parse(matchSpesa.group(1)!.replaceAll(',', '.'));
-        String cat = matchSpesa.group(2) ?? "Generale";
         setState(() {
           usciteMese += val;
           patrimonioCondiviso -= val;
         });
+        _aggiornaHomeWidget();
+        return;
       } catch (e) {}
     }
+
+    // C. Parsing Entrate / Incassi Vocali
+    RegExp expEntrata = RegExp(r'(?:incassato|entrata|stipendio|ricevuto|guadagnato)\s*(\d+(?:[\.,]\d+)?)\s*(?:euro|€)?', caseSensitive: false);
+    Match? matchEntrata = expEntrata.firstMatch(lower);
+    if (matchEntrata != null) {
+      try {
+        double val = double.parse(matchEntrata.group(1)!.replaceAll(',', '.'));
+        setState(() {
+          entrateMese += val;
+          patrimonioCondiviso += val;
+        });
+        _aggiornaHomeWidget();
+        return;
+      } catch (e) {}
+    }
+  }
+
   }
 
 
@@ -714,7 +745,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     try {
       final user = FirebaseAuth.instance.currentUser;
       if (user != null) {
-        final doc = await FirebaseFirestore.instance.collection('users_budget').doc(user.uid).get();
+        final doc = await /* Offline First */
+    FirebaseFirestore.instance.settings = const Settings(persistenceEnabled: true);
+    FirebaseFirestore.instance.collection('users_budget').doc(user.uid).get();
         if (doc.exists && doc.data()!.containsKey('promemoria')) {
           List<dynamic> listaCloud = doc.data()!['promemoria'];
           setState(() {
