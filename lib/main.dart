@@ -380,6 +380,93 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
+  Widget _buildSezioneMembriCaveau() {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: _isDarkTheme ? const Color(0xFF282035) : const Color(0xFFF8F9FA),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: _isDarkTheme ? Colors.white10 : Colors.black12,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.people_alt_rounded, color: Theme.of(context).primaryColor, size: 20),
+              const SizedBox(width: 8),
+              Text(
+                "Membri del Caveau Condiviso",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 15,
+                  color: _isDarkTheme ? Colors.white : Colors.black87,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          ListTile(
+            contentPadding: EdgeInsets.zero,
+            leading: CircleAvatar(
+              backgroundColor: Theme.of(context).primaryColor.withOpacity(0.2),
+              child: Icon(Icons.person, color: Theme.of(context).primaryColor),
+            ),
+            title: Text(
+              _emailUtente.isNotEmpty ? _emailUtente : "Tu (Proprietario)",
+              style: TextStyle(
+                color: _isDarkTheme ? Colors.white : Colors.black87,
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            subtitle: const Text("Proprietario Caveau", style: TextStyle(fontSize: 12, color: Colors.grey)),
+            trailing: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: Colors.green.withOpacity(0.15),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Text("Attivo", style: TextStyle(color: Colors.green, fontSize: 11, fontWeight: FontWeight.bold)),
+            ),
+          ),
+          if (_partnerEmail.isNotEmpty) ...[
+            const Divider(),
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: const CircleAvatar(
+                backgroundColor: Color(0xFFEFE8FA),
+                child: Icon(Icons.favorite, color: Colors.pinkAccent, size: 18),
+              ),
+              title: Text(
+                _partnerEmail,
+                style: TextStyle(
+                  color: _isDarkTheme ? Colors.white : Colors.black87,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              subtitle: const Text("Partner Connesso", style: TextStyle(fontSize: 12, color: Colors.grey)),
+              trailing: IconButton(
+                icon: const Icon(Icons.link_off_rounded, color: Colors.redAccent, size: 20),
+                onPressed: () {
+                  setState(() {
+                    _partnerEmail = "";
+                  });
+                },
+                tooltip: "Scollega Partner",
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+
   void _generaConsiglioDinamico(String tipo) {
     double entrate = entrateMese;
     double uscite = usciteMese;
