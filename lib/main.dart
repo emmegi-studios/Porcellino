@@ -379,6 +379,17 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
+  String _piggyTone = 'Spietato';
+
+  String _getSystemPromptForCurrentTone() {
+    String baseIdentity = "Sei ESCLUSIVAMENTE 'Piggy AI', il salvadanaio e assistente finanziario personale e intelligente di Piggy Vault. Non menzionare MAI Gemini, Google, modelli linguistici o intelligenza artificiale. La tua unica ed esplicita identita e Piggy AI. TASSATIVO: Scrivi SEMPRE ed ESCLUSIVAMENTE in testo fluido in italiano, senza elenchi puntati o sintassi markdown. ";
+    switch (_piggyTone) {
+      case "Ironico": return baseIdentity + "Sei in modalita Ironica e Pungente sui vizi dell'utente.";
+      case "Fiscale": return baseIdentity + "Sei in modalita Fiscale e Pignola come un commercialista.";
+      case "Chill": return baseIdentity + "Sei in modalita Chill e Amiccone, rilassato e incoraggiante.";
+      default: return baseIdentity + "Sei in modalita Spietata e Diretta, cinico sulle spese sconsiderate.";
+    }
+  }
 
     Future<void> _mostraInfoApp(BuildContext context) async {
     showDialog(
@@ -1854,7 +1865,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               
               // CHIAMATA ESCLUSIVA A GEMINI 1.5 FLASH
               try {
-                String systemPrompt = 'Sei Piggy AI, l intelligenza artificiale cibernetica ufficiale del sistema Piggy Vault. '
+                String systemPrompt = _getSystemPromptForCurrentTone() + ' '
                                      'I tuoi dati reali finanziari del caveau dell utente sono: ' + jsonEncode(caveauSnapshot) + '. '
                                      'Rispondi sempre in italiano in modo intelligente, dinamico, cibernetico ed empatico. '
                                      'Interpreta qualsiasi messaggio dell utente in tempo reale. Non usare mai frasi o template predefiniti. ';
