@@ -2,11 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:local_auth/local_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:home_widget/home_widget.dart';
-import 'package:speech_to_text/speech_to_text.dart';
-import 'package:flutter_tts/flutter_tts.dart';
 import 'dart:convert';
 import 'dart:io';
 
@@ -48,48 +44,19 @@ class AuthScreen extends StatefulWidget {
 }
 
 class _AuthScreenState extends State<AuthScreen> {
-  final LocalAuthentication auth = LocalAuthentication();
   final TextEditingController _pinController = TextEditingController();
-  bool _isPinMode = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _checkBiometrics();
-  }
-
-  Future<void> _checkBiometrics() async {
-    try {
-      bool canAuthenticate = await auth.canCheckBiometrics || await auth.isDeviceSupported();
-      if (canAuthenticate) {
-        bool didAuthenticate = await auth.authenticate(
-          localizedReason: 'Autenticati per accedere a Piggy Vault',
-          options: const AuthenticationOptions(biometricOnly: false, stickyAuth: true),
-        );
-        if (didAuthenticate) {
-          _navigateToHome();
-        }
-      }
-    } catch (e) {
-      setState(() { _isPinMode = true; });
-    }
-  }
 
   void _verifyPin() {
     if (_pinController.text == "1234") {
-      _navigateToHome();
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const HomeScreen(userEmail: "marco@piggyvault.app")),
+      );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("PIN errato. Usa 1234 di default.")),
       );
     }
-  }
-
-  void _navigateToHome() {
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => const HomeScreen(userEmail: "marco@piggyvault.app")),
-    );
   }
 
   @override
@@ -107,14 +74,6 @@ class _AuthScreenState extends State<AuthScreen> {
               const SizedBox(height: 10),
               const Text("Il tuo salvadanaio e assistente finanziario", style: TextStyle(color: Colors.grey)),
               const SizedBox(height: 40),
-              if (!_isPinMode)
-                ElevatedButton.icon(
-                  onPressed: _checkBiometrics,
-                  icon: const Icon(Icons.fingerprint),
-                  label: const Text("Accedi con Biometria"),
-                  style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFE91E63), foregroundColor: Colors.white),
-                ),
-              const SizedBox(height: 20),
               TextField(
                 controller: _pinController,
                 obscureText: true,
@@ -124,10 +83,15 @@ class _AuthScreenState extends State<AuthScreen> {
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                 ),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 16),
               ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFE91E63),
+                  foregroundColor: Colors.white,
+                  minimumSize: const Size(double.infinity, 50),
+                ),
                 onPressed: _verifyPin,
-                child: const Text("Sblocca con PIN"),
+                child: const Text("Sblocca Caveau", style: TextStyle(fontWeight: FontWeight.bold)),
               ),
             ],
           ),
@@ -150,9 +114,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   double entrateMese = 2400.0;
   double usciteMese = 1150.0;
   String _currentTheme = 'Piggy Dark';
-  String _piggyTone = "Spietato";
   String _nomeUtenteDinamico = "Marco";
-  bool isAiLoading = false;
   
   List<dynamic> transazioni = [
     {"category": "🛒 Spesa", "note": "Supermercato", "amount": 85.50, "type": "Uscita (Spesa)", "author": "Marco"},
@@ -172,8 +134,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   final TextEditingController _amountController = TextEditingController();
   final TextEditingController _noteController = TextEditingController();
-  final TextEditingController _goalNameController = TextEditingController();
-  final TextEditingController _goalTargetController = TextEditingController();
   
   String _selectedType = 'Uscita (Spesa)';
   String _selectedCategory = '🛒 Spesa';
@@ -202,29 +162,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
-  }
-
-  void _mostraModalProfilo() {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: _cardBg,
-      builder: (context) => Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text("Profilo Utente", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: _textColor)),
-            const SizedBox(height: 10),
-            Text("Email: ${widget.userEmail}", style: TextStyle(color: _subtitleColor)),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text("Chiudi"),
-            )
-          ],
-        ),
-      ),
-    );
   }
 
   void _mostraModalImpostazioni() {
@@ -264,71 +201,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  void _mostraModalNuovoObiettivo() {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: _cardBg,
-      builder: (context) => Padding(
-        padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom, left: 16, right: 16, top: 24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text("🎯 Nuovo Obiettivo", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: _textColor)),
-            const SizedBox(height: 16),
-            TextField(controller: _goalNameController, style: TextStyle(color: _textColor), decoration: InputDecoration(labelText: 'Nome Obiettivo')),
-            const SizedBox(height: 12),
-            TextField(controller: _goalTargetController, keyboardType: TextInputType.number, style: TextStyle(color: _textColor), decoration: InputDecoration(labelText: 'Target in €')),
-            const SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: () {
-                if (_goalNameController.text.isNotEmpty && _goalTargetController.text.isNotEmpty) {
-                  setState(() {
-                    portafogli.add({
-                      'nome': _goalNameController.text.trim(),
-                      'target': double.tryParse(_goalTargetController.text.replaceAll(',', '.')) ?? 0.0,
-                      'attuale': 0.0
-                    });
-                  });
-                  _goalNameController.clear();
-                  _goalTargetController.clear();
-                  Navigator.pop(context);
-                }
-              },
-              child: const Text("Crea Obiettivo"),
-            ),
-            const SizedBox(height: 24),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _aggiungiFondiObiettivo(int index) {
-    final TextEditingController fundController = TextEditingController();
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: _cardBg,
-        title: Text("Finanzia: ${portafogli[index]['nome']}", style: TextStyle(color: _textColor)),
-        content: TextField(controller: fundController, keyboardType: TextInputType.number, style: TextStyle(color: _textColor)),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text("Annulla")),
-          ElevatedButton(
-            onPressed: () {
-              double val = double.tryParse(fundController.text.replaceAll(',', '.')) ?? 0.0;
-              if (val > 0) {
-                setState(() { portafogli[index]['attuale'] += val; });
-                Navigator.pop(ctx);
-              }
-            },
-            child: const Text("Aggiungi"),
-          )
-        ],
       ),
     );
   }
@@ -379,6 +251,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             ),
             const SizedBox(height: 16),
             ElevatedButton(
+              style: ElevatedButton.styleFrom(backgroundColor: _primaryColor),
               onPressed: () {
                 final note = _noteController.text.trim();
                 final amount = double.tryParse(_amountController.text.trim().replaceAll(',', '.')) ?? 0.0;
@@ -404,7 +277,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   Navigator.pop(context);
                 }
               },
-              child: const Text("Registra Transazione"),
+              child: const Text("Registra Transazione", style: TextStyle(color: Colors.white)),
             )
           ],
         ),
@@ -426,7 +299,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             const SizedBox(height: 12),
             Text("Piggy AI Assistant", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: _textColor)),
             const SizedBox(height: 12),
-            Text("Ciao Marco! Analizzando il tuo caveau, la gestione finanziaria è stabile. Continua così e tieni d'occhio le spese superflue.", style: TextStyle(color: _subtitleColor)),
+            Text("Analisi completata: il bilancio del caveau è stabile e sotto controllo.", style: TextStyle(color: _subtitleColor)),
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () => Navigator.pop(context),
@@ -513,9 +386,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           ),
           const SizedBox(height: 16),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: _primaryColor),
+            style: ElevatedButton.styleFrom(backgroundColor: _primaryColor, padding: const EdgeInsets.symmetric(vertical: 14)),
             onPressed: _mostraModalInserimento,
-            child: const Text("+ Nuova Transazione", style: TextStyle(color: Colors.white)),
+            child: const Text("+ Nuova Transazione", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
           ),
           const SizedBox(height: 16),
           Text("Ultime Transazioni", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: _textColor)),
