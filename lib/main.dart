@@ -1115,115 +1115,78 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Movimento eliminato e sincronizzato")));
   }
 
-    void _mostraDettaglioLivello(String titolo, String targetStr, IconData icona, Color colore) {
+      void _mostraDettaglioLivello(String titolo, String targetStr, String descrizione, IconData icona, Color colore) {
     double targetVal = 1000.0;
-    String descrizione = "Fondo di emergenza per imprevisti improvvisi.";
-    
-    if (targetStr.contains("10.000") || targetStr.contains("10k")) {
-      targetVal = 10000.0;
-      descrizione = "Cuscino di sicurezza per vivere qualche mese senza pensieri.";
-    } else if (targetStr.contains("50.000") || targetStr.contains("50k")) {
-      targetVal = 50000.0;
-      descrizione = "Fortezza finanziaria solida per investimenti e grandi progetti.";
-    } else if (targetStr.contains("100.000") || targetStr.contains("100k")) {
-      targetVal = 100000.0;
-      descrizione = "Livello Porcellone Supremo! Indipendenza e massima sicurezza.";
-    }
+    if (targetStr.contains("10.000") || targetStr.contains("10k")) targetVal = 10000.0;
+    else if (targetStr.contains("50.000") || targetStr.contains("50k")) targetVal = 50000.0;
+    else if (targetStr.contains("100.000") || targetStr.contains("100k")) targetVal = 100000.0;
 
     double pct = targetVal > 0 ? (patrimonio / targetVal).clamp(0.0, 1.0) : 1.0;
-    double manca = targetVal - patrimonio;
     bool raggiunto = patrimonio >= targetVal;
 
     String commentoAI = "";
-    switch (_piggyTone) {
-      case "Ironico":
-        commentoAI = raggiunto ? "Hai persino raggiunto il target! Incredibile, chi l'avrebbe mai detto." : "Ancora ne manca di strada... chiudi il portafoglio!";
-        break;
-      case "Fiscale":
-        commentoAI = raggiunto ? "Obiettivo conforme. Mantieni questo saldo nei limiti prescritti." : "Scostamento dal target: -€${manca.toStringAsFixed(2)}.";
-        break;
-      case "Chill":
-        commentoAI = raggiunto ? "Grande! Obiettivo sbloccato in pieno relax 🌴" : "Tranquillo, passo dopo passo ci arriviamo senza stress.";
-        break;
-      default: // Spietato
-        commentoAI = raggiunto ? "Non adagiarti sugli allori, continua a risparmiare." : "Ti mancano ben €${manca.toStringAsFixed(2)}. Meno aperitivi, più rigore.";
-    }
+    try {
+      switch (_piggyTone) {
+        case "Ironico": commentoAI = raggiunto ? "Target raggiunto! Chi l'avrebbe mai detto." : "Ancora ne manca di strada..."; break;
+        case "Fiscale": commentoAI = raggiunto ? "Obiettivo conforme." : "Scostamento dal target rilevato."; break;
+        case "Chill": commentoAI = raggiunto ? "Grande! Obiettivo sbloccato 🌴" : "Tranquillo, passo dopo passo ci arriviamo."; break;
+        default: commentoAI = raggiunto ? "Non adagiarti sugli allori." : "Meno aperitivi, più rigore.";
+      }
+    } catch(e) {}
 
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: _cardBg,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Row(
-          children: [
-            Icon(icona, color: colore, size: 28),
-            const SizedBox(width: 10),
-            Expanded(child: Text(titolo, style: TextStyle(color: _textColor, fontSize: 18, fontWeight: FontWeight.bold))),
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: const Color(0xFF1A1528),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          title: Row(
+            children: [
+              Icon(icona, color: colore, size: 28),
+              const SizedBox(width: 10),
+              Expanded(child: Text(titolo, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold))),
+            ],
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text("Obiettivo: $targetStr", style: const TextStyle(color: Colors.amber, fontWeight: FontWeight.bold, fontSize: 14)),
+              const SizedBox(height: 10),
+              Text(descrizione, style: const TextStyle(color: Colors.white70, fontSize: 13)),
+              const SizedBox(height: 16),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(6),
+                child: LinearProgressIndicator(
+                  value: pct,
+                  backgroundColor: Colors.black26,
+                  valueColor: AlwaysStoppedAnimation<Color>(raggiunto ? Colors.amber : Colors.blue),
+                  minHeight: 8,
+                ),
+              ),
+              const SizedBox(height: 14),
+              if (commentoAI.isNotEmpty)
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(color: Colors.black12, borderRadius: BorderRadius.circular(10)),
+                  child: Row(
+                    children: [
+                      const Text("🐷 ", style: TextStyle(fontSize: 16)),
+                      Expanded(child: Text(commentoAI, style: const TextStyle(color: Colors.white70, fontSize: 11, fontStyle: FontStyle.italic))),
+                    ],
+                  ),
+                ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("Chiudi", style: TextStyle(color: Colors.amber, fontWeight: FontWeight.bold)),
+            )
           ],
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text("Target da raggiungere: $targetStr", style: TextStyle(color: _primaryColor, fontWeight: FontWeight.bold, fontSize: 14)),
-            const SizedBox(height: 8),
-            Text(descrizione, style: TextStyle(color: _textColor, fontSize: 13)),
-            const SizedBox(height: 16),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(6),
-              child: LinearProgressIndicator(
-                value: pct,
-                backgroundColor: _scaffoldBg,
-                valueColor: AlwaysStoppedAnimation<Color>(raggiunto ? Colors.amber : _primaryColor),
-                minHeight: 8,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text("${(pct * 100).toStringAsFixed(1)}% completato", style: TextStyle(color: _subtitleColor, fontSize: 11)),
-                Text("€${patrimonio.toStringAsFixed(2)} / €${targetVal.toStringAsFixed(0)}", style: TextStyle(color: _textColor, fontWeight: FontWeight.bold, fontSize: 11)),
-              ],
-            ),
-            const SizedBox(height: 14),
-            Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: _scaffoldBg,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Row(
-                children: [
-                  const Text("🐷 ", style: TextStyle(fontSize: 16)),
-                  Expanded(child: Text(commentoAI, style: TextStyle(color: _subtitleColor, fontSize: 11, fontStyle: FontStyle.italic))),
-                ],
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text("Capito", style: TextStyle(color: _primaryColor, fontWeight: FontWeight.bold)),
-          )
-        ],
-      ),
+        );
+      },
     );
-  }
-
-  void _simulaAI(String spesaStr) {
-    if (spesaStr.isEmpty) return;
-    double valore = double.tryParse(spesaStr.replaceAll(',', '.')) ?? 0.0;
-    setState(() => isAiLoading = true);
-    
-    Future.delayed(const Duration(milliseconds: 700), () {
-      setState(() {
-        isAiLoading = false;
-        double impatto = patrimonio > 0 ? (valore / patrimonio) * 100 : 0;
-        aiPurchaseResult = "🤖 Consulente IA:\nUna spesa di €$valore impatta sul patrimonio comune per il ${impatto.toStringAsFixed(1)}%. Valutatela insieme!";
-      });
-    });
   }
 
   void _mostraModalProfilo() {
@@ -2525,13 +2488,13 @@ class _InviteManagerState extends State<InviteManager> {
       if (isLoggedIn) {
         String oraAgg = "${DateTime.now().hour}:${DateTime.now().minute.toString().padLeft(2, '0')}";
     await HomeWidget.saveWidgetData<String>('widget_patrimonio', '€ ' + patrimonio.toStringAsFixed(2));
-    await HomeWidget.saveWidgetData<String>('widget_entrate', '+€ ' + entrateMese.toStringAsFixed(2));
-    await HomeWidget.saveWidgetData<String>('widget_uscite', '-€ ' + usciteMese.toStringAsFixed(2));
-    await HomeWidget.saveWidgetData<String>('widget_status', 'Piggy AI ($_piggyTone) • $oraAgg');
+    await HomeWidget.saveWidgetData<String>('widget_entrate', '');
+    await HomeWidget.saveWidgetData<String>('widget_uscite', '');
+    await HomeWidget.saveWidgetData<String>('widget_status', 'In attesa di accesso...');
     await HomeWidget.saveWidgetData<bool>('widget_logged', true);
       } else {
         await HomeWidget.saveWidgetData<String>('widget_patrimonio', '🔒 Caveau Bloccato');
-        await HomeWidget.saveWidgetData<String>('widget_status', 'Effettua il login in app');
+        await HomeWidget.saveWidgetData<String>('widget_status', 'In attesa di accesso...');
         await HomeWidget.saveWidgetData<bool>('widget_logged', false);
       }
       await HomeWidget.updateWidget(
