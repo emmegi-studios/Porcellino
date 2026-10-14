@@ -563,7 +563,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     }
   }
 
-  Future<void> _salvaPromemoriaSuCloud() async {
+    Future<void> _salvaPromemoriaSuCloud() async {
     try {
       final user = FirebaseAuth.instance.currentUser;
       if (user != null) {
@@ -572,8 +572,155 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         }, SetOptions(merge: true));
       }
     } catch (e) {
-      print("Errore salvataggio promemoria cloud: $e");
+      debugPrint("Errore salvataggio promemoria cloud: $e");
     }
+  }
+
+  void _mostraModalAggiungiPromemoria() {
+    TextEditingController titoloCtrl = TextEditingController();
+    TextEditingController importoCtrl = TextEditingController();
+    DateTime dataSelezionata = DateTime.now().add(const Duration(days: 7));
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: _cardBg,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+      builder: (context) => StatefulBuilder(
+        builder: (context, setModalState) {
+          String commentoAI = "";
+          switch (_piggyTone) {
+            case "Ironico":
+              commentoAI = "Un'altra scadenza? Spero non sia l'ennesimo abbonamento dimenticato...";
+              break;
+            case "Fiscale":
+              commentoAI = "Registrazione del debito futuro per corretta pianificazione del bilancio.";
+              break;
+            case "Chill":
+              commentoAI = "Tranquillo, mettiamo un promemoria così te ne dimentichi senza ansia!";
+              break;
+            default: // Spietato
+              commentoAI = "Vedi di pagarla in tempo, niente scuse o interessi di mora!";
+          }
+
+          return Padding(
+            padding: EdgeInsets.only(
+              top: 20, left: 20, right: 20,
+              bottom: MediaQuery.of(context).viewInsets.bottom + 20,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text("⏰ Nuova Scadenza", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: _textColor)),
+                    IconButton(
+                      icon: const Icon(Icons.close, size: 20),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(color: _scaffoldBg, borderRadius: BorderRadius.circular(10)),
+                  child: Row(
+                    children: [
+                      const Text("🐷 ", style: TextStyle(fontSize: 16)),
+                      Expanded(child: Text(commentoAI, style: TextStyle(color: _subtitleColor, fontSize: 11, fontStyle: FontStyle.italic))),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: titoloCtrl,
+                  style: TextStyle(color: _textColor),
+                  decoration: InputDecoration(
+                    labelText: "Descrizione Scadenza (es. Bolletta Luce)",
+                    labelStyle: TextStyle(color: _subtitleColor),
+                    filled: true,
+                    fillColor: _scaffoldBg,
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: importoCtrl,
+                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  style: TextStyle(color: _textColor),
+                  decoration: InputDecoration(
+                    labelText: "Importo stimato (€)",
+                    labelStyle: TextStyle(color: _subtitleColor),
+                    filled: true,
+                    fillColor: _scaffoldBg,
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text("Data: ${dataSelezionata.day.toString().padLeft(2, '0')}/${dataSelezionata.month.toString().padLeft(2, '0')}/${dataSelezionata.year}",
+                         style: TextStyle(color: _textColor, fontWeight: FontWeight.bold)),
+                    TextButton.icon(
+                      icon: const Icon(Icons.calendar_today, size: 16),
+                      label: const Text("Cambia Data"),
+                      onPressed: () async {
+                        DateTime? picked = await showDatePicker(
+                          context: context,
+                          initialDate: dataSelezionata,
+                          firstDate: DateTime.now(),
+                          lastDate: DateTime(2030),
+                        );
+                        if (picked != null) {
+                          setModalState(() { dataSelezionata = picked; });
+                        }
+                      },
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: _primaryColor,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                    onPressed: () {
+                      if (titoloCtrl.text.trim().isEmpty) return;
+                      double imp = double.tryParse(importoCtrl.text.replaceAll(',', '.')) ?? 0.0;
+                      
+                      Map<String, dynamic> item = {
+                        "titolo": titoloCtrl.text.trim(),
+                        "importo": imp,
+                        "data": "${dataSelezionata.day.toString().padLeft(2, '0')}/${dataSelezionata.month.toString().padLeft(2, '0')}/${dataSelezionata.year}",
+                        "completato": false,
+                        "creatoIl": DateTime.now().toIso8601String(),
+                      };
+
+                      setState(() {
+                        _promemoria.add(item);
+                      });
+                      _salvaPromemoriaSuCloud();
+                      Navigator.pop(context);
+
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text("⏰ Scadenza registrata e sincronizzata su Cloud!")),
+                      );
+                    },
+                    child: const Text("Salva Scadenza", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
   }
 
 
@@ -968,28 +1115,101 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Movimento eliminato e sincronizzato")));
   }
 
-  void _mostraDettaglioLivello(String titolo, String target, String descrizione, IconData icona, Color colore) {
+    void _mostraDettaglioLivello(String titolo, String targetStr, IconData icona, Color colore) {
+    double targetVal = 1000.0;
+    String descrizione = "Fondo di emergenza per imprevisti improvvisi.";
+    
+    if (targetStr.contains("10.000") || targetStr.contains("10k")) {
+      targetVal = 10000.0;
+      descrizione = "Cuscino di sicurezza per vivere qualche mese senza pensieri.";
+    } else if (targetStr.contains("50.000") || targetStr.contains("50k")) {
+      targetVal = 50000.0;
+      descrizione = "Fortezza finanziaria solida per investimenti e grandi progetti.";
+    } else if (targetStr.contains("100.000") || targetStr.contains("100k")) {
+      targetVal = 100000.0;
+      descrizione = "Livello Porcellone Supremo! Indipendenza e massima sicurezza.";
+    }
+
+    double pct = targetVal > 0 ? (patrimonio / targetVal).clamp(0.0, 1.0) : 1.0;
+    double manca = targetVal - patrimonio;
+    bool raggiunto = patrimonio >= targetVal;
+
+    String commentoAI = "";
+    switch (_piggyTone) {
+      case "Ironico":
+        commentoAI = raggiunto ? "Hai persino raggiunto il target! Incredibile, chi l'avrebbe mai detto." : "Ancora ne manca di strada... chiudi il portafoglio!";
+        break;
+      case "Fiscale":
+        commentoAI = raggiunto ? "Obiettivo conforme. Mantieni questo saldo nei limiti prescritti." : "Scostamento dal target: -€${manca.toStringAsFixed(2)}.";
+        break;
+      case "Chill":
+        commentoAI = raggiunto ? "Grande! Obiettivo sbloccato in pieno relax 🌴" : "Tranquillo, passo dopo passo ci arriviamo senza stress.";
+        break;
+      default: // Spietato
+        commentoAI = raggiunto ? "Non adagiarti sugli allori, continua a risparmiare." : "Ti mancano ben €${manca.toStringAsFixed(2)}. Meno aperitivi, più rigore.";
+    }
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: _cardBg,
-        title: Wrap(alignment: WrapAlignment.center, spacing: 12.0, runSpacing: 12.0, children: [
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Row(
+          children: [
             Icon(icona, color: colore, size: 28),
             const SizedBox(width: 10),
-            Text(titolo, style: TextStyle(color: _textColor, fontSize: 18))]),
+            Expanded(child: Text(titolo, style: TextStyle(color: _textColor, fontSize: 18, fontWeight: FontWeight.bold))),
+          ],
+        ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("Obiettivo del livello: $target", style: TextStyle(color: _primaryColor, fontWeight: FontWeight.bold, fontSize: 14)),
-            const SizedBox(height: 12),
+            Text("Target da raggiungere: $targetStr", style: TextStyle(color: _primaryColor, fontWeight: FontWeight.bold, fontSize: 14)),
+            const SizedBox(height: 8),
             Text(descrizione, style: TextStyle(color: _textColor, fontSize: 13)),
             const SizedBox(height: 16),
-            Text("Patrimonio condiviso attuale: €${patrimonio.toStringAsFixed(2)}", style: TextStyle(color: _subtitleColor, fontSize: 12))]),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(6),
+              child: LinearProgressIndicator(
+                value: pct,
+                backgroundColor: _scaffoldBg,
+                valueColor: AlwaysStoppedAnimation<Color>(raggiunto ? Colors.amber : _primaryColor),
+                minHeight: 8,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text("${(pct * 100).toStringAsFixed(1)}% completato", style: TextStyle(color: _subtitleColor, fontSize: 11)),
+                Text("€${patrimonio.toStringAsFixed(2)} / €${targetVal.toStringAsFixed(0)}", style: TextStyle(color: _textColor, fontWeight: FontWeight.bold, fontSize: 11)),
+              ],
+            ),
+            const SizedBox(height: 14),
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: _scaffoldBg,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Row(
+                children: [
+                  const Text("🐷 ", style: TextStyle(fontSize: 16)),
+                  Expanded(child: Text(commentoAI, style: TextStyle(color: _subtitleColor, fontSize: 11, fontStyle: FontStyle.italic))),
+                ],
+              ),
+            ),
+          ],
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text("Capito", style: TextStyle(color: _primaryColor, fontWeight: FontWeight.bold)))]));
+            child: Text("Capito", style: TextStyle(color: _primaryColor, fontWeight: FontWeight.bold)),
+          )
+        ],
+      ),
+    );
   }
 
   void _simulaAI(String spesaStr) {
@@ -1057,85 +1277,76 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     );
   }
 
-  void _mostraModalImpostazioni() {
-    showModalBottomSheet(context: context,
-      isScrollControlled: true,
-      backgroundColor: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF1A1528) : Colors.white,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
-      builder: (BuildContext context) {
-        return StatefulBuilder(
-          builder: (BuildContext context, StateSetter setModalState) {
-            return Padding(
-              padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom, left: 16, right: 16, top: 24),
-              child: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Icon(Icons.settings, color: _primaryColor),
-                        const SizedBox(width: 8),
-                        Text('⚙️ Impostazioni & Temi', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: _textColor)),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    ListTile(
-                      title: Text('Tema Attivo', style: TextStyle(color: _subtitleColor, fontSize: 11)),
-                      subtitle: Text(_currentTheme, style: TextStyle(color: _primaryColor, fontWeight: FontWeight.bold, fontSize: 14)),
-                    ),
-                    const SizedBox(height: 16),
-                    TextField(
-                      controller: _inviteController,
-                      style: TextStyle(color: _textColor),
-                      decoration: InputDecoration(
-                        hintText: 'Email del partner da invitare',
-                        hintStyle: TextStyle(color: _subtitleColor),
-                        filled: true,
-                        fillColor: _scaffoldBg,
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    const SizedBox(height: 16),
-                    Text('🎨 Scegli Tema Grafico:', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: _textColor)),
-                    const SizedBox(height: 8),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        ElevatedButton.icon(
-                          onPressed: () { HapticFeedback.lightImpact(); setState(() { _currentTheme = 'Piggy Dark'; }); SharedPreferences.getInstance().then((p) => p.setString("selectedTheme", _currentTheme)); Navigator.pop(context); },
-                          icon: const Icon(Icons.dark_mode, color: Colors.white, size: 16),
-                          label: const Text('Piggy Dark', style: TextStyle(color: Colors.white)),
-                        ),
-                        ElevatedButton.icon(
-                          style: ElevatedButton.styleFrom(backgroundColor: Colors.grey.shade200),
-                          onPressed: () { HapticFeedback.lightImpact(); setState(() { _currentTheme = 'Piggy White'; }); SharedPreferences.getInstance().then((p) => p.setString("selectedTheme", _currentTheme)); Navigator.pop(context); },
-                          icon: const Icon(Icons.light_mode, color: Colors.black87, size: 16),
-                          label: const Text('Piggy White', style: TextStyle(color: Colors.black87)),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    Divider(color: _textColor.withOpacity(0.2)),
-                    ListTile(
-                      leading: Icon(Icons.info_outline, color: _textColor.withOpacity(0.7)),
-                      title: Text('Info & Crediti', style: TextStyle(color: _textColor)),
-                      onTap: () => _mostraInfoApp(context),
-                    ),
-                    ListTile(
-                      leading: const Icon(Icons.system_update, color: Colors.greenAccent),
-                      title: Text('Cerca Aggiornamenti', style: TextStyle(color: _textColor)),
-                      onTap: () => _verificaAggiornamentiOTA(context),
-                    ),
-                    const SizedBox(height: 24),
-                  ],
-                ),
+      void _mostraModalImpostazioni() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: _cardBg,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+      builder: (context) => StatefulBuilder(
+        builder: (context, setModalState) => Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text("Impostazioni & Personalizzazione", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: _textColor)),
+              const SizedBox(height: 16),
+              Text("🎭 Tono Piggy AI", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: _primaryColor)),
+              const SizedBox(height: 8),
+              Wrap(
+                spacing: 8.0,
+                children: ["Spietato", "Ironico", "Fiscale", "Chill"].map((tone) {
+                  bool isSelected = _piggyTone == tone;
+                  return ChoiceChip(
+                    label: Text(tone, style: TextStyle(color: isSelected ? Colors.white : _textColor, fontSize: 12, fontWeight: FontWeight.bold)),
+                    selected: isSelected,
+                    selectedColor: _primaryColor,
+                    backgroundColor: _scaffoldBg,
+                    onSelected: (selected) {
+                      if (selected) {
+                        setState(() { _piggyTone = tone; });
+                        setModalState(() {});
+                        SharedPreferences.getInstance().then((p) => p.setString("piggyTone", tone));
+                      }
+                    },
+                  );
+                }).toList(),
               ),
-            );
-          },
-        );
-      },
+              const SizedBox(height: 16),
+              Divider(color: _subtitleColor.withOpacity(0.3)),
+              const SizedBox(height: 12),
+              Text("🎨 Tema dell'Applicazione", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: _primaryColor)),
+              const SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF1A1528)),
+                    onPressed: () {
+                      setState(() { _currentTheme = 'Piggy Dark'; });
+                      setModalState(() {});
+                      SharedPreferences.getInstance().then((p) => p.setString("selectedTheme", "Piggy Dark"));
+                    },
+                    icon: const Icon(Icons.dark_mode, color: Colors.white, size: 16),
+                    label: const Text('Piggy Dark', style: TextStyle(color: Colors.white)),
+                  ),
+                  ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(backgroundColor: Colors.grey.shade200),
+                    onPressed: () {
+                      setState(() { _currentTheme = 'Piggy White'; });
+                      setModalState(() {});
+                      SharedPreferences.getInstance().then((p) => p.setString("selectedTheme", "Piggy White"));
+                    },
+                    icon: const Icon(Icons.light_mode, color: Colors.black87, size: 16),
+                    label: const Text('Piggy White', style: TextStyle(color: Colors.black87)),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
@@ -1602,6 +1813,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                 ),
                               ],
                             ),
+          const SizedBox(height: 14),
+          _buildRipartizioneSpeseCard(),
                             actions: [
                               TextButton(
                                 onPressed: () => Navigator.pop(context),
@@ -1761,20 +1974,27 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               trailing: Text("${tx['type'].contains('Entrata') ? '+' : '-'}€${tx['amount']}", style: TextStyle(color: tx['type'].contains('Entrata') ? Colors.greenAccent : _primaryColor, fontWeight: FontWeight.bold)))))]));
   }
 
-  Widget _buildTappaBadge(String titolo, String sub, IconData icona, Color colore, bool completata) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-      decoration: BoxDecoration(
-        color: completata ? colore.withOpacity(0.2) : _scaffoldBg,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: completata ? colore : Colors.grey.shade700)),
-      child: Column(
-        children: [
-          Icon(icona, size: 18, color: completata ? colore : _subtitleColor),
-          const SizedBox(height: 4),
-          Text(titolo, style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: completata ? _textColor : _subtitleColor)),
-          const SizedBox(height: 2),
-          Text(sub, style: TextStyle(fontSize: 8, color: _subtitleColor))]));
+    Widget _buildTappaBadge(String titolo, String sub, IconData icona, Color colore, bool completata) {
+    return GestureDetector(
+      onTap: () => _mostraDettaglioLivello(titolo, sub, icona, colore),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+        decoration: BoxDecoration(
+          color: completata ? colore.withOpacity(0.2) : _scaffoldBg,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: completata ? colore : Colors.grey.shade700),
+        ),
+        child: Column(
+          children: [
+            Icon(icona, size: 18, color: completata ? colore : _subtitleColor),
+            const SizedBox(height: 4),
+            Text(titolo, style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: completata ? _textColor : _subtitleColor)),
+            const SizedBox(height: 2),
+            Text(sub, style: TextStyle(fontSize: 8, color: _subtitleColor)),
+          ],
+        ),
+      ),
+    );
   }
 }
 
@@ -2303,9 +2523,12 @@ class _InviteManagerState extends State<InviteManager> {
   Future<void> _updateAndroidWidget(bool isLoggedIn, double patrimonio) async {
     try {
       if (isLoggedIn) {
-        await HomeWidget.saveWidgetData<String>('widget_patrimonio', 'Caveau: € ' + patrimonio.toStringAsFixed(2));
-        await HomeWidget.saveWidgetData<String>('widget_status', 'Stato: Monitoraggio Attivo');
-        await HomeWidget.saveWidgetData<bool>('widget_logged', true);
+        String oraAgg = "${DateTime.now().hour}:${DateTime.now().minute.toString().padLeft(2, '0')}";
+    await HomeWidget.saveWidgetData<String>('widget_patrimonio', '€ ' + patrimonio.toStringAsFixed(2));
+    await HomeWidget.saveWidgetData<String>('widget_entrate', '+€ ' + entrateMese.toStringAsFixed(2));
+    await HomeWidget.saveWidgetData<String>('widget_uscite', '-€ ' + usciteMese.toStringAsFixed(2));
+    await HomeWidget.saveWidgetData<String>('widget_status', 'Piggy AI ($_piggyTone) • $oraAgg');
+    await HomeWidget.saveWidgetData<bool>('widget_logged', true);
       } else {
         await HomeWidget.saveWidgetData<String>('widget_patrimonio', '🔒 Caveau Bloccato');
         await HomeWidget.saveWidgetData<String>('widget_status', 'Effettua il login in app');
