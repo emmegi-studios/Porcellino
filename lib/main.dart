@@ -64,6 +64,14 @@ final String _geminiApiKey = utf8.decode(base64Decode("QVEuQWI4Uk42SWVuaHUyOVV5U
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  try {
+    FirebaseFirestore.instance.settings = const Settings(
+      persistenceEnabled: true,
+      cacheSizeBytes: Settings.CACHE_SIZE_UNLIMITED,
+    );
+  } catch (e) {
+    debugPrint('Nota cache offline: $e');
+  }
 
   try {
     FirebaseMessaging messaging = FirebaseMessaging.instance;
