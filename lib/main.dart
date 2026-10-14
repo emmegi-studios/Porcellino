@@ -83,8 +83,7 @@ void main() async {
 
   final prefs = await SharedPreferences.getInstance();
   final savedTheme = prefs.getString('selectedTheme') ?? 'Piggy Dark';
-  runApp(PiggyVaultApp(initialTheme: savedTheme));
-}
+  runApp(PiggyVaultApp(initialTheme: savedTheme)}
 
 class PiggyVaultApp extends StatelessWidget {
   final String initialTheme;
