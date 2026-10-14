@@ -2167,36 +2167,61 @@ class InviteManager extends StatefulWidget {
 class _InviteManagerState extends State<InviteManager> {
   String? currentEmail;
 
-  
+  @override
+  void initState() {
+    super.initState();
+    _checkInviti();
+  }
 
   Future<void> _checkInviti() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null || user.email == null) return;
-    
-    
+    currentEmail = user.email;
+
     FirebaseFirestore.instance.collection('inviti').doc(currentEmail).snapshots().listen((snapshot) {
       if (snapshot.exists && snapshot.data() != null) {
         final data = snapshot.data()!;
-        final mittente = data['mittente'] ?? 'Qualcuno';
+        final mittente = data['mittente'] ?? 'Un familiare';
         final caveauId = data['caveau_id'] ?? '';
-        
+
+        if (!mounted) return;
+
         showDialog(
           context: context,
           barrierDismissible: false,
           builder: (ctx) => AlertDialog(
-            title: const Text('📩 Nuovo Invito!', style: TextStyle(color: Colors.black)),
-            content: Text('$mittente ti ha invitato nel suo Caveau.\n\nVuoi unire i vostri portafogli?', style: const TextStyle(color: Colors.black)),
+            backgroundColor: const Color(0xFF1E2235),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            title: const Row(
+              children: [
+                Text('🤝 ', style: TextStyle(fontSize: 22)),
+                Text('Invito al Caveau', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+              ],
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('$mittente desidera condividere il Caveau con te.', style: const TextStyle(color: Colors.white, fontSize: 14)),
+                const SizedBox(height: 10),
+                const Text('Unendo i portafogli vedrete in tempo reale le spese e il saldo comune.', style: TextStyle(color: Colors.white70, fontSize: 12)),
+              ],
+            ),
             actions: [
               TextButton(
-                onPressed: () async { HapticFeedback.lightImpact();
+                onPressed: () async {
+                  HapticFeedback.lightImpact();
                   if (currentEmail != null) {
                     await FirebaseFirestore.instance.collection('inviti').doc(currentEmail).delete();
                   }
                   if (ctx.mounted) Navigator.pop(ctx);
                 },
-                child: const Text('Rifiuta', style: TextStyle(color: Colors.red))),
+                child: const Text('Rifiuta', style: TextStyle(color: Colors.redAccent)),
+              ),
               ElevatedButton(
-                onPressed: () async { HapticFeedback.lightImpact();
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.amber),
+                onPressed: () async {
+                  HapticFeedback.lightImpact();
                   final prefs = await SharedPreferences.getInstance();
                   await prefs.setString('caveauId', caveauId);
                   if (currentEmail != null) {
@@ -2204,12 +2229,153 @@ class _InviteManagerState extends State<InviteManager> {
                   }
                   if (ctx.mounted) {
                     Navigator.pop(ctx);
-                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Caveau Unito! Riavvia l\'app per sincronizzare.')));
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('⚡ Caveau Unito! Sincronizzazione Real-Time Attiva.')),
+                    );
                   }
                 },
-                child: const Text('Accetta e Unisci'))]));
+                child: const Text('Accetta e Unisci', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+              ),
+            ],
+          ),
+        );
       }
     });
+  }
+
+    void mostraPannelloCondivisione(BuildContext context) {
+    TextEditingController emailCtrl = TextEditingController();
+    final user = FirebaseAuth.instance.currentUser;
+    String miaEmail = user?.email ?? "Proprietario";
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: const Color(0xFF1A1528),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+      builder: (context) => Padding(
+        padding: EdgeInsets.only(
+          top: 20, left: 20, right: 20,
+          bottom: MediaQuery.of(context).viewInsets.bottom + 20,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text("🤝 Caveau Unificato & Condiviso", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
+                IconButton(icon: const Icon(Icons.close, color: Colors.white70, size: 20), onPressed: () => Navigator.pop(context)),
+              ],
+            ),
+            const SizedBox(height: 8),
+            const Text("Quando unisci i portafogli, il caveau diventa uno solo: ogni spesa o entrata è visibile in tempo reale da entrambi, con tracciabilità dell'autore.", style: TextStyle(color: Colors.white54, fontSize: 11)),
+            const SizedBox(height: 16),
+            
+            // SEZIONE MEMBRI ATTIVI
+            const Text("Membri attivi nel Caveau Comune:", style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 8),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(color: const Color(0xFF251F38), borderRadius: BorderRadius.circular(12)),
+              child: Column(
+                children: [
+                  ListTile(
+                    dense: true,
+                    contentPadding: EdgeInsets.zero,
+                    leading: const CircleAvatar(backgroundColor: Colors.amber, radius: 14, child: Text("👑", style: TextStyle(fontSize: 12))),
+                    title: Text(miaEmail, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13)),
+                    subtitle: const Text("Tu (Proprietario Principale)", style: TextStyle(color: Colors.greenAccent, fontSize: 10)),
+                  ),
+                  const Divider(color: Colors.white24, height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Row(
+                        children: [
+                          CircleAvatar(backgroundColor: Colors.blueAccent, radius: 14, child: Text("🔗", style: TextStyle(fontSize: 12))),
+                          SizedBox(width: 10),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text("Partner Collegato", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13)),
+                              Text("Sincronizzazione Totale Attiva", style: TextStyle(color: Colors.greenAccent, fontSize: 10)),
+                            ],
+                          ),
+                        ],
+                      ),
+                      TextButton.icon(
+                        style: TextButton.styleFrom(foregroundColor: Colors.redAccent),
+                        icon: const Icon(Icons.link_off, size: 16),
+                        label: const Text("Revoca", style: TextStyle(fontSize: 11)),
+                        onPressed: () async {
+                          final prefs = await SharedPreferences.getInstance();
+                          await prefs.remove('caveauId');
+                          if (context.mounted) {
+                            Navigator.pop(context);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text("⚠️ Condivisione revocata. Il caveau è tornato indipendente.")),
+                            );
+                          }
+                        },
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            
+            const SizedBox(height: 20),
+            const Text("Invita un familiare o partner:", style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 8),
+            TextField(
+              controller: emailCtrl,
+              style: const TextStyle(color: Colors.white),
+              decoration: InputDecoration(
+                labelText: "Email dell'altro account",
+                labelStyle: const TextStyle(color: Colors.white54),
+                filled: true,
+                fillColor: const Color(0xFF251F38),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+            ),
+            const SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.amber,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+                onPressed: () async {
+                  if (emailCtrl.text.trim().isEmpty) return;
+                  String destEmail = emailCtrl.text.trim();
+                  
+                  try {
+                    await FirebaseFirestore.instance.collection('inviti').doc(destEmail).set({
+                      'mittente': miaEmail,
+                      'caveau_id': user?.uid ?? 'default_caveau',
+                      'creatoIl': DateTime.now().toIso8601String(),
+                    });
+                    if (context.mounted) {
+                      Navigator.pop(context);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text("📩 Invito inviato a $destEmail! Appena accetterà, i caveau si fonderanno in uno solo.")),
+                      );
+                    }
+                  } catch (e) {
+                    debugPrint("Errore invio invito: $e");
+                  }
+                },
+                child: const Text("Invia Invito Unificato", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   @override
@@ -2217,16 +2383,12 @@ class _InviteManagerState extends State<InviteManager> {
     return widget.child;
   }
 
-  // Aggiornamento sicuro del Widget in base allo stato di autenticazione
   Future<void> _updateAndroidWidget(bool isLoggedIn, double patrimonio) async {
     try {
       if (isLoggedIn) {
-        String oraAgg = "${DateTime.now().hour}:${DateTime.now().minute.toString().padLeft(2, '0')}";
-    await HomeWidget.saveWidgetData<String>('widget_patrimonio', '€ ' + patrimonio.toStringAsFixed(2));
-    await HomeWidget.saveWidgetData<String>('widget_entrate', '');
-    await HomeWidget.saveWidgetData<String>('widget_uscite', '');
-    await HomeWidget.saveWidgetData<String>('widget_status', 'In attesa di accesso...');
-    await HomeWidget.saveWidgetData<bool>('widget_logged', true);
+        await HomeWidget.saveWidgetData<String>('widget_patrimonio', '€ ' + patrimonio.toStringAsFixed(2));
+        await HomeWidget.saveWidgetData<String>('widget_status', 'Caveau Sincronizzato');
+        await HomeWidget.saveWidgetData<bool>('widget_logged', true);
       } else {
         await HomeWidget.saveWidgetData<String>('widget_patrimonio', '🔒 Caveau Bloccato');
         await HomeWidget.saveWidgetData<String>('widget_status', 'In attesa di accesso...');
@@ -2239,7 +2401,6 @@ class _InviteManagerState extends State<InviteManager> {
     } catch (_) {}
   }
 
-  // Widget indicatore di rischio dinamico per il budget
   Widget _buildBarraRischioBudget(double speseCorrenti, double budgetTotale) {
     double percentuale = budgetTotale > 0 ? (speseCorrenti / budgetTotale) : 0.0;
     if (percentuale > 1.0) percentuale = 1.0;
@@ -2255,11 +2416,11 @@ class _InviteManagerState extends State<InviteManager> {
     } else if (percentuale < 0.85) {
       coloreRischio = Colors.amberAccent;
       statoRischio = 'GIALLO: Spendi con moderazione';
-      messaggioRischio = 'Attenzione alle unità organiche: le spese si avvicinano alla soglia di guardia.';
+      messaggioRischio = 'Attenzione: le spese si avvicinano alla soglia di guardia.';
     } else {
       coloreRischio = Colors.redAccent;
       statoRischio = 'ROSSO: Pericolo stabilità!';
-      messaggioRischio = 'Spendere ancora potrebbe compromettere la stabilità energetica del caveau!';
+      messaggioRischio = 'Spendere ancora potrebbe compromettere la stabilità del caveau!';
     }
 
     return Container(
@@ -2269,7 +2430,7 @@ class _InviteManagerState extends State<InviteManager> {
         color: const Color(0xFF1E2235),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: coloreRischio.withOpacity(0.5), width: 1.5),
-        boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 8, spreadRadius: 2)],
+        boxShadow: const [BoxShadow(color: Colors.black26, blurRadius: 8, spreadRadius: 2)],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
