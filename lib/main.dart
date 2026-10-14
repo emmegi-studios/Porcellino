@@ -1,3 +1,4 @@
+import 'package:local_auth/local_auth.dart';
 import 'package:http/http.dart' as http;
 import 'package:home_widget/home_widget.dart';
 import 'dart:convert';
@@ -91,6 +92,39 @@ class PiggyVaultApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    if (!_isUnlocked) {
+      return Scaffold(
+        backgroundColor: const Color(0xFF1E2235),
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text("🐷", style: TextStyle(fontSize: 64)),
+                const SizedBox(height: 20),
+                const Text("Caveau Protetto", style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 10),
+                const Text("Autenticazione biometrica richiesta per accedere ai dati finanziari.", textAlign: TextAlign.center, style: TextStyle(color: Colors.white70, fontSize: 14)),
+                const SizedBox(height: 30),
+                ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.amber,
+                    foregroundColor: Colors.black,
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  ),
+                  onPressed: _eseguiSbloccoBiometrico,
+                  icon: const Icon(Icons.fingerprint),
+                  label: const Text("Sblocca con Impronta", style: TextStyle(fontWeight: FontWeight.bold)),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
     return MaterialApp(
       title: 'Piggy Vault',
       debugShowCheckedModeBanner: false,
@@ -387,6 +421,45 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
+
+  // --- SICUREZZA BIOMETRICA ---
+  final LocalAuthentication _localAuth = LocalAuthentication();
+  bool _isUnlocked = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Avviamo il controllo biometrico subito dopo il primo rendering
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _eseguiSbloccoBiometrico();
+    });
+  }
+
+  Future<void> _eseguiSbloccoBiometrico() async {
+    try {
+      bool canCheck = await _localAuth.canCheckBiometrics || await _localAuth.isDeviceSupported();
+      if (!canCheck) {
+        setState(() { _isUnlocked = true; });
+        return;
+      }
+
+      bool didAuthenticate = await _localAuth.authenticate(
+        localizedReason: 'Sblocca Piggy Vault per accedere al Caveau',
+        options: const AuthenticationOptions(
+          biometricOnly: false,
+          stickyAuth: true,
+        ),
+      );
+
+      setState(() {
+        _isUnlocked = didAuthenticate;
+      });
+    } catch (e) {
+      // In caso di errore o assenza sensori, sblocchiamo per evitare blocchi utente
+      setState(() { _isUnlocked = true; });
+    }
+  }
+
   String _piggyTone = 'Spietato';
 
   String _getSystemPromptForCurrentTone() {
