@@ -1115,11 +1115,20 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Movimento eliminato e sincronizzato")));
   }
 
-      void _mostraDettaglioLivello(String titolo, String targetStr, String descrizione, IconData icona, Color colore) {
+        void _mostraDettaglioLivello(String titolo, String targetStr, IconData icona, Color colore) {
     double targetVal = 1000.0;
-    if (targetStr.contains("10.000") || targetStr.contains("10k")) targetVal = 10000.0;
-    else if (targetStr.contains("50.000") || targetStr.contains("50k")) targetVal = 50000.0;
-    else if (targetStr.contains("100.000") || targetStr.contains("100k")) targetVal = 100000.0;
+    String descrizione = "Fondo di prima sicurezza per imprevisti urgenti.";
+    
+    if (targetStr.contains("10.000") || targetStr.contains("10k")) {
+      targetVal = 10000.0;
+      descrizione = "Cuscino finanziario per una tranquillità a medio termine.";
+    } else if (targetStr.contains("50.000") || targetStr.contains("50k")) {
+      targetVal = 50000.0;
+      descrizione = "Solida fortezza patrimoniale per investimenti e stabilità.";
+    } else if (targetStr.contains("100.000") || targetStr.contains("100k")) {
+      targetVal = 100000.0;
+      descrizione = "Il traguardo supremo del caveau finanziario!";
+    }
 
     double pct = targetVal > 0 ? (patrimonio / targetVal).clamp(0.0, 1.0) : 1.0;
     bool raggiunto = patrimonio >= targetVal;
@@ -1136,31 +1145,31 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
     showDialog(
       context: context,
-      builder: (BuildContext context) {
+      builder: (context) {
         return AlertDialog(
-          backgroundColor: const Color(0xFF1A1528),
+          backgroundColor: _cardBg,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           title: Row(
             children: [
               Icon(icona, color: colore, size: 28),
               const SizedBox(width: 10),
-              Expanded(child: Text(titolo, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold))),
+              Expanded(child: Text(titolo, style: TextStyle(color: _textColor, fontSize: 18, fontWeight: FontWeight.bold))),
             ],
           ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("Obiettivo: $targetStr", style: const TextStyle(color: Colors.amber, fontWeight: FontWeight.bold, fontSize: 14)),
+              Text("Obiettivo: $targetStr", style: TextStyle(color: _primaryColor, fontWeight: FontWeight.bold, fontSize: 14)),
               const SizedBox(height: 10),
-              Text(descrizione, style: const TextStyle(color: Colors.white70, fontSize: 13)),
+              Text(descrizione, style: TextStyle(color: _subtitleColor, fontSize: 13)),
               const SizedBox(height: 16),
               ClipRRect(
                 borderRadius: BorderRadius.circular(6),
                 child: LinearProgressIndicator(
                   value: pct,
-                  backgroundColor: Colors.black26,
-                  valueColor: AlwaysStoppedAnimation<Color>(raggiunto ? Colors.amber : Colors.blue),
+                  backgroundColor: _scaffoldBg,
+                  valueColor: AlwaysStoppedAnimation<Color>(raggiunto ? Colors.amber : _primaryColor),
                   minHeight: 8,
                 ),
               ),
@@ -1168,11 +1177,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               if (commentoAI.isNotEmpty)
                 Container(
                   padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(color: Colors.black12, borderRadius: BorderRadius.circular(10)),
+                  decoration: BoxDecoration(color: _scaffoldBg, borderRadius: BorderRadius.circular(10)),
                   child: Row(
                     children: [
                       const Text("🐷 ", style: TextStyle(fontSize: 16)),
-                      Expanded(child: Text(commentoAI, style: const TextStyle(color: Colors.white70, fontSize: 11, fontStyle: FontStyle.italic))),
+                      Expanded(child: Text(commentoAI, style: TextStyle(color: _subtitleColor, fontSize: 11, fontStyle: FontStyle.italic))),
                     ],
                   ),
                 ),
@@ -1181,286 +1190,12 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text("Chiudi", style: TextStyle(color: Colors.amber, fontWeight: FontWeight.bold)),
+              child: Text("Chiudi", style: TextStyle(color: _primaryColor, fontWeight: FontWeight.bold)),
             )
           ],
         );
       },
     );
-  }
-
-  void _mostraModalProfilo() {
-    showModalBottomSheet(context: context,
-      isScrollControlled: true,
-      backgroundColor: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF1A1528) : Colors.white,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
-      builder: (BuildContext context) {
-        return Padding(
-          padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom, left: 16, right: 16, top: 24),
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text('👤 Profilo & Cloud', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: _textColor)),
-                    Icon(Icons.cloud_sync, color: _primaryColor),
-                  ],
-                ),
-                const SizedBox(height: 20),
-                ListTile(
-                  title: Text('Utente Attivo', style: TextStyle(color: _subtitleColor, fontSize: 11)),
-                  subtitle: Text(_nomeUtenteDinamico, style: TextStyle(color: _textColor, fontWeight: FontWeight.bold, fontSize: 15)),
-                ),
-                ListTile(
-                  title: Text('Email Collegata', style: TextStyle(color: _subtitleColor, fontSize: 11)),
-                  subtitle: Text(widget.userEmail, style: TextStyle(color: _textColor, fontWeight: FontWeight.bold, fontSize: 15)),
-                ),
-                ListTile(
-                  title: Text('Stato Firebase Cloud', style: TextStyle(color: _subtitleColor, fontSize: 11)),
-                  subtitle: const Text('Connesso in tempo reale', style: TextStyle(color: Colors.greenAccent, fontWeight: FontWeight.bold)),
-                ),
-                const SizedBox(height: 24),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: const Size(double.infinity, 50),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                  ),
-                      onPressed: () async { HapticFeedback.lightImpact(); Navigator.pop(context); await FirebaseAuth.instance.signOut(); Navigator.of(context, rootNavigator: true).pushNamedAndRemoveUntil("/", (route) => false); },
-                  child: const Text('Disconnetti Account', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                ),
-                const SizedBox(height: 24),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-      void _mostraModalImpostazioni() {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: _cardBg,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
-      builder: (context) => StatefulBuilder(
-        builder: (context, setModalState) => Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text("Impostazioni & Personalizzazione", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: _textColor)),
-              const SizedBox(height: 16),
-              Text("🎭 Tono Piggy AI", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: _primaryColor)),
-              const SizedBox(height: 8),
-              Wrap(
-                spacing: 8.0,
-                children: ["Spietato", "Ironico", "Fiscale", "Chill"].map((tone) {
-                  bool isSelected = _piggyTone == tone;
-                  return ChoiceChip(
-                    label: Text(tone, style: TextStyle(color: isSelected ? Colors.white : _textColor, fontSize: 12, fontWeight: FontWeight.bold)),
-                    selected: isSelected,
-                    selectedColor: _primaryColor,
-                    backgroundColor: _scaffoldBg,
-                    onSelected: (selected) {
-                      if (selected) {
-                        setState(() { _piggyTone = tone; });
-                        setModalState(() {});
-                        SharedPreferences.getInstance().then((p) => p.setString("piggyTone", tone));
-                      }
-                    },
-                  );
-                }).toList(),
-              ),
-              const SizedBox(height: 16),
-              Divider(color: _subtitleColor.withOpacity(0.3)),
-              const SizedBox(height: 12),
-              Text("🎨 Tema dell'Applicazione", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: _primaryColor)),
-              const SizedBox(height: 8),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  ElevatedButton.icon(
-                    style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF1A1528)),
-                    onPressed: () {
-                      setState(() { _currentTheme = 'Piggy Dark'; });
-                      setModalState(() {});
-                      SharedPreferences.getInstance().then((p) => p.setString("selectedTheme", "Piggy Dark"));
-                    },
-                    icon: const Icon(Icons.dark_mode, color: Colors.white, size: 16),
-                    label: const Text('Piggy Dark', style: TextStyle(color: Colors.white)),
-                  ),
-                  ElevatedButton.icon(
-                    style: ElevatedButton.styleFrom(backgroundColor: Colors.grey.shade200),
-                    onPressed: () {
-                      setState(() { _currentTheme = 'Piggy White'; });
-                      setModalState(() {});
-                      SharedPreferences.getInstance().then((p) => p.setString("selectedTheme", "Piggy White"));
-                    },
-                    icon: const Icon(Icons.light_mode, color: Colors.black87, size: 16),
-                    label: const Text('Piggy White', style: TextStyle(color: Colors.black87)),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-
-  void _mostraModalNuovoObiettivo() {
-    showModalBottomSheet(context: context,
-      isScrollControlled: true,
-      backgroundColor: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF1A1528) : Colors.white,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
-      builder: (BuildContext context) {
-        return Padding(
-          padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom, left: 16, right: 16, top: 24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text("🎯 Nuovo Obiettivo", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: _textColor)),
-              const SizedBox(height: 16),
-              TextField(controller: _goalNameController, style: TextStyle(color: _textColor), decoration: InputDecoration(labelText: 'Nome Obiettivo (es. Viaggio)', labelStyle: TextStyle(color: _subtitleColor),
-                  floatingLabelStyle: const TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold), fillColor: _scaffoldBg, filled: true)),
-              const SizedBox(height: 12),
-              TextField(controller: _goalTargetController, keyboardType: TextInputType.number, style: TextStyle(color: _textColor), decoration: InputDecoration(labelText: 'Target in € (es. 1500)', labelStyle: TextStyle(color: _subtitleColor),
-                  floatingLabelStyle: const TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold), fillColor: _scaffoldBg, filled: true)),
-              const SizedBox(height: 24),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(minimumSize: const Size(double.infinity, 50)),
-                onPressed: () { HapticFeedback.lightImpact();
-                  if (_goalNameController.text.isNotEmpty && _goalTargetController.text.isNotEmpty) {
-                    setState(() {
-                      portafogli.add({
-                        'nome': _goalNameController.text.trim(),
-                        'target': double.tryParse(_goalTargetController.text.replaceAll(',', '.')) ?? 0.0,
-                        'attuale': 0.0
-                      });
-                    });
-                    _goalNameController.clear();
-                    _goalTargetController.clear();
-                    Navigator.pop(context);
-                  }
-                },
-                child: const Text("Crea Obiettivo", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-              ),
-              const SizedBox(height: 24),
-            ]
-          )
-        );
-      }
-    );
-  }
-
-  void _aggiungiFondiObiettivo(int index) {
-    final TextEditingController fundController = TextEditingController();
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: _cardBg,
-        title: Text("Finanzia: ${portafogli[index]['nome']}", style: TextStyle(color: _textColor, fontSize: 16, fontWeight: FontWeight.bold)),
-        content: TextField(controller: fundController, keyboardType: TextInputType.number, style: TextStyle(color: _textColor), decoration: InputDecoration(hintText: "Importo da aggiungere", hintStyle: TextStyle(color: _subtitleColor))),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: Text("Annulla", style: TextStyle(color: _subtitleColor))),
-          ElevatedButton(
-            onPressed: () { HapticFeedback.lightImpact();
-              double val = double.tryParse(fundController.text.replaceAll(',', '.')) ?? 0.0;
-              if (val > 0) {
-                setState(() {
-                  portafogli[index]['attuale'] += val;
-                });
-                Navigator.pop(ctx);
-              }
-            },
-            child: const Text("Aggiungi", style: TextStyle(color: Colors.white))
-          )
-        ]
-      )
-    );
-  }
-
-  void _mostraFoglioResoconto() {
-    double bilancioNetto = entrateMese - usciteMese;
-    showModalBottomSheet(context: context,
-      isScrollControlled: true, backgroundColor: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF1A1528) : Colors.white,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
-      builder: (context) {
-        return Container(
-          padding: const EdgeInsets.all(24),
-          constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.8),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text("📋 Foglio Resoconto Cloud", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: _textColor)),
-                      IconButton(
-                        icon: Icon(Icons.download, color: _primaryColor),
-                        tooltip: 'Esporta CSV',
-                        onPressed: () { HapticFeedback.lightImpact();
-                          _esportaCSV();
-                        },
-                      ),
-                    ],
-                  ),
-                  Icon(Icons.description, color: _primaryColor)]),
-              const SizedBox(height: 16),
-              Card(
-                color: _scaffoldBg,
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text("RIEPILOGO BILANCIO COMUNE", style: TextStyle(fontSize: 10, color: _subtitleColor, fontWeight: FontWeight.bold)),
-                      const SizedBox(height: 8),
-                      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text("Entrate Totali:", style: TextStyle(color: _textColor)), Text("€ ${entrateMese.toStringAsFixed(2)}", style: const TextStyle(color: Colors.blueAccent, fontWeight: FontWeight.bold))]),
-                      const SizedBox(height: 4),
-                      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text("Uscite Totali:", style: TextStyle(color: _textColor)), Text("€ ${usciteMese.toStringAsFixed(2)}", style: TextStyle(color: _primaryColor, fontWeight: FontWeight.bold))]),
-                      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text("Bilancio Netto:", style: TextStyle(color: _textColor)), Text("€ ${bilancioNetto.toStringAsFixed(2)}", style: TextStyle(color: bilancioNetto >= 0 ? const Color(0xFF10B981) : _primaryColor, fontWeight: FontWeight.bold))])]))),
-              const SizedBox(height: 16),
-              Text("Movimenti Cloud (Swipe per eliminare)", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: _subtitleColor)),
-              const SizedBox(height: 8),
-              Expanded(
-                child: ListView.builder(
-                  itemCount: transazioni.length,
-                  itemBuilder: (context, index) {
-                    final tx = transazioni[index];
-                    return Dismissible(
-                      key: Key('${tx['category']}_${tx['amount']}_$index'),
-                      direction: DismissDirection.endToStart,
-                      background: Container(
-                        alignment: Alignment.centerRight,
-                        padding: const EdgeInsets.only(right: 20),
-                        color: Colors.red,
-                        child: const Icon(Icons.delete, color: Colors.white)),
-                      onDismissed: (direction) => _eliminaTransazione(index),
-                      child: ListTile(
-                        dense: true,
-                        title: Text(tx['category'], style: TextStyle(fontWeight: FontWeight.bold, color: _textColor)),
-                        subtitle: Text("${tx['note']} • Inserito da: ${tx['author'] ?? 'Utente'}", style: TextStyle(color: _subtitleColor)),
-                        trailing: Text(
-                          "${tx['type'].contains('Entrata') ? '+' : '-'}€ ${tx['amount'].toStringAsFixed(2)}",
-                          style: TextStyle(color: tx['type'].contains('Entrata') ? const Color(0xFF10B981) : _primaryColor, fontWeight: FontWeight.bold))));
-                  })),
-              const SizedBox(height: 12),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(backgroundColor: _primaryColor, padding: const EdgeInsets.symmetric(vertical: 14)),
-                onPressed: () => Navigator.pop(context),
-                child: const Text("Chiudi Resoconto", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)))
-            ]));
-      });
   }
 
   void _mostraModalInserimento() {
