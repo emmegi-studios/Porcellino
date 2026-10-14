@@ -1115,9 +1115,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Movimento eliminato e sincronizzato")));
   }
 
-        void _mostraDettaglioLivello(String titolo, String targetStr, IconData icona, Color colore) {
+        void _mostraDettaglioLivello(String titolo, String targetStr, String descrizioneCustom, IconData icona, Color colore) {
     double targetVal = 1000.0;
-    String descrizione = "Fondo di prima sicurezza per imprevisti urgenti.";
+    String descrizione = descrizioneCustom;
     
     if (targetStr.contains("10.000") || targetStr.contains("10k")) {
       targetVal = 10000.0;
