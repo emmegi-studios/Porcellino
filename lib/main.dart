@@ -87,6 +87,8 @@ void main() async {
 }
 
 class PiggyVaultApp extends StatelessWidget {
+  final bool _isUnlocked = true;
+  void _eseguiSbloccoBiometrico() {}
   final String initialTheme;
   const PiggyVaultApp({super.key, this.initialTheme = 'Piggy Dark'});
 
@@ -194,8 +196,6 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   @override
-
-  @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
       _loadTheme();
@@ -212,6 +212,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
+  String _piggyTone = "Piggy Vault";
   List<Map<String, dynamic>> _promemoria = [];
 
   Future<void> _caricaPromemoriaDaCloud() async {
