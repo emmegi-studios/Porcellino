@@ -2139,3 +2139,5 @@ String _sanitizeTextForTTS(String input) {
   clean = clean.replaceAll(RegExp(r'[\(\)]'), '');
   return clean.trim();
 }
+
+// Piggy Vault v2.3.0 Master Build Release Patch
