@@ -202,6 +202,16 @@ class _LoginScreenState extends State<LoginScreen> {
       _loadBudget();
     }
   }
+}
+
+class HomeScreen extends StatefulWidget {
+  final String userEmail;
+  const HomeScreen({super.key, required this.userEmail});
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   List<Map<String, dynamic>> _promemoria = [];
 
   Future<void> _caricaPromemoriaDaCloud() async {
