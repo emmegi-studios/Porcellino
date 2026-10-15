@@ -196,11 +196,27 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) {
-      _loadTheme();
-      _loadBudget();
-    }
+    @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text("Piggy Vault Login", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 16),
+              TextField(controller: _emailController, decoration: const InputDecoration(labelText: "Email")),
+              const SizedBox(height: 12),
+              TextField(controller: _passwordController, obscureText: _obscurePassword, decoration: const InputDecoration(labelText: "Password")),
+              const SizedBox(height: 20),
+              ElevatedButton(onPressed: () {}, child: const Text("Accedi")),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
 
@@ -212,6 +228,15 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
+void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _loadTheme();
+      _loadBudget();
+    }
+  }
+}
+
+
   String _getSystemPromptForCurrentTone() => "Sei l'assistente Piggy Vault.";
   List<Map<String, dynamic>> _promemoria = [];
 
@@ -2145,3 +2170,5 @@ String _sanitizeTextForTTS(String input) {
 // Master Release Patch v2.3.0 applied at 1792099472.5474143
 
 // Golden Fix Build Release v2.3.0 - 2026-10-15T23:56:22.006993
+
+// Production Release Build Commit Stamp: 1792102083.1420012
