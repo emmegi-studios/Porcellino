@@ -1713,7 +1713,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
     Widget _buildTappaBadge(String titolo, String sub, IconData icona, Color colore, bool completata) {
     return GestureDetector(
-      onTap: () => _mostraDettaglioLivello(titolo, sub, icona, colore, ""),
+      onTap: () => _mostraDettaglioLivello(titolo, sub, icona, colore),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
         decoration: BoxDecoration(
