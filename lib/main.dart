@@ -212,20 +212,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
-  bool _isDarkTheme = false;
-  String _piggyTone = "Piggy Vault";
-  Color _cardBg = const Color(0xFF1E2235);
-  Color _textColor = Colors.white;
-  void _loadTheme() {}
-  void _loadBudget() {}
-  void _mostraModalProfilo() {}
-  void _mostraModalImpostazioni() {}
-  void _aggiungiFondiObiettivo(dynamic idx) {}
-  void _mostraModalNuovoObiettivo() {}
-  void _mostraFoglioResoconto() {}
   String _getSystemPromptForCurrentTone() => "Sei l'assistente Piggy Vault.";
-
-  String _piggyTone = "Piggy Vault";
   List<Map<String, dynamic>> _promemoria = [];
 
   Future<void> _caricaPromemoriaDaCloud() async {
@@ -828,7 +815,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     showDialog(
       context: context,
       builder: (context) {
-        return AlertDialog(title: backgroundColor: _cardBg, content: shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        return AlertDialog(backgroundColor: _cardBg, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           title: Row(
             children: [
               Icon(icona, color: colore, size: 28),
@@ -1437,8 +1424,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       backgroundColor: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF1A1528) : Colors.white,
       builder: (context) {
         bool _isSpeaking = false;
-        bool _isListening = false;
-
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setStateModal) {
             
