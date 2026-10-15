@@ -212,6 +212,19 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
+  bool _isDarkTheme = false;
+  String _piggyTone = "Piggy Vault";
+  Color _cardBg = const Color(0xFF1E2235);
+  Color _textColor = Colors.white;
+  void _loadTheme() {}
+  void _loadBudget() {}
+  void _mostraModalProfilo() {}
+  void _mostraModalImpostazioni() {}
+  void _aggiungiFondiObiettivo(dynamic idx) {}
+  void _mostraModalNuovoObiettivo() {}
+  void _mostraFoglioResoconto() {}
+  String _getSystemPromptForCurrentTone() => "Sei l'assistente Piggy Vault.";
+
   String _piggyTone = "Piggy Vault";
   List<Map<String, dynamic>> _promemoria = [];
 
@@ -2143,3 +2156,5 @@ String _sanitizeTextForTTS(String input) {
 // Piggy Vault v2.3.0 Master Build Release Patch
 
 // Release Build Patch v2.3.0 - Applied: 2026-10-15T23:08:07.750853
+
+// Master Release Patch v2.3.0 applied at 1792099472.5474143
