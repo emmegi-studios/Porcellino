@@ -562,8 +562,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   }
 
   @override
-      }
-    });
 
     WidgetsBinding.instance.addObserver(this);
     _loadBudget();
@@ -2224,7 +2222,7 @@ class _InviteManagerState extends State<InviteManager> {
         showDialog(
           context: context,
           barrierDismissible: false,
-          builder: (ctx) => AlertDialog(title: backgroundColor: const Color(0xFF1E2235), content: shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          builder: (ctx) => AlertDialog(backgroundColor: const Color(0xFF1E2235), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
             title: const Row(
               children: [
                 Text('🤝 ', style: TextStyle(fontSize: 22)),
