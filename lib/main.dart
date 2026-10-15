@@ -427,13 +427,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   bool _isUnlocked = false;
 
   @override
-  void initState() {
-    super.initState();
-    // Avviamo il controllo biometrico subito dopo il primo rendering
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _eseguiSbloccoBiometrico();
-    });
-  }
 
   Future<void> _eseguiSbloccoBiometrico() async {
     try {
@@ -569,39 +562,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   }
 
   @override
-  void initState() {
-    super.initState();
-
-    // Ascoltatore Notifiche Push in Foreground (In tempo reale)
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      if (message.notification != null) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Row(
-                children: [
-                  const Icon(Icons.notifications_active, color: Colors.white),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(message.notification!.title ?? 'Nuova attività nel Caveau 🐷', style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
-                        Text(message.notification!.body ?? '', style: const TextStyle(color: Colors.white)),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              backgroundColor: Colors.green.shade600,
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-              duration: const Duration(seconds: 4),
-              margin: const EdgeInsets.only(bottom: 20, left: 16, right: 16),
-            ),
-          );
-        }
       }
     });
 
@@ -1227,9 +1187,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     showDialog(
       context: context,
       builder: (context) {
-        return AlertDialog(
-          backgroundColor: _cardBg,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        return AlertDialog(title: backgroundColor: _cardBg, content: shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           title: Row(
             children: [
               Icon(icona, color: colore, size: 28),
@@ -1755,7 +1713,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
     Widget _buildTappaBadge(String titolo, String sub, IconData icona, Color colore, bool completata) {
     return GestureDetector(
-      onTap: () => _mostraDettaglioLivello(titolo, sub, icona, colore),
+      onTap: () => _mostraDettaglioLivello(titolo, sub, icona, colore, ""),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
         decoration: BoxDecoration(
@@ -2249,10 +2207,6 @@ class _InviteManagerState extends State<InviteManager> {
   String? currentEmail;
 
   @override
-  void initState() {
-    super.initState();
-    _checkInviti();
-  }
 
   Future<void> _checkInviti() async {
     final user = FirebaseAuth.instance.currentUser;
@@ -2270,9 +2224,7 @@ class _InviteManagerState extends State<InviteManager> {
         showDialog(
           context: context,
           barrierDismissible: false,
-          builder: (ctx) => AlertDialog(
-            backgroundColor: const Color(0xFF1E2235),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          builder: (ctx) => AlertDialog(title: backgroundColor: const Color(0xFF1E2235), content: shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
             title: const Row(
               children: [
                 Text('🤝 ', style: TextStyle(fontSize: 22)),
