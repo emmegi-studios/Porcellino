@@ -234,7 +234,7 @@ void didChangeAppLifecycleState(AppLifecycleState state) {
       _loadBudget();
     }
   }
-}
+
 
 
   String _getSystemPromptForCurrentTone() => "Sei l'assistente Piggy Vault.";
@@ -1386,7 +1386,7 @@ void didChangeAppLifecycleState(AppLifecycleState state) {
       ),
     );
   }
-}
+
 
 
 
@@ -1840,11 +1840,7 @@ void didChangeAppLifecycleState(AppLifecycleState state) {
       },
     );
   }
-
-
-
-
-
+}
 
 
 class InviteManager extends StatefulWidget {
@@ -2172,3 +2168,5 @@ String _sanitizeTextForTTS(String input) {
 // Golden Fix Build Release v2.3.0 - 2026-10-15T23:56:22.006993
 
 // Production Release Build Commit Stamp: 1792102083.1420012
+
+// Production Master Scope Fix Stamp: 1792102632.6512933
