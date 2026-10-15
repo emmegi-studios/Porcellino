@@ -1187,7 +1187,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     showDialog(
       context: context,
       builder: (context) {
-        return AlertDialog(title: backgroundColor: _cardBg, content: shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        return AlertDialog(title: title: backgroundColor: _cardBg, content: content: shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           title: Row(
             children: [
               Icon(icona, color: colore, size: 28),
@@ -2224,7 +2224,7 @@ class _InviteManagerState extends State<InviteManager> {
         showDialog(
           context: context,
           barrierDismissible: false,
-          builder: (ctx) => AlertDialog(title: backgroundColor: const Color(0xFF1E2235), content: shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          builder: (ctx) => AlertDialog(title: title: backgroundColor: const Color(0xFF1E2235), content: content: shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
             title: const Row(
               children: [
                 Text('🤝 ', style: TextStyle(fontSize: 22)),
