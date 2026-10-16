@@ -228,6 +228,13 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
+  String _piggyTone = "Piggy Vault";
+  void _mostraModalProfilo() {}
+  void _mostraModalImpostazioni() {}
+  void _aggiungiFondiObiettivo(dynamic idx) {}
+  void _mostraModalNuovoObiettivo() {}
+  void _mostraFoglioResoconto() {}
+
 void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
       _loadTheme();
@@ -2174,3 +2181,5 @@ String _sanitizeTextForTTS(String input) {
 // Production Release Build Commit Stamp: 1792104277.1608565
 
 // Master Release Fix Stamp: 1792152556.922077
+
+// Production Release Stamp: 1792156863.4854977
