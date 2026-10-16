@@ -379,6 +379,46 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
+  bool _isDarkTheme = false;
+  String _piggyTone = "Piggy Vault";
+
+  Future<void> _loadTheme() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _isDarkTheme = prefs.getString('selectedTheme') == 'Piggy Dark';
+    });
+  }
+
+  Future<void> _saveTheme(bool isDark) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('piggy_is_dark', isDark);
+    setState(() {
+      _isDarkTheme = isDark;
+    });
+  }
+
+  String _getSystemPromptForCurrentTone() => "Sei l'assistente Piggy Vault.";
+
+  bool _isDarkTheme = false;
+  String _piggyTone = "Piggy Vault";
+
+  Future<void> _loadTheme() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _isDarkTheme = prefs.getString('selectedTheme') == 'Piggy Dark';
+    });
+  }
+
+  Future<void> _saveTheme(bool isDark) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('piggy_is_dark', isDark);
+    setState(() {
+      _isDarkTheme = isDark;
+    });
+  }
+
+  String _getSystemPromptForCurrentTone() => "Sei l'assistente Piggy Vault.";
+
 
     Future<void> _mostraInfoApp(BuildContext context) async {
     showDialog(
