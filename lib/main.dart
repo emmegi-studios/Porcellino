@@ -390,6 +390,17 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     );
   }
 
+  List<Map<String, dynamic>> _promemoria = [];
+
+  void _mostraNotificaScadenza(String titolo, String data) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Scadenza aggiunta: $titolo ($data)'),
+        backgroundColor: Colors.pinkAccent,
+      ),
+    );
+  }
+
   bool _isDarkTheme = false;
   String _piggyTone = "Piggy Vault";
 
