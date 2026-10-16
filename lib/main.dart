@@ -228,6 +228,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
+  bool _isDarkTheme = false;
   Widget _buildRipartizioneSpeseCard() => const SizedBox.shrink();
   void _mostraNotificaScadenza(String t, String d) {}
 
