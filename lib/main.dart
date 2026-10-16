@@ -228,6 +228,9 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
+  Widget _buildRipartizioneSpeseCard() => const SizedBox.shrink();
+  void _mostraNotificaScadenza(String t, String d) {}
+
   String _piggyTone = "Piggy Vault";
   void _mostraModalProfilo() {}
   void _mostraModalImpostazioni() {}
