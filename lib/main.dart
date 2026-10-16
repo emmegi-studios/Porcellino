@@ -1263,6 +1263,78 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     );
   }
 
+  
+  Widget _buildRipartizioneSpeseCard() {
+    final Map<String, double> spesaPerCategoria = {};
+    double totaleUsciteCalcolato = 0.0;
+
+    for (var tx in transazioni) {
+      final String type = (tx['type'] ?? '').toString();
+      if (!type.contains('Entrata')) {
+        final String cat = (tx['category'] ?? 'Altro').toString();
+        final double amt = double.tryParse(tx['amount'].toString()) ?? 0.0;
+        spesaPerCategoria[cat] = (spesaPerCategoria[cat] ?? 0.0) + amt;
+        totaleUsciteCalcolato += amt;
+      }
+    }
+
+    return Card(
+      color: _cardBg,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      elevation: 2,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.pie_chart, color: Colors.pinkAccent),
+                const SizedBox(width: 8),
+                Text("Ripartizione Spese", style: TextStyle(color: _textColor, fontWeight: FontWeight.bold, fontSize: 16)),
+              ],
+            ),
+            const SizedBox(height: 12),
+            if (spesaPerCategoria.isEmpty)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: Text("Nessuna uscita registrata finora.", style: TextStyle(color: _subtitleColor, fontSize: 13)),
+              )
+            else
+              ...spesaPerCategoria.entries.map((entry) {
+                final double percentuale = totaleUsciteCalcolato > 0 ? (entry.value / totaleUsciteCalcolato) : 0.0;
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4.0),
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(child: Text(entry.key, style: TextStyle(color: _textColor, fontSize: 13), overflow: TextOverflow.ellipsis)),
+                          Text("€ ${entry.value.toStringAsFixed(2)} (${(percentuale * 100).toStringAsFixed(0)}%)",
+                              style: const TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold, fontSize: 13)),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(4),
+                        child: LinearProgressIndicator(
+                          value: percentuale,
+                          backgroundColor: Colors.white10,
+                          color: Colors.pinkAccent,
+                          minHeight: 6,
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }),
+          ],
+        ),
+      ),
+    );
+  }
+
   void _mostraFoglioResoconto() {
     double bilancioNetto = entrateMese - usciteMese;
     showModalBottomSheet(context: context,
