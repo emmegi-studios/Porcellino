@@ -1208,10 +1208,10 @@ void didChangeAppLifecycleState(AppLifecycleState state) {
                   floatingLabelStyle: const TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold),
                                   ),
                                 ),
+                                const SizedBox(height: 14),
+                                _buildRipartizioneSpeseCard(),
                               ],
                             ),
-          const SizedBox(height: 14),
-          _buildRipartizioneSpeseCard(),
                             actions: [
                               TextButton(
                                 onPressed: () => Navigator.pop(context),
