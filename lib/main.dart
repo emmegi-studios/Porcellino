@@ -379,6 +379,22 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
+
+  Future<void> _loadTheme() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _isDarkTheme = prefs.getString('selectedTheme') == 'Piggy Dark';
+    });
+  }
+
+  Future<void> _saveTheme(bool isDark) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('piggy_is_dark', isDark);
+    setState(() {
+      _isDarkTheme = isDark;
+    });
+  }
+
   List<Map<String, dynamic>> _promemoria = [];
 
   void _mostraNotificaScadenza(String titolo, String data) {
