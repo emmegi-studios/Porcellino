@@ -2006,6 +2006,56 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
               try {
                 bool available = await _speechToText.initialize(
+                  onError: (val) {
+                    setStateModal(() => _isListening = false);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text("Errore microfono: ${val.errorMsg}"), backgroundColor: Colors.redAccent)
+                    );
+                  },
+                  onStatus: (val) {
+                    if (val == 'done' || val == 'notListening') {
+                      setStateModal(() => _isListening = false);
+                    }
+                  },
+                );
+
+                if (available) {
+                  setStateModal(() => _isListening = true);
+                  _speechToText.listen(
+                    onResult: (val) {
+                      setStateModal(() {
+                        _modalInputController.text = val.recognizedWords;
+                        _modalInputController.selection = TextSelection.fromPosition(
+                          TextPosition(offset: _modalInputController.text.length),
+                        );
+                      });
+                      if (val.finalResult) {
+                        setStateModal(() => _isListening = false);
+                      }
+                    },
+                    listenFor: const Duration(seconds: 45),
+                    pauseFor: const Duration(seconds: 5),
+                    partialResults: true,
+                  );
+                } else {
+                  setStateModal(() => _isListening = false);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text("Riconoscimento vocale non disponibile. Verifica permessi microfono."),
+                      backgroundColor: Colors.orangeAccent,
+                    )
+                  );
+                }
+              } catch (e) {
+                setStateModal(() => _isListening = false);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text("Errore avvio vocale: $e"), backgroundColor: Colors.redAccent)
+                );
+              }
+            }
+
+              try {
+                bool available = await _speechToText.initialize(
                   onError: (val) => setStateModal(() => _isListening = false),
                   onStatus: (val) {
                     if (val == 'done' || val == 'notListening') {
