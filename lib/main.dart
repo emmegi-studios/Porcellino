@@ -1863,7 +1863,21 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   
   
   
-                                                                          void _mostraPiggyAI(BuildContext context, [bool? isDarkOverride]) {
+                                                                            Future<String> _getGeminiResponse(String prompt) async {
+    try {
+      final model = GenerativeModel(
+        model: 'gemini-1.5-flash',
+        apiKey: _geminiApiKey,
+      );
+      final content = [Content.text(prompt)];
+      final response = await model.generateContent(content);
+      return response.text ?? "Nessuna risposta ricevuta da Piggy AI.";
+    } catch (e) {
+      return "Errore Piggy AI: $e";
+    }
+  }
+
+void _mostraPiggyAI(BuildContext context, [bool? isDarkOverride]) {
     final TextEditingController modalInputController = TextEditingController();
     final SpeechToText speechToText = SpeechToText();
     bool isListening = false;
