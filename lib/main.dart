@@ -408,7 +408,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
 
 
-  bool get _isDarkTheme => _currentTheme == 'Piggy Dark'; // false;
+  bool get _isDarkTheme => _currentTheme == 'Piggy Dark';
+  set _isDarkTheme(bool value) { _currentTheme = value ? 'Piggy Dark' : 'Piggy White'; } // false;
   String _piggyTone = "Piggy Vault";
 
 
