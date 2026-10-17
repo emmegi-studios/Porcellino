@@ -408,7 +408,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
 
 
-  bool _isDarkTheme = false;
+  bool get _isDarkTheme => _currentTheme == 'Piggy Dark'; // false;
   String _piggyTone = "Piggy Vault";
 
 
@@ -769,11 +769,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   }
 
   bool get _isDark => _currentTheme == 'Piggy Dark';
-  Color get _cardBg => _isDarkTheme ? const Color(0xFF1E2235) : Colors.white;
+  Color get _cardBg => _isDarkTheme ? const Color(0xFF1E2235) : const Color(0xFFF5F6FA);
   Color get _textColor => _currentTheme == 'Piggy White' ? Colors.black87 : Colors.white;
   Color get _subtitleColor => _isDarkTheme ? Colors.grey.shade400 : const Color(0xFF334155);
   Color get _primaryColor => Colors.pinkAccent;
-  Color get _scaffoldBg => _isDarkTheme ? const Color(0xFF0F111A) : Colors.grey.shade100;
+  Color get _scaffoldBg => _isDarkTheme ? const Color(0xFF0F111A) : const Color(0xFFFFFFFF);
 
   double patrimonio = 0.0;
   double entrateMese = 0.0;
@@ -1474,7 +1474,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             child: Container(
               margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-              decoration: BoxDecoration(color: _scaffoldBg, borderRadius: BorderRadius.circular(20), border: Border.all(color: _primaryColor.withOpacity(0.5))),
+              decoration: BoxDecoration(color: _isDarkTheme ? _cardBg : const Color(0xFFEFEFF4), borderRadius: BorderRadius.circular(20), border: Border.all(color: _primaryColor.withOpacity(0.5))),
               child: Row(
                 children: [
                   const Icon(Icons.cloud_done, size: 14, color: Colors.greenAccent),
@@ -1509,7 +1509,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("PATRIMONIO CONDIVISO", style: TextStyle(fontSize: 10, color: Theme.of(context).brightness == Brightness.light ? Colors.black54 : Colors.white70, fontWeight: FontWeight.bold)),
+                      Text("PATRIMONIO CONDIVISO", style: TextStyle(fontSize: 10, color: _isDarkTheme ? Colors.white70 : Colors.black87, fontWeight: FontWeight.bold)),
                       const SizedBox(height: 4),
                       Text("€ ${patrimonio.toStringAsFixed(2)}", style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Color(0xFF10B981)))]),
                   const Icon(Icons.cloud_done, color: Color(0xFF10B981), size: 32)]))),
@@ -1868,7 +1868,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   
                                                                             Future<String> _getGeminiResponse(String prompt) async {
     try {
-      final url = Uri.parse('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=$_geminiApiKey');
+      final url = Uri.parse('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=$_geminiApiKey');
       final response = await http.post(
         url,
         headers: {'Content-Type': 'application/json'},
@@ -1887,8 +1887,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         if (text != null && text.isNotEmpty) return text;
       }
 
-      // Fallback su gemini-2.0-flash se 1.5-flash restituisce errore di rotta
-      final url2 = Uri.parse('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=$_geminiApiKey');
+      // Fallback su gemini-flash-latest se 2.5-flash non risponde
+      final url2 = Uri.parse('https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=$_geminiApiKey');
       final response2 = await http.post(
         url2,
         headers: {'Content-Type': 'application/json'},
