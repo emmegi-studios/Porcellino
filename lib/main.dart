@@ -1448,6 +1448,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     return Scaffold(
       backgroundColor: _scaffoldBg,
       appBar: AppBar(
+        backgroundColor: _scaffoldBg,
+        elevation: 0,
+        surfaceTintColor: Colors.transparent,
         title: Row(
           children: [
             ClipRRect(
@@ -1865,15 +1868,48 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   
                                                                             Future<String> _getGeminiResponse(String prompt) async {
     try {
-      final model = GenerativeModel(
-        model: 'gemini-1.5-flash',
-        apiKey: _geminiApiKey,
+      final url = Uri.parse('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=$_geminiApiKey');
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          "contents": [
+            {
+              "parts": [{"text": prompt}]
+            }
+          ]
+        }),
       );
-      final content = [Content.text(prompt)];
-      final response = await model.generateContent(content);
-      return response.text ?? "Nessuna risposta ricevuta da Piggy AI.";
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final text = data['candidates']?[0]?['content']?['parts']?[0]?['text'];
+        if (text != null && text.isNotEmpty) return text;
+      }
+
+      // Fallback su gemini-2.0-flash se 1.5-flash restituisce errore di rotta
+      final url2 = Uri.parse('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=$_geminiApiKey');
+      final response2 = await http.post(
+        url2,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          "contents": [
+            {
+              "parts": [{"text": prompt}]
+            }
+          ]
+        }),
+      );
+
+      if (response2.statusCode == 200) {
+        final data2 = jsonDecode(response2.body);
+        final text2 = data2['candidates']?[0]?['content']?['parts']?[0]?['text'];
+        if (text2 != null && text2.isNotEmpty) return text2;
+      }
+
+      return "⚠️ Errore risposta Piggy AI (${response.statusCode}). Riprova tra poco.";
     } catch (e) {
-      return "Errore Piggy AI: $e";
+      return "❌ Errore di connessione Piggy AI: $e";
     }
   }
 
@@ -1910,7 +1946,7 @@ void _mostraPiggyAI(BuildContext context, [bool? isDarkOverride]) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: const Color(0xFF12131C),
+      backgroundColor: isDark ? const Color(0xFF12131C) : Colors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -2019,7 +2055,15 @@ void _mostraPiggyAI(BuildContext context, [bool? isDarkOverride]) {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Image.asset('assets/piggy_avatar.png', width: 28, height: 28, errorBuilder: (_, __, ___) => const Icon(Icons.smart_toy, color: Colors.pinkAccent)),
+                        ClipOval(
+                          child: Image.asset(
+                            'assets/images/piggy_ai_assistant.png',
+                            width: 28,
+                            height: 28,
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, __, ___) => const Icon(Icons.smart_toy, color: Colors.pinkAccent, size: 28),
+                          ),
+                        ),
                         const SizedBox(width: 8),
                         const Text("Piggy AI", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
                         const SizedBox(width: 8),
