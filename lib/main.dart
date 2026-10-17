@@ -1914,7 +1914,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   }
 
 void _mostraPiggyAI(BuildContext context, [bool? isDarkOverride]) {
-    final bool isDark = isDarkOverride ?? _isDarkTheme;
+    final bool isDark = isDarkOverride ?? (Theme.of(context).brightness == Brightness.dark);
     final TextEditingController modalInputController = TextEditingController();
     final SpeechToText speechToText = SpeechToText();
     bool isListening = false;
@@ -1947,7 +1947,7 @@ void _mostraPiggyAI(BuildContext context, [bool? isDarkOverride]) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: isDarkTheme ? const Color(0xFF12131C) : Colors.white,
+      backgroundColor: isDark ? const Color(0xFF12131C) : Colors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
