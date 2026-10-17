@@ -390,26 +390,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     );
   }
 
-  List<Map<String, dynamic>> _promemoria = [];
 
-  void _mostraNotificaScadenza(String titolo, String data) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Scadenza aggiunta: $titolo ($data)'),
-        backgroundColor: Colors.pinkAccent,
-      ),
-    );
-  }
 
   bool _isDarkTheme = false;
   String _piggyTone = "Piggy Vault";
 
-  Future<void> _loadTheme() async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      _isDarkTheme = prefs.getString('selectedTheme') == 'Piggy Dark';
-    });
-  }
 
   Future<void> _saveTheme(bool isDark) async {
     final prefs = await SharedPreferences.getInstance();
@@ -421,25 +406,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   String _getSystemPromptForCurrentTone() => "Sei l'assistente Piggy Vault.";
 
-  bool _isDarkTheme = false;
-  String _piggyTone = "Piggy Vault";
 
-  Future<void> _loadTheme() async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      _isDarkTheme = prefs.getString('selectedTheme') == 'Piggy Dark';
-    });
-  }
 
-  Future<void> _saveTheme(bool isDark) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('piggy_is_dark', isDark);
-    setState(() {
-      _isDarkTheme = isDark;
-    });
-  }
 
-  String _getSystemPromptForCurrentTone() => "Sei l'assistente Piggy Vault.";
 
 
     Future<void> _mostraInfoApp(BuildContext context) async {
@@ -498,7 +467,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     }
   }
 
-  bool _isDarkTheme = true;
 
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
@@ -517,26 +485,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         ?.requestNotificationsPermission();
   }
 
-  Future<void> _mostraNotificaScadenza(String titolo, String data) async {
-    const AndroidNotificationDetails androidPlatformChannelSpecifics =
-        AndroidNotificationDetails(
-      'piggy_vault_scadenze',
-      'Scadenze Finanziarie',
-      channelDescription: 'Notifiche per scadenze e promemoria di Piggy Vault',
-      importance: Importance.max,
-      priority: Priority.high,
-      ticker: 'ticker',
-    );
-    const NotificationDetails platformChannelSpecifics =
-        NotificationDetails(android: androidPlatformChannelSpecifics);
-    
-    await flutterLocalNotificationsPlugin.show(
-      DateTime.now().millisecond,
-      '📅 Nuova Scadenza: $titolo',
-      'Fissata per il giorno $data',
-      platformChannelSpecifics,
-    );
-  }
 
   @override
   void initState() {
@@ -595,7 +543,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       _loadBudget();
     }
   }
-  List<Map<String, dynamic>> _promemoria = [];
 
   Future<void> _caricaPromemoriaDaCloud() async {
     try {
@@ -630,20 +577,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   
 
-  Future<void> _loadTheme() async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      _isDarkTheme = prefs.getString('selectedTheme') == 'Piggy Dark';
-    });
-  }
 
-  Future<void> _saveTheme(bool isDark) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('piggy_is_dark', isDark);
-    setState(() {
-      _isDarkTheme = isDark;
-    });
-  }
 
   
 
