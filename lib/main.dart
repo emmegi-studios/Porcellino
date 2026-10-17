@@ -769,11 +769,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   }
 
   bool get _isDark => _currentTheme == 'Piggy Dark';
-  Color get _cardBg => _isDark ? const Color(0xFF1E2235) : Colors.white;
+  Color get _cardBg => _isDarkTheme ? const Color(0xFF1E2235) : Colors.white;
   Color get _textColor => _currentTheme == 'Piggy White' ? Colors.black87 : Colors.white;
-  Color get _subtitleColor => _isDark ? Colors.grey.shade400 : const Color(0xFF334155);
+  Color get _subtitleColor => _isDarkTheme ? Colors.grey.shade400 : const Color(0xFF334155);
   Color get _primaryColor => Colors.pinkAccent;
-  Color get _scaffoldBg => _isDark ? const Color(0xFF0F111A) : Colors.grey.shade100;
+  Color get _scaffoldBg => _isDarkTheme ? const Color(0xFF0F111A) : Colors.grey.shade100;
 
   double patrimonio = 0.0;
   double entrateMese = 0.0;
@@ -1914,6 +1914,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   }
 
 void _mostraPiggyAI(BuildContext context, [bool? isDarkOverride]) {
+    final bool isDark = isDarkOverride ?? _isDarkTheme;
     final TextEditingController modalInputController = TextEditingController();
     final SpeechToText speechToText = SpeechToText();
     bool isListening = false;
@@ -1946,7 +1947,7 @@ void _mostraPiggyAI(BuildContext context, [bool? isDarkOverride]) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: isDark ? const Color(0xFF12131C) : Colors.white,
+      backgroundColor: isDarkTheme ? const Color(0xFF12131C) : Colors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
