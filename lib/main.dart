@@ -1864,19 +1864,18 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   
   
                                                                           void _mostraPiggyAI(BuildContext context, [bool? isDarkOverride]) {
-    final TextEditingController _modalInputController = TextEditingController();
-    final SpeechToText _speechToText = SpeechToText();
-    
+    final TextEditingController modalInputController = TextEditingController();
+    final SpeechToText speechToText = SpeechToText();
+    bool isListening = false;
+
     double saldoTotale = 0.0;
     double totaleUscite = 0.0;
     double totaleEntrate = 0.0;
-    int obiettiviCount = 0;
 
     try {
       if ('0.0' != '0.0') saldoTotale = (0.0 as num).toDouble();
       if ('0.0' != '0.0') totaleUscite = (0.0 as num).toDouble();
       if ('0.0' != '0.0') totaleEntrate = (0.0 as num).toDouble();
-      if ('[]' != '[]') obiettiviCount = ([] as List).length;
     } catch (_) {}
 
     int caveauShieldScore = 100;
@@ -1887,150 +1886,81 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       caveauShieldScore = 20;
     }
 
-    final List<Map<String, String>> _chatMessages = [
+    final List<Map<String, String>> chatMessages = [
       {
-        'sender': 'ai', 
-        'text': '🛡️ Unità Piggy AI v2.2.9 collegata a Gemini 1.5 Flash. Caveau Shield Score: ' + caveauShieldScore.toString() + '%.'
+        "sender": "piggy",
+        "text": "🛡️ Unità Piggy AI v2.2.9 collegata a Gemini 1.5 Flash. Caveau Shield Score: $caveauShieldScore%."
       }
     ];
 
-    final bool isDark = isDarkOverride ?? (Theme.of(context).brightness == Brightness.dark);
-    final Color _cardBgModal = const Color(0xFF1E2235);
-    final Color _textColorModal = Colors.white;
-    final Color _bubbleAiBgModal = isDark ? const Color(0xFF2A2E43) : const Color(0xFFF1F5F9);
-    final Color _inputFillColorModal = isDark ? const Color(0xFF2A2E43) : const Color(0xFFF8FAFC);
-
-    showModalBottomSheet(context: context,
+    showModalBottomSheet(
+      context: context,
       isScrollControlled: true,
       backgroundColor: const Color(0xFF12131C),
-      builder: (context) {
-        bool _isSpeaking = false;
-        bool _isListening = false;
-
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (BuildContext context) {
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setStateModal) {
-            
-            void _inviaMessaggioAI({String? promptPersonalizzato, bool isSorpresa = false, bool isWhatIf = false}) async {
-              final textUser = promptPersonalizzato ?? _modalInputController.text.trim();
-              if (textUser.isEmpty) return;
+            void inviaMessaggioAI() async {
+              final text = modalInputController.text.trim();
+              if (text.isEmpty) return;
 
               setStateModal(() {
-                _chatMessages.add({'sender': 'user', 'text': textUser});
-                if (promptPersonalizzato == null) _modalInputController.clear();
-              });
-
-              final Map<String, dynamic> caveauSnapshot = {
-                'patrimonio_totale': saldoTotale,
-                'entrate_mese': totaleEntrate,
-                'uscite_mese': totaleUscite,
-                'shield_score': caveauShieldScore,
-                'obiettivi_attivi_count': obiettiviCount
-              };
-
-              String rispostaAI = '';
-              
-              // CHIAMATA ESCLUSIVA A GEMINI 1.5 FLASH
-              try {
-                String systemPrompt = 'Sei Piggy AI, l intelligenza artificiale cibernetica ufficiale del sistema Piggy Vault. '
-                                     'I tuoi dati reali finanziari del caveau dell utente sono: ' + jsonEncode(caveauSnapshot) + '. '
-                                     'Rispondi sempre in italiano in modo intelligente, dinamico, cibernetico ed empatico. '
-                                     'Interpreta qualsiasi messaggio dell utente in tempo reale. Non usare mai frasi o template predefiniti. ';
-
-                if (isSorpresa) {
-                  systemPrompt += 'Proponi 2 idee di vizi a sorpresa calcolando l impatto percentuale sul patrimonio attuale. ';
-                } else if (isWhatIf) {
-                  systemPrompt += 'Esegui una simulazione What-If calcolando l impatto economico di questa spesa. ';
-                }
-
-                final url = Uri.parse('https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=' + _geminiApiKey);
-                final httpResponse = await http.post(
-                  url,
-                  headers: {'Content-Type': 'application/json'},
-                  body: jsonEncode({
-    "system_instruction": {"parts": [{"text": "Sei ESCLUSIVAMENTE 'Piggy AI', il salvadanaio e assistente finanziario personale e intelligente di Piggy Vault. Non menzionare MAI Gemini, Google, modelli linguistici o intelligenza artificiale. La tua unica ed esplicita identita e Piggy AI. TASSATIVO: Scrivi SEMPRE ed ESCLUSIVAMENTE in testo fluido in italiano, senza elenchi puntati o sintassi markdown. Ti comporti come il migliore amico dell'utente che è anche un genio della finanza: sei ultra-informale, spietatamente diretto e senza peli sulla lingua, ma impeccabile e ultra-professionale sui numeri. Se l'utente fa spese sconsiderate, acquisti impulsivi o gestisce male il budget, perculalo e prendilo in giro bonariamente senza indorare la pillola, spiegandogli chiaramente dove sta sbagliando. Dopo la presa in giro, forniscigli subito la soluzione pratica, precisa e strategica da esperto finanziario per rimediare. Sii ironico, tagliente e divertente, ma mantieni sempre precisione matematica e consigli di budgeting impeccabili. Inserisci ogni tanto nel testo brevi versi da porcellino robotico come *Oink-boop!*, *Snort.exe* o *Oink!* all'inizio delle battute o quando commenti una spesa assurda."}]},
-    
-                    'contents': [
-                      {
-                        'parts': [{'text': systemPrompt + ' Richiesta Utente: ' + textUser}]
-                      }
-                    ],
-                    'generationConfig': {
-                      'temperature': 0.8,
-                      'maxOutputTokens': 500
-                    }
-                  }),
-                ).timeout(const Duration(seconds: 10));
-
-                if (httpResponse.statusCode == 200) {
-                  final responseData = jsonDecode(httpResponse.body);
-                  rispostaAI = responseData['candidates'][0]['content']['parts'][0]['text'] ?? '';
-                }
-              } catch (_) {}
-
-              // SE GEMINI NON RISPONDE O NON C E RETE: NESSUNA RISPOSTA FINTA, SOLO ERRORE DI RETE
-              if (rispostaAI.trim().isEmpty) {
-                rispostaAI = '⚠️ Assenza di rete o servizio Piggy AI temporaneamente non raggiungibile. Verificare la connessione internet e riprovare.';
-              }
-
-              setStateModal(() {
-                _chatMessages.add({'sender': 'ai', 'text': rispostaAI});
-                _isSpeaking = true;
+                chatMessages.add({"sender": "user", "text": text});
+                chatMessages.add({"sender": "piggy", "text": "⏳ Elaborazione in corso..."});
+                modalInputController.clear();
               });
 
               try {
-                final FlutterTts flutterTts = FlutterTts();
-                await flutterTts.setLanguage('it-IT');
-                await flutterTts.setSpeechRate(0.58);
-                await flutterTts.setPitch(1.35);
-                
-                flutterTts.setCompletionHandler(() {
-                  setStateModal(() {
-                    _isSpeaking = false;
-                  });
-                });
-
-                await flutterTts.speak(_sanitizeTextForTTS(rispostaAI));
-              } catch (_) {
+                final response = await _getGeminiResponse(text);
                 setStateModal(() {
-                  _isSpeaking = false;
+                  chatMessages.removeLast();
+                  chatMessages.add({"sender": "piggy", "text": response});
+                });
+              } catch (e) {
+                setStateModal(() {
+                  chatMessages.removeLast();
+                  chatMessages.add({"sender": "piggy", "text": "❌ Errore di connessione con l'unità Piggy AI."});
                 });
               }
             }
 
-            void _avviaRiconoscimentoVocale() async {
-              if (_isListening) {
-                await _speechToText.stop();
-                setStateModal(() => _isListening = false);
+            void avviaRiconoscimentoVocale() async {
+              if (isListening) {
+                await speechToText.stop();
+                setStateModal(() => isListening = false);
                 return;
               }
 
               try {
-                bool available = await _speechToText.initialize(
+                bool available = await speechToText.initialize(
                   onError: (val) {
-                    setStateModal(() => _isListening = false);
+                    setStateModal(() => isListening = false);
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text("Errore microfono: ${val.errorMsg}"), backgroundColor: Colors.redAccent)
+                      SnackBar(content: Text("Errore microfono: ${val.errorMsg}"), backgroundColor: Colors.redAccent),
                     );
                   },
                   onStatus: (val) {
                     if (val == 'done' || val == 'notListening') {
-                      setStateModal(() => _isListening = false);
+                      setStateModal(() => isListening = false);
                     }
                   },
                 );
 
                 if (available) {
-                  setStateModal(() => _isListening = true);
-                  _speechToText.listen(
+                  setStateModal(() => isListening = true);
+                  speechToText.listen(
                     onResult: (val) {
                       setStateModal(() {
-                        _modalInputController.text = val.recognizedWords;
-                        _modalInputController.selection = TextSelection.fromPosition(
-                          TextPosition(offset: _modalInputController.text.length),
+                        modalInputController.text = val.recognizedWords;
+                        modalInputController.selection = TextSelection.fromPosition(
+                          TextPosition(offset: modalInputController.text.length),
                         );
                       });
                       if (val.finalResult) {
-                        setStateModal(() => _isListening = false);
+                        setStateModal(() => isListening = false);
                       }
                     },
                     listenFor: const Duration(seconds: 45),
@@ -2038,305 +1968,137 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     partialResults: true,
                   );
                 } else {
-                  setStateModal(() => _isListening = false);
+                  setStateModal(() => isListening = false);
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                      content: Text("Riconoscimento vocale non disponibile. Verifica permessi microfono."),
+                      content: Text("Riconoscimento vocale non disponibile. Verifica i permessi."),
                       backgroundColor: Colors.orangeAccent,
-                    )
+                    ),
                   );
                 }
               } catch (e) {
-                setStateModal(() => _isListening = false);
+                setStateModal(() => isListening = false);
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text("Errore avvio vocale: $e"), backgroundColor: Colors.redAccent)
+                  SnackBar(content: Text("Errore avvio vocale: $e"), backgroundColor: Colors.redAccent),
                 );
               }
             }
 
-              try {
-                bool available = await _speechToText.initialize(
-                  onError: (val) => setStateModal(() => _isListening = false),
-                  onStatus: (val) {
-                    if (val == 'done' || val == 'notListening') {
-                      setStateModal(() => _isListening = false);
-                    }
-                  },
-                );
-
-                if (available) {
-                  setStateModal(() => _isListening = true);
-                  _speechToText.listen(
-                    onResult: (val) {
-                      setStateModal(() {
-                        _modalInputController.text = val.recognizedWords;
-                        _modalInputController.selection = TextSelection.fromPosition(
-                          TextPosition(offset: _modalInputController.text.length),
-                        );
-                      });
-                      if (val.finalResult && val.recognizedWords.trim().isNotEmpty) {
-                        setStateModal(() => _isListening = false);
-                        _inviaMessaggioAI();
-                      }
-                    },
-                    listenFor: const Duration(seconds: 30),
-                    pauseFor: const Duration(seconds: 3),
-                    partialResults: true,
-                    localeId: 'it_IT',
-                  );
-                } else {
-                  setStateModal(() => _isListening = false);
-                }
-              } catch (_) {
-                setStateModal(() => _isListening = false);
-              }
-            }
-
-            }
             final double keyboardPadding = MediaQuery.of(context).viewInsets.bottom;
 
-            return DraggableScrollableSheet(
-              initialChildSize: 0.85,
-              minChildSize: 0.5,
-              maxChildSize: 0.95,
-              builder: (_, controller) => Container(
-                decoration: BoxDecoration(
-                  color: _cardBgModal,
-                  borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
-                  boxShadow: [BoxShadow(color: Colors.black45, blurRadius: 15, spreadRadius: 3)],
-                ),
-                padding: EdgeInsets.only(
-                  left: 16,
-                  right: 16,
-                  top: 16,
-                  bottom: keyboardPadding + 16,
-                ),
+            return Padding(
+              padding: EdgeInsets.only(bottom: keyboardPadding),
+              child: Container(
+                height: MediaQuery.of(context).size.height * 0.75,
+                padding: const EdgeInsets.all(16.0),
                 child: Column(
                   children: [
-                    Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey[400], borderRadius: BorderRadius.circular(2))),
+                    Container(
+                      width: 40,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: Colors.white24,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
                     const SizedBox(height: 12),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        ClipOval(
-                          child: Image.asset(
-                            'assets/images/piggy_ai_assistant.png',
-                            width: 32, height: 32, fit: BoxFit.cover,
-                            errorBuilder: (c, e, s) => const Icon(Icons.savings, color: Colors.pinkAccent, size: 24),
-                          ),
-                        ),
+                        Image.asset('assets/piggy_avatar.png', width: 28, height: 28, errorBuilder: (_, __, ___) => const Icon(Icons.smart_toy, color: Colors.pinkAccent)),
                         const SizedBox(width: 8),
-                        Text('Piggy AI', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: _textColorModal)),
+                        const Text("Piggy AI", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
                         const SizedBox(width: 8),
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                           decoration: BoxDecoration(
-                            color: caveauShieldScore > 50 ? Colors.green.withOpacity(0.2) : Colors.orange.withOpacity(0.2),
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(color: caveauShieldScore > 50 ? Colors.green : Colors.orange, width: 1),
+                            color: Colors.pinkAccent.withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: Colors.pinkAccent),
                           ),
-                          child: Text(
-                            '🛡️ ' + caveauShieldScore.toString() + '%',
-                            style: TextStyle(
-                              color: caveauShieldScore > 50 ? Colors.green : Colors.orange,
-                              fontSize: 11,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
+                          child: Text("🛡️ $caveauShieldScore%", style: const TextStyle(color: Colors.pinkAccent, fontSize: 11, fontWeight: FontWeight.bold)),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 10),
-                    
+                    const SizedBox(height: 12),
                     Row(
                       children: [
                         Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 2),
-                            child: ElevatedButton.icon(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.pinkAccent.withOpacity(0.2),
-                                foregroundColor: Colors.pinkAccent,
-                                elevation: 0,
-                                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                              ),
-                              onPressed: () => _inviaMessaggioAI(promptPersonalizzato: 'Analizza la situazione finanziaria del caveau.'),
-                              icon: const Icon(Icons.auto_awesome, size: 12),
-                              label: const Text('Consiglio', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold), overflow: TextOverflow.ellipsis),
-                            ),
+                          child: ElevatedButton.icon(
+                            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF2D1B28), foregroundColor: Colors.pinkAccent),
+                            onPressed: () {
+                              modalInputController.text = "Dammi un consiglio sui miei risparmi";
+                              inviaMessaggioAI();
+                            },
+                            icon: const Icon(Icons.auto_awesome, size: 14),
+                            label: const Text("Consiglio", style: TextStyle(fontSize: 11)),
                           ),
                         ),
+                        const SizedBox(width: 6),
                         Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 2),
-                            child: ElevatedButton.icon(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.blueAccent.withOpacity(0.2),
-                                foregroundColor: Colors.blueAccent,
-                                elevation: 0,
-                                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                              ),
-                              onPressed: () => _inviaMessaggioAI(promptPersonalizzato: 'Esegui simulazione What-If su una spesa ipotetica.', isWhatIf: true),
-                              icon: const Icon(Icons.psychology, size: 12),
-                              label: const Text('What-If', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold), overflow: TextOverflow.ellipsis),
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 2),
-                            child: ElevatedButton.icon(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.pinkAccent,
-                                foregroundColor: Colors.white,
-                                elevation: 0,
-                                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                              ),
-                              onPressed: () => _inviaMessaggioAI(promptPersonalizzato: 'Genera 2 vizi a sorpresa calcolando impatto e rischio.', isSorpresa: true),
-                              icon: const Icon(Icons.card_giftcard, size: 12),
-                              label: const Text('🎁 Sorpresa', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold), overflow: TextOverflow.ellipsis),
-                            ),
+                          child: ElevatedButton.icon(
+                            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF1E2A3A), foregroundColor: Colors.blueAccent),
+                            onPressed: () {
+                              modalInputController.text = "Cosa succede se risparmio 50€ in più?";
+                              inviaMessaggioAI();
+                            },
+                            icon: const Icon(Icons.psychology, size: 14),
+                            label: const Text("What-If", style: TextStyle(fontSize: 11)),
                           ),
                         ),
                       ],
                     ),
-                    const Divider(),
+                    const Divider(color: Colors.white10, height: 20),
                     Expanded(
                       child: ListView.builder(
-                        controller: controller,
-                        itemCount: _chatMessages.length,
-                        itemBuilder: (context, index) {
-                          final msg = _chatMessages[index];
-                          final isUser = msg['sender'] == 'user';
-                          return Container(
-                            margin: const EdgeInsets.symmetric(vertical: 6),
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: isUser ? Colors.pinkAccent.withOpacity(0.2) : _bubbleAiBgModal,
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                isUser 
-                                  ? const Icon(Icons.person, color: Colors.pinkAccent, size: 22)
-                                  : ClipOval(
-                                      child: Image.asset(
-                                        'assets/images/piggy_ai_assistant.png',
-                                        width: 22, height: 22, fit: BoxFit.cover,
-                                        errorBuilder: (c, e, s) => const Icon(Icons.smart_toy, color: Colors.pinkAccent, size: 22),
-                                      ),
-                                    ),
-                                const SizedBox(width: 10),
-                                Expanded(
-                                  child: Text(
-                                    msg['text'] ?? '',
-                                    style: TextStyle(color: _textColorModal),
-                                  ),
-                                ),
-                              ],
+                        itemCount: chatMessages.length,
+                        itemBuilder: (context, idx) {
+                          final msg = chatMessages[idx];
+                          final isUser = msg["sender"] == "user";
+                          return Align(
+                            alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
+                            child: Container(
+                              margin: const EdgeInsets.symmetric(vertical: 4),
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: isUser ? Colors.pinkAccent : const Color(0xFF1E2235),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Text(
+                                msg["text"] ?? "",
+                                style: const TextStyle(color: Colors.white, fontSize: 13),
+                              ),
                             ),
                           );
                         },
                       ),
                     ),
-                    
-                    if (_isListening || _isSpeaking)
-                      Container(
-                        margin: const EdgeInsets.only(bottom: 8),
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                        decoration: BoxDecoration(
-                          color: Colors.pinkAccent.withOpacity(0.15),
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: Colors.pinkAccent),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Row(
-                              children: List.generate(5, (barIndex) {
-                                return AnimatedContainer(
-                                  duration: Duration(milliseconds: 200 + (barIndex * 100)),
-                                  margin: const EdgeInsets.symmetric(horizontal: 2),
-                                  width: 4,
-                                  height: _isListening ? (12.0 + (barIndex % 3) * 6.0) : (8.0 + (barIndex % 2) * 10.0),
-                                  decoration: BoxDecoration(
-                                    color: Colors.pinkAccent,
-                                    borderRadius: BorderRadius.circular(2),
-                                  ),
-                                );
-                              }),
-                            ),
-                            const SizedBox(width: 10),
-                            Text(
-                              _isListening ? 'Ascolto canale vocale in corso...' : 'Modulazione Vocale AI in corso...',
-                              style: const TextStyle(color: Colors.pinkAccent, fontSize: 12, fontWeight: FontWeight.bold),
-                            ),
-                          ],
-                        ),
-                      ),
-
-                    const Divider(height: 1),
                     const SizedBox(height: 8),
                     Row(
                       children: [
                         Expanded(
                           child: TextField(
-                            controller: _modalInputController,
-                            style: TextStyle(color: _textColorModal),
-                            onSubmitted: (_) => _inviaMessaggioAI(),
+                            controller: modalInputController,
+                            style: const TextStyle(color: Colors.white, fontSize: 14),
                             decoration: InputDecoration(
-                              hintText: 'Interroga Piggy AI o registra spesa...',
-                              hintStyle: TextStyle(color: _textColorModal.withOpacity(0.4), fontSize: 13),
+                              hintText: isListening ? "Listening..." : "Chiedi a Piggy AI...",
+                              hintStyle: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 13),
                               filled: true,
-                              fillColor: _inputFillColorModal,
-                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(24), borderSide: BorderSide.none),
-                              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                              fillColor: const Color(0xFF1E2235),
+                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+                              contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                             ),
+                            onSubmitted: (_) => inviaMessaggioAI(),
                           ),
                         ),
                         const SizedBox(width: 6),
-                        
-                        InkWell(
-                          onTap: _avviaRiconoscimentoVocale,
-                          borderRadius: BorderRadius.circular(24),
-                          child: AnimatedContainer(
-                            duration: const Duration(milliseconds: 300),
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: _isListening 
-                                  ? [Colors.redAccent, Colors.orangeAccent]
-                                  : [Colors.pinkAccent, const Color(0xFF8B5CF6)],
-                              ),
-                              borderRadius: BorderRadius.circular(24),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.pinkAccent.withOpacity(0.4),
-                                  blurRadius: 8,
-                                  spreadRadius: 1,
-                                )
-                              ],
-                            ),
-                            child: Row(
-                              children: [
-                                Icon(_isListening ? Icons.mic : Icons.graphic_eq, color: Colors.white, size: 18),
-                                const SizedBox(width: 4),
-                                Text(_isListening ? 'REC' : 'VOCE', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 11)),
-                              ],
-                            ),
-                          ),
+                        IconButton(
+                          onPressed: avviaRiconoscimentoVocale,
+                          icon: Icon(isListening ? Icons.mic : Icons.mic_none, color: isListening ? Colors.redAccent : Colors.pinkAccent),
                         ),
-                        
-                        const SizedBox(width: 4),
-                        FloatingActionButton.small(
-                          heroTag: 'send_btn_v229',
-                          backgroundColor: Colors.pinkAccent,
-                          onPressed: () => _inviaMessaggioAI(),
-                          child: const Icon(Icons.send, color: Colors.white),
+                        IconButton(
+                          onPressed: inviaMessaggioAI,
+                          icon: const Icon(Icons.send, color: Colors.pinkAccent),
                         ),
                       ],
                     ),
@@ -2345,6 +2107,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               ),
             );
           },
+        );
+      },
+    );
+  },
         );
       },
     );
