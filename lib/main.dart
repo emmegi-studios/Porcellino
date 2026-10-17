@@ -2110,14 +2110,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         );
       },
     );
-  },
   }
-
-
-
-
-
-
 
 class InviteManager extends StatefulWidget {
   final Widget child;
