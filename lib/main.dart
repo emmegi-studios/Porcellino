@@ -2092,6 +2092,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               }
             }
 
+            }
             final double keyboardPadding = MediaQuery.of(context).viewInsets.bottom;
 
             return DraggableScrollableSheet(
