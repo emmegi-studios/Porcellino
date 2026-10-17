@@ -255,7 +255,7 @@ class _LoginScreenState extends State<LoginScreen> {
     final _cardBg = _isDarkTheme ? const Color(0xFF1E2235) : Colors.white;
     final _scaffoldBg = _isDarkTheme ? const Color(0xFF0F111A) : const Color(0xFF282035);
     final _textColor = _isDarkTheme ? Colors.white : Colors.black87;
-    final _subtitleColor = _isDarkTheme ? Colors.grey.shade400 : Colors.black54;
+    final _subtitleColor = _isDarkTheme ? Colors.grey.shade400 : const Color(0xFF475569);
     final _primaryColor = Colors.pinkAccent;
 
     return Scaffold(
@@ -771,7 +771,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   bool get _isDark => _currentTheme == 'Piggy Dark';
   Color get _cardBg => _isDark ? const Color(0xFF1E2235) : Colors.white;
   Color get _textColor => _currentTheme == 'Piggy White' ? Colors.black87 : Colors.white;
-  Color get _subtitleColor => _currentTheme == 'Piggy White' ? Colors.black54 : Colors.grey.shade400;
+  Color get _subtitleColor => _isDark ? Colors.grey.shade400 : const Color(0xFF475569);
   Color get _primaryColor => Colors.pinkAccent;
   Color get _scaffoldBg => _isDark ? const Color(0xFF0F111A) : Colors.grey.shade100;
 
@@ -1895,14 +1895,14 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     ];
 
     final bool isDark = isDarkOverride ?? (Theme.of(context).brightness == Brightness.dark);
-    final Color _cardBgModal = isDark ? const Color(0xFF1E2235) : Colors.white;
-    final Color _textColorModal = isDark ? Colors.white : const Color(0xFF0F172A);
+    final Color _cardBgModal = const Color(0xFF1E2235);
+    final Color _textColorModal = Colors.white;
     final Color _bubbleAiBgModal = isDark ? const Color(0xFF2A2E43) : const Color(0xFFF1F5F9);
     final Color _inputFillColorModal = isDark ? const Color(0xFF2A2E43) : const Color(0xFFF8FAFC);
 
     showModalBottomSheet(context: context,
       isScrollControlled: true,
-      backgroundColor: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF1A1528) : Colors.white,
+      backgroundColor: const Color(0xFF12131C),
       builder: (context) {
         bool _isSpeaking = false;
         bool _isListening = false;
