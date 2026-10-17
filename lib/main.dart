@@ -412,13 +412,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   String _piggyTone = "Piggy Vault";
 
 
-  Future<void> _saveTheme(bool isDark) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('piggy_is_dark', isDark);
-    setState(() {
-      _isDarkTheme = isDark;
-    });
-  }
 
   String _getSystemPromptForCurrentTone() => "Sei l'assistente Piggy Vault.";
 
