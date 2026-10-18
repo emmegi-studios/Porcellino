@@ -128,9 +128,6 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
 
-  Color get _mainTextColor => Colors.white;
-  Color get _subTextColor => Colors.white70;
-
 
 
 
@@ -164,7 +161,7 @@ class _LoginScreenState extends State<LoginScreen> {
       if (mounted) _mostraPiggyAI(context, _isDarkTheme);
     });
 
-    _isDarkTheme = (widget.initialTheme == 'Piggy Dark');
+    
     _loadTheme();
     _loadSavedEmail();
   }
@@ -173,7 +170,7 @@ class _LoginScreenState extends State<LoginScreen> {
     final prefs = await SharedPreferences.getInstance();
     if (mounted) {
       setState(() {
-        _isDarkTheme = prefs.getString('selectedTheme') == 'Piggy Dark';
+        
       });
     }
   }
@@ -392,12 +389,14 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   Color get _subTextColor => _isDark ? Colors.white70 : Colors.black54;
   Color get _textColor => _mainTextColor;
   Color get _subtitleColor => _subTextColor;
+  Color get _bgColor => _isDark ? const Color(0xFF0F111A) : const Color(0xFFF5F6FA);
+
 
 
   Future<void> _loadTheme() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
-      _isDarkTheme = prefs.getString('selectedTheme') == 'Piggy Dark';
+      
     });
   }
 
@@ -405,7 +404,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('piggy_is_dark', isDark);
     setState(() {
-      _isDarkTheme = isDark;
+      
     });
   }
 
@@ -419,10 +418,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       ),
     );
   }
-
-
-
-  bool get _isDarkTheme => _currentTheme == "Piggy Dark";
   set _isDarkTheme(bool value) { _currentTheme = value ? 'Piggy Dark' : 'Piggy White'; } // false;
   String _piggyTone = "Piggy Vault";
 
@@ -783,8 +778,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     });
   }
   Color get _cardBg => (Theme.of(context).brightness == Brightness.dark) ? const Color(0xFF1E2235) : const Color(0xFFF5F6FA);
-  Color get _textColor => _currentTheme == 'Piggy White' ? Colors.black87 : Colors.white;
-  Color get _subtitleColor => (Theme.of(context).brightness == Brightness.dark) ? Colors.grey.shade400 : const Color(0xFF334155);
   Color get _primaryColor => Colors.pinkAccent;
   Color get _scaffoldBg => (Theme.of(context).brightness == Brightness.dark) ? const Color(0xFF0F111A) : const Color(0xFFFFFFFF);
 
