@@ -135,6 +135,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
 
 
+
   
   @override
   void dispose() {
@@ -386,13 +387,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
-
-  bool get _isDark => _currentTheme == "Piggy Dark";
-  bool get _isDarkTheme => _isDark;
-  Color get _mainTextColor => _isDark ? Colors.white : Colors.black87;
-  Color get _subTextColor => _isDark ? Colors.white70 : Colors.black54;
-  Color get _textColor => _mainTextColor;
-  Color get _subtitleColor => _subTextColor;
   Color get _bgColor => _isDark ? const Color(0xFF0F111A) : const Color(0xFFF5F6FA);
 
 
