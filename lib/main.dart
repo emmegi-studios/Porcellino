@@ -1882,7 +1882,20 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   Future<String> _getGeminiResponse(String prompt) async {
     final client = http.Client();
+    final prefs = await SharedPreferences.getInstance();
     
+    String apiKey = "";
+    try {
+      apiKey = utf8.decode(base64.decode("QVEuQWI4Uk42SWVuaHUyOVV5Um1neV9xQXd0bmdkUEJ1OURhc204Q0F1Q2gyTDE0YXhULVE="));
+    } catch (_) {
+      apiKey = "";
+    }
+
+    String selectedPersonality = prefs.getString('piggyPersonality') ?? 'Cyber-Tecno';
+    double entrate = prefs.getDouble('entrateMese') ?? 0.0;
+    double uscite = prefs.getDouble('usciteMese') ?? 0.0;
+    double saldo = entrate - uscite;
+
     Map<String, String> personalitaPrompts = {
       'Cyber-Tecno': 'Sei Piggy AI, un Cyber Porcellino Amico e Agente Finanziario ad alta tecnologia. Parla in modo energico, usando termini cyber/futuristici e metafore finanziarie sul Caveau.',
       'Strategico & Ironico': 'Sei Piggy AI, un Cyber Porcellino Strategico e leggermente Ironico. Parla in modo diretto, sagace e stimolante, facendo battute simpatiche sulle spese inutili e spronando al risparmio.',
@@ -1890,26 +1903,21 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       'Formale & Analitico': 'Sei Piggy AI, un Cyber Porcellino Agente Finanziario analitico e rigoroso. Parla in modo professionale, chiaro e focalizzato sui numeri e sulla pianificazione.'
     };
 
-    String personaContext = personalitaPrompts[_selectedPersonality] ?? personalitaPrompts['Cyber-Tecno']!;
-
-    double entrate = entrateMese;
-    double uscite = usciteMese;
-    double saldo = entrate - uscite;
+    String personaContext = personalitaPrompts[selectedPersonality] ?? personalitaPrompts['Cyber-Tecno']!;
 
     String fullPrompt = """$personaContext
 Identificati SEMPRE come Piggy AI - Cyber Porcellino Amico e Agente Finanziario.
 NON menzionare mai Gemini, Google, modelli AI, API o infrastrutture tecniche.
 Contesto finanziario corrente dell'utente:
 - Patrimonio/Bilancio Netto Mese: €${saldo.toStringAsFixed(2)}
-- Entrate Mese: €${entrate.toStringAsFixed(2)}
-- Uscite Mese: €${uscite.toStringAsFixed(2)}
+- Entrate Mese: €${entrate.toStringAsFixed(2)} - Uscite Mese: €${uscite.toStringAsFixed(2)}
 
 Rispondi all'utente in italiano in modo chiaro, utile e conciso, rimanendo fedele alla tua personalità.
 
 Richiesta dell'utente: $prompt""";
 
     try {
-      final url = Uri.parse('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=$_geminiApiKey');
+      final url = Uri.parse('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=$apiKey');
       final response = await client.post(
         url,
         headers: {'Content-Type': 'application/json'},
@@ -1928,7 +1936,7 @@ Richiesta dell'utente: $prompt""";
         if (text != null && text.isNotEmpty) return text;
       }
 
-      final url2 = Uri.parse('https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=$_geminiApiKey');
+      final url2 = Uri.parse('https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=$apiKey');
       final response2 = await client.post(
         url2,
         headers: {'Content-Type': 'application/json'},
