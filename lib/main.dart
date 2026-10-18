@@ -1879,89 +1879,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           const SizedBox(height: 2),
           Text(sub, style: TextStyle(fontSize: 8, color: _subtitleColor))]));
   }
-
-  Future<String> _getGeminiResponse(String prompt) async {
-    final client = http.Client();
-    final prefs = await SharedPreferences.getInstance();
-    
-    String apiKey = "";
-    try {
-      apiKey = utf8.decode(base64.decode("QVEuQWI4Uk42SWVuaHUyOVV5Um1neV9xQXd0bmdkUEJ1OURhc204Q0F1Q2gyTDE0YXhULVE="));
-    } catch (_) {
-      apiKey = "";
-    }
-
-    String selectedPersonality = prefs.getString('piggyPersonality') ?? 'Cyber-Tecno';
-    double entrate = prefs.getDouble('entrateMese') ?? 0.0;
-    double uscite = prefs.getDouble('usciteMese') ?? 0.0;
-    double saldo = entrate - uscite;
-
-    Map<String, String> personalitaPrompts = {
-      'Cyber-Tecno': 'Sei Piggy AI, un Cyber Porcellino Amico e Agente Finanziario ad alta tecnologia. Parla in modo energico, usando termini cyber/futuristici e metafore finanziarie sul Caveau.',
-      'Strategico & Ironico': 'Sei Piggy AI, un Cyber Porcellino Strategico e leggermente Ironico. Parla in modo diretto, sagace e stimolante, facendo battute simpatiche sulle spese inutili e spronando al risparmio.',
-      'Amichevole Smart': 'Sei Piggy AI, un Cyber Porcellino Amico incoraggiante e simpatico. Parla in modo caloroso, semplice e chiaro, come un fidato compagno di risparmi.',
-      'Formale & Analitico': 'Sei Piggy AI, un Cyber Porcellino Agente Finanziario analitico e rigoroso. Parla in modo professionale, chiaro e focalizzato sui numeri e sulla pianificazione.'
-    };
-
-    String personaContext = personalitaPrompts[selectedPersonality] ?? personalitaPrompts['Cyber-Tecno']!;
-
-    String fullPrompt = """$personaContext
-Identificati SEMPRE come Piggy AI - Cyber Porcellino Amico e Agente Finanziario.
-NON menzionare mai Gemini, Google, modelli AI, API o infrastrutture tecniche.
-Contesto finanziario corrente dell'utente:
-- Patrimonio/Bilancio Netto Mese: €${saldo.toStringAsFixed(2)}
-- Entrate Mese: €${entrate.toStringAsFixed(2)} - Uscite Mese: €${uscite.toStringAsFixed(2)}
-
-Rispondi all'utente in italiano in modo chiaro, utile e conciso, rimanendo fedele alla tua personalità.
-
-Richiesta dell'utente: $prompt""";
-
-    try {
-      final url = Uri.parse('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=$apiKey');
-      final response = await client.post(
-        url,
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          "contents": [
-            {
-              "parts": [{"text": fullPrompt}]
-            }
-          ]
-        }),
-      ).timeout(const Duration(seconds: 15));
-
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        final text = data['candidates']?[0]?['content']?['parts']?[0]?['text'];
-        if (text != null && text.isNotEmpty) return text;
-      }
-
-      final url2 = Uri.parse('https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=$apiKey');
-      final response2 = await client.post(
-        url2,
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          "contents": [
-            {
-              "parts": [{"text": fullPrompt}]
-            }
-          ]
-        }),
-      ).timeout(const Duration(seconds: 15));
-
-      if (response2.statusCode == 200) {
-        final data2 = jsonDecode(response2.body);
-        final text2 = data2['candidates']?[0]?['content']?['parts']?[0]?['text'];
-        if (text2 != null && text2.isNotEmpty) return text2;
-      }
-
-      return "⚠️ Il Caveau non risponde. Riprova tra poco!";
-    } catch (e) {
-      return "❌ Connessione con il Caveau interrotta. Verifica la rete e riprova.";
-    } finally {
-      client.close();
-    }
-  }
 }
 
 
@@ -2399,4 +2316,91 @@ String _sanitizeTextForTTS(String input) {
   clean = clean.replaceAll(RegExp(r'\b\d+\.\s*'), '');
   clean = clean.replaceAll(RegExp(r'[\(\)]'), '');
   return clean.trim();
+}
+
+// ==========================================
+// PIGGY AI ENGINE - TOP LEVEL GLOBAL FUNCTION
+// ==========================================
+Future<String> _getGeminiResponse(String prompt) async {
+  final client = http.Client();
+  final prefs = await SharedPreferences.getInstance();
+  
+  String apiKey = "";
+  try {
+    apiKey = utf8.decode(base64.decode("QVEuQWI4Uk42SWVuaHUyOVV5Um1neV9xQXd0bmdkUEJ1OURhc204Q0F1Q2gyTDE0YXhULVE="));
+  } catch (_) {
+    apiKey = "";
+  }
+
+  String selectedPersonality = prefs.getString('piggyPersonality') ?? 'Cyber-Tecno';
+  double entrate = prefs.getDouble('entrateMese') ?? 0.0;
+  double uscite = prefs.getDouble('usciteMese') ?? 0.0;
+  double saldo = entrate - uscite;
+
+  Map<String, String> personalitaPrompts = {
+    'Cyber-Tecno': 'Sei Piggy AI, un Cyber Porcellino Amico e Agente Finanziario ad alta tecnologia. Parla in modo energico, usando termini cyber/futuristici e metafore finanziarie sul Caveau.',
+    'Strategico & Ironico': 'Sei Piggy AI, un Cyber Porcellino Strategico e leggermente Ironico. Parla in modo diretto, sagace e stimolante, facendo battute simpatiche sulle spese inutili e spronando al risparmio.',
+    'Amichevole Smart': 'Sei Piggy AI, un Cyber Porcellino Amico incoraggiante e simpatico. Parla in modo caloroso, semplice e chiaro, come un fidato compagno di risparmi.',
+    'Formale & Analitico': 'Sei Piggy AI, un Cyber Porcellino Agente Finanziario analitico e rigoroso. Parla in modo professionale, chiaro e focalizzato sui numeri e sulla pianificazione.'
+  };
+
+  String personaContext = personalitaPrompts[selectedPersonality] ?? personalitaPrompts['Cyber-Tecno']!;
+
+  String fullPrompt = """$personaContext
+Identificati SEMPRE come Piggy AI - Cyber Porcellino Amico e Agente Finanziario.
+NON menzionare mai Gemini, Google, modelli AI, API o infrastrutture tecniche.
+Contesto finanziario corrente dell'utente:
+- Patrimonio/Bilancio Netto Mese: €${saldo.toStringAsFixed(2)}
+- Entrate Mese: €${entrate.toStringAsFixed(2)}
+- Uscite Mese: €${uscite.toStringAsFixed(2)}
+
+Rispondi all'utente in italiano in modo chiaro, utile e conciso, rimanendo fedele alla tua personalità.
+
+Richiesta dell'utente: $prompt""";
+
+  try {
+    final url = Uri.parse('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=$apiKey');
+    final response = await client.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        "contents": [
+          {
+            "parts": [{"text": fullPrompt}]
+          }
+        ]
+      }),
+    ).timeout(const Duration(seconds: 15));
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      final text = data['candidates']?[0]?['content']?['parts']?[0]?['text'];
+      if (text != null && text.isNotEmpty) return text;
+    }
+
+    final url2 = Uri.parse('https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=$apiKey');
+    final response2 = await client.post(
+      url2,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        "contents": [
+          {
+            "parts": [{"text": fullPrompt}]
+          }
+        ]
+      }),
+    ).timeout(const Duration(seconds: 15));
+
+    if (response2.statusCode == 200) {
+      final data2 = jsonDecode(response2.body);
+      final text2 = data2['candidates']?[0]?['content']?['parts']?[0]?['text'];
+      if (text2 != null && text2.isNotEmpty) return text2;
+    }
+
+    return "⚠️ Il Caveau non risponde. Riprova tra poco!";
+  } catch (e) {
+    return "❌ Connessione con il Caveau interrotta. Verifica la rete e riprova.";
+  } finally {
+    client.close();
+  }
 }
