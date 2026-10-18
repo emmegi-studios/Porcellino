@@ -1868,9 +1868,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   
   
                                                                             Future<String> _getGeminiResponse(String prompt) async {
+    final client = http.Client();
     try {
       final url = Uri.parse('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=$_geminiApiKey');
-      final response = await http.post(
+      final response = await client.post(
         url,
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
@@ -1880,7 +1881,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             }
           ]
         }),
-      );
+      ).timeout(const Duration(seconds: 15));
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -1888,9 +1889,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         if (text != null && text.isNotEmpty) return text;
       }
 
-      // Fallback su gemini-flash-latest se 2.5-flash non risponde
+      // Fallback su gemini-flash-latest
       final url2 = Uri.parse('https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=$_geminiApiKey');
-      final response2 = await http.post(
+      final response2 = await client.post(
         url2,
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
@@ -1900,7 +1901,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             }
           ]
         }),
-      );
+      ).timeout(const Duration(seconds: 15));
 
       if (response2.statusCode == 200) {
         final data2 = jsonDecode(response2.body);
@@ -1910,7 +1911,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
       return "⚠️ Errore risposta Piggy AI (${response.statusCode}). Riprova tra poco.";
     } catch (e) {
-      return "❌ Errore di connessione Piggy AI: $e";
+      return "❌ Connessione interrotta o rete lenta. Riprova tra poco.";
+    } finally {
+      client.close();
     }
   }
 
