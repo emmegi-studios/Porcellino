@@ -128,6 +128,10 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
 
+  Color get _mainTextColor => Colors.white;
+  Color get _subTextColor => Colors.white70;
+
+
 
 
 
