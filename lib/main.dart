@@ -781,6 +781,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   double usciteMese = 0.0;
   List<Map<String, dynamic>> transazioni = [];
   String _currentTheme = 'Piggy Dark';
+  String _selectedPersonality = 'Cyber-Tecno';
   String _caveauId = '';
   String _nomeUtenteDinamico = 'Utente';
   bool isAiLoading = false;
@@ -874,6 +875,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       entrateMese = prefs.getDouble('entrateMese') ?? 0.00;
       usciteMese = prefs.getDouble('usciteMese') ?? 0.00;
       _currentTheme = prefs.getString('selectedTheme') ?? 'Piggy Dark';
+      _selectedPersonality = prefs.getString('piggyPersonality') ?? 'Cyber-Tecno';
     });
   }
 
@@ -1093,7 +1095,38 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     ),
                     const SizedBox(height: 24),
                     const SizedBox(height: 16),
-                    Text('🎨 Scegli Tema Grafico:', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: _textColor)),
+                    
+            const SizedBox(height: 16),
+            Text('🎭 Personalità Piggy AI:', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: _textColor)),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                'Cyber-Tecno',
+                'Strategico & Ironico',
+                'Amichevole Smart',
+                'Formale & Analitico'
+              ].map((p) {
+                final selected = _selectedPersonality == p;
+                return ChoiceChip(
+                  label: Text(p, style: TextStyle(color: selected ? Colors.white : _textColor, fontSize: 11)),
+                  selected: selected,
+                  selectedColor: Colors.pinkAccent,
+                  backgroundColor: _isDarkTheme ? const Color(0xFF1E2235) : Colors.grey.shade200,
+                  onSelected: (val) {
+                    if (val) {
+                      setState(() {
+                        _selectedPersonality = p;
+                      });
+                      SharedPreferences.getInstance().then((prefs) => prefs.setString('piggyPersonality', p));
+                    }
+                  },
+                );
+              }).toList(),
+            ),
+
+            Text('🎨 Scegli Tema Grafico:', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: _textColor)),
                     const SizedBox(height: 8),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -1869,6 +1902,28 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   
                                                                             Future<String> _getGeminiResponse(String prompt) async {
     final client = http.Client();
+    
+    Map<String, String> personalitaPrompts = {
+      'Cyber-Tecno': 'Sei Piggy AI, un Cyber Porcellino Amico e Agente Finanziario ad alta tecnologia. Parla in modo energico, usando termini cyber/futuristici e metafore finanziarie sul Caveau.',
+      'Strategico & Ironico': 'Sei Piggy AI, un Cyber Porcellino Strategico e leggermente Ironico. Parla in modo diretto, sagace e stimolante, facendo battute simpatiche sulle spese inutili e spronando al risparmio.',
+      'Amichevole Smart': 'Sei Piggy AI, un Cyber Porcellino Amico incoraggiante e simpatico. Parla in modo caloroso, semplice e chiaro, come un fidato compagno di risparmi.',
+      'Formale & Analitico': 'Sei Piggy AI, un Cyber Porcellino Agente Finanziario analitico e rigoroso. Parla in modo professionale, chiaro e focalizzato sui numeri e sulla pianificazione.'
+    };
+
+    String personaContext = personalitaPrompts[_selectedPersonality] ?? personalitaPrompts['Cyber-Tecno']!;
+
+    String fullPrompt = """$personaContext
+Identificati SEMPRE come Piggy AI - Cyber Porcellino Amico e Agente Finanziario.
+NON menzionare mai Gemini, Google, modelli AI, API o infrastrutture tecniche.
+Contesto finanziario corrente dell'utente:
+- Patrimonio Condiviso: €${saldoCondiviso.toStringAsFixed(2)}
+- Entrate Mese: €${entrateMese.toStringAsFixed(2)}
+- Uscite Mese: €${usciteMese.toStringAsFixed(2)}
+
+Rispondi all'utente in italiano in modo chiaro, utile e conciso, rimanendo fedele alla tua personalità.
+
+Richiesta dell'utente: $prompt""";
+
     try {
       final url = Uri.parse('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=$_geminiApiKey');
       final response = await client.post(
@@ -1877,7 +1932,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         body: jsonEncode({
           "contents": [
             {
-              "parts": [{"text": prompt}]
+              "parts": [{"text": fullPrompt}]
             }
           ]
         }),
@@ -1889,7 +1944,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         if (text != null && text.isNotEmpty) return text;
       }
 
-      // Fallback su gemini-flash-latest
+      // Fallback
       final url2 = Uri.parse('https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=$_geminiApiKey');
       final response2 = await client.post(
         url2,
@@ -1897,7 +1952,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         body: jsonEncode({
           "contents": [
             {
-              "parts": [{"text": prompt}]
+              "parts": [{"text": fullPrompt}]
             }
           ]
         }),
@@ -1909,9 +1964,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         if (text2 != null && text2.isNotEmpty) return text2;
       }
 
-      return "⚠️ Errore risposta Piggy AI (${response.statusCode}). Riprova tra poco.";
+      return "⚠️ Il Caveau non risponde. Riprova tra poco!";
     } catch (e) {
-      return "❌ Connessione interrotta o rete lenta. Riprova tra poco.";
+      return "❌ Connessione con il Caveau interrotta. Verifica la rete e riprova.";
     } finally {
       client.close();
     }
