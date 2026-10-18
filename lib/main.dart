@@ -433,11 +433,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             Text('Piggy Vault', style: TextStyle(color: Colors.white)),
           ],
         ),
-        content: const Column(
+        content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Versione: 2.5 Ultimate', style: TextStyle(color: _isDarkTheme ? Colors.white70 : Colors.black87)),
+            Text('Versione: 2.5 Ultimate', style: TextStyle(color: isDark ? Colors.white70 : Colors.black87)),
             SizedBox(height: 8),
             Text('Sviluppato da EmmeGi Studios', style: TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold)),
             SizedBox(height: 8),
@@ -461,7 +461,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         builder: (context) => AlertDialog(
           backgroundColor: _isDarkTheme ? const Color(0xFF1E2235) : const Color(0xFFF5F6FA),
           title: const Text('Aggiornamenti 🚀', style: TextStyle(color: Colors.white)),
-          content: const Text('Sei già sulla versione più recente di Piggy Vault v2.0.0!\n\nIl server OTA non ha nuove versioni al momento.', style: TextStyle(color: _isDarkTheme ? Colors.white70 : Colors.black87)),
+          content: Text('Sei già sulla versione più recente di Piggy Vault v2.0.0!\n\nIl server OTA non ha nuove versioni al momento.', style: TextStyle(color: isDark ? Colors.white70 : Colors.black87)),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
@@ -1508,7 +1508,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             child: Container(
               margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-              decoration: BoxDecoration(color: _isDarkTheme ? _cardBg : const Color(0xFFEFEFF4), borderRadius: BorderRadius.circular(20), border: Border.all(color: _primaryColor.withOpacity(0.5))),
+              decoration: BoxDecoration(color: isDark ? _cardBg : const Color(0xFFEFEFF4), borderRadius: BorderRadius.circular(20), border: Border.all(color: _primaryColor.withOpacity(0.5))),
               child: Row(
                 children: [
                   const Icon(Icons.cloud_done, size: 14, color: Colors.greenAccent),
@@ -1543,7 +1543,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("PATRIMONIO CONDIVISO", style: TextStyle(fontSize: 10, color: _isDarkTheme ? Colors.white70 : Colors.black87, fontWeight: FontWeight.bold)),
+                      Text("PATRIMONIO CONDIVISO", style: TextStyle(fontSize: 10, color: isDark ? Colors.white70 : Colors.black87, fontWeight: FontWeight.bold)),
                       const SizedBox(height: 4),
                       Text("€ ${patrimonio.toStringAsFixed(2)}", style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Color(0xFF10B981)))]),
                   const Icon(Icons.cloud_done, color: Color(0xFF10B981), size: 32)]))),
@@ -2277,7 +2277,7 @@ class _InviteManagerState extends State<InviteManager> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('Stato Rischio Caveau', style: TextStyle(color: _isDarkTheme ? Colors.white70 : Colors.black87, fontSize: 13, fontWeight: FontWeight.bold)),
+              Text('Stato Rischio Caveau', style: TextStyle(color: isDark ? Colors.white70 : Colors.black87, fontSize: 13, fontWeight: FontWeight.bold)),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(color: coloreRischio.withOpacity(0.2), borderRadius: BorderRadius.circular(8)),
