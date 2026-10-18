@@ -1351,9 +1351,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     children: [
                       Text("RIEPILOGO BILANCIO COMUNE", style: TextStyle(fontSize: 10, color: _subtitleColor, fontWeight: FontWeight.bold)),
                       const SizedBox(height: 8),
-                      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text("Entrate Totali:", style: TextStyle(color: _textColor)), Text("€ ${entrateMese.toStringAsFixed(2)}", style: const TextStyle(color: Colors.blueAccent, fontWeight: FontWeight.bold))]),
+                      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text("Entrate Totali:", style: TextStyle(color: _textColor)), Text("€ ${rapportoUscite is double ? (rapportoUscite as double).toStringAsFixed(2) : '0.00'}", style: const TextStyle(color: Colors.blueAccent, fontWeight: FontWeight.bold))]),
                       const SizedBox(height: 4),
-                      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text("Uscite Totali:", style: TextStyle(color: _textColor)), Text("€ ${usciteMese.toStringAsFixed(2)}", style: TextStyle(color: _primaryColor, fontWeight: FontWeight.bold))]),
+                      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text("Uscite Totali:", style: TextStyle(color: _textColor)), Text("€ ${rapportoUscite is double ? (rapportoUscite as double).toStringAsFixed(2) : '0.00'}", style: TextStyle(color: _primaryColor, fontWeight: FontWeight.bold))]),
                       Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text("Bilancio Netto:", style: TextStyle(color: _textColor)), Text("€ ${bilancioNetto.toStringAsFixed(2)}", style: TextStyle(color: bilancioNetto >= 0 ? const Color(0xFF10B981) : _primaryColor, fontWeight: FontWeight.bold))])]))),
               const SizedBox(height: 16),
               Text("Movimenti Cloud (Swipe per eliminare)", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: _subtitleColor)),
@@ -1562,7 +1562,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       children: [
                         Text("ENTRATE MESE", style: TextStyle(fontSize: 9, color: _subtitleColor, fontWeight: FontWeight.bold)),
                         const SizedBox(height: 4),
-                        Text("€ ${entrateMese.toStringAsFixed(2)}", style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blueAccent))])))),
+                        Text("€ ${rapportoUscite is double ? (rapportoUscite as double).toStringAsFixed(2) : '0.00'}", style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blueAccent))])))),
               const SizedBox(width: 10),
               Expanded(
                 child: Card(
@@ -1575,7 +1575,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       children: [
                         Text("USCITE MESE", style: TextStyle(fontSize: 9, color: _subtitleColor, fontWeight: FontWeight.bold)),
                         const SizedBox(height: 4),
-                        Text("€ ${usciteMese.toStringAsFixed(2)}", style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.redAccent))]))))]),
+                        Text("€ ${rapportoUscite is double ? (rapportoUscite as double).toStringAsFixed(2) : '0.00'}", style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.redAccent))]))))]),
           const SizedBox(height: 14),
 
           Card(
@@ -1912,13 +1912,18 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
     String personaContext = personalitaPrompts[_selectedPersonality] ?? personalitaPrompts['Cyber-Tecno']!;
 
+    // Valori finanziari diretti in Euro
+    double entrate = entrateMese;
+    double uscite = usciteMese;
+    double saldo = entrate - uscite;
+
     String fullPrompt = """$personaContext
 Identificati SEMPRE come Piggy AI - Cyber Porcellino Amico e Agente Finanziario.
 NON menzionare mai Gemini, Google, modelli AI, API o infrastrutture tecniche.
 Contesto finanziario corrente dell'utente:
-- Patrimonio Condiviso: €${saldoCondiviso.toStringAsFixed(2)}
-- Entrate Mese: €${entrateMese.toStringAsFixed(2)}
-- Uscite Mese: €${usciteMese.toStringAsFixed(2)}
+- Patrimonio/Bilancio Netto Mese: €${saldo.toStringAsFixed(2)}
+- Entrate Mese: €${entrate.toStringAsFixed(2)}
+- Uscite Mese: €${uscite.toStringAsFixed(2)}
 
 Rispondi all'utente in italiano in modo chiaro, utile e conciso, rimanendo fedele alla tua personalità.
 
