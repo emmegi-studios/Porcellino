@@ -425,7 +425,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF1E2235),
+        backgroundColor: _isDarkTheme ? const Color(0xFF1E2235) : const Color(0xFFF5F6FA),
         title: const Row(
           children: [
             Icon(Icons.savings, color: Colors.pinkAccent),
@@ -437,7 +437,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Versione: 2.5 Ultimate', style: TextStyle(color: Colors.white70)),
+            Text('Versione: 2.5 Ultimate', style: TextStyle(color: _isDarkTheme ? Colors.white70 : Colors.black87)),
             SizedBox(height: 8),
             Text('Sviluppato da EmmeGi Studios', style: TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold)),
             SizedBox(height: 8),
@@ -459,9 +459,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
-          backgroundColor: const Color(0xFF1E2235),
+          backgroundColor: _isDarkTheme ? const Color(0xFF1E2235) : const Color(0xFFF5F6FA),
           title: const Text('Aggiornamenti 🚀', style: TextStyle(color: Colors.white)),
-          content: const Text('Sei già sulla versione più recente di Piggy Vault v2.0.0!\n\nIl server OTA non ha nuove versioni al momento.', style: TextStyle(color: Colors.white70)),
+          content: const Text('Sei già sulla versione più recente di Piggy Vault v2.0.0!\n\nIl server OTA non ha nuove versioni al momento.', style: TextStyle(color: _isDarkTheme ? Colors.white70 : Colors.black87)),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
@@ -626,7 +626,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF1E2235),
+        backgroundColor: _isDarkTheme ? const Color(0xFF1E2235) : const Color(0xFFF5F6FA),
         title: const Text("Imposta Tetto di Spesa Mensile", style: TextStyle(color: Colors.white)),
         content: TextField(
           controller: controller,
@@ -2277,7 +2277,7 @@ class _InviteManagerState extends State<InviteManager> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('Stato Rischio Caveau', style: TextStyle(color: Colors.white70, fontSize: 13, fontWeight: FontWeight.bold)),
+              const Text('Stato Rischio Caveau', style: TextStyle(color: _isDarkTheme ? Colors.white70 : Colors.black87, fontSize: 13, fontWeight: FontWeight.bold)),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(color: coloreRischio.withOpacity(0.2), borderRadius: BorderRadius.circular(8)),
