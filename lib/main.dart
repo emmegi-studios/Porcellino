@@ -276,7 +276,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       errorBuilder: (context, error, stackTrace) => Icon(Icons.savings, size: 60, color: _primaryColor),
                     ),
               const SizedBox(height: 16),
-              const Text("Piggy Vault", style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white)),
+              const Text("Piggy Vault", style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: _isDarkTheme ? Colors.white : Colors.black87)),
               const SizedBox(height: 8),
               Text("Accedi al tuo caveau condiviso", style: TextStyle(fontSize: 14, color: _subtitleColor)),
               const SizedBox(height: 32),
@@ -342,7 +342,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       onPressed: _eseguiAutenticazione,
                       child: Text(
                         _isRegistrazione ? "Registrati e Crea Account" : "Entra nel Caveau Condiviso",
-                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
+                        style: const TextStyle(color: _isDarkTheme ? Colors.white : Colors.black87, fontWeight: FontWeight.bold, fontSize: 16),
                       ),
                     ),
               if (!_isRegistrazione) ...[
@@ -430,7 +430,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           children: [
             Icon(Icons.savings, color: Colors.pinkAccent),
             SizedBox(width: 8),
-            Text('Piggy Vault', style: TextStyle(color: Colors.white)),
+            Text('Piggy Vault', style: TextStyle(color: _isDarkTheme ? Colors.white : Colors.black87)),
           ],
         ),
         content: Column(
@@ -441,7 +441,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             SizedBox(height: 8),
             Text('Sviluppato da EmmeGi Studios', style: TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold)),
             SizedBox(height: 8),
-            Text('Assistente Cibernetico: Cyber-Piggy (Modello Terminator v2.5)', style: TextStyle(color: Colors.white60, fontSize: 13)),
+            Text('Assistente Cibernetico: Cyber-Piggy (Modello Terminator v2.5)', style: TextStyle(color: _isDarkTheme ? Colors.white : Colors.black8760, fontSize: 13)),
           ],
         ),
         actions: [
@@ -460,7 +460,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         context: context,
         builder: (context) => AlertDialog(
           backgroundColor: _isDarkTheme ? const Color(0xFF1E2235) : const Color(0xFFF5F6FA),
-          title: const Text('Aggiornamenti 🚀', style: TextStyle(color: Colors.white)),
+          title: const Text('Aggiornamenti 🚀', style: TextStyle(color: _isDarkTheme ? Colors.white : Colors.black87)),
           content: Text('Sei già sulla versione più recente di Piggy Vault v2.0.0!\n\nIl server OTA non ha nuove versioni al momento.', style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white70 : Colors.black87)),
           actions: [
             TextButton(
@@ -508,15 +508,15 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             SnackBar(
               content: Row(
                 children: [
-                  const Icon(Icons.notifications_active, color: Colors.white),
+                  const Icon(Icons.notifications_active, color: _isDarkTheme ? Colors.white : Colors.black87),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text(message.notification!.title ?? 'Nuova attività nel Caveau 🐷', style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
-                        Text(message.notification!.body ?? '', style: const TextStyle(color: Colors.white)),
+                        Text(message.notification!.title ?? 'Nuova attività nel Caveau 🐷', style: const TextStyle(fontWeight: FontWeight.bold, color: _isDarkTheme ? Colors.white : Colors.black87)),
+                        Text(message.notification!.body ?? '', style: const TextStyle(color: _isDarkTheme ? Colors.white : Colors.black87)),
                       ],
                     ),
                   ),
@@ -627,11 +627,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: _isDarkTheme ? const Color(0xFF1E2235) : const Color(0xFFF5F6FA),
-        title: const Text("Imposta Tetto di Spesa Mensile", style: TextStyle(color: Colors.white)),
+        title: const Text("Imposta Tetto di Spesa Mensile", style: TextStyle(color: _isDarkTheme ? Colors.white : Colors.black87)),
         content: TextField(
           controller: controller,
           keyboardType: const TextInputType.numberWithOptions(decimal: true),
-          style: const TextStyle(color: Colors.white),
+          style: const TextStyle(color: _isDarkTheme ? Colors.white : Colors.black87),
           decoration: const InputDecoration(
             labelText: "Budget (€)",
             labelStyle: TextStyle(color: Colors.grey),
@@ -650,7 +650,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               }
               Navigator.pop(context);
             },
-            child: const Text("Salva", style: TextStyle(color: Colors.white)),
+            child: const Text("Salva", style: TextStyle(color: _isDarkTheme ? Colors.white : Colors.black87)),
           ),
         ],
       ),
@@ -701,7 +701,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text("Tetto di Spesa Mensile", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+              const Text("Tetto di Spesa Mensile", style: TextStyle(color: _isDarkTheme ? Colors.white : Colors.black87, fontWeight: FontWeight.bold, fontSize: 16)),
               IconButton(
                 icon: const Icon(Icons.edit, color: Colors.pinkAccent, size: 20),
                 onPressed: _showBudgetDialog,
@@ -713,7 +713,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text("Speso: €${currentMonthExpenses.toStringAsFixed(2)}", style: const TextStyle(color: Colors.grey, fontSize: 14)),
-              Text("Budget: €${_monthlyBudget.toStringAsFixed(2)}", style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14)),
+              Text("Budget: €${_monthlyBudget.toStringAsFixed(2)}", style: const TextStyle(color: _isDarkTheme ? Colors.white : Colors.black87, fontWeight: FontWeight.bold, fontSize: 14)),
             ],
           ),
           const SizedBox(height: 12),
@@ -831,8 +831,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 const SnackBar(content: Text('CSV copiato con successo negli appunti!')),
               );
             },
-            icon: const Icon(Icons.download, color: Colors.white, size: 16),
-            label: const Text('Scarica CSV', style: TextStyle(color: Colors.white)),
+            icon: const Icon(Icons.download, color: _isDarkTheme ? Colors.white : Colors.black87, size: 16),
+            label: const Text('Scarica CSV', style: TextStyle(color: _isDarkTheme ? Colors.white : Colors.black87)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx),
@@ -1043,7 +1043,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
                       onPressed: () async { HapticFeedback.lightImpact(); Navigator.pop(context); await FirebaseAuth.instance.signOut(); Navigator.of(context, rootNavigator: true).pushNamedAndRemoveUntil("/", (route) => false); },
-                  child: const Text('Disconnetti Account', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                  child: const Text('Disconnetti Account', style: TextStyle(color: _isDarkTheme ? Colors.white : Colors.black87, fontWeight: FontWeight.bold)),
                 ),
                 const SizedBox(height: 24),
               ],
@@ -1133,8 +1133,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       children: [
                         ElevatedButton.icon(
                           onPressed: () { HapticFeedback.lightImpact(); setState(() { _currentTheme = 'Piggy Dark'; }); SharedPreferences.getInstance().then((p) => p.setString("selectedTheme", _currentTheme)); Navigator.pop(context); },
-                          icon: const Icon(Icons.dark_mode, color: Colors.white, size: 16),
-                          label: const Text('Piggy Dark', style: TextStyle(color: Colors.white)),
+                          icon: const Icon(Icons.dark_mode, color: _isDarkTheme ? Colors.white : Colors.black87, size: 16),
+                          label: const Text('Piggy Dark', style: TextStyle(color: _isDarkTheme ? Colors.white : Colors.black87)),
                         ),
                         ElevatedButton.icon(
                           style: ElevatedButton.styleFrom(backgroundColor: Colors.grey.shade200),
@@ -1203,7 +1203,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     Navigator.pop(context);
                   }
                 },
-                child: const Text("Crea Obiettivo", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                child: const Text("Crea Obiettivo", style: TextStyle(color: _isDarkTheme ? Colors.white : Colors.black87, fontWeight: FontWeight.bold)),
               ),
               const SizedBox(height: 24),
             ]
@@ -1233,7 +1233,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 Navigator.pop(ctx);
               }
             },
-            child: const Text("Aggiungi", style: TextStyle(color: Colors.white))
+            child: const Text("Aggiungi", style: TextStyle(color: _isDarkTheme ? Colors.white : Colors.black87))
           )
         ]
       )
@@ -1370,7 +1370,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         alignment: Alignment.centerRight,
                         padding: const EdgeInsets.only(right: 20),
                         color: Colors.red,
-                        child: const Icon(Icons.delete, color: Colors.white)),
+                        child: const Icon(Icons.delete, color: _isDarkTheme ? Colors.white : Colors.black87)),
                       onDismissed: (direction) => _eliminaTransazione(index),
                       child: ListTile(
                         dense: true,
@@ -1384,7 +1384,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               ElevatedButton(
                 style: ElevatedButton.styleFrom(backgroundColor: _primaryColor, padding: const EdgeInsets.symmetric(vertical: 14)),
                 onPressed: () => Navigator.pop(context),
-                child: const Text("Chiudi Resoconto", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)))
+                child: const Text("Chiudi Resoconto", style: TextStyle(color: _isDarkTheme ? Colors.white : Colors.black87, fontWeight: FontWeight.bold)))
             ]));
       });
   }
@@ -1465,7 +1465,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     Navigator.pop(context);
                   }
                 },
-                child: const Text("Registra e Sincronizza Cloud", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)))]));
+                child: const Text("Registra e Sincronizza Cloud", style: TextStyle(color: _isDarkTheme ? Colors.white : Colors.black87, fontWeight: FontWeight.bold)))]));
       });
   }
 
@@ -1525,7 +1525,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           child: Image.asset(
             'assets/images/piggy_ai_assistant.png',
             width: 48, height: 48, fit: BoxFit.cover,
-            errorBuilder: (c, e, s) => const Icon(Icons.savings, color: Colors.white, size: 28),
+            errorBuilder: (c, e, s) => const Icon(Icons.savings, color: _isDarkTheme ? Colors.white : Colors.black87, size: 28),
           ),
         ),
       ),
@@ -1726,7 +1726,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                     Navigator.pop(context);
                                   }
                                 },
-                                child: const Text("Salva", style: TextStyle(color: Colors.white)),
+                                child: const Text("Salva", style: TextStyle(color: _isDarkTheme ? Colors.white : Colors.black87)),
                               ),
                             ],
                           ),
@@ -1848,7 +1848,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
             Text("➕ Nuova Transazione", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: _subtitleColor)),
-            ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: _primaryColor), onPressed: _mostraModalInserimento, child: const Text("+ Nuova", style: TextStyle(color: Colors.white)))
+            ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: _primaryColor), onPressed: _mostraModalInserimento, child: const Text("+ Nuova", style: TextStyle(color: _isDarkTheme ? Colors.white : Colors.black87)))
           ]),
           const SizedBox(height: 8),
           
@@ -2037,7 +2037,7 @@ void _mostraPiggyAI(BuildContext context, [bool? isDarkOverride]) {
                       width: 40,
                       height: 4,
                       decoration: BoxDecoration(
-                        color: Colors.white24,
+                        color: _isDarkTheme ? Colors.white : Colors.black8724,
                         borderRadius: BorderRadius.circular(2),
                       ),
                     ),
@@ -2055,7 +2055,7 @@ void _mostraPiggyAI(BuildContext context, [bool? isDarkOverride]) {
                           ),
                         ),
                         const SizedBox(width: 8),
-                        const Text("Piggy AI", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
+                        const Text("Piggy AI", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: _isDarkTheme ? Colors.white : Colors.black87)),
                         const SizedBox(width: 8),
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
@@ -2096,7 +2096,7 @@ void _mostraPiggyAI(BuildContext context, [bool? isDarkOverride]) {
                         ),
                       ],
                     ),
-                    const Divider(color: Colors.white10, height: 20),
+                    const Divider(color: _isDarkTheme ? Colors.white : Colors.black8710, height: 20),
                     Expanded(
                       child: ListView.builder(
                         itemCount: chatMessages.length,
@@ -2114,7 +2114,7 @@ void _mostraPiggyAI(BuildContext context, [bool? isDarkOverride]) {
                               ),
                               child: Text(
                                 msg["text"] ?? "",
-                                style: const TextStyle(color: Colors.white, fontSize: 13),
+                                style: const TextStyle(color: _isDarkTheme ? Colors.white : Colors.black87, fontSize: 13),
                               ),
                             ),
                           );
@@ -2127,10 +2127,10 @@ void _mostraPiggyAI(BuildContext context, [bool? isDarkOverride]) {
                         Expanded(
                           child: TextField(
                             controller: modalInputController,
-                            style: const TextStyle(color: Colors.white, fontSize: 14),
+                            style: const TextStyle(color: _isDarkTheme ? Colors.white : Colors.black87, fontSize: 14),
                             decoration: InputDecoration(
                               hintText: isListening ? "Listening..." : "Chiedi a Piggy AI...",
-                              hintStyle: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 13),
+                              hintStyle: TextStyle(color: _isDarkTheme ? Colors.white : Colors.black87.withOpacity(0.4), fontSize: 13),
                               filled: true,
                               fillColor: const Color(0xFF1E2235),
                               border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
