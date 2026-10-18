@@ -1948,7 +1948,7 @@ void _mostraPiggyAI(BuildContext context, [bool? isDarkOverride]) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: isDark ? const Color(0xFF12131C) : Colors.white,
+      backgroundColor: isDark ? const Color(0xFF12131C) : const Color(0xFFF5F6FA),
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
