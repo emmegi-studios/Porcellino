@@ -73,7 +73,7 @@ void main() async {
   }
 
   final prefs = await SharedPreferences.getInstance();
-  final savedTheme = 'Piggy Dark';
+  final savedTheme = prefs.getString('selectedTheme') ?? 'Piggy Dark';
   runApp(PiggyVaultApp(initialTheme: savedTheme));
 }
 
@@ -128,18 +128,10 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
 
-  bool get _isDark => true;
-  bool get _isDarkTheme => true;
-  Color get _bgColor => const Color(0xFF0F111A);
-  Color get _cardBgColor => const Color(0xFF1E2235);
   Color get _textColor => Colors.white;
   Color get _mainTextColor => Colors.white;
   Color get _subtitleColor => Colors.white70;
   Color get _subTextColor => Colors.white70;
-
-  bool get
-
-
 
 
   
@@ -156,6 +148,7 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _isRegistrazione = false;
   bool _isLoading = false;
   bool _obscurePassword = true;
+  late bool _isDarkTheme;
 
   @override
   void initState() {
@@ -170,6 +163,8 @@ class _LoginScreenState extends State<LoginScreen> {
     HomeWidget.widgetClicked.listen((Uri? uri) {
       if (mounted) _mostraPiggyAI(context, _isDarkTheme);
     });
+
+    _isDarkTheme = (widget.initialTheme == 'Piggy Dark');
     _loadTheme();
     _loadSavedEmail();
   }
@@ -178,6 +173,7 @@ class _LoginScreenState extends State<LoginScreen> {
     final prefs = await SharedPreferences.getInstance();
     if (mounted) {
       setState(() {
+        _isDarkTheme = prefs.getString('selectedTheme') == 'Piggy Dark';
       });
     }
   }
@@ -399,14 +395,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   Color get _subtitleColor => Colors.white70;
   Color get _subTextColor => Colors.white70;
 
-  bool get
-
-
-
 
   Future<void> _loadTheme() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
+      _isDarkTheme = prefs.getString('selectedTheme') == 'Piggy Dark';
     });
   }
 
@@ -414,6 +407,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('piggy_is_dark', isDark);
     setState(() {
+      _isDarkTheme = isDark;
     });
   }
 
@@ -427,6 +421,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       ),
     );
   }
+
+
+
+  bool get _isDarkTheme => _currentTheme == "Piggy Dark";
   set _isDarkTheme(bool value) { _currentTheme = value ? 'Piggy Dark' : 'Piggy White'; } // false;
   String _piggyTone = "Piggy Vault";
 
@@ -786,7 +784,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       }
     });
   }
+
+  bool get _isDark => _currentTheme == 'Piggy Dark';
   Color get _cardBg => (Theme.of(context).brightness == Brightness.dark) ? const Color(0xFF1E2235) : const Color(0xFFF5F6FA);
+  Color get _textColor => _currentTheme == 'Piggy White' ? Colors.black87 : Colors.white;
+  Color get _subtitleColor => (Theme.of(context).brightness == Brightness.dark) ? Colors.grey.shade400 : const Color(0xFF334155);
   Color get _primaryColor => Colors.pinkAccent;
   Color get _scaffoldBg => (Theme.of(context).brightness == Brightness.dark) ? const Color(0xFF0F111A) : const Color(0xFFFFFFFF);
 
@@ -888,7 +890,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       patrimonio = prefs.getDouble('patrimonio') ?? 0.00;
       entrateMese = prefs.getDouble('entrateMese') ?? 0.00;
       usciteMese = prefs.getDouble('usciteMese') ?? 0.00;
-      _currentTheme = 'Piggy Dark';
+      _currentTheme = prefs.getString('selectedTheme') ?? 'Piggy Dark';
       _selectedPersonality = prefs.getString('piggyPersonality') ?? 'Cyber-Tecno';
     });
   }
