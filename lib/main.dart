@@ -128,13 +128,6 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
 
-  Color get _textColor => Colors.white;
-  Color get _mainTextColor => Colors.white;
-  Color get _subtitleColor => Colors.white70;
-  Color get _subTextColor => Colors.white70;
-
-
-
   
   @override
   void dispose() {
@@ -293,7 +286,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 keyboardType: TextInputType.emailAddress,
                 decoration: InputDecoration(
                   labelText: "Email utente",
-                  labelStyle: TextStyle(color: _subTextColor),
+                  labelStyle: TextStyle(color: _isDarkTheme ? Colors.white70 : Colors.black54),
                   floatingLabelStyle: TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold),
                   filled: true,
                   fillColor: _cardBg,
@@ -307,7 +300,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 style: TextStyle(color: _textColor),
                 decoration: InputDecoration(
                   labelText: "Password",
-                  labelStyle: TextStyle(color: _subTextColor),
+                  labelStyle: TextStyle(color: _isDarkTheme ? Colors.white70 : Colors.black54),
                   floatingLabelStyle: TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold),
                   filled: true,
                   fillColor: _cardBg,
@@ -326,7 +319,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   style: TextStyle(color: _textColor),
                   decoration: InputDecoration(
                     labelText: "Conferma Password",
-                    labelStyle: TextStyle(color: _subTextColor),
+                    labelStyle: TextStyle(color: _isDarkTheme ? Colors.white70 : Colors.black54),
                   floatingLabelStyle: TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold),
                     filled: true,
                     fillColor: _cardBg,
@@ -387,18 +380,6 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
-  bool get _isDark => _currentTheme == "Piggy Dark";
-  bool get _isDarkTheme => _isDark;
-  Color get _textColor => _isDark ? Colors.white : Colors.black87;
-  Color get _mainTextColor => _textColor;
-  Color get _subtitleColor => _isDark ? Colors.white70 : Colors.black54;
-  Color get _subTextColor => _subtitleColor;
-  Color get _bgColor => _isDark ? const Color(0xFF0F111A) : const Color(0xFFF5F6FA);
-  Color get _cardBgColor => _isDark ? const Color(0xFF1E2235) : Colors.white;
-
-
-
-
   Future<void> _loadTheme() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
@@ -424,6 +405,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       ),
     );
   }
+
+
+
+  bool get _isDarkTheme => _currentTheme == "Piggy Dark";
   set _isDarkTheme(bool value) { _currentTheme = value ? 'Piggy Dark' : 'Piggy White'; } // false;
   String _piggyTone = "Piggy Vault";
 
@@ -649,7 +634,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87),
           decoration: const InputDecoration(
             labelText: "Budget (€)",
-            labelStyle: TextStyle(color: _subTextColor),
+            labelStyle: TextStyle(color: Colors.grey),
           ),
         ),
         actions: [
@@ -783,7 +768,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       }
     });
   }
+
+  bool get _isDark => _currentTheme == 'Piggy Dark';
   Color get _cardBg => (Theme.of(context).brightness == Brightness.dark) ? const Color(0xFF1E2235) : const Color(0xFFF5F6FA);
+  Color get _textColor => _currentTheme == 'Piggy White' ? Colors.black87 : Colors.white;
+  Color get _subtitleColor => (Theme.of(context).brightness == Brightness.dark) ? Colors.grey.shade400 : const Color(0xFF334155);
   Color get _primaryColor => Colors.pinkAccent;
   Color get _scaffoldBg => (Theme.of(context).brightness == Brightness.dark) ? const Color(0xFF0F111A) : const Color(0xFFFFFFFF);
 
@@ -1099,7 +1088,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       style: TextStyle(color: _textColor),
                       decoration: InputDecoration(
                         hintText: 'Email del partner da invitare',
-                        hintStyle: TextStyle(color: _subTextColor),
+                        hintStyle: TextStyle(color: _isDarkTheme ? Colors.white70 : Colors.black54),
                         filled: true,
                         fillColor: _scaffoldBg,
                         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
@@ -1193,10 +1182,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             children: [
               Text("🎯 Nuovo Obiettivo", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: _textColor)),
               const SizedBox(height: 16),
-              TextField(controller: _goalNameController, style: TextStyle(color: _textColor), decoration: InputDecoration(labelText: 'Nome Obiettivo (es. Viaggio)', labelStyle: TextStyle(color: _subTextColor),
+              TextField(controller: _goalNameController, style: TextStyle(color: _textColor), decoration: InputDecoration(labelText: 'Nome Obiettivo (es. Viaggio)', labelStyle: TextStyle(color: _isDarkTheme ? Colors.white70 : Colors.black54),
                   floatingLabelStyle: const TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold), fillColor: _scaffoldBg, filled: true)),
               const SizedBox(height: 12),
-              TextField(controller: _goalTargetController, keyboardType: TextInputType.number, style: TextStyle(color: _textColor), decoration: InputDecoration(labelText: 'Target in € (es. 1500)', labelStyle: TextStyle(color: _subTextColor),
+              TextField(controller: _goalTargetController, keyboardType: TextInputType.number, style: TextStyle(color: _textColor), decoration: InputDecoration(labelText: 'Target in € (es. 1500)', labelStyle: TextStyle(color: _isDarkTheme ? Colors.white70 : Colors.black54),
                   floatingLabelStyle: const TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold), fillColor: _scaffoldBg, filled: true)),
               const SizedBox(height: 24),
               ElevatedButton(
@@ -1232,7 +1221,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       builder: (ctx) => AlertDialog(
         backgroundColor: _cardBg,
         title: Text("Finanzia: ${portafogli[index]['nome']}", style: TextStyle(color: _textColor, fontSize: 16, fontWeight: FontWeight.bold)),
-        content: TextField(controller: fundController, keyboardType: TextInputType.number, style: TextStyle(color: _textColor), decoration: InputDecoration(hintText: "Importo da aggiungere", hintStyle: TextStyle(color: _subTextColor))),
+        content: TextField(controller: fundController, keyboardType: TextInputType.number, style: TextStyle(color: _textColor), decoration: InputDecoration(hintText: "Importo da aggiungere", hintStyle: TextStyle(color: _isDarkTheme ? Colors.white70 : Colors.black54))),
         actions: [
           TextButton(onPressed: () => Navigator.pop(ctx), child: Text("Annulla", style: TextStyle(color: _isDarkTheme ? Colors.white70 : Colors.black54))),
           ElevatedButton(
@@ -1420,7 +1409,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 value: _selectedType,
                 dropdownColor: _cardBg,
                 style: TextStyle(color: _textColor),
-                decoration: InputDecoration(labelText: "Tipo", labelStyle: TextStyle(color: _subTextColor),
+                decoration: InputDecoration(labelText: "Tipo", labelStyle: TextStyle(color: _isDarkTheme ? Colors.white70 : Colors.black54),
                   floatingLabelStyle: TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold), filled: true, fillColor: _scaffoldBg, border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))),
                 items: const [
                   DropdownMenuItem(value: 'Uscita (Spesa)', child: Text("🔴 Uscita (Spesa)")),
@@ -1431,14 +1420,14 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 controller: _amountController,
                 style: TextStyle(color: _textColor),
                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                decoration: InputDecoration(labelText: "Importo (€)", labelStyle: TextStyle(color: _subTextColor),
+                decoration: InputDecoration(labelText: "Importo (€)", labelStyle: TextStyle(color: _isDarkTheme ? Colors.white70 : Colors.black54),
                   floatingLabelStyle: TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold), filled: true, fillColor: _scaffoldBg, border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)))),
               const SizedBox(height: 12),
               DropdownButtonFormField<String>(
                 value: _selectedCategory,
                 dropdownColor: _cardBg,
                 style: TextStyle(color: _textColor),
-                decoration: InputDecoration(labelText: "Categoria", labelStyle: TextStyle(color: _subTextColor),
+                decoration: InputDecoration(labelText: "Categoria", labelStyle: TextStyle(color: _isDarkTheme ? Colors.white70 : Colors.black54),
                   floatingLabelStyle: TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold), filled: true, fillColor: _scaffoldBg, border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))),
                 items: categorieConEmoji.map((cat) => DropdownMenuItem(value: cat, child: Text(cat))).toList(),
                 onChanged: (val) => setState(() => _selectedCategory = val ?? '🐾 Animali')),
@@ -1446,7 +1435,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               TextField(
                 controller: _noteController,
                 style: TextStyle(color: _textColor),
-                decoration: InputDecoration(labelText: "Note / Descrizione", labelStyle: TextStyle(color: _subTextColor),
+                decoration: InputDecoration(labelText: "Note / Descrizione", labelStyle: TextStyle(color: _isDarkTheme ? Colors.white70 : Colors.black54),
                   floatingLabelStyle: const TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold), filled: true, fillColor: _scaffoldBg, border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)))),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
@@ -1699,10 +1688,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                   style: TextStyle(color: _textColor),
                                   decoration: InputDecoration(
                                     labelText: "Titolo Scadenza",
-                                    labelStyle: TextStyle(color: _subTextColor),
+                                    labelStyle: TextStyle(color: _isDarkTheme ? Colors.white70 : Colors.black54),
                   floatingLabelStyle: const TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold),
                                     hintText: "es. Affitto o Bolletta",
-                                    hintStyle: TextStyle(color: _subTextColor)),
+                                    hintStyle: TextStyle(color: _isDarkTheme ? Colors.white70 : Colors.black54.withOpacity(0.5)),
                                   ),
                                 ),
                                 const SizedBox(height: 12),
@@ -1711,7 +1700,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                   style: TextStyle(color: _textColor),
                                   decoration: InputDecoration(
                                     labelText: "Data (DD/MM/YYYY)",
-                                    labelStyle: TextStyle(color: _subTextColor),
+                                    labelStyle: TextStyle(color: _isDarkTheme ? Colors.white70 : Colors.black54),
                   floatingLabelStyle: const TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold),
                                   ),
                                 ),
@@ -2142,7 +2131,7 @@ void _mostraPiggyAI(BuildContext context, [bool? isDarkOverride]) {
                             style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87, fontSize: 14),
                             decoration: InputDecoration(
                               hintText: isListening ? "Listening..." : "Chiedi a Piggy AI...",
-                              hintStyle: TextStyle(color: _subTextColor).brightness == Brightness.dark) ? Colors.white : Colors.black87.withOpacity(0.4), fontSize: 13),
+                              hintStyle: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87.withOpacity(0.4), fontSize: 13),
                               filled: true,
                               fillColor: const Color(0xFF1E2235),
                               border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
