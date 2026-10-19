@@ -73,7 +73,7 @@ void main() async {
   }
 
   final prefs = await SharedPreferences.getInstance();
-  final savedTheme = prefs.getString('selectedTheme') ?? 'Piggy Dark';
+  final savedTheme = 'Piggy Dark';
   runApp(PiggyVaultApp(initialTheme: savedTheme));
 }
 
@@ -128,10 +128,15 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
 
+  bool get _isDark => true;
+  bool get _isDarkTheme => true;
+  Color get _bgColor => const Color(0xFF0F111A);
+  Color get _cardBgColor => const Color(0xFF1E2235);
   Color get _textColor => Colors.white;
   Color get _mainTextColor => Colors.white;
   Color get _subtitleColor => Colors.white70;
   Color get _subTextColor => Colors.white70;
+
 
 
 
@@ -387,14 +392,15 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
-  bool get _isDark => _currentTheme == "Piggy Dark";
-  bool get _isDarkTheme => _isDark;
-  Color get _bgColor => _isDark ? const Color(0xFF0F111A) : const Color(0xFFF5F6FA);
-  Color get _cardBgColor => _isDark ? const Color(0xFF1E2235) : Colors.white;
-  Color get _textColor => _isDark ? Colors.white : Colors.black87;
-  Color get _mainTextColor => _textColor;
-  Color get _subtitleColor => _isDark ? Colors.white70 : Colors.black54;
-  Color get _subTextColor => _subtitleColor;
+  bool get _isDark => true;
+  bool get _isDarkTheme => true;
+  Color get _bgColor => const Color(0xFF0F111A);
+  Color get _cardBgColor => const Color(0xFF1E2235);
+  Color get _textColor => Colors.white;
+  Color get _mainTextColor => Colors.white;
+  Color get _subtitleColor => Colors.white70;
+  Color get _subTextColor => Colors.white70;
+
 
 
 
@@ -884,7 +890,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       patrimonio = prefs.getDouble('patrimonio') ?? 0.00;
       entrateMese = prefs.getDouble('entrateMese') ?? 0.00;
       usciteMese = prefs.getDouble('usciteMese') ?? 0.00;
-      _currentTheme = prefs.getString('selectedTheme') ?? 'Piggy Dark';
+      _currentTheme = 'Piggy Dark';
       _selectedPersonality = prefs.getString('piggyPersonality') ?? 'Cyber-Tecno';
     });
   }
