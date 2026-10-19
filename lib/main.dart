@@ -134,6 +134,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Color get _subTextColor => Colors.white70;
 
 
+
   
   @override
   void dispose() {
@@ -394,6 +395,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   Color get _mainTextColor => _textColor;
   Color get _subtitleColor => _isDark ? Colors.white70 : Colors.black54;
   Color get _subTextColor => _subtitleColor;
+
 
 
   Future<void> _loadTheme() async {
