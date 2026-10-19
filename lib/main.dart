@@ -128,6 +128,12 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
 
+  Color get _textColor => Colors.white;
+  Color get _mainTextColor => Colors.white;
+  Color get _subtitleColor => Colors.white70;
+  Color get _subTextColor => Colors.white70;
+
+
   
   @override
   void dispose() {
@@ -380,6 +386,16 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
+  bool get _isDark => _currentTheme == "Piggy Dark";
+  bool get _isDarkTheme => _isDark;
+  Color get _bgColor => _isDark ? const Color(0xFF0F111A) : const Color(0xFFF5F6FA);
+  Color get _cardBgColor => _isDark ? const Color(0xFF1E2235) : Colors.white;
+  Color get _textColor => _isDark ? Colors.white : Colors.black87;
+  Color get _mainTextColor => _textColor;
+  Color get _subtitleColor => _isDark ? Colors.white70 : Colors.black54;
+  Color get _subTextColor => _subtitleColor;
+
+
   Future<void> _loadTheme() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
@@ -405,10 +421,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       ),
     );
   }
-
-
-
-  bool get _isDarkTheme => _currentTheme == "Piggy Dark";
   set _isDarkTheme(bool value) { _currentTheme = value ? 'Piggy Dark' : 'Piggy White'; } // false;
   String _piggyTone = "Piggy Vault";
 
@@ -768,11 +780,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       }
     });
   }
-
-  bool get _isDark => _currentTheme == 'Piggy Dark';
   Color get _cardBg => (Theme.of(context).brightness == Brightness.dark) ? const Color(0xFF1E2235) : const Color(0xFFF5F6FA);
-  Color get _textColor => _currentTheme == 'Piggy White' ? Colors.black87 : Colors.white;
-  Color get _subtitleColor => (Theme.of(context).brightness == Brightness.dark) ? Colors.grey.shade400 : const Color(0xFF334155);
   Color get _primaryColor => Colors.pinkAccent;
   Color get _scaffoldBg => (Theme.of(context).brightness == Brightness.dark) ? const Color(0xFF0F111A) : const Color(0xFFFFFFFF);
 
