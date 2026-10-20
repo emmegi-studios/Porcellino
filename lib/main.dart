@@ -73,7 +73,7 @@ void main() async {
   }
 
   final prefs = await SharedPreferences.getInstance();
-  final savedTheme = prefs.getString('selectedTheme') ?? 'Piggy Dark';
+  final savedTheme = 'Piggy Dark';
   runApp(PiggyVaultApp(initialTheme: savedTheme));
 }
 
@@ -874,7 +874,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       patrimonio = prefs.getDouble('patrimonio') ?? 0.00;
       entrateMese = prefs.getDouble('entrateMese') ?? 0.00;
       usciteMese = prefs.getDouble('usciteMese') ?? 0.00;
-      _currentTheme = prefs.getString('selectedTheme') ?? 'Piggy Dark';
+      _currentTheme = 'Piggy Dark';
       _selectedPersonality = prefs.getString('piggyPersonality') ?? 'Cyber-Tecno';
     });
   }
@@ -1141,7 +1141,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                           style: ElevatedButton.styleFrom(backgroundColor: Colors.grey.shade200),
                           onPressed: () { HapticFeedback.lightImpact(); setState(() { _currentTheme = 'Piggy Dark'; }); SharedPreferences.getInstance().then((p) => p.setString("selectedTheme", _currentTheme)); Navigator.pop(context); },
                           icon: const Icon(Icons.light_mode, color: Colors.black87, size: 16),
-                          label: const Text('Piggy White', style: TextStyle(color: Colors.black87)),
+                          label: const Text('Piggy White', style: TextStyle(color: Colors.white)),
                         ),
                       ],
                     ),
