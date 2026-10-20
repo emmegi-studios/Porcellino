@@ -947,11 +947,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     });
     await prefs.setString('selectedTheme', 'Piggy Dark');
   }
-    void _toggleTheme(String themeName) async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      _currentTheme = 'Piggy Dark';
-    });
+    );
     await prefs.setString('selectedTheme', 'Piggy Dark');
   }
   }
