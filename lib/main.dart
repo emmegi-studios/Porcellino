@@ -152,7 +152,6 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _isRegistrazione = false;
   bool _isLoading = false;
   bool _obscurePassword = true;
-  late bool _isDarkTheme;
 
   @override
   void initState() {
@@ -168,7 +167,6 @@ class _LoginScreenState extends State<LoginScreen> {
       if (mounted) _mostraPiggyAI(context, _isDarkTheme);
     });
 
-    _isDarkTheme = (widget.initialTheme == 'Piggy Dark');
     _loadTheme();
     _loadSavedEmail();
   }
@@ -177,7 +175,6 @@ class _LoginScreenState extends State<LoginScreen> {
     final prefs = await SharedPreferences.getInstance();
     if (mounted) {
       setState(() {
-        _isDarkTheme = prefs.getString('selectedTheme') == 'Piggy Dark';
       });
     }
   }
@@ -403,7 +400,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   Future<void> _loadTheme() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
-      _isDarkTheme = prefs.getString('selectedTheme') == 'Piggy Dark';
     });
   }
 
@@ -411,7 +407,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('piggy_is_dark', isDark);
     setState(() {
-      _isDarkTheme = isDark;
     });
   }
 
