@@ -167,7 +167,7 @@ class _LoginScreenState extends State<LoginScreen> {
     final prefs = await SharedPreferences.getInstance();
     if (mounted) {
       setState(() {
-        _isDarkTheme = prefs.getString('selectedTheme') == 'Piggy Dark';
+        _isDarkTheme = true;
       });
     }
   }
@@ -383,7 +383,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   Future<void> _loadTheme() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
-      _isDarkTheme = prefs.getString('selectedTheme') == 'Piggy Dark';
+      _isDarkTheme = true;
     });
   }
 
@@ -909,7 +909,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     await prefs.setDouble('patrimonio', patrimonio);
     await prefs.setDouble('entrateMese', entrateMese);
     await prefs.setDouble('usciteMese', usciteMese);
-    await prefs.setString('selectedTheme', _currentTheme);
+    await prefs.setString('selectedTheme', 'Piggy Dark');
 
     try {
       await FirebaseFirestore.instance
@@ -930,9 +930,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   void _toggleTheme(String themeName) async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
-      _currentTheme = themeName;
+      _currentTheme = 'Piggy Dark';
     });
-    await prefs.setString('selectedTheme', themeName);
+    await prefs.setString('selectedTheme', 'Piggy Dark');
   }
 
   Map<String, dynamic> _getLivelloPorcellino() {
