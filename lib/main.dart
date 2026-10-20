@@ -1,3 +1,4 @@
+import 'package:local_auth/local_auth.dart';
 import 'package:http/http.dart' as http;
 import 'package:home_widget/home_widget.dart';
 import 'dart:convert';
@@ -127,6 +128,57 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  final LocalAuthentication _localAuth = LocalAuthentication();
+
+  Future<void> _autenticaBiometrico() async {
+    try {
+      final bool canAuthenticateWithBiometrics = await _localAuth.canCheckBiometrics;
+      final bool canAuthenticate = canAuthenticateWithBiometrics || await _localAuth.isDeviceSupported();
+
+      if (!canAuthenticate) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Sblocco biometrico non supportato o non configurato su questo dispositivo"), backgroundColor: Colors.orange)
+          );
+        }
+        return;
+      }
+
+      final bool authenticated = await _localAuth.authenticate(
+        localizedReason: 'Autenticati per accedere a Piggy Vault',
+        options: const AuthenticationOptions(
+          stickyAuth: true,
+          biometricOnly: false,
+        ),
+      );
+
+      if (authenticated && mounted) {
+        final prefs = await SharedPreferences.getInstance();
+        final savedEmail = prefs.getString('piggy_last_email');
+        
+        if (savedEmail != null && savedEmail.isNotEmpty) {
+          _emailController.text = savedEmail;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("Sblocco biometrico riuscito per $savedEmail!"), backgroundColor: Colors.green)
+          );
+          if (_passwordController.text.isNotEmpty) {
+            _eseguiAutenticazione();
+          }
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Sblocco biometrico riuscito! Inserisci le tue credenziali per il primo accesso."), backgroundColor: Colors.green)
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Errore biometria: ${e.toString()}"), backgroundColor: Colors.red)
+        );
+      }
+    }
+  }
+
 
   
   @override
@@ -337,6 +389,21 @@ class _LoginScreenState extends State<LoginScreen> {
                   : ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         minimumSize: const Size.fromHeight(52),
+              const SizedBox(height: 12),
+              OutlinedButton.icon(
+                onPressed: _autenticaBiometrico,
+                style: OutlinedButton.styleFrom(
+                  minimumSize: const Size.fromHeight(50),
+                  side: const BorderSide(color: Colors.pinkAccent, width: 1.5),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                ),
+                icon: const Icon(Icons.fingerprint, color: Colors.pinkAccent, size: 26),
+                label: const Text(
+                  "Accedi con Impronta / FaceID",
+                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15)
+                ),
+              ),
+
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                       ),
                       onPressed: _eseguiAutenticazione,
