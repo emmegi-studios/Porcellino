@@ -128,9 +128,74 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
   final LocalAuthentication _localAuth = LocalAuthentication();
+  bool _isRegistrazione = false;
+  bool _isLoading = false;
+  bool _obscurePassword = true;
+  late bool _isDarkTheme;
 
-    Future<void> _autenticaBiometrico() async {
+  @override
+  void initState() {
+    super.initState();
+    HomeWidget.initiallyLaunchedFromHomeWidget().then((Uri? uri) {
+      if (uri != null) {
+        Future.delayed(const Duration(milliseconds: 300), () {
+          if (mounted) _mostraPiggyAI(context, _isDarkTheme);
+        });
+      }
+    });
+    HomeWidget.widgetClicked.listen((Uri? uri) {
+      if (mounted) _mostraPiggyAI(context, _isDarkTheme);
+    });
+
+    _isDarkTheme = (widget.initialTheme == 'Piggy Dark');
+    _loadTheme();
+    _loadSavedEmail();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final prefs = await SharedPreferences.getInstance();
+      if (prefs.containsKey('piggy_last_password')) {
+        _autenticaBiometrico();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _loadTheme() async {
+    if (mounted) {
+      setState(() {
+        _isDarkTheme = true;
+      });
+    }
+  }
+
+  Future<void> _loadSavedEmail() async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedEmail = prefs.getString('piggy_last_email');
+    if (savedEmail != null && mounted) {
+      setState(() {
+        _emailController.text = savedEmail;
+      });
+    }
+  }
+
+  Future<void> _saveCredentials(String email, String password) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('piggy_last_email', email);
+    await prefs.setString('piggy_last_password', password);
+  }
+
+  Future<void> _autenticaBiometrico() async {
     try {
       final bool canAuthenticateWithBiometrics = await _localAuth.canCheckBiometrics;
       final bool canAuthenticate = canAuthenticateWithBiometrics || await _localAuth.isDeviceSupported();
@@ -165,123 +230,25 @@ class _LoginScreenState extends State<LoginScreen> {
         }
       }
     } catch (e) {
-      // Gestione silenziosa o errore soft
+      // Gestione errori biometria
     }
-  }
-        return;
-      }
-
-      final bool authenticated = await _localAuth.authenticate(
-        localizedReason: 'Autenticati per accedere a Piggy Vault',
-        options: const AuthenticationOptions(
-          stickyAuth: true,
-          biometricOnly: false,
-        ),
-      );
-
-      if (authenticated && mounted) {
-        final prefs = await SharedPreferences.getInstance();
-        final savedEmail = prefs.getString('piggy_last_email');
-        
-        if (savedEmail != null && savedEmail.isNotEmpty) {
-          _emailController.text = savedEmail;
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("Sblocco biometrico riuscito per $savedEmail!"), backgroundColor: Colors.green)
-          );
-          if (_passwordController.text.isNotEmpty) {
-            _eseguiAutenticazione();
-          }
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Sblocco biometrico riuscito! Inserisci le tue credenziali per il primo accesso."), backgroundColor: Colors.green)
-          );
-        }
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Errore biometria: ${e.toString()}"), backgroundColor: Colors.red)
-        );
-      }
-    }
-  }
-
-
-  
-  @override
-  void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
-    super.dispose();
-  }
-
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-  final _confirmPasswordController = TextEditingController();
-  bool _isRegistrazione = false;
-  bool _isLoading = false;
-  bool _obscurePassword = true;
-  late bool _isDarkTheme;
-
-  @override
-  void initState() {
-    super.initState();
-    HomeWidget.initiallyLaunchedFromHomeWidget().then((Uri? uri) {
-      if (uri != null) {
-        Future.delayed(const Duration(milliseconds: 300), () {
-          if (mounted) _mostraPiggyAI(context, _isDarkTheme);
-        });
-      }
-    });
-    HomeWidget.widgetClicked.listen((Uri? uri) {
-      if (mounted) _mostraPiggyAI(context, _isDarkTheme);
-    });
-
-    _isDarkTheme = (widget.initialTheme == 'Piggy Dark');
-    _loadTheme();
-    _loadSavedEmail();
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      final prefs = await SharedPreferences.getInstance();
-      if (prefs.containsKey('piggy_last_password')) {
-        _autenticaBiometrico();
-      }
-    });
-  }
-
-  Future<void> _loadTheme() async {
-    final prefs = await SharedPreferences.getInstance();
-    if (mounted) {
-      setState(() {
-        _isDarkTheme = true;
-      });
-    }
-  }
-
-  
-
-  Future<void> _loadSavedEmail() async {
-    final prefs = await SharedPreferences.getInstance();
-    final savedEmail = prefs.getString('piggy_last_email');
-    if (savedEmail != null && mounted) {
-      setState(() {
-        _emailController.text = savedEmail;
-      });
-    }
-  }
-
-  Future<void> _saveCredentials(String email, String password) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('piggy_last_email', email);
-    await prefs.setString('piggy_last_password', password);
   }
 
   Future<void> _eseguiAutenticazione() async {
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
-    
+
     if (email.isEmpty || password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Compila tutti i campi"), backgroundColor: Colors.orange)
+        SnackBar(
+          content: const Text("Compila tutti i campi", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+          backgroundColor: const Color(0xFF1E2235),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+            side: const BorderSide(color: Colors.pinkAccent, width: 1.5),
+          ),
+        ),
       );
       return;
     }
@@ -291,12 +258,21 @@ class _LoginScreenState extends State<LoginScreen> {
       if (_isRegistrazione) {
         if (password != _confirmPasswordController.text.trim()) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Le password non coincidono"), backgroundColor: Colors.red)
+            SnackBar(
+              content: const Text("Le password non coincidono", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+              backgroundColor: const Color(0xFF1E2235),
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+                side: const BorderSide(color: Colors.pinkAccent, width: 1.5),
+              ),
+            ),
           );
           setState(() => _isLoading = false);
           return;
         }
         await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: password);
+        await _saveCredentials(email, password);
       } else {
         await _saveCredentials(email, password);
         await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
@@ -314,7 +290,6 @@ class _LoginScreenState extends State<LoginScreen> {
             case 'invalid-email':
               msg = "Formato email non valido.";
               break;
-
             case 'user-disabled':
               msg = "Questo account è stato disabilitato.";
               break;
@@ -343,7 +318,15 @@ class _LoginScreenState extends State<LoginScreen> {
     final email = _emailController.text.trim();
     if (email.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Inserisci prima la tua email per il recupero"), backgroundColor: Colors.orange)
+        SnackBar(
+          content: const Text("Inserisci prima la tua email per il recupero", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+          backgroundColor: const Color(0xFF1E2235),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+            side: const BorderSide(color: Colors.pinkAccent, width: 1.5),
+          ),
+        ),
       );
       return;
     }
@@ -351,33 +334,22 @@ class _LoginScreenState extends State<LoginScreen> {
       await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Email di recupero inviata! Controlla la posta."), backgroundColor: Colors.green)
+          SnackBar(
+            content: const Text("Email di recupero inviata! Controlla la posta.", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+            backgroundColor: const Color(0xFF1E2235),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+              side: const BorderSide(color: Colors.pinkAccent, width: 1.5),
+            ),
+          ),
         );
       }
     } catch (e) {
       if (mounted) {
-        String msg = "Errore durante l'accesso. Riprova.";
-        if (e is FirebaseAuthException) {
-          switch (e.code) {
-            case 'invalid-credential':
-            case 'wrong-password':
-            case 'user-not-found':
-              msg = "Email o password errate. Verifica i dati e riprova.";
-              break;
-            case 'invalid-email':
-              msg = "Formato email non valido.";
-              break;
-
-            case 'user-disabled':
-              msg = "Questo account è stato disabilitato.";
-              break;
-            default:
-              msg = "Errore di autenticazione: ${e.message ?? e.code}";
-          }
-        }
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(msg, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+            content: Text("Errore: ${e.toString()}", style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
             backgroundColor: const Color(0xFF1E2235),
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(
@@ -393,32 +365,28 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final _cardBg = (Theme.of(context).brightness == Brightness.dark) ? const Color(0xFF1E2235) : Colors.white;
-    final _scaffoldBg = (Theme.of(context).brightness == Brightness.dark) ? const Color(0xFF0F111A) : const Color(0xFF282035);
     final _textColor = (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87;
-    final _subtitleColor = (Theme.of(context).brightness == Brightness.dark) ? Colors.grey.shade400 : const Color(0xFF475569);
     final _primaryColor = Colors.pinkAccent;
 
     return Scaffold(
       backgroundColor: const Color(0xFF13131A),
-
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-            
-                    Image.asset(
-                      'assets/icon/icona_esterna.png',
-                      width: 80,
-                      height: 80,
-                      fit: BoxFit.contain,
-                      errorBuilder: (context, error, stackTrace) => Icon(Icons.savings, size: 60, color: _primaryColor),
-                    ),
+              Image.asset(
+                'assets/icon/icona_esterna.png',
+                width: 80,
+                height: 80,
+                fit: BoxFit.contain,
+                errorBuilder: (context, error, stackTrace) => Icon(Icons.savings, size: 60, color: _primaryColor),
+              ),
               const SizedBox(height: 16),
               Text("Piggy Vault", style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87)),
               const SizedBox(height: 8),
-              Text("Accedi al tuo caveau condiviso", style: TextStyle(fontSize: 14, color: Colors.white70)),
+              Text("Accedi al tuo caveau condiviso", style: const TextStyle(fontSize: 14, color: Colors.white70)),
               const SizedBox(height: 32),
               TextField(
                 controller: _emailController,
@@ -426,8 +394,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 keyboardType: TextInputType.emailAddress,
                 decoration: InputDecoration(
                   labelText: "Email utente",
-                  labelStyle: TextStyle(color: Colors.white70),
-                  floatingLabelStyle: TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold),
+                  labelStyle: const TextStyle(color: Colors.white70),
+                  floatingLabelStyle: const TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold),
                   filled: true,
                   fillColor: _cardBg,
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
@@ -440,8 +408,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 style: TextStyle(color: _textColor),
                 decoration: InputDecoration(
                   labelText: "Password",
-                  labelStyle: TextStyle(color: Colors.white70),
-                  floatingLabelStyle: TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold),
+                  labelStyle: const TextStyle(color: Colors.white70),
+                  floatingLabelStyle: const TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold),
                   filled: true,
                   fillColor: _cardBg,
                   suffixIcon: IconButton(
@@ -459,8 +427,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   style: TextStyle(color: _textColor),
                   decoration: InputDecoration(
                     labelText: "Conferma Password",
-                    labelStyle: TextStyle(color: Colors.white70),
-                  floatingLabelStyle: TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold),
+                    labelStyle: const TextStyle(color: Colors.white70),
+                    floatingLabelStyle: const TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold),
                     filled: true,
                     fillColor: _cardBg,
                     suffixIcon: IconButton(
@@ -511,7 +479,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 onPressed: () => setState(() => _isRegistrazione = !_isRegistrazione),
                 child: Text(
                   _isRegistrazione ? "Hai già un account? Accedi" : "Non hai un account? Registrati",
-                  style: TextStyle(color: Theme.of(context).brightness == Brightness.dark ? Colors.white70 : Color(0xFF666666)),
+                  style: const TextStyle(color: Colors.white70),
                 ),
               ),
             ],
@@ -521,7 +489,6 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 }
-
 
 class HomeScreen extends StatefulWidget {
   final String userEmail;
