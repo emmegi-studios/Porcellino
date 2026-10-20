@@ -161,12 +161,12 @@ class _LoginScreenState extends State<LoginScreen> {
     HomeWidget.initiallyLaunchedFromHomeWidget().then((Uri? uri) {
       if (uri != null) {
         Future.delayed(const Duration(milliseconds: 300), () {
-          if (mounted) _mostraPiggyAI(context, _isDarkTheme);
+          
         });
       }
     });
     HomeWidget.widgetClicked.listen((Uri? uri) {
-      if (mounted) _mostraPiggyAI(context, _isDarkTheme);
+      
     });
 
     _loadTheme();
@@ -388,6 +388,14 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
+  void _toggleTheme(String themeName) async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _currentTheme = 'Piggy Dark';
+    });
+    await prefs.setString('selectedTheme', 'Piggy Dark');
+  }
+
 
   bool get _isDarkTheme => true;
   bool get _isDark => true;
@@ -936,15 +944,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     }
   }
 
-    void _toggleTheme(String themeName) async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      _currentTheme = 'Piggy Dark';
-      void _toggleTheme(String themeName) async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      _currentTheme = 'Piggy Dark';
-    });
+    );
     await prefs.setString('selectedTheme', 'Piggy Dark');
   }
     );
@@ -2417,10 +2417,14 @@ Richiesta dell'utente: $prompt""";
     }
 
     return "⚠️ Il Caveau non risponde. Riprova tra poco!";
-  } catch (e) {
+   catch (e) {
     return "❌ Connessione con il Caveau interrotta. Verifica la rete e riprova.";
-  } finally {
+   finally {
     client.close();
-  }
+  
+
+
+}
+}
 }
 }
