@@ -126,6 +126,8 @@ class LoginScreen extends StatefulWidget {
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
+}
+
 class _LoginScreenState extends State<LoginScreen> {
 
   bool get _isDarkTheme => true;
@@ -938,10 +940,20 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
       _currentTheme = 'Piggy Dark';
+      void _toggleTheme(String themeName) async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _currentTheme = 'Piggy Dark';
     });
     await prefs.setString('selectedTheme', 'Piggy Dark');
-  });
-    await prefs.setString('selectedTheme', themeName);
+  }
+    void _toggleTheme(String themeName) async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _currentTheme = 'Piggy Dark';
+    });
+    await prefs.setString('selectedTheme', 'Piggy Dark');
+  }
   }
 
   Map<String, dynamic> _getLivelloPorcellino() {
@@ -2414,4 +2426,5 @@ Richiesta dell'utente: $prompt""";
   } finally {
     client.close();
   }
+}
 }
