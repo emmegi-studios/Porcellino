@@ -396,6 +396,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         _isRegistrazione ? "Registrati e Crea Account" : "Entra nel Caveau Condiviso",
                         style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87, fontWeight: FontWeight.bold, fontSize: 16),
                       ),
+                    ),
               const SizedBox(height: 12),
               OutlinedButton.icon(
                 onPressed: _autenticaBiometrico,
@@ -410,7 +411,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15)
                 ),
               ),
-                    ),
               if (!_isRegistrazione) ...[
                 const SizedBox(height: 12),
                 TextButton(
