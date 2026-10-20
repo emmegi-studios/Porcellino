@@ -130,17 +130,44 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final LocalAuthentication _localAuth = LocalAuthentication();
 
-  Future<void> _autenticaBiometrico() async {
+    Future<void> _autenticaBiometrico() async {
     try {
       final bool canAuthenticateWithBiometrics = await _localAuth.canCheckBiometrics;
       final bool canAuthenticate = canAuthenticateWithBiometrics || await _localAuth.isDeviceSupported();
 
-      if (!canAuthenticate) {
-        if (mounted) {
+      if (!canAuthenticate) return;
+
+      final bool authenticated = await _localAuth.authenticate(
+        localizedReason: 'Autenticati per accedere direttamente a Piggy Vault',
+        options: const AuthenticationOptions(
+          stickyAuth: true,
+          biometricOnly: false,
+        ),
+      );
+
+      if (authenticated && mounted) {
+        final prefs = await SharedPreferences.getInstance();
+        final savedEmail = prefs.getString('piggy_last_email');
+        final savedPassword = prefs.getString('piggy_last_password');
+
+        if (savedEmail != null && savedPassword != null && savedEmail.isNotEmpty && savedPassword.isNotEmpty) {
+          _emailController.text = savedEmail;
+          _passwordController.text = savedPassword;
+          _eseguiAutenticazione();
+        } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Sblocco biometrico non supportato o non configurato su questo dispositivo"), backgroundColor: Colors.orange)
+            SnackBar(
+              content: const Text("Primo accesso: inserisci email e password per abilitare la biometria.", style: TextStyle(color: Colors.white)),
+              backgroundColor: const Color(0xFF1E2235),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12), side: const BorderSide(color: Colors.pinkAccent)),
+            ),
           );
         }
+      }
+    } catch (e) {
+      // Gestione silenziosa o errore soft
+    }
+  }
         return;
       }
 
@@ -213,6 +240,12 @@ class _LoginScreenState extends State<LoginScreen> {
     _isDarkTheme = (widget.initialTheme == 'Piggy Dark');
     _loadTheme();
     _loadSavedEmail();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final prefs = await SharedPreferences.getInstance();
+      if (prefs.containsKey('piggy_last_password')) {
+        _autenticaBiometrico();
+      }
+    });
   }
 
   Future<void> _loadTheme() async {
@@ -236,9 +269,10 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  Future<void> _saveEmail(String email) async {
+  Future<void> _saveCredentials(String email, String password) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('piggy_last_email', email);
+    await prefs.setString('piggy_last_password', password);
   }
 
   Future<void> _eseguiAutenticazione() async {
@@ -264,13 +298,40 @@ class _LoginScreenState extends State<LoginScreen> {
         }
         await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: password);
       } else {
-        await _saveEmail(email);
+        await _saveCredentials(email, password);
         await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
       }
     } catch (e) {
       if (mounted) {
+        String msg = "Errore durante l'accesso. Riprova.";
+        if (e is FirebaseAuthException) {
+          switch (e.code) {
+            case 'invalid-credential':
+            case 'wrong-password':
+            case 'user-not-found':
+              msg = "Email o password errate. Verifica i dati e riprova.";
+              break;
+            case 'invalid-email':
+              msg = "Formato email non valido.";
+              break;
+
+            case 'user-disabled':
+              msg = "Questo account è stato disabilitato.";
+              break;
+            default:
+              msg = "Errore di autenticazione: ${e.message ?? e.code}";
+          }
+        }
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Errore: ${e.toString()}"), backgroundColor: Colors.red)
+          SnackBar(
+            content: Text(msg, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+            backgroundColor: const Color(0xFF1E2235),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+              side: const BorderSide(color: Colors.pinkAccent, width: 1.5),
+            ),
+          ),
         );
       }
     } finally {
@@ -295,8 +356,35 @@ class _LoginScreenState extends State<LoginScreen> {
       }
     } catch (e) {
       if (mounted) {
+        String msg = "Errore durante l'accesso. Riprova.";
+        if (e is FirebaseAuthException) {
+          switch (e.code) {
+            case 'invalid-credential':
+            case 'wrong-password':
+            case 'user-not-found':
+              msg = "Email o password errate. Verifica i dati e riprova.";
+              break;
+            case 'invalid-email':
+              msg = "Formato email non valido.";
+              break;
+
+            case 'user-disabled':
+              msg = "Questo account è stato disabilitato.";
+              break;
+            default:
+              msg = "Errore di autenticazione: ${e.message ?? e.code}";
+          }
+        }
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Errore: ${e.toString()}"), backgroundColor: Colors.red)
+          SnackBar(
+            content: Text(msg, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+            backgroundColor: const Color(0xFF1E2235),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+              side: const BorderSide(color: Colors.pinkAccent, width: 1.5),
+            ),
+          ),
         );
       }
     }
