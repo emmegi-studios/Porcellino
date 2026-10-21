@@ -1,3 +1,6 @@
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:printing/printing.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:http/http.dart' as http;
 import 'package:home_widget/home_widget.dart';
@@ -500,6 +503,93 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
+  Future<void> _esportaPDF() async {
+    try {
+      final pdf = pw.Document();
+      double totaleEntrate = 0.0;
+      double totaleUscite = 0.0;
+
+      for (var t in transazioni) {
+        double amt = double.tryParse(t['amount'].toString()) ?? 0.0;
+        if (t['tipo'].toString().contains('Entrata')) {
+          totaleEntrate += amt;
+        } else {
+          totaleUscite += amt;
+        }
+      }
+
+      pdf.addPage(
+        pw.MultiPage(
+          pageFormat: PdfPageFormat.a4,
+          margin: const pw.EdgeInsets.all(32),
+          build: (pw.Context context) {
+            return [
+              pw.Header(
+                level: 0,
+                child: pw.Row(
+                  mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                  children: [
+                    pw.Text("Piggy Vault - Report Finanziario", style: pw.TextStyle(fontSize: 20, fontWeight: pw.FontWeight.bold, color: PdfColors.pink400)),
+                    pw.Text("Utente: $_nomeUtenteDinamico", style: const pw.TextStyle(fontSize: 11, color: PdfColors.grey700)),
+                  ],
+                ),
+              ),
+              pw.SizedBox(height: 12),
+              pw.Container(
+                padding: const pw.EdgeInsets.all(12),
+                decoration: pw.BoxDecoration(
+                  color: PdfColors.blueGrey900,
+                  borderRadius: pw.BorderRadius.circular(8),
+                ),
+                child: pw.Row(
+                  mainAxisAlignment: pw.MainAxisAlignment.spaceAround,
+                  children: [
+                    pw.Column(children: [
+                      pw.Text("Totale Entrate", style: const pw.TextStyle(color: PdfColors.green300, fontSize: 10)),
+                      pw.Text("+€${totaleEntrate.toStringAsFixed(2)}", style: pw.TextStyle(color: PdfColors.white, fontWeight: pw.FontWeight.bold, fontSize: 13)),
+                    ]),
+                    pw.Column(children: [
+                      pw.Text("Totale Uscite", style: const pw.TextStyle(color: PdfColors.red300, fontSize: 10)),
+                      pw.Text("-€${totaleUscite.toStringAsFixed(2)}", style: pw.TextStyle(color: PdfColors.white, fontWeight: pw.FontWeight.bold, fontSize: 13)),
+                    ]),
+                    pw.Column(children: [
+                      pw.Text("Saldo Totale", style: const pw.TextStyle(color: PdfColors.amber300, fontSize: 10)),
+                      pw.Text("€${(totaleEntrate - totaleUscite).toStringAsFixed(2)}", style: pw.TextStyle(color: PdfColors.white, fontWeight: pw.FontWeight.bold, fontSize: 13)),
+                    ]),
+                  ],
+                ),
+              ),
+              pw.SizedBox(height: 16),
+              pw.TableHelper.fromTextArray(
+                headers: ['Data', 'Categoria', 'Tipo', 'Importo', 'Autore', 'Note'],
+                data: transazioni.map((t) => [
+                  t['data'] ?? '',
+                  t['category'] ?? '',
+                  t['tipo'] ?? '',
+                  "€${t['amount']}",
+                  t['author'] ?? 'Utente',
+                  t['note'] ?? ''
+                ]).toList(),
+                headerStyle: pw.TextStyle(fontWeight: pw.FontWeight.bold, color: PdfColors.white, fontSize: 10),
+                headerDecoration: const pw.BoxDecoration(color: PdfColors.pink400),
+                cellStyle: const pw.TextStyle(fontSize: 9),
+                rowDecoration: const pw.BoxDecoration(border: pw.Border(bottom: pw.BorderSide(color: PdfColors.grey300, width: 0.5))),
+              ),
+            ];
+          },
+        ),
+      );
+
+      await Printing.sharePdf(bytes: await pdf.save(), filename: 'Piggy_Vault_Report.pdf');
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Errore generazione PDF: $e"), backgroundColor: Colors.red),
+        );
+      }
+    }
+  }
+
   bool _isAppLocked = true;
   final LocalAuthentication _homeLocalAuth = LocalAuthentication();
 
@@ -987,6 +1077,16 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             },
             icon: Icon(Icons.download, color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87, size: 16),
             label: Text('Scarica CSV', style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87)),
+          ),
+          ElevatedButton.icon(
+            onPressed: () {
+              Navigator.pop(ctx);
+              _esportaPDF();
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.pinkAccent),
+            icon: const Icon(Icons.picture_as_pdf, color: Colors.white, size: 16),
+            label: const Text('Esporta PDF', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+          
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx),
