@@ -2664,6 +2664,10 @@ class _InviteManagerState extends State<InviteManager> {
     return widget.child;
   }
 
+  
+
+  // Widget indicatore di rischio dinamico per il budget
+  
   // Aggiornamento sicuro del Widget in base allo stato di autenticazione
   Future<void> _updateAndroidWidget(bool isLoggedIn, double patrimonio, [String ultimoMovimento = '']) async {
     try {
@@ -2683,7 +2687,6 @@ class _InviteManagerState extends State<InviteManager> {
     } catch (_) {}
   }
 
-  // Widget indicatore di rischio dinamico per il budget
   Widget _buildBarraRischioBudget(double speseCorrenti, double budgetTotale) {
     double percentuale = budgetTotale > 0 ? (speseCorrenti / budgetTotale) : 0.0;
     if (percentuale > 1.0) percentuale = 1.0;
