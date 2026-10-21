@@ -1301,6 +1301,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             patrimonio = (data['patrimonio'] ?? patrimonio).toDouble();
             entrateMese = (data['entrateMese'] ?? entrateMese).toDouble();
             usciteMese = (data['usciteMese'] ?? usciteMese).toDouble();
+            String ultimoMov = transazioni.isNotEmpty ? "${transazioni.first['category']} €${transazioni.first['amount']}" : "";
+            _updateAndroidWidget(true, patrimonio, ultimoMov);
             if (data['transazioni'] != null) {
               final List decoded = data['transazioni'];
               transazioni = decoded.map((e) => Map<String, dynamic>.from(e)).toList();
@@ -2663,11 +2665,11 @@ class _InviteManagerState extends State<InviteManager> {
   }
 
   // Aggiornamento sicuro del Widget in base allo stato di autenticazione
-  Future<void> _updateAndroidWidget(bool isLoggedIn, double patrimonio) async {
+  Future<void> _updateAndroidWidget(bool isLoggedIn, double patrimonio, [String ultimoMovimento = '']) async {
     try {
       if (isLoggedIn) {
         await HomeWidget.saveWidgetData<String>('widget_patrimonio', 'Caveau: € ' + patrimonio.toStringAsFixed(2));
-        await HomeWidget.saveWidgetData<String>('widget_status', 'Stato: Monitoraggio Attivo');
+        await HomeWidget.saveWidgetData<String>('widget_status', ultimoMovimento.isNotEmpty ? 'Ultimo: ' + ultimoMovimento : 'Stato: Monitoraggio Attivo');
         await HomeWidget.saveWidgetData<bool>('widget_logged', true);
       } else {
         await HomeWidget.saveWidgetData<String>('widget_patrimonio', '🔒 Caveau Bloccato');
