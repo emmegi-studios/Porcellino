@@ -503,6 +503,46 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
+  void _verificaSogliaBudget() {
+    if (_monthlyBudget > 0 && usciteMese >= (_monthlyBudget * 0.8)) {
+      final int perc = ((usciteMese / _monthlyBudget) * 100).round();
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('⚠️ Attenzione: Hai raggiunto il ' + perc.toString() + '% del tuo budget mensile! (€' + usciteMese.toStringAsFixed(2) + ' / €' + _monthlyBudget.toStringAsFixed(2) + ')'),
+              backgroundColor: Colors.orangeAccent,
+              duration: const Duration(seconds: 4),
+            ),
+          );
+        }
+      });
+    }
+  }
+
+  void _verificaPromemoriaInScadenza() {
+    if (_promemoria.isEmpty) return;
+    final ora = DateTime.now();
+    final oggiStr = "${ora.day.toString().padLeft(2, '0')}/${ora.month.toString().padLeft(2, '0')}/${ora.year}";
+    int scadenzeOggi = 0;
+    for (var p in _promemoria) {
+      if (p['data'] == oggiStr) scadenzeOggi++;
+    }
+    if (scadenzeOggi > 0) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('🔔 Hai ' + scadenzeOggi.toString() + ' promemoria in scadenza oggi!'),
+              backgroundColor: Colors.pinkAccent,
+              duration: const Duration(seconds: 4),
+            ),
+          );
+        }
+      });
+    }
+  }
+
   Future<void> _esportaPDF() async {
     try {
       final pdf = pw.Document();
@@ -1128,6 +1168,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       patrimonio = prefs.getDouble('patrimonio') ?? 0.00;
       entrateMese = prefs.getDouble('entrateMese') ?? 0.00;
       usciteMese = prefs.getDouble('usciteMese') ?? 0.00;
+      _verificaSogliaBudget();
+      _verificaPromemoriaInScadenza();
       _currentTheme = 'Piggy Dark';
       _selectedPersonality = prefs.getString('piggyPersonality') ?? 'Cyber-Tecno';
     });
