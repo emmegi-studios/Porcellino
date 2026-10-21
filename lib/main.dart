@@ -503,6 +503,109 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
+  void _mostraAnalisiCategorie() {
+    Map<String, double> spesaPerCategoria = {};
+    double totaleUscite = 0.0;
+
+    for (var t in transazioni) {
+      String tipo = t['tipo']?.toString() ?? '';
+      if (tipo.contains('Uscita') || !tipo.contains('Entrata')) {
+        double amt = double.tryParse(t['amount'].toString()) ?? 0.0;
+        String cat = t['category']?.toString() ?? '📦 Altro';
+        spesaPerCategoria[cat] = (spesaPerCategoria[cat] ?? 0.0) + amt;
+        totaleUscite += amt;
+      }
+    }
+
+    var categorieOrdate = spesaPerCategoria.entries.toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: const Color(0xFF1A1528),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (ctx) {
+        return Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    "📊 Analisi Spese per Categoria",
+                    style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close, color: Colors.white70),
+                    onPressed: () => Navigator.pop(ctx),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Text(
+                "Totale uscite analizzate: €${totaleUscite.toStringAsFixed(2)}",
+                style: const TextStyle(color: Colors.white70, fontSize: 13),
+              ),
+              const SizedBox(height: 16),
+              if (categorieOrdate.isEmpty)
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 24.0),
+                  child: Center(
+                    child: Text("Nessuna uscita registrata al momento.", style: TextStyle(color: Colors.white54)),
+                  ),
+                )
+              else
+                Flexible(
+                  child: ListView.builder(
+                    shrinkWrap: True,
+                    itemCount: categorieOrdate.length,
+                    itemBuilder: (context, index) {
+                      final item = categorieOrdate[index];
+                      final double pct = totaleUscite > 0 ? (item.value / totaleUscite) : 0.0;
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(item.key, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14)),
+                                Text("€${item.value.toStringAsFixed(2)} (${(pct * 100).toStringAsFixed(1)}%)", style: const TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold, fontSize: 13)),
+                              ],
+                            ),
+                            const SizedBox(height: 6),
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(6),
+                              child: LinearProgressIndicator(
+                                value: pct,
+                                minHeight: 8,
+                                backgroundColor: Colors.white12,
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  index == 0 ? Colors.pinkAccent : (index == 1 ? Colors.purpleAccent : Colors.blueAccent),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              const SizedBox(height: 16),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   void _verificaSogliaBudget() {
     if (_monthlyBudget > 0 && usciteMese >= (_monthlyBudget * 0.8)) {
       final int perc = ((usciteMese / _monthlyBudget) * 100).round();
@@ -985,7 +1088,17 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text("Tetto di Spesa Mensile", style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87, fontWeight: FontWeight.bold, fontSize: 16)),
+              Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text("Tetto di Spesa Mensile", style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87, fontWeight: FontWeight.bold, fontSize: 16)),
+            IconButton(
+              icon: const Icon(Icons.pie_chart_outline, color: Colors.pinkAccent, size: 22),
+              tooltip: "Analisi Categorie",
+              onPressed: _mostraAnalisiCategorie,
+            ),
+          ],
+        ),
               IconButton(
                 icon: const Icon(Icons.edit, color: Colors.pinkAccent, size: 20),
                 onPressed: _showBudgetDialog,
