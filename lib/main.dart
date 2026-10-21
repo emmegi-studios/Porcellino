@@ -500,6 +500,43 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
+  bool _isAppLocked = true;
+  final LocalAuthentication _homeLocalAuth = LocalAuthentication();
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    if (state == AppLifecycleState.paused || state == AppLifecycleState.inactive) {
+      if (mounted) {
+        setState(() {
+          _isAppLocked = true;
+        });
+      }
+    } else if (state == AppLifecycleState.resumed) {
+      if (_isAppLocked) {
+        _sbloccaBiometricoHome();
+      }
+    }
+  }
+
+  Future<void> _sbloccaBiometricoHome() async {
+    try {
+      final bool canAuth = await _homeLocalAuth.canCheckBiometrics || await _homeLocalAuth.isDeviceSupported();
+      if (!canAuth) {
+        if (mounted) setState(() => _isAppLocked = false);
+        return;
+      }
+      final bool authenticated = await _homeLocalAuth.authenticate(
+        localizedReason: 'Sblocca Piggy Vault per accedere ai tuoi dati',
+        options: const AuthenticationOptions(stickyAuth: true, biometricOnly: false),
+      );
+      if (authenticated && mounted) {
+        setState(() => _isAppLocked = false);
+      }
+    } catch (e) {
+      // Mantiene il caveau bloccato in caso di annullamento o errore
+    }
+  }
 
   Future<void> _loadTheme() async {
     final prefs = await SharedPreferences.getInstance();
@@ -620,6 +657,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _sbloccaBiometricoHome();
 
     // Ascoltatore Notifiche Push in Foreground (In tempo reale)
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
@@ -668,12 +707,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   }
 
   @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) {
-      _loadTheme();
-      _loadBudget();
-    }
-  }
 
   Future<void> _caricaPromemoriaDaCloud() async {
     try {
@@ -1593,6 +1626,37 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
+    if (_isAppLocked) {
+      return Scaffold(
+        backgroundColor: const Color(0xFF0F111A),
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.lock_outline, size: 80, color: Colors.pinkAccent),
+                const SizedBox(height: 24),
+                const Text("Caveau Bloccato", style: TextStyle(color: Colors.white, fontSize: 26, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 8),
+                const Text("Autenticati per accedere alla tua Dashboard", style: TextStyle(color: Colors.white70, fontSize: 14), textAlign: TextAlign.center),
+                const SizedBox(height: 32),
+                ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.pinkAccent,
+                    minimumSize: const Size(220, 52),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  ),
+                  onPressed: _sbloccaBiometricoHome,
+                  icon: const Icon(Icons.fingerprint, color: Colors.white, size: 26),
+                  label: const Text("Sblocca ora", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
     try {
       _nomeUtenteDinamico = widget.userEmail.split("@")[0];
       if (_nomeUtenteDinamico.isNotEmpty) {
