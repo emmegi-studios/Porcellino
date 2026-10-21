@@ -563,7 +563,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               else
                 Flexible(
                   child: ListView.builder(
-                    shrinkWrap: True,
+                    shrinkWrap: true,
                     itemCount: categorieOrdate.length,
                     itemBuilder: (context, index) {
                       final item = categorieOrdate[index];
