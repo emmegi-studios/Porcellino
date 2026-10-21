@@ -2681,6 +2681,16 @@ class _InviteManagerState extends State<InviteManager> {
         androidName: 'PiggyWidgetProvider',
       );
     } catch (_) {}
+  } else {
+        await HomeWidget.saveWidgetData<String>('widget_patrimonio', '🔒 Caveau Bloccato');
+        await HomeWidget.saveWidgetData<String>('widget_status', 'Effettua il login in app');
+        await HomeWidget.saveWidgetData<bool>('widget_logged', false);
+      }
+      await HomeWidget.updateWidget(
+        name: 'PiggyWidgetProvider',
+        androidName: 'PiggyWidgetProvider',
+      );
+    } catch (_) {}
   }
 
   // Widget indicatore di rischio dinamico per il budget
