@@ -503,6 +503,21 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
+  Future<void> _salvaPortafogli() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('portafogli', jsonEncode(portafogli));
+      if (_caveauId.isNotEmpty) {
+        await FirebaseFirestore.instance
+            .collection('caveau_condiviso')
+            .doc(_caveauId)
+            .set({'portafogli': portafogli}, SetOptions(merge: true));
+      }
+    } catch (e) {
+      debugPrint("Errore salvataggio portafogli: $e");
+    }
+  }
+
 
   // Aggiornamento sicuro del Widget in base allo stato di autenticazione
   Future<void> _updateAndroidWidget(bool isLoggedIn, double patrimonio, [String ultimoMovimento = '']) async {
@@ -1302,6 +1317,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       patrimonio = prefs.getDouble('patrimonio') ?? 0.00;
       entrateMese = prefs.getDouble('entrateMese') ?? 0.00;
       usciteMese = prefs.getDouble('usciteMese') ?? 0.00;
+      final String? portafogliJson = prefs.getString('portafogli');
+      if (portafogliJson != null && portafogliJson.isNotEmpty) {
+        final List decoded = jsonDecode(portafogliJson);
+        portafogli = decoded.map((e) => Map<String, dynamic>.from(e)).toList();
+      }
       _verificaSogliaBudget();
       _verificaPromemoriaInScadenza();
       _currentTheme = 'Piggy Dark';
@@ -1324,6 +1344,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             usciteMese = (data['usciteMese'] ?? usciteMese).toDouble();
             String ultimoMov = transazioni.isNotEmpty ? "${transazioni.first['category']} €${transazioni.first['amount']}" : "";
             _updateAndroidWidget(true, patrimonio, ultimoMov);
+            if (data['portafogli'] != null) {
+              final List decoded = data['portafogli'];
+              portafogli = decoded.map((e) => Map<String, dynamic>.from(e)).toList();
+            }
             if (data['transazioni'] != null) {
               final List decoded = data['transazioni'];
               transazioni = decoded.map((e) => Map<String, dynamic>.from(e)).toList();
@@ -1633,6 +1657,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     });
                     _goalNameController.clear();
                     _goalTargetController.clear();
+                    _salvaPortafogli();
                     Navigator.pop(context);
                   }
                 },
