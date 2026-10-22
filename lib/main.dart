@@ -80,7 +80,7 @@ void main() async {
     final String? themeSaved = prefs.getString('selectedTheme');
     if (themeSaved != null && themeSaved.isNotEmpty) {
     }
-  final savedTheme = 'Piggy Dark';
+  final savedTheme = (themeSaved != null && themeSaved.isNotEmpty) ? themeSaved : 'Piggy Dark';
   runApp(PiggyVaultApp(initialTheme: savedTheme));
 }
 
