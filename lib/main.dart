@@ -77,6 +77,10 @@ void main() async {
   }
 
   final prefs = await SharedPreferences.getInstance();
+    final String? themeSaved = prefs.getString('selectedTheme');
+    if (themeSaved != null && themeSaved.isNotEmpty) {
+      _currentTheme = themeSaved;
+    }
   final savedTheme = 'Piggy Dark';
   runApp(PiggyVaultApp(initialTheme: savedTheme));
 }
@@ -1281,7 +1285,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   double entrateMese = 0.0;
   double usciteMese = 0.0;
   List<Map<String, dynamic>> transazioni = [];
-  String _currentTheme = prefs.getString('selectedTheme') ?? 'Piggy Dark';
+  String _currentTheme = 'Piggy Dark';
   String _selectedPersonality = 'Cyber-Tecno';
   String _caveauId = '';
   String _nomeUtenteDinamico = 'Utente';
