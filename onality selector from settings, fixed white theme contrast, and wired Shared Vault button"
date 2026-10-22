@@ -1,0 +1,1814 @@
+[1mdiff --git a/lib/main.dart b/lib/main.dart[m
+[1mindex fefa768..a605981 100644[m
+[1m--- a/lib/main.dart[m
+[1m+++ b/lib/main.dart[m
+[36m@@ -392,1451 +392,27 @@[m [mclass _LoginScreenState extends State<LoginScreen> {[m
+               const SizedBox(height: 16),[m
+               Text("Piggy Vault", style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87)),[m
+               const SizedBox(height: 8),[m
+[31m-              Text("Accedi al tuo caveau condiviso", style: const TextStyle(fontSize: 14, color: Colors.white70)),[m
+[32m+[m[32m              Text("Accedi al tuo caveau condiviso", style: const TextStyle(fontSize: 14, color: (Theme.of(context).brightness == Brightness.dark ? Colors.white70 : const Color(0xFF222233)))),[m
+               const SizedBox(height: 32),[m
+[31m-              TextField([m
+[31m-                controller: _emailController,[m
+[31m-                style: TextStyle(color: _textColor),[m
+[31m-                keyboardType: TextInputType.emailAddress,[m
+[31m-                decoration: InputDecoration([m
+[31m-                  labelText: "Email utente",[m
+[31m-                  labelStyle: const TextStyle(color: Colors.white70),[m
+[31m-                  floatingLabelStyle: const TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold),[m
+[31m-                  filled: true,[m
+[31m-                  fillColor: _cardBg,[m
+[31m-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),[m
+[31m-                ),[m
+[31m-              ),[m
+[31m-              const SizedBox(height: 16),[m
+[31m-              TextField([m
+[31m-                controller: _passwordController,[m
+[31m-                obscureText: _obscurePassword,[m
+[31m-                style: TextStyle(color: _textColor),[m
+[31m-                decoration: InputDecoration([m
+[31m-                  labelText: "Password",[m
+[31m-                  labelStyle: const TextStyle(color: Colors.white70),[m
+[31m-                  floatingLabelStyle: const TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold),[m
+[31m-                  filled: true,[m
+[31m-                  fillColor: _cardBg,[m
+[31m-                  suffixIcon: IconButton([m
+[31m-                    icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility, color: _primaryColor),[m
+[31m-                    onPressed: () => setState(() => _obscurePassword = !_obscurePassword),[m
+[31m-                  ),[m
+[31m-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),[m
+[31m-                ),[m
+[31m-              ),[m
+[31m-              if (_isRegistrazione) ...[[m
+[31m-                const SizedBox(height: 16),[m
+[31m-                TextField([m
+[31m-                  controller: _confirmPasswordController,[m
+[31m-                  obscureText: _obscurePassword,[m
+[31m-                  style: TextStyle(color: _textColor),[m
+[31m-                  decoration: InputDecoration([m
+[31m-                    labelText: "Conferma Password",[m
+[31m-                    labelStyle: const TextStyle(color: Colors.white70),[m
+[31m-                    floatingLabelStyle: const TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold),[m
+[31m-                    filled: true,[m
+[31m-                    fillColor: _cardBg,[m
+[31m-                    suffixIcon: IconButton([m
+[31m-                      icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility, color: _primaryColor),[m
+[31m-                      onPressed: () => setState(() => _obscurePassword = !_obscurePassword),[m
+[31m-                    ),[m
+[31m-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),[m
+[31m-                  ),[m
+[31m-                ),[m
+[31m-              ],[m
+[31m-              const SizedBox(height: 24),[m
+[31m-              _isLoading[m
+[31m-                  ? const CircularProgressIndicator()[m
+[31m-                  : ElevatedButton([m
+[31m-                      style: ElevatedButton.styleFrom([m
+[31m-                        minimumSize: const Size.fromHeight(52),[m
+[31m-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),[m
+[31m-                      ),[m
+[31m-                      onPressed: _eseguiAutenticazione,[m
+[31m-                      child: Text([m
+[31m-                        _isRegistrazione ? "Registrati e Crea Account" : "Entra nel Caveau Condiviso",[m
+[31m-                        style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87, fontWeight: FontWeight.bold, fontSize: 16),[m
+[31m-                      ),[m
+[31m-                    ),[m
+[31m-              const SizedBox(height: 12),[m
+[31m-              OutlinedButton.icon([m
+[31m-                onPressed: _autenticaBiometrico,[m
+[31m-                style: OutlinedButton.styleFrom([m
+[31m-                  minimumSize: const Size.fromHeight(50),[m
+[31m-                  side: const BorderSide(color: Colors.pinkAccent, width: 1.5),[m
+[31m-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),[m
+[31m-                ),[m
+[31m-                icon: const Icon(Icons.fingerprint, color: Colors.pinkAccent, size: 26),[m
+[31m-                label: const Text([m
+[31m-                  "Accedi con Impronta / FaceID",[m
+[31m-                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15)[m
+[31m-                ),[m
+[31m-              ),[m
+[31m-              if (!_isRegistrazione) ...[[m
+[31m-                const SizedBox(height: 12),[m
+[31m-                TextButton([m
+[31m-                  onPressed: _resetPassword,[m
+[31m-                  child: Text("Password smarrita?", style: TextStyle(color: _primaryColor, fontWeight: FontWeight.bold)),[m
+[31m-                ),[m
+[31m-              ],[m
+[31m-              const SizedBox(height: 16),[m
+[31m-              TextButton([m
+[31m-                onPressed: () => setState(() => _isRegistrazione = !_isRegistrazione),[m
+[31m-                child: Text([m
+[31m-                  _isRegistrazione ? "Hai già un account? Accedi" : "Non hai un account? Registrati",[m
+[31m-                  style: const TextStyle(color: Colors.white70),[m
+[31m-                ),[m
+[31m-              ),[m
+[31m-            ],[m
+[31m-          ),[m
+[31m-        ),[m
+[31m-      ),[m
+[31m-    );[m
+[31m-  }[m
+[31m-}[m
+[31m-[m
+[31m-class HomeScreen extends StatefulWidget {[m
+[31m-  final String userEmail;[m
+[31m-[m
+[31m-  HomeScreen({super.key, required this.userEmail});[m
+[31m-[m
+[31m-  @override[m
+[31m-  State<HomeScreen> createState() => _HomeScreenState();[m
+[31m-}[m
+[31m-[m
+[31m-class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {[m
+[31m-[m
+[31m-  void _scollegaCaveauCondiviso() async {[m
+[31m-    final prefs = await SharedPreferences.getInstance();[m
+[31m-    await prefs.setString('caveauId', '');[m
+[31m-    setState(() {[m
+[31m-      _caveauId = '';[m
+[31m-    });[m
+[31m-    _sincronizzaCloud();[m
+[31m-    if (mounted) {[m
+[31m-      ScaffoldMessenger.of(context).showSnackBar([m
+[31m-        const SnackBar(content: Text('Scollegato dal Caveau Condiviso. Sei tornato al tuo Caveau Personale.'), backgroundColor: Colors.orange),[m
+[31m-      );[m
+[31m-    }[m
+[31m-  }[m
+[31m-[m
+[31m-[m
+[31m-[m
+[31m-  void _esportaBackupJSON() async {[m
+[31m-    final prefs = await SharedPreferences.getInstance();[m
+[31m-    Map<String, dynamic> backupData = {[m
+[31m-      'app': 'Piggy Vault',[m
+[31m-      'version': '2.8.17',[m
+[31m-      'timestamp': DateTime.now().toIso8601String(),[m
+[31m-      'patrimonio': patrimonio,[m
+[31m-      'entrateMese': entrateMese,[m
+[31m-      'usciteMese': usciteMese,[m
+[31m-      'transazioni': transazioni,[m
+[31m-      'portafogli': portafogli,[m
+[31m-      'speseRicorrenti': speseRicorrenti,[m
+[31m-      'selectedTheme': _currentTheme,[m
+[31m-      'piggyPersonality': _selectedPersonality,[m
+[31m-    };[m
+[31m-    String jsonString = jsonEncode(backupData);[m
+[31m-    if (!mounted) return;[m
+[31m-    showDialog([m
+[31m-      context: context,[m
+[31m-      builder: (ctx) => AlertDialog([m
+[31m-        backgroundColor: _cardBg,[m
+[31m-        title: Text('💾 Backup Locale JSON', style: TextStyle(color: _textColor)),[m
+[31m-        content: SizedBox([m
+[31m-          width: double.maxFinite,[m
+[31m-          child: Column([m
+[31m-            mainAxisSize: MainAxisSize.min,[m
+[31m-            crossAxisAlignment: CrossAxisAlignment.start,[m
+[31m-            children: [[m
+[31m-              Text('Copia il codice JSON sottostante per conservare un backup offline del tuo Caveau:', style: TextStyle(color: _subtitleColor, fontSize: 12)),[m
+[31m-              const SizedBox(height: 8),[m
+[31m-              SizedBox([m
+[31m-                height: 160,[m
+[31m-                child: SingleChildScrollView([m
+[31m-                  child: SelectableText(jsonString, style: TextStyle(color: _textColor, fontSize: 11, fontFamily: 'monospace')),[m
+[31m-                ),[m
+[31m-              ),[m
+[31m-            ],[m
+[31m-          ),[m
+[31m-        ),[m
+[31m-        actions: [[m
+[31m-          ElevatedButton.icon([m
+[31m-            onPressed: () {[m
+[31m-              Clipboard.setData(ClipboardData(text: jsonString));[m
+[31m-              Navigator.pop(ctx);[m
+[31m-              ScaffoldMessenger.of(context).showSnackBar([m
+[31m-                const SnackBar(content: Text('Backup JSON copiato negli appunti!')),[m
+[31m-              );[m
+[31m-            },[m
+[31m-            icon: const Icon(Icons.copy, size: 16),[m
+[31m-            label: const Text('Copia Backup'),[m
+[31m-          ),[m
+[31m-        ],[m
+[31m-      ),[m
+[31m-    );[m
+[31m-  }[m
+[31m-[m
+[31m-  void _ripristinaBackupJSON() {[m
+[31m-    final TextEditingController jsonController = TextEditingController();[m
+[31m-    showDialog([m
+[31m-      context: context,[m
+[31m-      builder: (ctx) => AlertDialog([m
+[31m-        backgroundColor: _cardBg,[m
+[31m-        title: Text('📥 Ripristina Backup JSON', style: TextStyle(color: _textColor)),[m
+[31m-        content: Column([m
+[31m-          mainAxisSize: MainAxisSize.min,[m
+[31m-          crossAxisAlignment: CrossAxisAlignment.start,[m
+[31m-          children: [[m
+[31m-            Text('Incolla qui il codice JSON del tuo backup per ripristinare i dati:', style: TextStyle(color: _subtitleColor, fontSize: 12)),[m
+[31m-            const SizedBox(height: 12),[m
+[31m-            TextField([m
+[31m-              controller: jsonController,[m
+[31m-              maxLines: 5,[m
+[31m-              style: TextStyle(color: _textColor, fontSize: 11, fontFamily: 'monospace'),[m
+[31m-              decoration: InputDecoration([m
+[31m-                hintText: 'Incolla il JSON di backup...',[m
+[31m-                hintStyle: TextStyle(color: _subtitleColor),[m
+[31m-                filled: true,[m
+[31m-                fillColor: _scaffoldBg,[m
+[31m-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),[m
+[31m-              ),[m
+[31m-            ),[m
+[31m-          ],[m
+[31m-        ),[m
+[31m-        actions: [[m
+[31m-          TextButton([m
+[31m-            onPressed: () => Navigator.pop(ctx),[m
+[31m-            child: const Text('Annulla'),[m
+[31m-          ),[m
+[31m-          ElevatedButton.icon([m
+[31m-            onPressed: () async {[m
+[31m-              try {[m
+[31m-                final Map<String, dynamic> data = jsonDecode(jsonController.text.trim());[m
+[31m-                if (data['app'] == 'Piggy Vault' || data.containsKey('patrimonio')) {[m
+[31m-                  final prefs = await SharedPreferences.getInstance();[m
+[31m-                  setState(() {[m
+[31m-                    if (data.containsKey('patrimonio')) patrimonio = (data['patrimonio'] as num).toDouble();[m
+[31m-                    if (data.containsKey('entrateMese')) entrateMese = (data['entrateMese'] as num).toDouble();[m
+[31m-                    if (data.containsKey('usciteMese')) usciteMese = (data['usciteMese'] as num).toDouble();[m
+[31m-                    if (data['transazioni'] != null) transazioni = List<Map<String, dynamic>>.from(data['transazioni']);[m
+[31m-                    if (data['portafogli'] != null) portafogli = List<Map<String, dynamic>>.from(data['portafogli']);[m
+[31m-                    if (data['speseRicorrenti'] != null) speseRicorrenti = List<Map<String, dynamic>>.from(data['speseRicorrenti']);[m
+[31m-                  });[m
+[31m-                  await prefs.setDouble('patrimonio', patrimonio);[m
+[31m-                  await prefs.setDouble('entrateMese', entrateMese);[m
+[31m-                  await prefs.setDouble('usciteMese', usciteMese);[m
+[31m-                  await prefs.setString('transazioni', jsonEncode(transazioni));[m
+[31m-                  await prefs.setString('portafogli', jsonEncode(portafogli));[m
+[31m-                  await prefs.setString('speseRicorrenti', jsonEncode(speseRicorrenti));[m
+[31m-                  Navigator.pop(ctx);[m
+[31m-                  ScaffoldMessenger.of(context).showSnackBar([m
+[31m-                    const SnackBar(content: Text('Dati ripristinati con successo!'), backgroundColor: Colors.green),[m
+[31m-                  );[m
+[31m-                } else {[m
+[31m-                  throw Exception('Formato non valido');[m
+[31m-                }[m
+[31m-              } catch (e) {[m
+[31m-                ScaffoldMessenger.of(context).showSnackBar([m
+[31m-                  SnackBar(content: Text('Errore ripristino: $e'), backgroundColor: Colors.red),[m
+[31m-                );[m
+[31m-              }[m
+[31m-            },[m
+[31m-            icon: const Icon(Icons.restore, size: 16),[m
+[31m-            label: const Text('Ripristina'),[m
+[31m-          ),[m
+[31m-        ],[m
+[31m-      ),[m
+[31m-    );[m
+[31m-  }[m
+[31m-[m
+[31m-[m
+[31m-[m
+[31m-  Future<void> _salvaSpeseRicorrenti() async {[m
+[31m-    try {[m
+[31m-      final prefs = await SharedPreferences.getInstance();[m
+[31m-      await prefs.setString('speseRicorrenti', jsonEncode(speseRicorrenti));[m
+[31m-      if (_caveauId.isNotEmpty) {[m
+[31m-        await FirebaseFirestore.instance[m
+[31m-            .collection('caveau_condiviso')[m
+[31m-            .doc(_caveauId)[m
+[31m-            .set({'speseRicorrenti': speseRicorrenti}, SetOptions(merge: true));[m
+[31m-      }[m
+[31m-    } catch (e) {[m
+[31m-      debugPrint("Errore salvataggio spese ricorrenti: $e");[m
+[31m-    }[m
+[31m-  }[m
+[31m-[m
+[31m-  void _verificaEElaboraRicorrenti() {[m
+[31m-    bool modificato = false;[m
+[31m-    DateTime oggi = DateTime.now();[m
+[31m-    DateTime oggiData = DateTime(oggi.year, oggi.month, oggi.day);[m
+[31m-[m
+[31m-    for (var r in speseRicorrenti) {[m
+[31m-      if (r['attivo'] == true) {[m
+[31m-        DateTime? proxData = DateTime.tryParse(r['prossimaData'] ?? '');[m
+[31m-        if (proxData != null && !proxData.isAfter(oggiData)) {[m
+[31m-          double amt = double.tryParse(r['amount'].toString()) ?? 0.0;[m
+[31m-          String tipo = r['tipo'] ?? 'Uscita';[m
+[31m-          [m
+[31m-          transazioni.insert(0, {[m
+[31m-            'data': "${oggi.year}-${oggi.month.toString().padLeft(2, '0')}-${oggi.day.toString().padLeft(2, '0')}",[m
+[31m-            'category': r['category'] ?? 'Ricorrente',[m
+[31m-            'amount': amt,[m
+[31m-            'tipo': tipo,[m
+[31m-            'author': _nomeUtenteDinamico,[m
+[31m-            'note': "Ricorrente: ${r['nome'] ?? ''}"[m
+[31m-          });[m
+[31m-[m
+[31m-          if (tipo.contains('Entrata')) {[m
+[31m-            patrimonio += amt;[m
+[31m-            entrateMese += amt;[m
+[31m-          } else {[m
+[31m-            patrimonio -= amt;[m
+[31m-            usciteMese += amt;[m
+[31m-          }[m
+[31m-[m
+[31m-          String freq = r['frequenza'] ?? 'Mensile';[m
+[31m-          if (freq == 'Settimanale') {[m
+[31m-            proxData = proxData.add(const Duration(days: 7));[m
+[31m-          } else if (freq == 'Annuale') {[m
+[31m-            proxData = DateTime(proxData.year + 1, proxData.month, proxData.day);[m
+[31m-          } else {[m
+[31m-            proxData = DateTime(proxData.year, proxData.month + 1, proxData.day);[m
+[31m-          }[m
+[31m-          [m
+[31m-          r['prossimaData'] = "${proxData.year}-${proxData.month.toString().padLeft(2, '0')}-${proxData.day.toString().padLeft(2, '0')}";[m
+[31m-          modificato = true;[m
+[31m-        }[m
+[31m-      }[m
+[31m-    }[m
+[31m-[m
+[31m-    if (modificato) {[m
+[31m-      _salvaSpeseRicorrenti();[m
+[31m-      _salvaSpeseRicorrenti();[m
+[31m-      _updateAndroidWidget(true, patrimonio, transazioni.isNotEmpty ? "${transazioni.first['category']} €${transazioni.first['amount']}" : "");[m
+[31m-    }[m
+[31m-  }[m
+[31m-[m
+[31m-[m
+[31m-  Future<void> _salvaPortafogli() async {[m
+[31m-    try {[m
+[31m-      final prefs = await SharedPreferences.getInstance();[m
+[31m-      await prefs.setString('portafogli', jsonEncode(portafogli));[m
+[31m-      if (_caveauId.isNotEmpty) {[m
+[31m-        await FirebaseFirestore.instance[m
+[31m-            .collection('caveau_condiviso')[m
+[31m-            .doc(_caveauId)[m
+[31m-            .set({'portafogli': portafogli}, SetOptions(merge: true));[m
+[31m-      }[m
+[31m-    } catch (e) {[m
+[31m-      debugPrint("Errore salvataggio portafogli: $e");[m
+[31m-    }[m
+[31m-  }[m
+[31m-[m
+[31m-[m
+[31m-  // Aggiornamento sicuro del Widget in base allo stato di autenticazione[m
+[31m-  Future<void> _updateAndroidWidget(bool isLoggedIn, double patrimonio, [String ultimoMovimento = '']) async {[m
+[31m-    try {[m
+[31m-      if (isLoggedIn) {[m
+[31m-        await HomeWidget.saveWidgetData<String>('widget_patrimonio', 'Caveau: € ' + patrimonio.toStringAsFixed(2));[m
+[31m-        await HomeWidget.saveWidgetData<String>('widget_status', ultimoMovimento.isNotEmpty ? 'Ultimo: ' + ultimoMovimento : 'Stato: Monitoraggio Attivo');[m
+[31m-        await HomeWidget.saveWidgetData<bool>('widget_logged', true);[m
+[31m-      } else {[m
+[31m-        await HomeWidget.saveWidgetData<String>('widget_patrimonio', '🔒 Caveau Bloccato');[m
+[31m-        await HomeWidget.saveWidgetData<String>('widget_status', 'Effettua il login in app');[m
+[31m-        await HomeWidget.saveWidgetData<bool>('widget_logged', false);[m
+[31m-      }[m
+[31m-      await HomeWidget.updateWidget([m
+[31m-        name: 'PiggyWidgetProvider',[m
+[31m-        androidName: 'PiggyWidgetProvider',[m
+[31m-      );[m
+[31m-    } catch (_) {}[m
+[31m-  }[m
+[31m-[m
+[31m-[m
+[31m-  void _mostraAnalisiCategorie() {[m
+[31m-    Map<String, double> spesaPerCategoria = {};[m
+[31m-    double totaleUscite = 0.0;[m
+[31m-[m
+[31m-    for (var t in transazioni) {[m
+[31m-      String tipo = t['tipo']?.toString() ?? '';[m
+[31m-      if (tipo.contains('Uscita') || !tipo.contains('Entrata')) {[m
+[31m-        double amt = double.tryParse(t['amount'].toString()) ?? 0.0;[m
+[31m-        String cat = t['category']?.toString() ?? '📦 Altro';[m
+[31m-        spesaPerCategoria[cat] = (spesaPerCategoria[cat] ?? 0.0) + amt;[m
+[31m-        totaleUscite += amt;[m
+[31m-      }[m
+[31m-    }[m
+[31m-[m
+[31m-    var categorieOrdate = spesaPerCategoria.entries.toList()[m
+[31m-      ..sort((a, b) => b.value.compareTo(a.value));[m
+[31m-[m
+[31m-    showModalBottomSheet([m
+[31m-      context: context,[m
+[31m-      isScrollControlled: true,[m
+[31m-      backgroundColor: const Color(0xFF1A1528),[m
+[31m-      shape: const RoundedRectangleBorder([m
+[31m-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),[m
+[31m-      ),[m
+[31m-      builder: (ctx) {[m
+[31m-        return Padding([m
+[31m-          padding: const EdgeInsets.all(20.0),[m
+[31m-          child: Column([m
+[31m-            mainAxisSize: MainAxisSize.min,[m
+[31m-            crossAxisAlignment: CrossAxisAlignment.start,[m
+[31m-            children: [[m
+[31m-              Row([m
+[31m-                mainAxisAlignment: MainAxisAlignment.spaceBetween,[m
+[31m-                children: [[m
+[31m-                  const Text([m
+[31m-                    "📊 Analisi Spese per Categoria",[m
+[31m-                    style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),[m
+[31m-                  ),[m
+[31m-                  IconButton([m
+[31m-                    icon: const Icon(Icons.close, color: Colors.white70),[m
+[31m-                    onPressed: () => Navigator.pop(ctx),[m
+[31m-                  ),[m
+[31m-                ],[m
+[31m-              ),[m
+[31m-              const SizedBox(height: 8),[m
+[31m-              Text([m
+[31m-                "Totale uscite analizzate: €${totaleUscite.toStringAsFixed(2)}",[m
+[31m-                style: const TextStyle(color: Colors.white70, fontSize: 13),[m
+[31m-              ),[m
+[31m-              const SizedBox(height: 16),[m
+[31m-              if (categorieOrdate.isEmpty)[m
+[31m-                const Padding([m
+[31m-                  padding: EdgeInsets.symmetric(vertical: 24.0),[m
+[31m-                  child: Center([m
+[31m-                    child: Text("Nessuna uscita registrata al momento.", style: TextStyle(color: Colors.white54)),[m
+[31m-                  ),[m
+[31m-                )[m
+[31m-              else[m
+[31m-                Flexible([m
+[31m-                  child: ListView.builder([m
+[31m-                    shrinkWrap: true,[m
+[31m-                    itemCount: categorieOrdate.length,[m
+[31m-                    itemBuilder: (context, index) {[m
+[31m-                      final item = categorieOrdate[index];[m
+[31m-                      final double pct = totaleUscite > 0 ? (item.value / totaleUscite) : 0.0;[m
+[31m-                      return Padding([m
+[31m-                        padding: const EdgeInsets.symmetric(vertical: 8.0),[m
+[31m-                        child: Column([m
+[31m-                          crossAxisAlignment: CrossAxisAlignment.start,[m
+[31m-                          children: [[m
+[31m-                            Row([m
+[31m-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,[m
+[31m-                              children: [[m
+[31m-                                Text(item.key, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14)),[m
+[31m-                                Text("€${item.value.toStringAsFixed(2)} (${(pct * 100).toStringAsFixed(1)}%)", style: const TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold, fontSize: 13)),[m
+[31m-                              ],[m
+[31m-                            ),[m
+[31m-                            const SizedBox(height: 6),[m
+[31m-                            ClipRRect([m
+[31m-                              borderRadius: BorderRadius.circular(6),[m
+[31m-                              child: LinearProgressIndicator([m
+[31m-                                value: pct,[m
+[31m-                                minHeight: 8,[m
+[31m-                                backgroundColor: Colors.white12,[m
+[31m-                                valueColor: AlwaysStoppedAnimation<Color>([m
+[31m-                                  index == 0 ? Colors.pinkAccent : (index == 1 ? Colors.purpleAccent : Colors.blueAccent),[m
+[31m-                                ),[m
+[31m-                              ),[m
+[31m-                            ),[m
+[31m-                          ],[m
+[31m-                        ),[m
+[31m-                      );[m
+[31m-                    },[m
+[31m-                  ),[m
+[31m-                ),[m
+[31m-              const SizedBox(height: 16),[m
+[31m-            ],[m
+[31m-          ),[m
+[31m-        );[m
+[31m-      },[m
+[31m-    );[m
+[31m-  }[m
+[31m-[m
+[31m-  void _verificaSogliaBudget() {[m
+[31m-    if (_monthlyBudget > 0 && usciteMese >= (_monthlyBudget * 0.8)) {[m
+[31m-      final int perc = ((usciteMese / _monthlyBudget) * 100).round();[m
+[31m-      WidgetsBinding.instance.addPostFrameCallback((_) {[m
+[31m-        if (mounted) {[m
+[31m-          ScaffoldMessenger.of(context).showSnackBar([m
+[31m-            SnackBar([m
+[31m-              content: Text('⚠️ Attenzione: Hai raggiunto il ' + perc.toString() + '% del tuo budget mensile! (€' + usciteMese.toStringAsFixed(2) + ' / €' + _monthlyBudget.toStringAsFixed(2) + ')'),[m
+[31m-              backgroundColor: Colors.orangeAccent,[m
+[31m-              duration: const Duration(seconds: 4),[m
+[31m-            ),[m
+[31m-          );[m
+[31m-        }[m
+[31m-      });[m
+[31m-    }[m
+[31m-  }[m
+[31m-[m
+[31m-  void _verificaPromemoriaInScadenza() {[m
+[31m-    if (_promemoria.isEmpty) return;[m
+[31m-    final ora = DateTime.now();[m
+[31m-    final oggiStr = "${ora.day.toString().padLeft(2, '0')}/${ora.month.toString().padLeft(2, '0')}/${ora.year}";[m
+[31m-    int scadenzeOggi = 0;[m
+[31m-    for (var p in _promemoria) {[m
+[31m-      if (p['data'] == oggiStr) scadenzeOggi++;[m
+[31m-    }[m
+[31m-    if (scadenzeOggi > 0) {[m
+[31m-      WidgetsBinding.instance.addPostFrameCallback((_) {[m
+[31m-        if (mounted) {[m
+[31m-          ScaffoldMessenger.of(context).showSnackBar([m
+[31m-            SnackBar([m
+[31m-              content: Text('🔔 Hai ' + scadenzeOggi.toString() + ' promemoria in scadenza oggi!'),[m
+[31m-              backgroundColor: Colors.pinkAccent,[m
+[31m-              duration: const Duration(seconds: 4),[m
+[31m-            ),[m
+[31m-          );[m
+[31m-        }[m
+[31m-      });[m
+[31m-    }[m
+[31m-  }[m
+[31m-[m
+[31m-  Future<void> _esportaPDF() async {[m
+[31m-    try {[m
+[31m-      final pdf = pw.Document();[m
+[31m-      double totaleEntrate = 0.0;[m
+[31m-      double totaleUscite = 0.0;[m
+[31m-[m
+[31m-      for (var t in transazioni) {[m
+[31m-        double amt = double.tryParse(t['amount'].toString()) ?? 0.0;[m
+[31m-        if (t['tipo'].toString().contains('Entrata')) {[m
+[31m-          totaleEntrate += amt;[m
+[31m-        } else {[m
+[31m-          totaleUscite += amt;[m
+[31m-        }[m
+[31m-      }[m
+[31m-[m
+[31m-      pdf.addPage([m
+[31m-        pw.MultiPage([m
+[31m-          pageFormat: PdfPageFormat.a4,[m
+[31m-          margin: const pw.EdgeInsets.all(32),[m
+[31m-          build: (pw.Context context) {[m
+[31m-            return [[m
+[31m-              pw.Header([m
+[31m-                level: 0,[m
+[31m-                child: pw.Row([m
+[31m-                  mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,[m
+[31m-                  children: [[m
+[31m-                    pw.Text("Piggy Vault - Report Finanziario", style: pw.TextStyle(fontSize: 20, fontWeight: pw.FontWeight.bold, color: PdfColors.pink400)),[m
+[31m-                    pw.Text("Utente: $_nomeUtenteDinamico", style: const pw.TextStyle(fontSize: 11, color: PdfColors.grey700)),[m
+[31m-                  ],[m
+[31m-                ),[m
+[31m-              ),[m
+[31m-              pw.SizedBox(height: 12),[m
+[31m-              pw.Container([m
+[31m-                padding: const pw.EdgeInsets.all(12),[m
+[31m-                decoration: pw.BoxDecoration([m
+[31m-                  color: PdfColors.blueGrey900,[m
+[31m-                  borderRadius: pw.BorderRadius.circular(8),[m
+[31m-                ),[m
+[31m-                child: pw.Row([m
+[31m-                  mainAxisAlignment: pw.MainAxisAlignment.spaceAround,[m
+[31m-                  children: [[m
+[31m-                    pw.Column(children: [[m
+[31m-                      pw.Text("Totale Entrate", style: const pw.TextStyle(color: PdfColors.green300, fontSize: 10)),[m
+[31m-                      pw.Text("+€${totaleEntrate.toStringAsFixed(2)}", style: pw.TextStyle(color: PdfColors.white, fontWeight: pw.FontWeight.bold, fontSize: 13)),[m
+[31m-                    ]),[m
+[31m-                    pw.Column(children: [[m
+[31m-                      pw.Text("Totale Uscite", style: const pw.TextStyle(color: PdfColors.red300, fontSize: 10)),[m
+[31m-                      pw.Text("-€${totaleUscite.toStringAsFixed(2)}", style: pw.TextStyle(color: PdfColors.white, fontWeight: pw.FontWeight.bold, fontSize: 13)),[m
+[31m-                    ]),[m
+[31m-                    pw.Column(children: [[m
+[31m-                      pw.Text("Saldo Totale", style: const pw.TextStyle(color: PdfColors.amber300, fontSize: 10)),[m
+[31m-                      pw.Text("€${(totaleEntrate - totaleUscite).toStringAsFixed(2)}", style: pw.TextStyle(color: PdfColors.white, fontWeight: pw.FontWeight.bold, fontSize: 13)),[m
+[31m-                    ]),[m
+[31m-                  ],[m
+[31m-                ),[m
+[31m-              ),[m
+[31m-              pw.SizedBox(height: 16),[m
+[31m-              pw.TableHelper.fromTextArray([m
+[31m-                headers: ['Data', 'Categoria', 'Tipo', 'Importo', 'Autore', 'Note'],[m
+[31m-                data: transazioni.map((t) => [[m
+[31m-                  t['data'] ?? '',[m
+[31m-                  t['category'] ?? '',[m
+[31m-                  t['tipo'] ?? '',[m
+[31m-                  "€${t['amount']}",[m
+[31m-                  t['author'] ?? 'Utente',[m
+[31m-                  t['note'] ?? ''[m
+[31m-                ]).toList(),[m
+[31m-                headerStyle: pw.TextStyle(fontWeight: pw.FontWeight.bold, color: PdfColors.white, fontSize: 10),[m
+[31m-                headerDecoration: const pw.BoxDecoration(color: PdfColors.pink400),[m
+[31m-                cellStyle: const pw.TextStyle(fontSize: 9),[m
+[31m-                rowDecoration: const pw.BoxDecoration(border: pw.Border(bottom: pw.BorderSide(color: PdfColors.grey300, width: 0.5))),[m
+[31m-              ),[m
+[31m-            ];[m
+[31m-          },[m
+[31m-        ),[m
+[31m-      );[m
+[31m-[m
+[31m-      await Printing.sharePdf(bytes: await pdf.save(), filename: 'Piggy_Vault_Report.pdf');[m
+[31m-    } catch (e) {[m
+[31m-      if (mounted) {[m
+[31m-        ScaffoldMessenger.of(context).showSnackBar([m
+[31m-          SnackBar(content: Text("Errore generazione PDF: $e"), backgroundColor: Colors.red),[m
+[31m-        );[m
+[31m-      }[m
+[31m-    }[m
+[31m-  }[m
+[31m-[m
+[31m-  bool _isAppLocked = true;[m
+[31m-  final LocalAuthentication _homeLocalAuth = LocalAuthentication();[m
+[31m-[m
+[31m-  @override[m
+[31m-  void didChangeAppLifecycleState(AppLifecycleState state) {[m
+[31m-    super.didChangeAppLifecycleState(state);[m
+[31m-    if (state == AppLifecycleState.paused || state == AppLifecycleState.inactive) {[m
+[31m-      if (mounted) {[m
+[31m-        setState(() {[m
+[31m-          _isAppLocked = true;[m
+[31m-        });[m
+[31m-      }[m
+[31m-    } else if (state == AppLifecycleState.resumed) {[m
+[31m-      if (_isAppLocked) {[m
+[31m-        _sbloccaBiometricoHome();[m
+[31m-      }[m
+[31m-    }[m
+[31m-  }[m
+[31m-[m
+[31m-  Future<void> _sbloccaBiometricoHome() async {[m
+[31m-    try {[m
+[31m-      final bool canAuth = await _homeLocalAuth.canCheckBiometrics || await _homeLocalAuth.isDeviceSupported();[m
+[31m-      if (!canAuth) {[m
+[31m-        if (mounted) setState(() => _isAppLocked = false);[m
+[31m-        return;[m
+[31m-      }[m
+[31m-      final bool authenticated = await _homeLocalAuth.authenticate([m
+[31m-        localizedReason: 'Sblocca Piggy Vault per accedere ai tuoi dati',[m
+[31m-        options: const AuthenticationOptions(stickyAuth: true, biometricOnly: false),[m
+[31m-      );[m
+[31m-      if (authenticated && mounted) {[m
+[31m-        setState(() => _isAppLocked = false);[m
+[31m-      }[m
+[31m-    } catch (e) {[m
+[31m-      // Mantiene il caveau bloccato in caso di annullamento o errore[m
+[31m-    }[m
+[31m-  }[m
+[31m-[m
+[31m-  Future<void> _loadTheme() async {[m
+[31m-    final prefs = await SharedPreferences.getInstance();[m
+[31m-    setState(() {[m
+[31m-      _isDarkTheme = true;[m
+[31m-    });[m
+[31m-  }[m
+[31m-[m
+[31m-  Future<void> _saveTheme(bool isDark) async {[m
+[31m-    final prefs = await SharedPreferences.getInstance();[m
+[31m-    await prefs.setBool('piggy_is_dark', isDark);[m
+[31m-    setState(() {[m
+[31m-      _isDarkTheme = isDark;[m
+[31m-    });[m
+[31m-  }[m
+[31m-[m
+[31m-  List<Map<String, dynamic>> _promemoria = [];[m
+[31m-[m
+[31m-  void _mostraNotificaScadenza(String titolo, String data) {[m
+[31m-    ScaffoldMessenger.of(context).showSnackBar([m
+[31m-      SnackBar([m
+[31m-        content: Text('Scadenza aggiunta: $titolo ($data)'),[m
+[31m-        backgroundColor: Colors.pinkAccent,[m
+[31m-      ),[m
+[31m-    );[m
+[31m-  }[m
+[31m-[m
+[31m-[m
+[31m-[m
+[31m-  bool get _isDarkTheme => _currentTheme == "Piggy Dark";[m
+[31m-  set _isDarkTheme(bool value) { _currentTheme = value ? 'Piggy Dark' : 'Piggy White'; } // false;[m
+[31m-  String _piggyTone = "Piggy Vault";[m
+[31m-[m
+[31m-[m
+[31m-[m
+[31m-  String _getSystemPromptForCurrentTone() => "Sei l'assistente Piggy Vault.";[m
+[31m-[m
+[31m-[m
+[31m-[m
+[31m-[m
+[31m-[m
+[31m-[m
+[31m-    Future<void> _mostraInfoApp(BuildContext context) async {[m
+[31m-    showDialog([m
+[31m-      context: context,[m
+[31m-      builder: (context) => AlertDialog([m
+[31m-        backgroundColor: (Theme.of(context).brightness == Brightness.dark) ? const Color(0xFF1E2235) : const Color(0xFFF5F6FA),[m
+[31m-        title: Row([m
+[31m-          children: [[m
+[31m-            Icon(Icons.savings, color: Colors.pinkAccent),[m
+[31m-            SizedBox(width: 8),[m
+[31m-            Text('Piggy Vault', style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87)),[m
+[31m-          ],[m
+[31m-        ),[m
+[31m-        content: Column([m
+[31m-          mainAxisSize: MainAxisSize.min,[m
+[31m-          crossAxisAlignment: CrossAxisAlignment.start,[m
+[31m-          children: [[m
+[31m-            Text('Versione: 2.5 Ultimate', style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white70 : Colors.black87)),[m
+[31m-            SizedBox(height: 8),[m
+[31m-            Text('Sviluppato da EmmeGi Studios', style: TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold)),[m
+[31m-            SizedBox(height: 8),[m
+[31m-            Text('Assistente Cibernetico: Cyber-Piggy (Modello Terminator v2.5)', style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87, fontSize: 13)),[m
+[31m-          ],[m
+[31m-        ),[m
+[31m-        actions: [[m
+[31m-          TextButton([m
+[31m-            onPressed: () => Navigator.pop(context),[m
+[31m-            child: const Text('Chiudi', style: TextStyle(color: Colors.pinkAccent)),[m
+[31m-          ),[m
+[31m-        ],[m
+[31m-      ),[m
+[31m-    );[m
+[31m-  }[m
+[31m-[m
+[31m-  Future<void> _verificaAggiornamentiOTA(BuildContext context) async {[m
+[31m-    try {[m
+[31m-      showDialog([m
+[31m-        context: context,[m
+[31m-        builder: (context) => AlertDialog([m
+[31m-          backgroundColor: (Theme.of(context).brightness == Brightness.dark) ? const Color(0xFF1E2235) : const Color(0xFFF5F6FA),[m
+[31m-          title: Text('Aggiornamenti 🚀', style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87)),[m
+[31m-          content: Text('Sei già sulla versione più recente di Piggy Vault v2.0.0!\n\nIl server OTA non ha nuove versioni al momento.', style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white70 : Colors.black87)),[m
+[31m-          actions: [[m
+[31m-            TextButton([m
+[31m-              onPressed: () => Navigator.pop(context),[m
+[31m-              child: const Text('Ottimo!', style: TextStyle(color: Colors.pinkAccent)),[m
+[31m-            )[m
+[31m-          ],[m
+[31m-        ),[m
+[31m-      );[m
+[31m-    } catch (e) {[m
+[31m-      ScaffoldMessenger.of(context).showSnackBar([m
+[31m-        SnackBar(content: Text('Errore OTA: $e'), backgroundColor: Colors.redAccent),[m
+[31m-      );[m
+[31m-    }[m
+[31m-  }[m
+[31m-[m
+[31m-[m
+[31m-  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();[m
+[31m-[m
+[31m-  Future<void> _initNotifications() async {[m
+[31m-    const AndroidInitializationSettings initializationSettingsAndroid =[m
+[31m-        AndroidInitializationSettings('@mipmap/ic_launcher');[m
+[31m-    [m
+[31m-    const InitializationSettings initializationSettings =[m
+[31m-        InitializationSettings(android: initializationSettingsAndroid);[m
+[31m-[m
+[31m-    await flutterLocalNotificationsPlugin.initialize(initializationSettings);[m
+[31m-[m
+[31m-    // Richiesta permessi Android 13+[m
+[31m-    await flutterLocalNotificationsPlugin[m
+[31m-        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()[m
+[31m-        ?.requestNotificationsPermission();[m
+[31m-  }[m
+[31m-[m
+[31m-[m
+[31m-  @override[m
+[31m-  void initState() {[m
+[31m-    super.initState();[m
+[31m-    WidgetsBinding.instance.addObserver(this);[m
+[31m-    _sbloccaBiometricoHome();[m
+[31m-[m
+[31m-    // Ascoltatore Notifiche Push in Foreground (In tempo reale)[m
+[31m-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {[m
+[31m-      if (message.notification != null) {[m
+[31m-        if (mounted) {[m
+[31m-          ScaffoldMessenger.of(context).showSnackBar([m
+[31m-            SnackBar([m
+[31m-              content: Row([m
+[31m-                children: [[m
+[31m-                  Icon(Icons.notifications_active, color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87),[m
+[31m-                  const SizedBox(width: 12),[m
+[31m-                  Expanded([m
+[31m-                    child: Column([m
+[31m-                      crossAxisAlignment: CrossAxisAlignment.start,[m
+[31m-                      mainAxisSize: MainAxisSize.min,[m
+[31m-                      children: [[m
+[31m-                        Text(message.notification!.title ?? 'Nuova attività nel Caveau 🐷', style: TextStyle(fontWeight: FontWeight.bold, color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87)),[m
+[31m-                        Text(message.notification!.body ?? '', style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87)),[m
+[31m-                      ],[m
+[31m-                    ),[m
+[31m-                  ),[m
+[31m-                ],[m
+[31m-              ),[m
+[31m-              backgroundColor: Colors.green.shade600,[m
+[31m-              behavior: SnackBarBehavior.floating,[m
+[31m-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),[m
+[31m-              duration: const Duration(seconds: 4),[m
+[31m-              margin: const EdgeInsets.only(bottom: 20, left: 16, right: 16),[m
+[31m-            ),[m
+[31m-          );[m
+[31m-        }[m
+[31m-      }[m
+[31m-    });[m
+[31m-[m
+[31m-    WidgetsBinding.instance.addObserver(this);[m
+[31m-    _loadBudget();[m
+[31m-    _loadTheme();[m
+[31m-    _caricaPromemoriaDaCloud();[m
+[31m-    _initNotifications();[m
+[31m-  }[m
+[31m-[m
+[31m-  @override[m
+[31m-  void dispose() {[m
+[31m-    WidgetsBinding.instance.removeObserver(this);[m
+[31m-    super.dispose();[m
+[31m-  }[m
+[31m-[m
+[31m-  @override[m
+[31m-[m
+[31m-  Future<void> _caricaPromemoriaDaCloud() async {[m
+[31m-    try {[m
+[31m-      final user = FirebaseAuth.instance.currentUser;[m
+[31m-      if (user != null) {[m
+[31m-        final doc = await FirebaseFirestore.instance.collection('users_budget').doc(user.uid).get();[m
+[31m-        if (doc.exists && doc.data()!.containsKey('promemoria')) {[m
+[31m-          List<dynamic> listaCloud = doc.data()!['promemoria'];[m
+[31m-          setState(() {[m
+[31m-            _promemoria = listaCloud.map((e) => Map<String, dynamic>.from(e)).toList();[m
+[31m-          });[m
+[31m-        }[m
+[31m-      }[m
+[31m-    } catch (e) {[m
+[31m-      print("Errore caricamento promemoria cloud: $e");[m
+[31m-    }[m
+[31m-  }[m
+[31m-[m
+[31m-  Future<void> _salvaPromemoriaSuCloud() async {[m
+[31m-    try {[m
+[31m-      final user = FirebaseAuth.instance.currentUser;[m
+[31m-      if (user != null) {[m
+[31m-        await FirebaseFirestore.instance.collection('users_budget').doc(user.uid).set({[m
+[31m-          'promemoria': _promemoria,[m
+[31m-        }, SetOptions(merge: true));[m
+[31m-      }[m
+[31m-    } catch (e) {[m
+[31m-      print("Errore salvataggio promemoria cloud: $e");[m
+[31m-    }[m
+[31m-  }[m
+[31m-[m
+[31m-[m
+[31m-  [m
+[31m-[m
+[31m-[m
+[31m-[m
+[31m-  [m
+[31m-[m
+[31m-[m
+[31m-  double _monthlyBudget = 1500.0;[m
+[31m-[m
+[31m-  [m
+[31m-[m
+[31m-  Future<void> _loadBudget() async {[m
+[31m-    final prefs = await SharedPreferences.getInstance();[m
+[31m-    setState(() {[m
+[31m-      _monthlyBudget = prefs.getDouble('piggy_monthly_budget') ?? 1500.0;[m
+[31m-    });[m
+[31m-  }[m
+[31m-[m
+[31m-  Future<void> _saveBudget(double newBudget) async {[m
+[31m-    final prefs = await SharedPreferences.getInstance();[m
+[31m-    await prefs.setDouble('piggy_monthly_budget', newBudget);[m
+[31m-    setState(() {[m
+[31m-      _monthlyBudget = newBudget;[m
+[31m-    });[m
+[31m-    try {[m
+[31m-      final user = FirebaseAuth.instance.currentUser;[m
+[31m-      if (user != null) {[m
+[31m-        await FirebaseFirestore.instance.collection('users_budget').doc(user.uid).set({[m
+[31m-          'monthly_budget': newBudget,[m
+[31m-        }, SetOptions(merge: true));[m
+[31m-      }[m
+[31m-    } catch (e) {[m
+[31m-      print("Errore salvataggio budget cloud: $e");[m
+[31m-    }[m
+[31m-  }[m
+[31m-[m
+[31m-  void _showBudgetDialog() {[m
+[31m-    final controller = TextEditingController(text: _monthlyBudget.toString());[m
+[31m-    showDialog([m
+[31m-      context: context,[m
+[31m-      builder: (context) => AlertDialog([m
+[31m-        backgroundColor: (Theme.of(context).brightness == Brightness.dark) ? const Color(0xFF1E2235) : const Color(0xFFF5F6FA),[m
+[31m-        title: Text("Imposta Tetto di Spesa Mensile", style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87)),[m
+[31m-        content: TextField([m
+[31m-          controller: controller,[m
+[31m-          keyboardType: const TextInputType.numberWithOptions(decimal: true),[m
+[31m-          style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87),[m
+[31m-          decoration: const InputDecoration([m
+[31m-            labelText: "Budget (€)",[m
+[31m-            labelStyle: TextStyle(color: Colors.grey),[m
+[31m-          ),[m
+[31m-        ),[m
+[31m-        actions: [[m
+[31m-          TextButton([m
+[31m-            onPressed: () => Navigator.pop(context),[m
+[31m-            child: const Text("Annulla", style: TextStyle(color: Colors.grey)),[m
+[31m-          ),[m
+[31m-          ElevatedButton([m
+[31m-            onPressed: () {[m
+[31m-              final val = double.tryParse(controller.text);[m
+[31m-              if (val != null && val > 0) {[m
+[31m-                _saveBudget(val);[m
+[31m-              }[m
+[31m-              Navigator.pop(context);[m
+[31m-            },[m
+[31m-            child: Text("Salva", style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87)),[m
+[31m-          ),[m
+[31m-        ],[m
+[31m-      ),[m
+[31m-    );[m
+[31m-  }[m
+[31m-[m
+[31m-  Widget _buildBudgetCard(List<dynamic> docs) {[m
+[31m-    double currentMonthExpenses = 0.0;[m
+[31m-    final now = DateTime.now();[m
+[31m-    for (var doc in docs) {[m
+[31m-      final data = doc.data() as Map<String, dynamic>;[m
+[31m-      final type = data['type'] ?? 'uscita';[m
+[31m-      final amount = (data['amount'] ?? 0.0).toDouble();[m
+[31m-      final dateField = data['date'];[m
+[31m-      DateTime? date;[m
+[31m-      if (dateField is Timestamp) {[m
+[31m-        date = dateField.toDate();[m
+[31m-      } else if (dateField is String) {[m
+[31m-        date = DateTime.tryParse(dateField);[m
+[31m-      }[m
+[31m-      [m
+[31m-      if (date != null && date.year == now.year && date.month == now.month) {[m
+[31m-        if (type == 'uscita' || amount < 0) {[m
+[31m-          currentMonthExpenses += amount.abs();[m
+[31m-        }[m
+[31m-      }[m
+[31m-    }[m
+[31m-[m
+[31m-    final progress = _monthlyBudget > 0 ? (currentMonthExpenses / _monthlyBudget).clamp(0.0, 1.0) : 0.0;[m
+[31m-    Color progressColor = Colors.greenAccent;[m
+[31m-    if (progress >= 1.0) {[m
+[31m-      progressColor = Colors.redAccent;[m
+[31m-    } else if (progress >= 0.8) {[m
+[31m-      progressColor = Colors.orangeAccent;[m
+[31m-    }[m
+[31m-[m
+[31m-    return Container([m
+[31m-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),[m
+[31m-      padding: const EdgeInsets.all(16),[m
+[31m-      decoration: BoxDecoration([m
+[31m-        color: const Color(0xFF1E2235),[m
+[31m-        borderRadius: BorderRadius.circular(16),[m
+[31m-        border: Border.all(color: progressColor.withOpacity(0.5), width: 1.5),[m
+[31m-      ),[m
+[31m-      child: Column([m
+[31m-        crossAxisAlignment: CrossAxisAlignment.start,[m
+[31m-        children: [[m
+[31m-          Row([m
+[31m-            mainAxisAlignment: MainAxisAlignment.spaceBetween,[m
+[31m-            children: [[m
+[31m-              Row([m
+[31m-          mainAxisAlignment: MainAxisAlignment.spaceBetween,[m
+[31m-          children: [[m
+[31m-            Text("Tetto di Spesa Mensile", style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87, fontWeight: FontWeight.bold, fontSize: 16)),[m
+[31m-            IconButton([m
+[31m-              icon: const Icon(Icons.pie_chart_outline, color: Colors.pinkAccent, size: 22),[m
+[31m-              tooltip: "Analisi Categorie",[m
+[31m-              onPressed: _mostraAnalisiCategorie,[m
+[31m-            ),[m
+[31m-          ],[m
+[31m-        ),[m
+[31m-              IconButton([m
+[31m-                icon: const Icon(Icons.edit, color: Colors.pinkAccent, size: 20),[m
+[31m-                onPressed: _showBudgetDialog,[m
+[31m-              ),[m
+[31m-            ],[m
+[31m-          ),[m
+[31m-          const SizedBox(height: 8),[m
+[31m-          Row([m
+[31m-            mainAxisAlignment: MainAxisAlignment.spaceBetween,[m
+[31m-            children: [[m
+[31m-              Text("Speso: €${currentMonthExpenses.toStringAsFixed(2)}", style: const TextStyle(color: Colors.grey, fontSize: 14)),[m
+[31m-              Text("Budget: €${_monthlyBudget.toStringAsFixed(2)}", style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87, fontWeight: FontWeight.bold, fontSize: 14)),[m
+[31m-            ],[m
+[31m-          ),[m
+[31m-          const SizedBox(height: 12),[m
+[31m-          ClipRRect([m
+[31m-            borderRadius: BorderRadius.circular(8),[m
+[31m-            child: LinearProgressIndicator([m
+[31m-              value: progress,[m
+[31m-              minHeight: 10,[m
+[31m-      backgroundColor: const Color(0xFF13131A),[m
+[31m-              valueColor: AlwaysStoppedAnimation<Color>(progressColor),[m
+[31m-            ),[m
+[31m-          ),[m
+[31m-        ],[m
+[31m-      ),[m
+[31m-    );[m
+[31m-  }[m
+[31m-[m
+[31m-[m
+[31m-  bool _isInitialLoad = true;[m
+[31m-[m
+[31m-  [m
+[31m-[m
+[31m-  void _setupRealtimeNotifications() {[m
+[31m-    final currentUserEmail = FirebaseAuth.instance.currentUser?.email;[m
+[31m-    FirebaseFirestore.instance.collection('caveau_condiviso').snapshots().listen((snapshot) {[m
+[31m-      if (_isInitialLoad) {[m
+[31m-        _isInitialLoad = false;[m
+[31m-        return;[m
+[31m-      }[m
+[31m-      for (var change in snapshot.docChanges) {[m
+[31m-        if (change.type == DocumentChangeType.added) {[m
+[31m-          final data = change.doc.data() as Map<String, dynamic>?;[m
+[31m-          if (data != null) {[m
+[31m-            final author = data['author'] ?? 'Partner';[m
+[31m-            final amount = data['amount'] ?? '0';[m
+[31m-            final category = data['category'] ?? 'Spesa';[m
+[31m-            final type = data['type'] ?? 'Uscita';[m
+[31m-[m
+[31m-            if (currentUserEmail == null || author != currentUserEmail) {[m
+[31m-              if (mounted) {[m
+[31m-                ScaffoldMessenger.of(context).showSnackBar([m
+[31m-                  SnackBar([m
+[31m-                    content: Text("🔔 Nuova attività da $author: $type di €$amount ($category)"),[m
+[31m-                    backgroundColor: const Color(0xFF3B82F6),[m
+[31m-                    duration: const Duration(seconds: 4),[m
+[31m-                  ),[m
+[31m-                );[m
+[31m-              }[m
+[31m-            }[m
+[31m-          }[m
+[31m-        }[m
+[31m-      }[m
+[31m-    });[m
+[31m-  }[m
+[31m-[m
+[31m-  bool get _isDark => _currentTheme == 'Piggy Dark';[m
+[31m-  Color get _cardBg => _isDark ? const Color(0xFF1E2235) : const Color(0xFFFFFFFF);[m
+[31m-  Color get _textColor => _isDark ? Colors.white : const Color(0xFF1A1A2E);[m
+[31m-  Color get _subtitleColor => _isDark ? Colors.white70 : const Color(0xFF222233);[m
+[31m-  Color get _primaryColor => Colors.pinkAccent;[m
+[31m-  Color get _scaffoldBg => _isDark ? const Color(0xFF0F111A) : const Color(0xFFF4F6F9);[m
+[31m-[m
+[31m-  double patrimonio = 0.0;[m
+[31m-  double entrateMese = 0.0;[m
+[31m-  double usciteMese = 0.0;[m
+[31m-  List<Map<String, dynamic>> transazioni = [];[m
+[31m-  String _currentTheme = 'Piggy Dark';[m
+[31m-  String _selectedPersonality = 'Cyber-Tecno';[m
+[31m-  String _caveauId = '';[m
+[31m-  String _nomeUtenteDinamico = 'Utente';[m
+[31m-  bool isAiLoading = false;[m
+[31m-  List<Map<String, dynamic>> portafogli = [];[m
+[31m-  List<Map<String, dynamic>> speseRicorrenti = [];[m
+[31m-  final TextEditingController _goalNameController = TextEditingController();[m
+[31m-  final TextEditingController _goalTargetController = TextEditingController();[m
+[31m-  String aiPurchaseResult = '';[m
+[31m-  final TextEditingController _itemController = TextEditingController();[m
+[31m-  final TextEditingController _amountController = TextEditingController();[m
+[31m-  final TextEditingController _noteController = TextEditingController();[m
+[31m-  final TextEditingController _inviteController = TextEditingController();[m
+[31m-  String _selectedType = 'Uscita (Spesa)';[m
+[31m-  String _selectedCategory = '🐾 Animali';[m
+[31m-  final List<String> categorieConEmoji = ['💰 Stipendio / Entrate', '🍔 Cibo & Spesa', '🏠 Casa & Affitto', '🚗 Trasporti', '💡 Bollette & Utenze', '🎉 Svago & Hobby', '🐾 Animali',[m
+[31m-  '📦 Altro'];[m
+[31m-[m
+[31m-  [m
+[31m-  [m
+[31m-  [m
+[31m-  [m
+[31m-  [m
+[31m-[m
+[31m-  [m
+[31m-  [m
+[31m-  void _esportaCSV() {[m
+[31m-    String csv = 'Data,Categoria,Tipo,Importo,Autore,Note\n';[m
+[31m-    for (var t in transazioni) {[m
+[31m-      csv += "${t['data']},${t['category']},${t['tipo']},${t['amount']},${t['author'] ?? 'Utente'},${t['note'] ?? ''}\n";[m
+[31m-    }[m
+[31m-    showDialog([m
+[31m-      context: context,[m
+[31m-      builder: (ctx) => AlertDialog([m
+[31m-        backgroundColor: _cardBg,[m
+[31m-        title: Text('📊 Esportazione CSV', style: TextStyle(color: _textColor)),[m
+[31m-        content: SizedBox([m
+[31m-          width: double.maxFinite,[m
+[31m-          child: SingleChildScrollView([m
+[31m-            child: SelectableText(csv, style: TextStyle(color: _textColor, fontSize: 12)),[m
+[31m-          ),[m
+[31m-        ),[m
+[31m-        actions: [[m
+[31m-          ElevatedButton.icon([m
+[31m-            onPressed: () { HapticFeedback.lightImpact();[m
+[31m-              Clipboard.setData(ClipboardData(text: csv));[m
+[31m-              Navigator.pop(ctx);[m
+[31m-              ScaffoldMessenger.of(context).showSnackBar([m
+[31m-                const SnackBar(content: Text('CSV copiato con successo negli appunti!')),[m
+[31m-              );[m
+[31m-            },[m
+[31m-            icon: Icon(Icons.download, color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87, size: 16),[m
+[31m-            label: Text('Scarica CSV', style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87)),[m
+[31m-          ),[m
+[31m-          ElevatedButton.icon([m
+[31m-            onPressed: () {[m
+[31m-              Navigator.pop(ctx);[m
+[31m-              _esportaPDF();[m
+[31m-            },[m
+[31m-            style: ElevatedButton.styleFrom(backgroundColor: Colors.pinkAccent),[m
+[31m-            icon: const Icon(Icons.picture_as_pdf, color: Colors.white, size: 16),[m
+[31m-            label: const Text('Esporta PDF', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),[m
+[31m-          [m
+[31m-          ),[m
+[31m-          TextButton([m
+[31m-            onPressed: () => Navigator.pop(ctx),[m
+[31m-            child: Text('Chiudi', style: TextStyle(color: Colors.white70)),[m
+[31m-          ),[m
+[31m-        ],[m
+[32m+[m[32m              ElevatedButton.icon([m
+[32m+[m[32m      style: ElevatedButton.styleFrom([m
+[32m+[m[32m        backgroundColor: Colors.pinkAccent,[m
+[32m+[m[32m        foregroundColor: Colors.white,[m
+[32m+[m[32m        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),[m
+[32m+[m[32m        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),[m
+       ),[m
+[31m-    );[m
+[31m-  }[m
+[31m-[m
+[31m-[m
+[31m-[m
+[31m-  [m
+[31m-  [m
+[31m-  [m
+[31m-  [m
+[31m-  [m
+[31m-[m
+[31m-[m
+[31m-  [m
+[31m-  [m
+[31m-  [m
+[31m-  [m
+[31m-  [m
+[31m-[m
+[31m-[m
+[31m-  [m
+[31m-  [m
+[31m-  [m
+[31m-  [m
+[31m-  [m
+[31m-[m
+[31m-[m
+[31m-[m
+[31m-[m
+[31m-  Future<void> _caricaDatiLocali() async {[m
+[31m-    final prefs = await SharedPreferences.getInstance();[m
+[31m-    setState(() {[m
+[31m-      patrimonio = prefs.getDouble('patrimonio') ?? 0.00;[m
+[31m-      entrateMese = prefs.getDouble('entrateMese') ?? 0.00;[m
+[31m-      usciteMese = prefs.getDouble('usciteMese') ?? 0.00;[m
+[31m-      final String? portafogliJson = prefs.getString('portafogli');[m
+[31m-      final String? ricorrentiJson = prefs.getString('speseRicorrenti');[m
+[31m-      if (ricorrentiJson != null && ricorrentiJson.isNotEmpty) {[m
+[31m-        final List decodedR = jsonDecode(ricorrentiJson);[m
+[31m-        speseRicorrenti = decodedR.map((e) => Map<String, dynamic>.from(e)).toList();[m
+[31m-      }[m
+[31m-      _verificaEElaboraRicorrenti();[m
+[31m-      if (portafogliJson != null && portafogliJson.isNotEmpty) {[m
+[31m-        final List decoded = jsonDecode(portafogliJson);[m
+[31m-        portafogli = decoded.map((e) => Map<String, dynamic>.from(e)).toList();[m
+[31m-      }[m
+[31m-      _verificaSogliaBudget();[m
+[31m-      _verificaPromemoriaInScadenza();[m
+[31m-      _currentTheme = 'Piggy Dark';[m
+[31m-      _selectedPersonality = prefs.getString('piggyPersonality') ?? 'Cyber-Tecno';[m
+[31m-    });[m
+[31m-  }[m
+[31m-[m
+[31m-  void _ascoltaCloudFirestore() {[m
+[31m-    try {[m
+[31m-      FirebaseFirestore.instance[m
+[31m-          .collection('caveau_condiviso')[m
+[31m-          .doc(_caveauId)[m
+[31m-          .snapshots()[m
+[31m-          .listen((snapshot) {[m
+[31m-        if (snapshot.exists && snapshot.data() != null) {[m
+[31m-          final data = snapshot.data()!;[m
+[31m-          setState(() {[m
+[31m-            patrimonio = (data['patrimonio'] ?? patrimonio).toDouble();[m
+[31m-            entrateMese = (data['entrateMese'] ?? entrateMese).toDouble();[m
+[31m-            usciteMese = (data['usciteMese'] ?? usciteMese).toDouble();[m
+[31m-            String ultimoMov = transazioni.isNotEmpty ? "${transazioni.first['category']} €${transazioni.first['amount']}" : "";[m
+[31m-            _updateAndroidWidget(true, patrimonio, ultimoMov);[m
+[31m-            if (data['speseRicorrenti'] != null) {[m
+[31m-              final List decodedR = data['speseRicorrenti'];[m
+[31m-              speseRicorrenti = decodedR.map((e) => Map<String, dynamic>.from(e)).toList();[m
+[31m-              _verificaEElaboraRicorrenti();[m
+[31m-            }[m
+[31m-            if (data['portafogli'] != null) {[m
+[31m-              final List decoded = data['portafogli'];[m
+[31m-              portafogli = decoded.map((e) => Map<String, dynamic>.from(e)).toList();[m
+[31m-            }[m
+[31m-            if (data['transazioni'] != null) {[m
+[31m-              final List decoded = data['transazioni'];[m
+[31m-              transazioni = decoded.map((e) => Map<String, dynamic>.from(e)).toList();[m
+[31m-            }[m
+[31m-          });[m
+[31m-        }[m
+[31m-      });[m
+[31m-    } catch (e) {[m
+[31m-      debugPrint("Firestore listener notice: $e");[m
+[31m-    }[m
+[31m-  }[m
+[31m-[m
+[31m-  Future<void> _sincronizzaCloud() async {[m
+[31m-    final prefs = await SharedPreferences.getInstance();[m
+[31m-    await prefs.setDouble('patrimonio', patrimonio);[m
+[31m-    await prefs.setDouble('entrateMese', entrateMese);[m
+[31m-    await prefs.setDouble('usciteMese', usciteMese);[m
+[31m-    await prefs.setString('selectedTheme', 'Piggy Dark');[m
+[31m-[m
+[31m-    try {[m
+[31m-      await FirebaseFirestore.instance[m
+[31m-          .collection('caveau_condiviso')[m
+[31m-          .doc(_caveauId)[m
+[31m-          .set({[m
+[31m-        'patrimonio': patrimonio,[m
+[31m-        'entrateMese': entrateMese,[m
+[31m-        'usciteMese': usciteMese,[m
+[31m-        'transazioni': transazioni,[m
+[31m-        'ultimoAggiornamento': FieldValue.serverTimestamp(),[m
+[31m-      });[m
+[31m-    } catch (e) {[m
+[31m-      debugPrint("Cloud sync save notice: $e");[m
+[31m-    }[m
+[31m-  }[m
+[31m-[m
+[31m-  void _toggleTheme(String themeName) async {[m
+[31m-    final prefs = await SharedPreferences.getInstance();[m
+[31m-    setState(() {[m
+[31m-      _currentTheme = 'Piggy Dark';[m
+[31m-    });[m
+[31m-    await prefs.setString('selectedTheme', 'Piggy Dark');[m
+[31m-  }[m
+[31m-[m
+[31m-  Map<String, dynamic> _getLivelloPorcellino() {[m
+[31m-    if (patrimonio < 1000) {[m
+[31m-      return {"nome": "Emergenze", "target": "1.000€", "color": Colors.green, "icon": Icons.shield};[m
+[31m-    } else if (patrimonio < 10000) {[m
+[31m-      return {"nome": "Cuscino", "target": "10.000€", "color": Colors.blue, "icon": Icons.weekend};[m
+[31m-    } else if (patrimonio < 50000) {[m
+[31m-      return {"nome": "Fortezza", "target": "50.000€", "color": Colors.purple, "icon": Icons.castle};[m
+[31m-    } else {[m
+[31m-      return {"nome": "Porcellone", "target": "100.000€", "color": _primaryColor, "icon": Icons.savings};[m
+[31m-    }[m
+[31m-  }[m
+[31m-[m
+[31m-  double _getProgresso() => (patrimonio / 100000.0).clamp(0.0, 1.0);[m
+[31m-[m
+[31m-  void _eliminaTransazione(int index) {[m
+[31m-    setState(() {[m
+[31m-      final tx = transazioni[index];[m
+[31m-      double amount = tx['amount'];[m
+[31m-      if (tx['type'].contains('Entrata')) {[m
+[31m-        patrimonio -= amount;[m
+[31m-        entrateMese -= amount;[m
+[31m-      } else {[m
+[31m-        patrimonio += amount;[m
+[31m-        usciteMese -= amount;[m
+[31m-      }[m
+[31m-      transazioni.removeAt(index);[m
+[31m-    });[m
+[31m-    _sincronizzaCloud();[m
+[31m-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Movimento eliminato e sincronizzato")));[m
+[31m-  }[m
+[31m-[m
+[31m-  void _mostraDettaglioLivello(String titolo, String target, String descrizione, IconData icona, Color colore) {[m
+[31m-    showDialog([m
+[31m-      context: context,[m
+[31m-      builder: (context) => AlertDialog([m
+[31m-        backgroundColor: _cardBg,[m
+[31m-        title: Wrap(alignment: WrapAlignment.center, spacing: 12.0, runSpacing: 12.0, children: [[m
+[31m-            Icon(icona, color: colore, size: 28),[m
+[31m-            const SizedBox(width: 10),[m
+[31m-            Text(titolo, style: TextStyle(color: _textColor, fontSize: 18))]),[m
+[31m-        content: Column([m
+[31m-          mainAxisSize: MainAxisSize.min,[m
+[31m-          crossAxisAlignment: CrossAxisAlignment.start,[m
+[31m-          children: [[m
+[31m-            Text("Obiettivo del livello: $target", style: TextStyle(color: _primaryColor, fontWeight: FontWeight.bold, fontSize: 14)),[m
+[31m-            const SizedBox(height: 12),[m
+[31m-            Text(descrizione, style: TextStyle(color: _textColor, fontSize: 13)),[m
+[31m-            const SizedBox(height: 16),[m
+[31m-            Text("Patrimonio condiviso attuale: €${patrimonio.toStringAsFixed(2)}", style: TextStyle(color: Colors.white70, fontSize: 12))]),[m
+[31m-        actions: [[m
+[31m-          TextButton([m
+[31m-            onPressed: () => Navigator.pop(context),[m
+[31m-            child: Text("Capito", style: TextStyle(color: _primaryColor, fontWeight: FontWeight.bold)))]));[m
+[31m-  }[m
+[31m-[m
+[31m-  void _simulaAI(String spesaStr) {[m
+[31m-    if (spesaStr.isEmpty) return;[m
+[31m-    double valore = double.tryParse(spesaStr.replaceAll(',', '.')) ?? 0.0;[m
+[31m-    setState(() => isAiLoading = true);[m
+[31m-    [m
+[31m-    Future.delayed(const Duration(milliseconds: 700), () {[m
+[31m-      setState(() {[m
+[31m-        isAiLoading = false;[m
+[31m-        double impatto = patrimonio > 0 ? (valore / patrimonio) * 100 : 0;[m
+[31m-        aiPurchaseResult = "🤖 Consulente IA:\nUna spesa di €$valore impatta sul patrimonio comune per il ${impatto.toStringAsFixed(1)}%. Valutatela insieme!";[m
+[31m-      });[m
+[31m-    });[m
+[31m-  }[m
+[31m-[m
+[31m-  void _mostraModalProfilo() {[m
+[31m-    showModalBottomSheet(context: context,[m
+[31m-      isScrollControlled: true,[m
+[31m-      backgroundColor: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF1A1528) : Colors.white,[m
+[31m-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),[m
+[31m-      builder: (BuildContext context) {[m
+[31m-        return Padding([m
+[31m-          padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom, left: 16, right: 16, top: 24),[m
+[31m-          child: SingleChildScrollView([m
+[31m-            child: Column([m
+[31m-              mainAxisSize: MainAxisSize.min,[m
+[31m-              crossAxisAlignment: CrossAxisAlignment.start,[m
+[31m-              children: [[m
+[31m-                Row([m
+[31m-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,[m
+[31m-                  children: [[m
+[31m-                    Text('👤 Profilo & Cloud', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: _textColor)),[m
+[31m-                    Icon(Icons.cloud_sync, color: _primaryColor),[m
+[31m-                  ],[m
+[31m-                ),[m
+[31m-                const SizedBox(height: 20),[m
+[31m-                ListTile([m
+[31m-                  title: Text('Utente Attivo', style: TextStyle(color: Colors.white70, fontSize: 11)),[m
+[31m-                  subtitle: Text(_nomeUtenteDinamico, style: TextStyle(color: _textColor, fontWeight: FontWeight.bold, fontSize: 15)),[m
+[31m-                ),[m
+[31m-                ListTile([m
+[31m-                  title: Text('Email Collegata', style: TextStyle(color: Colors.white70, fontSize: 11)),[m
+[31m-                  subtitle: Text(widget.userEmail, style: TextStyle(color: _textColor, fontWeight: FontWeight.bold, fontSize: 15)),[m
+[31m-                ),[m
+[31m-                ListTile([m
+[31m-                  title: Text('Stato Firebase Cloud', style: TextStyle(color: Colors.white70, fontSize: 11)),[m
+[31m-                  subtitle: const Text('Connesso in tempo reale', style: TextStyle(color: Colors.greenAccent, fontWeight: FontWeight.bold)),[m
+[31m-                ),[m
+[31m-                const SizedBox(height: 24),[m
+[31m-                ElevatedButton([m
+[31m-                  style: ElevatedButton.styleFrom([m
+[31m-                    minimumSize: const Size(double.infinity, 50),[m
+[31m-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),[m
+[31m-                  ),[m
+[31m-                      onPressed: () async { HapticFeedback.lightImpact(); Navigator.pop(context); await FirebaseAuth.instance.signOut(); Navigator.of(context, rootNavigator: true).pushNamedAndRemoveUntil("/", (route) => false); },[m
+[31m-                  child: Text('Disconnetti Account', style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87, fontWeight: FontWeight.bold)),[m
+[31m-                ),[m
+[31m-                const SizedBox(height: 24),[m
+[31m-              ],[m
+[31m-            ),[m
+[31m-          ),[m
+[31m-        );[m
+[32m+[m[32m      icon: const Icon(Icons.vpn_key),[m
+[32m+[m[32m      label: Text(_caveauId.isEmpty ? '🔑 Configura Caveau Condiviso' : '👥 Gestisci Caveau Condiviso', style: const TextStyle(fontWeight: FontWeight.bold)),[m
+[32m+[m[32m      onPressed: () {[m
+[32m+[m[32m        Navigator.pop(context);[m
+[32m+[m[32m        _mostraGestioneCaveau(context);[m
+       },[m
+[31m-    );[m
+[31m-  }[m
+[31m-[m
+[31m-  void _mostraModalImpostazioni() {[m
+[31m-    showModalBottomSheet(context: context,[m
+[31m-      isScrollControlled: true,[m
+[31m-      backgroundColor: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF1A1528) : Colors.white,[m
+[31m-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),[m
+[31m-      builder: (BuildContext context) {[m
+[31m-        return StatefulBuilder([m
+[31m-          builder: (BuildContext context, StateSetter setModalState) {[m
+[31m-            return Padding([m
+[31m-              padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom, left: 16, right: 16, top: 24),[m
+[31m-              child: SingleChildScrollView([m
+[31m-                child: Column([m
+[31m-                  mainAxisSize: MainAxisSize.min,[m
+[31m-                  crossAxisAlignment: CrossAxisAlignment.start,[m
+[31m-                  children: [[m
+[31m-                    Row([m
+[31m-                      children: [[m
+[31m-                        Icon(Icons.settings, color: _primaryColor),[m
+[31m-                        const SizedBox(width: 8),[m
+[31m-                        Text('⚙️ Impostazioni & Temi', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: _textColor)),[m
+[31m-                      ],[m
+[31m-                    ),[m
+[31m-                    const SizedBox(height: 16),[m
+[31m-                    ListTile([m
+[31m-                      title: Text('Tema Attivo', style: TextStyle(color: Colors.white70, fontSize: 11)),[m
+[31m-                      subtitle: Text(_currentTheme, style: TextStyle(color: _primaryColor, fontWeight: FontWeight.bold, fontSize: 14)),[m
+[31m-                    ),[m
+[31m-                    const SizedBox(height: 16),[m
+[31m-                    ListTile([m
+[31m-                      leading: Icon(_caveauId.isNotEmpty ? Icons.group : Icons.person, color: _primaryColor),[m
+[31m-                      title: Text(_caveauId.isNotEmpty ? 'Caveau Condiviso Attivo' : 'Caveau Personale', style: TextStyle(color: _textColor, fontWeight: FontWeight.bold, fontSize: 13)),[m
+[31m-                      subtitle: Text(_caveauId.isNotEmpty ? 'ID: $_caveauId' : 'I tuoi dati sono sincronizzati sul tuo account', style: TextStyle(color: _subtitleColor, fontSize: 11)),[m
+[31m-                      trailing: _caveauId.isNotEmpty[m
+[31m-                          ? TextButton([m
+[31m-                              onPressed: () { Navigator.pop(context); _scollegaCaveauCondiviso(); },[m
+[31m-                              child: const Text('Scollega', style: TextStyle(color: Colors.redAccent, fontSize: 11)),[m
+[31m-                            )[m
+[31m-                          : null,[m
+[31m-                    ),[m
+[31m-                    Divider(color: _textColor.withOpacity(0.2)),[m
+[31m-                    TextField([m
+[31m-                      controller: _inviteController,[m
+[31m-                      style: TextStyle(color: _textColor),[m
+[31m-                      decoration: InputDecoration([m
+[31m-                        hintText: 'Email del partner da invitare',[m
+[31m-                        hintStyle: TextStyle(color: Colors.white70),[m
+[31m-                        filled: true,[m
+[31m-                        fillColor: _scaffoldBg,[m
+[31m-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),[m
+[31m-                      ),[m
+[31m-                    ),[m
+[31m-                    const SizedBox(height: 24),[m
+[31m-                    const SizedBox(height: 16),[m
+[31m-                    [m
+[31m-            const SizedBox(height: 16),[m
+[31m-            Text('🎭 Personalità Piggy AI:', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: _textColor)),[m
+[31m-            const SizedBox(height: 8),[m
+[31m-            Wrap([m
+[31m-              spacing: 8,[m
+[31m-              runSpacing: 8,[m
+[31m-              children: [[m
+[31m-                'Cyber-Tecno',[m
+[31m-                'Strategico & Ironico',[m
+[31m-                'Amichevole Smart',[m
+[31m-                'Formale & Analitico'[m
+[31m-              ].map((p) {[m
+[31m-                final selected = _selectedPersonality == p;[m
+[31m-                return ChoiceChip([m
+[31m-                  label: Text(p, style: TextStyle(color: selected ? Colors.white : _textColor, fontSize: 11)),[m
+[31m-                  selected: selected,[m
+[31m-                  selectedColor: Colors.pinkAccent,[m
+[31m-                  backgroundColor: (Theme.of(context).brightness == Brightness.dark) ? const Color(0xFF1E2235) : Colors.grey.shade200,[m
+[31m-                  onSelected: (val) {[m
+[31m-                    if (val) {[m
+[31m-                      setState(() {[m
+[31m-                        _selectedPersonality = p;[m
+[31m-                      });[m
+[31m-                      SharedPreferences.getInstance().then((prefs) => prefs.setString('piggyPersonality', p));[m
+[31m-                    }[m
+[31m-                  },[m
+[31m-                );[m
+[31m-              }).toList(),[m
+[31m-            ),[m
+[31m-[m
+[31m-            Text('🎨 Scegli Tema Grafico:', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: _textColor)),[m
+[31m-                    const SizedBox(height: 8),[m
+[31m-                    Row([m
+[31m-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,[m
+[31m-                      children: [[m
+[31m-                        ElevatedButton.icon([m
+[31m-                          onPressed: () { HapticFeedback.lightImpact(); setState(() { _currentTheme = 'Piggy Dark'; }); SharedPreferences.getInstance().then((p) => p.setString("selectedTheme", _currentTheme)); Navigator.pop(context); },[m
+[32m+[m[32m    ) setState(() { _currentTheme = 'Piggy Dark'; }); SharedPreferences.getInstance().then((p) => p.setString("selectedTheme", _currentTheme)); Navigator.pop(context); },[m
+                           icon: Icon(Icons.dark_mode, color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87, size: 16),[m
+                           label: Text('Piggy Dark', style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87)),[m
+                         ),[m
+                         ElevatedButton.icon([m
+[31m-                          style: ElevatedButton.styleFrom(backgroundColor: Colors.grey.shade200),[m
+[32m+[m[32m                          style: ElevatedButton.styleFrom(backgroundColor: (Theme.of(context).brightness == Brightness.dark ? Colors.grey : const Color(0xFF444455)).shade200),[m
+                           onPressed: () { HapticFeedback.lightImpact(); setState(() { _currentTheme = 'Piggy White'; }); SharedPreferences.getInstance().then((p) => p.setString("selectedTheme", 'Piggy White')); Navigator.pop(context); },[m
+                           icon: const Icon(Icons.light_mode, color: Colors.black87, size: 16),[m
+                           label: const Text('Piggy White', style: TextStyle(color: Colors.black87)),[m
+[36m@@ -1900,10 +476,10 @@[m [mclass _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {[m
+             children: [[m
+               Text("🎯 Nuovo Obiettivo", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: _textColor)),[m
+               const SizedBox(height: 16),[m
+[31m-              TextField(controller: _goalNameController, style: TextStyle(color: _textColor), decoration: InputDecoration(labelText: 'Nome Obiettivo (es. Viaggio)', labelStyle: TextStyle(color: Colors.white70),[m
+[32m+[m[32m              TextField(controller: _goalNameController, style: TextStyle(color: _textColor), decoration: InputDecoration(labelText: 'Nome Obiettivo (es. Viaggio)', labelStyle: TextStyle(color: (Theme.of(context).brightness == Brightness.dark ? Colors.white70 : const Color(0xFF222233))),[m
+                   floatingLabelStyle: const TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold), fillColor: _scaffoldBg, filled: true)),[m
+               const SizedBox(height: 12),[m
+[31m-              TextField(controller: _goalTargetController, keyboardType: TextInputType.number, style: TextStyle(color: _textColor), decoration: InputDecoration(labelText: 'Target in € (es. 1500)', labelStyle: TextStyle(color: Colors.white70),[m
+[32m+[m[32m              TextField(controller: _goalTargetController, keyboardType: TextInputType.number, style: TextStyle(color: _textColor), decoration: InputDecoration(labelText: 'Target in € (es. 1500)', labelStyle: TextStyle(color: (Theme.of(context).brightness == Brightness.dark ? Colors.white70 : const Color(0xFF222233))),[m
+                   floatingLabelStyle: const TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold), fillColor: _scaffoldBg, filled: true)),[m
+               const SizedBox(height: 24),[m
+               ElevatedButton([m
+[36m@@ -1940,9 +516,9 @@[m [mclass _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {[m
+       builder: (ctx) => AlertDialog([m
+         backgroundColor: _cardBg,[m
+         title: Text("Finanzia: ${portafogli[index]['nome']}", style: TextStyle(color: _textColor, fontSize: 16, fontWeight: FontWeight.bold)),[m
+[31m-        content: TextField(controller: fundController, keyboardType: TextInputType.number, style: TextStyle(color: _textColor), decoration: InputDecoration(hintText: "Importo da aggiungere", hintStyle: TextStyle(color: Colors.white70))),[m
+[32m+[m[32m        content: TextField(controller: fundController, keyboardType: TextInputType.number, style: TextStyle(color: _textColor), decoration: InputDecoration(hintText: "Importo da aggiungere", hintStyle: TextStyle(color: (Theme.of(context).brightness == Brightness.dark ? Colors.white70 : const Color(0xFF222233))))),[m
+         actions: [[m
+[31m-          TextButton(onPressed: () => Navigator.pop(ctx), child: Text("Annulla", style: TextStyle(color: Colors.white70))),[m
+[32m+[m[32m          TextButton(onPressed: () => Navigator.pop(ctx), child: Text("Annulla", style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark ? Colors.white70 : const Color(0xFF222233))))),[m
+           ElevatedButton([m
+             onPressed: () { HapticFeedback.lightImpact();[m
+               double val = double.tryParse(fundController.text.replaceAll(',', '.')) ?? 0.0;[m
+[36m@@ -1995,7 +571,7 @@[m [mclass _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {[m
+             if (spesaPerCategoria.isEmpty)[m
+               Padding([m
+                 padding: const EdgeInsets.symmetric(vertical: 8.0),[m
+[31m-                child: Text("Nessuna uscita registrata finora.", style: TextStyle(color: Colors.white70, fontSize: 13)),[m
+[32m+[m[32m                child: Text("Nessuna uscita registrata finora.", style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark ? Colors.white70 : const Color(0xFF222233)), fontSize: 13)),[m
+               )[m
+             else[m
+               ...spesaPerCategoria.entries.map((entry) {[m
+[36m@@ -2069,14 +645,14 @@[m [mclass _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {[m
+                   child: Column([m
+                     crossAxisAlignment: CrossAxisAlignment.start,[m
+                     children: [[m
+[31m-                      Text("RIEPILOGO BILANCIO COMUNE", style: TextStyle(fontSize: 10, color: Colors.white70, fontWeight: FontWeight.bold)),[m
+[32m+[m[32m                      Text("RIEPILOGO BILANCIO COMUNE", style: TextStyle(fontSize: 10, color: (Theme.of(context).brightness == Brightness.dark ? Colors.white70 : const Color(0xFF222233)), fontWeight: FontWeight.bold)),[m
+                       const SizedBox(height: 8),[m
+                       Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text("Entrate Totali:", style: TextStyle(color: _textColor)), Text("€ ${entrateMese.toStringAsFixed(2)}", style: const TextStyle(color: Colors.blueAccent, fontWeight: FontWeight.bold))]),[m
+                       const SizedBox(height: 4),[m
+                       Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text("Uscite Totali:", style: TextStyle(color: _textColor)), Text("€ ${usciteMese.toStringAsFixed(2)}", style: TextStyle(color: _primaryColor, fontWeight: FontWeight.bold))]),[m
+                       Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text("Bilancio Netto:", style: TextStyle(color: _textColor)), Text("€ ${bilancioNetto.toStringAsFixed(2)}", style: TextStyle(color: bilancioNetto >= 0 ? const Color(0xFF10B981) : _primaryColor, fontWeight: FontWeight.bold))])]))),[m
+               const SizedBox(height: 16),[m
+[31m-              Text("Movimenti Cloud (Swipe per eliminare)", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white70)),[m
+[32m+[m[32m              Text("Movimenti Cloud (Swipe per eliminare)", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: (Theme.of(context).brightness == Brightness.dark ? Colors.white70 : const Color(0xFF222233)))),[m
+               const SizedBox(height: 8),[m
+               Expanded([m
+                 child: ListView.builder([m
+[36m@@ -2095,7 +671,7 @@[m [mclass _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {[m
+                       child: ListTile([m
+                         dense: true,[m
+                         title: Text(tx['category'], style: TextStyle(fontWeight: FontWeight.bold, color: _textColor)),[m
+[31m-                        subtitle: Text("${tx['note']} • Inserito da: ${tx['author'] ?? 'Utente'}", style: TextStyle(color: Colors.white70)),[m
+[32m+[m[32m                        subtitle: Text("${tx['note']} • Inserito da: ${tx['author'] ?? 'Utente'}", style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark ? Colors.white70 : const Color(0xFF222233)))),[m
+                         trailing: Text([m
+                           "${tx['type'].contains('Entrata') ? '+' : '-'}€ ${tx['amount'].toStringAsFixed(2)}",[m
+                           style: TextStyle(color: tx['type'].contains('Entrata') ? const Color(0xFF10B981) : _primaryColor, fontWeight: FontWeight.bold))));[m
+[36m@@ -2128,7 +704,7 @@[m [mclass _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {[m
+                 value: _selectedType,[m
+                 dropdownColor: _cardBg,[m
+                 style: TextStyle(color: _textColor),[m
+[31m-                decoration: InputDecoration(labelText: "Tipo", labelStyle: TextStyle(color: Colors.white70),[m
+[32m+[m[32m                decoration: InputDecoration(labelText: "Tipo", labelStyle: TextStyle(color: (Theme.of(context).brightness == Brightness.dark ? Colors.white70 : const Color(0xFF222233))),[m
+                   floatingLabelStyle: TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold), filled: true, fillColor: _scaffoldBg, border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))),[m
+                 items: const [[m
+                   DropdownMenuItem(value: 'Uscita (Spesa)', child: Text("🔴 Uscita (Spesa)")),[m
+[36m@@ -2139,14 +715,14 @@[m [mclass _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {[m
+                 controller: _amountController,[m
+                 style: TextStyle(color: _textColor),[m
+                 keyboardType: const TextInputType.numberWithOptions(decimal: true),[m
+[31m-                decoration: InputDecoration(labelText: "Importo (€)", labelStyle: TextStyle(color: Colors.white70),[m
+[32m+[m[32m                decoration: InputDecoration(labelText: "Importo (€)", labelStyle: TextStyle(color: (Theme.of(context).brightness == Brightness.dark ? Colors.white70 : const Color(0xFF222233))),[m
+                   floatingLabelStyle: TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold), filled: true, fillColor: _scaffoldBg, border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)))),[m
+               const SizedBox(height: 12),[m
+               DropdownButtonFormField<String>([m
+                 value: _selectedCategory,[m
+                 dropdownColor: _cardBg,[m
+                 style: TextStyle(color: _textColor),[m
+[31m-                decoration: InputDecoration(labelText: "Categoria", labelStyle: TextStyle(color: Colors.white70),[m
+[32m+[m[32m                decoration: InputDecoration(labelText: "Categoria", labelStyle: TextStyle(color: (Theme.of(context).brightness == Brightness.dark ? Colors.white70 : const Color(0xFF222233))),[m
+                   floatingLabelStyle: TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold), filled: true, fillColor: _scaffoldBg, border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))),[m
+                 items: categorieConEmoji.map((cat) => DropdownMenuItem(value: cat, child: Text(cat))).toList(),[m
+                 onChanged: (val) => setState(() => _selectedCategory = val ?? '🐾 Animali')),[m
+[36m@@ -2154,7 +730,7 @@[m [mclass _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {[m
+               TextField([m
+                 controller: _noteController,[m
+                 style: TextStyle(color: _textColor),[m
+[31m-                decoration: InputDecoration(labelText: "Note / Descrizione", labelStyle: TextStyle(color: Colors.white70),[m
+[32m+[m[32m                decoration: InputDecoration(labelText: "Note / Descrizione", labelStyle: TextStyle(color: (Theme.of(context).brightness == Brightness.dark ? Colors.white70 : const Color(0xFF222233))),[m
+                   floatingLabelStyle: const TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold), filled: true, fillColor: _scaffoldBg, border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)))),[m
+               ElevatedButton([m
+                 style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),[m
+[36m@@ -2223,14 +799,14 @@[m [mclass _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {[m
+                   Container([m
+                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),[m
+                     decoration: BoxDecoration([m
+[31m-                      color: _caveauId.isEmpty ? Colors.grey.withOpacity(0.2) : Colors.greenAccent.withOpacity(0.2),[m
+[32m+[m[32m                      color: _caveauId.isEmpty ? (Theme.of(context).brightness == Brightness.dark ? Colors.grey : const Color(0xFF444455)).withOpacity(0.2) : Colors.greenAccent.withOpacity(0.2),[m
+                       borderRadius: BorderRadius.circular(12),[m
+[31m-                      border: Border.all(color: _caveauId.isEmpty ? Colors.grey : Colors.greenAccent),[m
+[32m+[m[32m                      border: Border.all(color: _caveauId.isEmpty ? (Theme.of(context).brightness == Brightness.dark ? Colors.grey : const Color(0xFF444455)) : Colors.greenAccent),[m
+                     ),[m
+                     child: Text([m
+                       _caveauId.isEmpty ? 'Locale' : 'Attivo',[m
+                       style: TextStyle([m
+[31m-                        color: _caveauId.isEmpty ? Colors.grey : Colors.greenAccent,[m
+[32m+[m[32m                        color: _caveauId.isEmpty ? (Theme.of(context).brightness == Brightness.dark ? Colors.grey : const Color(0xFF444455)) : Colors.greenAccent,[m
+                         fontSize: 12,[m
+                         fontWeight: FontWeight.bold,[m
+                       ),[m
+[36m@@ -2250,7 +826,7 @@[m [mclass _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {[m
+                   child: Column([m
+                     crossAxisAlignment: CrossAxisAlignment.start,[m
+                     children: [[m
+[31m-                      const Text('🔑 ID Caveau Corrente:', style: TextStyle(fontSize: 12, color: Colors.grey)),[m
+[32m+[m[32m                      const Text('🔑 ID Caveau Corrente:', style: TextStyle(fontSize: 12, color: (Theme.of(context).brightness == Brightness.dark ? Colors.grey : const Color(0xFF444455)))),[m
+                       const SizedBox(height: 6),[m
+                       Row([m
+                         children: [[m
+[36m@@ -2305,7 +881,7 @@[m [mclass _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {[m
+               ] else ...[[m
+                 Text([m
+                   'Inserisci il codice del Caveau trasmesso dalla tua compagna per unire i vostri budget in tempo reale:',[m
+[31m-                  style: TextStyle(fontSize: 13, color: isDark ? Colors.white70 : Colors.black54),[m
+[32m+[m[32m                  style: TextStyle(fontSize: 13, color: isDark ? (Theme.of(context).brightness == Brightness.dark ? Colors.white70 : const Color(0xFF222233)) : Colors.black54),[m
+                 ),[m
+                 const SizedBox(height: 12),[m
+                 TextField([m
+[36m@@ -2313,7 +889,7 @@[m [mclass _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {[m
+                   style: TextStyle(color: textColor),[m
+                   decoration: InputDecoration([m
+                     hintText: 'Incolla o digita caveauId...',[m
+[31m-                    hintStyle: const TextStyle(color: Colors.grey),[m
+[32m+[m[32m                    hintStyle: const TextStyle(color: (Theme.of(context).brightness == Brightness.dark ? Colors.grey : const Color(0xFF444455))),[m
+                     filled: true,[m
+                     fillColor: isDark ? const Color(0xFF0F111A) : const Color(0xFFF4F6F9),[m
+                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),[m
+[36m@@ -2389,7 +965,7 @@[m [mclass _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {[m
+                 const SizedBox(height: 24),[m
+                 const Text("Caveau Bloccato", style: TextStyle(color: Colors.white, fontSize: 26, fontWeight: FontWeight.bold)),[m
+                 const SizedBox(height: 8),[m
+[31m-                const Text("Autenticati per accedere alla tua Dashboard", style: TextStyle(color: Colors.white70, fontSize: 14), textAlign: TextAlign.center),[m
+[32m+[m[32m                const Text("Autenticati per accedere alla tua Dashboard", style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark ? Colors.white70 : const Color(0xFF222233)), fontSize: 14), textAlign: TextAlign.center),[m
+                 const SizedBox(height: 32),[m
+                 ElevatedButton.icon([m
+                   style: ElevatedButton.styleFrom([m
+[36m@@ -2479,7 +1055,7 @@[m [mclass _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {[m
+                   Column([m
+                     crossAxisAlignment: CrossAxisAlignment.start,[m
+                     children: [[m
+[31m-                      Text("PATRIMONIO CONDIVISO", style: TextStyle(fontSize: 10, color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white70 : Colors.black87, fontWeight: FontWeight.bold)),[m
+[32m+[m[32m                      Text("PATRIMONIO CONDIVISO", style: TextStyle(fontSize: 10, color: (Theme.of(context).brightness == Brightness.dark) ? (Theme.of(context).brightness == Brightness.dark ? Colors.white70 : const Color(0xFF222233)) : Colors.black87, fontWeight: FontWeight.bold)),[m
+                       const SizedBox(height: 4),[m
+                       Text("€ ${patrimonio.toStringAsFixed(2)}", style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Color(0xFF10B981)))]),[m
+                   const Icon(Icons.cloud_done, color: Color(0xFF10B981), size: 32)]))),[m
+[36m@@ -2496,7 +1072,7 @@[m [mclass _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {[m
+                     child: Column([m
+                       crossAxisAlignment: CrossAxisAlignment.start,[m
+                       children: [[m
+[31m-                        Text("ENTRATE MESE", style: TextStyle(fontSize: 9, color: Colors.white70, fontWeight: FontWeight.bold)),[m
+[32m+[m[32m                        Text("ENTRATE MESE", style: TextStyle(fontSize: 9, color: (Theme.of(context).brightness == Brightness.dark ? Colors.white70 : const Color(0xFF222233)), fontWeight: FontWeight.bold)),[m
+                         const SizedBox(height: 4),[m
+                         Text("€ ${entrateMese.toStringAsFixed(2)}", style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blueAccent))])))),[m
+               const SizedBox(width: 10),[m
+[36m@@ -2509,7 +1085,7 @@[m [mclass _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {[m
+                     child: Column([m
+                       crossAxisAlignment: CrossAxisAlignment.start,[m
+                       children: [[m
+[31m-                        Text("USCITE MESE", style: TextStyle(fontSize: 9, color: Colors.white70, fontWeight: FontWeight.bold)),[m
+[32m+[m[32m                        Text("USCITE MESE", style: TextStyle(fontSize: 9, color: (Theme.of(context).brightness == Brightness.dark ? Colors.white70 : const Color(0xFF222233)), fontWeight: FontWeight.bold)),[m
+                         const SizedBox(height: 4),[m
+                         Text("€ ${usciteMese.toStringAsFixed(2)}", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: _primaryColor))]))))]),[m
+           const SizedBox(height: 14),[m
+[36m@@ -2524,7 +1100,7 @@[m [mclass _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {[m
+                 children: [[m
+                   Text("🎯 Portafogli a Obiettivi", style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: _textColor)),[m
+                   const SizedBox(height: 12),[m
+[31m-                  if (portafogli.isEmpty) Text("Nessun obiettivo attivo. Creane uno!", style: TextStyle(color: Colors.white70, fontSize: 11)),[m
+[32m+[m[32m                  if (portafogli.isEmpty) Text("Nessun obiettivo attivo. Creane uno!", style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark ? Colors.white70 : const Color(0xFF222233)), fontSize: 11)),[m
+                   ...portafogli.asMap().entries.map((entry) {[m
+                     int idx = entry.key;[m
+                     var goal = entry.value;[m
+[36m@@ -2535,7 +1111,7 @@[m [mclass _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {[m
+                           mainAxisAlignment: MainAxisAlignment.spaceBetween,[m
+                           children: [[m
+                             Text(goal['nome'], style: TextStyle(color: _textColor, fontWeight: FontWeight.bold)),[m
+[31m-                            Text("€${goal['attuale'].toStringAsFixed(0)} / €${goal['target'].toStringAsFixed(0)}", style: TextStyle(color: Colors.white70, fontSize: 11)),[m
+[32m+[m[32m                            Text("€${goal['attuale'].toStringAsFixed(0)} / €${goal['target'].toStringAsFixed(0)}", style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark ? Colors.white70 : const Color(0xFF222233)), fontSize: 11)),[m
+                           ][m
+                         ),[m
+                         const SizedBox(height: 4),[m
+[36m@@ -2580,7 +1156,7 @@[m [mclass _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {[m
+                   ),[m
+                   const SizedBox(height: 12),[m
+                   _promemoria.isEmpty[m
+[31m-                      ? Text("Nessuna scadenza imminente. Aggiungi un promemoria!", style: TextStyle(color: Colors.white70, fontSize: 11))[m
+[32m+[m[32m                      ? Text("Nessuna scadenza imminente. Aggiungi un promemoria!", style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark ? Colors.white70 : const Color(0xFF222233)), fontSize: 11))[m
+                       : Column([m
+                           children: _promemoria.map((p) => Padding([m
+                             padding: const EdgeInsets.only(bottom: 8.0),[m
+[36m@@ -2623,10 +1199,10 @@[m [mclass _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {[m
+                                   style: TextStyle(color: _textColor),[m
+                                   decoration: InputDecoration([m
+                                     labelText: "Titolo Scadenza",[m
+[31m-                                    labelStyle: TextStyle(color: Colors.white70),[m
+[32m+[m[32m                                    labelStyle: TextStyle(color: (Theme.of(context).brightness == Brightness.dark ? Colors.white70 : const Color(0xFF222233))),[m
+                   floatingLabelStyle: const TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold),[m
+                                     hintText: "es. Affitto o Bolletta",[m
+[31m-                                    hintStyle: TextStyle(color: Colors.white70.withOpacity(0.5)),[m
+[32m+[m[32m                                    hintStyle: TextStyle(color: (Theme.of(context).brightness == Brightness.dark ? Colors.white70 : const Color(0xFF222233)).withOpacity(0.5)),[m
+                                   ),[m
+                                 ),[m
+                                 const SizedBox(height: 12),[m
+[36m@@ -2635,7 +1211,7 @@[m [mclass _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {[m
+                                   style: TextStyle(color: _textColor),[m
+                                   decoration: InputDecoration([m
+                                     labelText: "Data (DD/MM/YYYY)",[m
+[31m-                                    labelStyle: TextStyle(color: Colors.white70),[m
+[32m+[m[32m                                    labelStyle: TextStyle(color: (Theme.of(context).brightness == Brightness.dark ? Colors.white70 : const Color(0xFF222233))),[m
+                   floatingLabelStyle: const TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold),[m
+                                   ),[m
+                                 ),[m
+[36m@@ -2644,7 +1220,7 @@[m [mclass _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {[m
+                             actions: [[m
+                               TextButton([m
+                                 onPressed: () => Navigator.pop(context),[m
+[31m-                                child: Text("Annulla", style: TextStyle(color: Colors.white70)),[m
+[32m+[m[32m                                child: Text("Annulla", style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark ? Colors.white70 : const Color(0xFF222233)))),[m
+                               ),[m
+                               ElevatedButton([m
+                                 onPressed: () {[m
+[36m@@ -2744,7 +1320,7 @@[m [mclass _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {[m
+                       Row([m
+                         mainAxisAlignment: MainAxisAlignment.spaceBetween,[m
+                         children: [[m
+[31m-                          Text("Obiettivo Attuale", style: TextStyle(fontSize: 11, color: Colors.white70)),[m
+[32m+[m[32m                          Text("Obiettivo Attuale", style: TextStyle(fontSize: 11, color: (Theme.of(context).brightness == Brightness.dark ? Colors.white70 : const Color(0xFF222233)))),[m
+                           Text("€ ${aCurrent.toStringAsFixed(0)} / ${aTarget.toStringAsFixed(0)}€", style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: _textColor)),[m
+                         ],[m
+                       ),[m
+[36m@@ -2783,20 +1359,20 @@[m [mclass _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {[m
+         const SizedBox(height: 14),[m
+ [m
+           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [[m
+[31m-            Text("➕ Nuova Transazione", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white70)),[m
+[32m+[m[32m            Text("➕ Nuova Transazione", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: (Theme.of(context).brightness == Brightness.dark ? Colors.white70 : const Color(0xFF222233)))),[m
+             ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: _primaryColor), onPressed: _mostraModalInserimento, child: Text("+ Nuova", style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87)))[m
+           ]),[m
+           const SizedBox(height: 8),[m
+           [m
+           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [[m
+[31m-            Text("📜 Storico Condiviso", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white70)),[m
+[32m+[m[32m            Text("📜 Storico Condiviso", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: (Theme.of(context).brightness == Brightness.dark ? Colors.white70 : const Color(0xFF222233)))),[m
+             ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: _cardBg), onPressed: _mostraFoglioResoconto, child: Text("Apri Resoconto", style: TextStyle(color: _textColor)))[m
+           ]),[m
+           ...transazioni.take(5).map((tx) => Card([m
+             color: _cardBg,[m
+             child: ListTile([m
+               title: Text(tx['category'], style: TextStyle(fontWeight: FontWeight.bold, color: _textColor)),[m
+[31m-              subtitle: Text("${tx['note']} • ${tx['author'] ?? 'Utente'}", style: TextStyle(color: Colors.white70)),[m
+[32m+[m[32m              subtitle: Text("${tx['note']} • ${tx['author'] ?? 'Utente'}", style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark ? Colors.white70 : const Color(0xFF222233)))),[m
+               trailing: Text("${tx['type'].contains('Entrata') ? '+' : '-'}€${tx['amount']}", style: TextStyle(color: tx['type'].contains('Entrata') ? Colors.greenAccent : _primaryColor, fontWeight: FontWeight.bold)))))]));[m
+   }[m
+ [m
+[36m@@ -2806,14 +1382,14 @@[m [mclass _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {[m
+       decoration: BoxDecoration([m
+         color: completata ? colore.withOpacity(0.2) : _scaffoldBg,[m
+         borderRadius: BorderRadius.circular(12),[m
+[31m-        border: Border.all(color: completata ? colore : Colors.grey.shade700)),[m
+[32m+[m[32m        border: Border.all(color: completata ? colore : (Theme.of(context).brightness == Brightness.dark ? Colors.grey : const Color(0xFF444455)).shade700)),[m
+       child: Column([m
+         children: [[m
+           Icon(icona, size: 18, color: completata ? colore : _subtitleColor),[m
+           const SizedBox(height: 4),[m
+           Text(titolo, style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: completata ? _textColor : _subtitleColor)),[m
+           const SizedBox(height: 2),[m
+[31m-          Text(sub, style: TextStyle(fontSize: 8, color: Colors.white70))]));[m
+[32m+[m[32m          Text(sub, style: TextStyle(fontSize: 8, color: (Theme.of(context).brightness == Brightness.dark ? Colors.white70 : const Color(0xFF222233))))]));[m
+   }[m
+ }[m
+ [m
+[36m@@ -3027,7 +1603,7 @@[m [mvoid _mostraPiggyAI(BuildContext context, [bool? isDarkOverride]) {[m
+                                       const SizedBox(height: 12),[m
+                                       ListTile([m
+                                         title: Text('Cyber-Tecno', style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87, fontWeight: FontWeight.bold, fontSize: 13)),[m
+[31m-                                        subtitle: Text('⚡ Agente ad alta tecnologia. Focus sul Caveau.', style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white70 : const Color(0xFF222233), fontSize: 11)),[m
+[32m+[m[32m                                        subtitle: Text('⚡ Agente ad alta tecnologia. Focus sul Caveau.', style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? (Theme.of(context).brightness == Brightness.dark ? Colors.white70 : const Color(0xFF222233)) : const Color(0xFF222233), fontSize: 11)),[m
+                                         trailing: _selectedPersonality == 'Cyber-Tecno' ? const Icon(Icons.check_circle, color: Colors.pinkAccent, size: 20) : null,[m
+                                         onTap: () async {[m
+                                           _selectedPersonality = 'Cyber-Tecno';[m
+[36m@@ -3039,7 +1615,7 @@[m [mvoid _mostraPiggyAI(BuildContext context, [bool? isDarkOverride]) {[m
+                                       ),[m
+                                       ListTile([m
+                                         title: Text('Strategico & Ironico', style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87, fontWeight: FontWeight.bold, fontSize: 13)),[m
+[31m-                                        subtitle: Text('🎯 Saggio e pungente. Battute intelligenti.', style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white70 : const Color(0xFF222233), fontSize: 11)),[m
+[32m+[m[32m                                        subtitle: Text('🎯 Saggio e pungente. Battute intelligenti.', style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? (Theme.of(context).brightness == Brightness.dark ? Colors.white70 : const Color(0xFF222233)) : const Color(0xFF222233), fontSize: 11)),[m
+                                         trailing: _selectedPersonality == 'Strategico & Ironico' ? const Icon(Icons.check_circle, color: Colors.pinkAccent, size: 20) : null,[m
+                                         onTap: () async {[m
+                                           _selectedPersonality = 'Strategico & Ironico';[m
+[36m@@ -3051,7 +1627,7 @@[m [mvoid _mostraPiggyAI(BuildContext context, [bool? isDarkOverride]) {[m
+                                       ),[m
+                                       ListTile([m
+                                         title: Text('Amichevole Smart', style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87, fontWeight: FontWeight.bold, fontSize: 13)),[m
+[31m-                                        subtitle: Text('🤝 Compagno fidato. Semplice e caloroso.', style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white70 : const Color(0xFF222233), fontSize: 11)),[m
+[32m+[m[32m                                        subtitle: Text('🤝 Compagno fidato. Semplice e caloroso.', style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? (Theme.of(context).brightness == Brightness.dark ? Colors.white70 : const Color(0xFF222233)) : const Color(0xFF222233), fontSize: 11)),[m
+                                         trailing: _selectedPersonality == 'Amichevole Smart' ? const Icon(Icons.check_circle, color: Colors.pinkAccent, size: 20) : null,[m
+                                         onTap: () async {[m
+                                           _selectedPersonality = 'Amichevole Smart';[m
+[36m@@ -3063,7 +1639,7 @@[m [mvoid _mostraPiggyAI(BuildContext context, [bool? isDarkOverride]) {[m
+                                       ),[m
+                                       ListTile([m
+                                         title: Text('Formale & Analitico', style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87, fontWeight: FontWeight.bold, fontSize: 13)),[m
+[31m-                                        subtitle: Text('📊 Consulente rigoroso. Cifre e statistiche.', style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white70 : const Color(0xFF222233), fontSize: 11)),[m
+[32m+[m[32m                                        subtitle: Text('📊 Consulente rigoroso. Cifre e statistiche.', style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? (Theme.of(context).brightness == Brightness.dark ? Colors.white70 : const Color(0xFF222233)) : const Color(0xFF222233), fontSize: 11)),[m
+                                         trailing: _selectedPersonality == 'Formale & Analitico' ? const Icon(Icons.check_circle, color: Colors.pinkAccent, size: 20) : null,[m
+                                         onTap: () async {[m
+                                           _selectedPersonality = 'Formale & Analitico';[m
+[36m@@ -3279,7 +1855,7 @@[m [mclass _InviteManagerState extends State<InviteManager> {[m
+           Row([m
+             mainAxisAlignment: MainAxisAlignment.spaceBetween,[m
+             children: [[m
+[31m-              Text('Stato Rischio Caveau', style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white70 : Colors.black87, fontSize: 13, fontWeight: FontWeight.bold)),[m
+[32m+[m[32m              Text('Stato Rischio Caveau', style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? (Theme.of(context).brightness == Brightness.dark ? Colors.white70 : const Color(0xFF222233)) : Colors.black87, fontSize: 13, fontWeight: FontWeight.bold)),[m
+               Container([m
+                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),[m
+                 decoration: BoxDecoration(color: coloreRischio.withOpacity(0.2), borderRadius: BorderRadius.circular(8)),[m
+[36m@@ -3293,12 +1869,12 @@[m [mclass _InviteManagerState extends State<InviteManager> {[m
+             child: LinearProgressIndicator([m
+               value: percentuale,[m
+               minHeight: 10,[m
+[31m-              backgroundColor: Colors.grey[800],[m
+[32m+[m[32m              backgroundColor: (Theme.of(context).brightness == Brightness.dark ? Colors.grey : const Color(0xFF444455))[800],[m
+               valueColor: AlwaysStoppedAnimation<Color>(coloreRischio),[m
+             ),[m
+           ),[m
+           const SizedBox(height: 8),[m
+[31m-          Text(messaggioRischio, style: TextStyle(color: Colors.grey[400], fontSize: 11)),[m
+[32m+[m[32m          Text(messaggioRischio, style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark ? Colors.grey : const Color(0xFF444455))[400], fontSize: 11)),[m
+         ],[m
+       ),[m
+     );[m

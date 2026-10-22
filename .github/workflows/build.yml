@@ -32,7 +32,7 @@ jobs:
         run: flutter pub get
 
       - name: Build APK Release
-        run: flutter build apk --release
+        run: flutter build apk --release --build-name="2.8.${{ github.run_number }}" --build-number="${{ github.run_number }}"
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
