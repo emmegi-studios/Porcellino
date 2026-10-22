@@ -507,6 +507,22 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
+  void _scollegaCaveauCondiviso() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('caveauId', '');
+    setState(() {
+      _caveauId = '';
+    });
+    _sincronizzaCloud();
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Scollegato dal Caveau Condiviso. Sei tornato al tuo Caveau Personale.'), backgroundColor: Colors.orange),
+      );
+    }
+  }
+
+
+
   void _esportaBackupJSON() async {
     final prefs = await SharedPreferences.getInstance();
     Map<String, dynamic> backupData = {
@@ -1753,6 +1769,18 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       subtitle: Text(_currentTheme, style: TextStyle(color: _primaryColor, fontWeight: FontWeight.bold, fontSize: 14)),
                     ),
                     const SizedBox(height: 16),
+                    ListTile(
+                      leading: Icon(_caveauId.isNotEmpty ? Icons.group : Icons.person, color: _primaryColor),
+                      title: Text(_caveauId.isNotEmpty ? 'Caveau Condiviso Attivo' : 'Caveau Personale', style: TextStyle(color: _textColor, fontWeight: FontWeight.bold, fontSize: 13)),
+                      subtitle: Text(_caveauId.isNotEmpty ? 'ID: $_caveauId' : 'I tuoi dati sono sincronizzati sul tuo account', style: TextStyle(color: _subtitleColor, fontSize: 11)),
+                      trailing: _caveauId.isNotEmpty
+                          ? TextButton(
+                              onPressed: () { Navigator.pop(context); _scollegaCaveauCondiviso(); },
+                              child: const Text('Scollega', style: TextStyle(color: Colors.redAccent, fontSize: 11)),
+                            )
+                          : null,
+                    ),
+                    Divider(color: _textColor.withOpacity(0.2)),
                     TextField(
                       controller: _inviteController,
                       style: TextStyle(color: _textColor),
