@@ -1273,7 +1273,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           controller: controller,
           keyboardType: const TextInputType.numberWithOptions(decimal: true),
           style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87),
-          decoration: const InputDecoration(
+          decoration: InputDecoration(
             labelText: "Budget (€)",
             labelStyle: TextStyle(color: Colors.grey),
           ),
