@@ -2653,6 +2653,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   
                                                                             
 
+String _selectedPersonality = 'Cyber-Tecno';
+
 void _mostraPiggyAI(BuildContext context, [bool? isDarkOverride]) {
     final bool isDark = isDarkOverride ?? (Theme.of(context).brightness == Brightness.dark);
     final TextEditingController modalInputController = TextEditingController();
@@ -2794,28 +2796,104 @@ void _mostraPiggyAI(BuildContext context, [bool? isDarkOverride]) {
                     ),
                     const SizedBox(height: 12),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        ClipOval(
-                          child: Image.asset(
-                            'assets/images/piggy_ai_assistant.png',
-                            width: 28,
-                            height: 28,
-                            fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) => Icon(Icons.smart_toy, color: Colors.pinkAccent, size: 28),
-                          ),
+                        Row(
+                          children: [
+                            ClipOval(
+                              child: Image.asset(
+                                'assets/images/piggy_ai_assistant.png',
+                                width: 28,
+                                height: 28,
+                                fit: BoxFit.cover,
+                                errorBuilder: (_, __, ___) => Icon(Icons.smart_toy, color: Colors.pinkAccent, size: 28),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Text("Piggy AI", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87)),
+                            const SizedBox(width: 8),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: Colors.pinkAccent.withOpacity(0.2),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: Colors.pinkAccent),
+                              ),
+                              child: Text("🛡️ $caveauShieldScore%", style: const TextStyle(color: Colors.pinkAccent, fontSize: 11, fontWeight: FontWeight.bold)),
+                            ),
+                          ],
                         ),
-                        const SizedBox(width: 8),
-                        Text("Piggy AI", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87)),
-                        const SizedBox(width: 8),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                          decoration: BoxDecoration(
-                            color: Colors.pinkAccent.withOpacity(0.2),
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: Colors.pinkAccent),
-                          ),
-                          child: Text("🛡️ $caveauShieldScore%", style: const TextStyle(color: Colors.pinkAccent, fontSize: 11, fontWeight: FontWeight.bold)),
+                        IconButton(
+                          icon: Icon(Icons.tune, color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87),
+                          tooltip: 'Personalità Piggy AI',
+                          onPressed: () {
+                            showModalBottomSheet(
+                              context: context,
+                              backgroundColor: (Theme.of(context).brightness == Brightness.dark) ? const Color(0xFF1E2235) : Colors.white,
+                              shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+                              builder: (pCtx) => StatefulBuilder(
+                                builder: (pCtx, setPState) => Padding(
+                                  padding: const EdgeInsets.all(20.0),
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text('🎭 Personalità Piggy AI', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87)),
+                                      const SizedBox(height: 12),
+                                      ListTile(
+                                        title: Text('Cyber-Tecno', style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87, fontWeight: FontWeight.bold, fontSize: 13)),
+                                        subtitle: Text('⚡ Agente ad alta tecnologia. Focus sul Caveau.', style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white70 : const Color(0xFF222233), fontSize: 11)),
+                                        trailing: _selectedPersonality == 'Cyber-Tecno' ? const Icon(Icons.check_circle, color: Colors.pinkAccent, size: 20) : null,
+                                        onTap: () async {
+                                          _selectedPersonality = 'Cyber-Tecno';
+                                          setPState(() {});
+                                          final prefs = await SharedPreferences.getInstance();
+                                          await prefs.setString('piggyPersonality', _selectedPersonality);
+                                          if (pCtx.mounted) Navigator.pop(pCtx);
+                                        },
+                                      ),
+                                      ListTile(
+                                        title: Text('Strategico & Ironico', style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87, fontWeight: FontWeight.bold, fontSize: 13)),
+                                        subtitle: Text('🎯 Saggio e pungente. Battute intelligenti.', style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white70 : const Color(0xFF222233), fontSize: 11)),
+                                        trailing: _selectedPersonality == 'Strategico & Ironico' ? const Icon(Icons.check_circle, color: Colors.pinkAccent, size: 20) : null,
+                                        onTap: () async {
+                                          _selectedPersonality = 'Strategico & Ironico';
+                                          setPState(() {});
+                                          final prefs = await SharedPreferences.getInstance();
+                                          await prefs.setString('piggyPersonality', _selectedPersonality);
+                                          if (pCtx.mounted) Navigator.pop(pCtx);
+                                        },
+                                      ),
+                                      ListTile(
+                                        title: Text('Amichevole Smart', style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87, fontWeight: FontWeight.bold, fontSize: 13)),
+                                        subtitle: Text('🤝 Compagno fidato. Semplice e caloroso.', style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white70 : const Color(0xFF222233), fontSize: 11)),
+                                        trailing: _selectedPersonality == 'Amichevole Smart' ? const Icon(Icons.check_circle, color: Colors.pinkAccent, size: 20) : null,
+                                        onTap: () async {
+                                          _selectedPersonality = 'Amichevole Smart';
+                                          setPState(() {});
+                                          final prefs = await SharedPreferences.getInstance();
+                                          await prefs.setString('piggyPersonality', _selectedPersonality);
+                                          if (pCtx.mounted) Navigator.pop(pCtx);
+                                        },
+                                      ),
+                                      ListTile(
+                                        title: Text('Formale & Analitico', style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87, fontWeight: FontWeight.bold, fontSize: 13)),
+                                        subtitle: Text('📊 Consulente rigoroso. Cifre e statistiche.', style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white70 : const Color(0xFF222233), fontSize: 11)),
+                                        trailing: _selectedPersonality == 'Formale & Analitico' ? const Icon(Icons.check_circle, color: Colors.pinkAccent, size: 20) : null,
+                                        onTap: () async {
+                                          _selectedPersonality = 'Formale & Analitico';
+                                          setPState(() {});
+                                          final prefs = await SharedPreferences.getInstance();
+                                          await prefs.setString('piggyPersonality', _selectedPersonality);
+                                          if (pCtx.mounted) Navigator.pop(pCtx);
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
                         ),
                       ],
                     ),
