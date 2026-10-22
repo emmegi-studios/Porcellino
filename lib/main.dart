@@ -503,6 +503,74 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
+
+  Future<void> _salvaSpeseRicorrenti() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('speseRicorrenti', jsonEncode(speseRicorrenti));
+      if (_caveauId.isNotEmpty) {
+        await FirebaseFirestore.instance
+            .collection('caveau_condiviso')
+            .doc(_caveauId)
+            .set({'speseRicorrenti': speseRicorrenti}, SetOptions(merge: true));
+      }
+    } catch (e) {
+      debugPrint("Errore salvataggio spese ricorrenti: $e");
+    }
+  }
+
+  void _verificaEElaboraRicorrenti() {
+    bool modificato = false;
+    DateTime oggi = DateTime.now();
+    DateTime oggiData = DateTime(oggi.year, oggi.month, oggi.day);
+
+    for (var r in speseRicorrenti) {
+      if (r['attivo'] == true) {
+        DateTime? proxData = DateTime.tryParse(r['prossimaData'] ?? '');
+        if (proxData != null && !proxData.isAfter(oggiData)) {
+          double amt = double.tryParse(r['amount'].toString()) ?? 0.0;
+          String tipo = r['tipo'] ?? 'Uscita';
+          
+          transazioni.insert(0, {
+            'data': "${oggi.year}-${oggi.month.toString().padLeft(2, '0')}-${oggi.day.toString().padLeft(2, '0')}",
+            'category': r['category'] ?? 'Ricorrente',
+            'amount': amt,
+            'tipo': tipo,
+            'author': _nomeUtenteDinamico,
+            'note': "Ricorrente: ${r['nome'] ?? ''}"
+          });
+
+          if (tipo.contains('Entrata')) {
+            patrimonio += amt;
+            entrateMese += amt;
+          } else {
+            patrimonio -= amt;
+            usciteMese += amt;
+          }
+
+          String freq = r['frequenza'] ?? 'Mensile';
+          if (freq == 'Settimanale') {
+            proxData = proxData.add(const Duration(days: 7));
+          } else if (freq == 'Annuale') {
+            proxData = DateTime(proxData.year + 1, proxData.month, proxData.day);
+          } else {
+            proxData = DateTime(proxData.year, proxData.month + 1, proxData.day);
+          }
+          
+          r['prossimaData'] = "${proxData.year}-${proxData.month.toString().padLeft(2, '0')}-${proxData.day.toString().padLeft(2, '0')}";
+          modificato = true;
+        }
+      }
+    }
+
+    if (modificato) {
+      _salvaLocalmente();
+      _salvaSpeseRicorrenti();
+      _updateAndroidWidget(true, patrimonio, transazioni.isNotEmpty ? "${transazioni.first['category']} €${transazioni.first['amount']}" : "");
+    }
+  }
+
+
   Future<void> _salvaPortafogli() async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -1219,6 +1287,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   String _nomeUtenteDinamico = 'Utente';
   bool isAiLoading = false;
   List<Map<String, dynamic>> portafogli = [];
+  List<Map<String, dynamic>> speseRicorrenti = [];
   final TextEditingController _goalNameController = TextEditingController();
   final TextEditingController _goalTargetController = TextEditingController();
   String aiPurchaseResult = '';
@@ -1240,7 +1309,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   
   
   void _esportaCSV() {
-    String csv = 'Data,Categoria,Tipo,Importo,Autore,Note\n;';
+    String csv = 'Data,Categoria,Tipo,Importo,Autore,Note\n';
     for (var t in transazioni) {
       csv += "${t['data']},${t['category']},${t['tipo']},${t['amount']},${t['author'] ?? 'Utente'},${t['note'] ?? ''}\n";
     }
@@ -1318,6 +1387,12 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       entrateMese = prefs.getDouble('entrateMese') ?? 0.00;
       usciteMese = prefs.getDouble('usciteMese') ?? 0.00;
       final String? portafogliJson = prefs.getString('portafogli');
+      final String? ricorrentiJson = prefs.getString('speseRicorrenti');
+      if (ricorrentiJson != null && ricorrentiJson.isNotEmpty) {
+        final List decodedR = jsonDecode(ricorrentiJson);
+        speseRicorrenti = decodedR.map((e) => Map<String, dynamic>.from(e)).toList();
+      }
+      _verificaEElaboraRicorrenti();
       if (portafogliJson != null && portafogliJson.isNotEmpty) {
         final List decoded = jsonDecode(portafogliJson);
         portafogli = decoded.map((e) => Map<String, dynamic>.from(e)).toList();
@@ -1344,6 +1419,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             usciteMese = (data['usciteMese'] ?? usciteMese).toDouble();
             String ultimoMov = transazioni.isNotEmpty ? "${transazioni.first['category']} €${transazioni.first['amount']}" : "";
             _updateAndroidWidget(true, patrimonio, ultimoMov);
+            if (data['speseRicorrenti'] != null) {
+              final List decodedR = data['speseRicorrenti'];
+              speseRicorrenti = decodedR.map((e) => Map<String, dynamic>.from(e)).toList();
+              _verificaEElaboraRicorrenti();
+            }
             if (data['portafogli'] != null) {
               final List decoded = data['portafogli'];
               portafogli = decoded.map((e) => Map<String, dynamic>.from(e)).toList();
