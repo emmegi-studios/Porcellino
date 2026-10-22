@@ -1784,7 +1784,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     TextField(
                       controller: _inviteController,
                       style: TextStyle(color: _textColor),
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
               ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.pinkAccent, foregroundColor: Colors.white),
                 icon: const Icon(Icons.vpn_key),
