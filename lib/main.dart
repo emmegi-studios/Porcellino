@@ -1423,7 +1423,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   bool get _isDark => _currentTheme == 'Piggy Dark';
   Color get _cardBg => _isDark ? const Color(0xFF1E2235) : const Color(0xFFFFFFFF);
   Color get _textColor => _isDark ? Colors.white : const Color(0xFF1A1A2E);
-  Color get _subtitleColor => _isDark ? Colors.white70 : const Color(0xFF555566);
+  Color get _subtitleColor => _isDark ? Colors.white70 : const Color(0xFF222233);
   Color get _primaryColor => Colors.pinkAccent;
   Color get _scaffoldBg => _isDark ? const Color(0xFF0F111A) : const Color(0xFFF4F6F9);
 
