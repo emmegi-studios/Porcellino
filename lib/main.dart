@@ -79,7 +79,6 @@ void main() async {
   final prefs = await SharedPreferences.getInstance();
     final String? themeSaved = prefs.getString('selectedTheme');
     if (themeSaved != null && themeSaved.isNotEmpty) {
-      _currentTheme = themeSaved;
     }
   final savedTheme = 'Piggy Dark';
   runApp(PiggyVaultApp(initialTheme: savedTheme));
