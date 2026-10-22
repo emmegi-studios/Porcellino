@@ -503,6 +503,27 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
+
+  // Aggiornamento sicuro del Widget in base allo stato di autenticazione
+  Future<void> _updateAndroidWidget(bool isLoggedIn, double patrimonio, [String ultimoMovimento = '']) async {
+    try {
+      if (isLoggedIn) {
+        await HomeWidget.saveWidgetData<String>('widget_patrimonio', 'Caveau: € ' + patrimonio.toStringAsFixed(2));
+        await HomeWidget.saveWidgetData<String>('widget_status', ultimoMovimento.isNotEmpty ? 'Ultimo: ' + ultimoMovimento : 'Stato: Monitoraggio Attivo');
+        await HomeWidget.saveWidgetData<bool>('widget_logged', true);
+      } else {
+        await HomeWidget.saveWidgetData<String>('widget_patrimonio', '🔒 Caveau Bloccato');
+        await HomeWidget.saveWidgetData<String>('widget_status', 'Effettua il login in app');
+        await HomeWidget.saveWidgetData<bool>('widget_logged', false);
+      }
+      await HomeWidget.updateWidget(
+        name: 'PiggyWidgetProvider',
+        androidName: 'PiggyWidgetProvider',
+      );
+    } catch (_) {}
+  }
+
+
   void _mostraAnalisiCategorie() {
     Map<String, double> spesaPerCategoria = {};
     double totaleUscite = 0.0;
@@ -2669,23 +2690,7 @@ class _InviteManagerState extends State<InviteManager> {
   // Widget indicatore di rischio dinamico per il budget
   
   // Aggiornamento sicuro del Widget in base allo stato di autenticazione
-  Future<void> _updateAndroidWidget(bool isLoggedIn, double patrimonio, [String ultimoMovimento = '']) async {
-    try {
-      if (isLoggedIn) {
-        await HomeWidget.saveWidgetData<String>('widget_patrimonio', 'Caveau: € ' + patrimonio.toStringAsFixed(2));
-        await HomeWidget.saveWidgetData<String>('widget_status', ultimoMovimento.isNotEmpty ? 'Ultimo: ' + ultimoMovimento : 'Stato: Monitoraggio Attivo');
-        await HomeWidget.saveWidgetData<bool>('widget_logged', true);
-      } else {
-        await HomeWidget.saveWidgetData<String>('widget_patrimonio', '🔒 Caveau Bloccato');
-        await HomeWidget.saveWidgetData<String>('widget_status', 'Effettua il login in app');
-        await HomeWidget.saveWidgetData<bool>('widget_logged', false);
-      }
-      await HomeWidget.updateWidget(
-        name: 'PiggyWidgetProvider',
-        androidName: 'PiggyWidgetProvider',
-      );
-    } catch (_) {}
-  }
+  
 
   Widget _buildBarraRischioBudget(double speseCorrenti, double budgetTotale) {
     double percentuale = budgetTotale > 0 ? (speseCorrenti / budgetTotale) : 0.0;
