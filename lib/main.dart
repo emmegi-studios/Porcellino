@@ -2501,7 +2501,7 @@ void _mostraPiggyAI(BuildContext context, [bool? isDarkOverride]) {
     final List<Map<String, String>> chatMessages = [
       {
         "sender": "piggy",
-        "text": "🛡️ Unità Piggy AI v2.2.9 collegata a Gemini 1.5 Flash. Caveau Shield Score: $caveauShieldScore%."
+        "text": "🛡️ Unità Piggy AI Attiva. Stato Caveau Shield Score: $caveauShieldScore%. Come posso aiutarti oggi?"
       }
     ];
 
@@ -2884,7 +2884,7 @@ String _sanitizeTextForTTS(String input) {
 Future<String> _getGeminiResponse(String prompt) async {
   final client = http.Client();
   final prefs = await SharedPreferences.getInstance();
-  
+
   String apiKey = "";
   try {
     apiKey = utf8.decode(base64.decode("QVEuQWI4Uk42SWVuaHUyOVV5Um1neV9xQXd0bmdkUEJ1OURhc204Q0F1Q2gyTDE0YXhULVE="));
@@ -2892,74 +2892,105 @@ Future<String> _getGeminiResponse(String prompt) async {
     apiKey = "";
   }
 
-  String selectedPersonality = prefs.getString('piggyPersonality') ?? 'Cyber-Tecno';
+  double saldo = prefs.getDouble('patrimonio') ?? 0.0;
   double entrate = prefs.getDouble('entrateMese') ?? 0.0;
   double uscite = prefs.getDouble('usciteMese') ?? 0.0;
-  double saldo = entrate - uscite;
+  String selectedPersonality = prefs.getString('piggyPersonality') ?? 'Cyber-Tecno';
+
+  double tassoRisparmio = entrate > 0 ? ((entrate - uscite) / entrate * 100).clamp(-100, 100) : 0.0;
+  double autonomiaMesi = uscite > 0 ? (saldo / uscite) : (saldo > 0 ? 99.0 : 0.0);
+
+  String transazioniContext = "Nessun movimento recente.";
+  try {
+    String? txJson = prefs.getString('transazioni');
+    if (txJson != null && txJson.isNotEmpty) {
+      List txList = jsonDecode(txJson);
+      var recenti = txList.take(7).map((t) => "- ${t['data']} | ${t['category']} | ${t['tipo']}: €${t['amount']} (${t['note'] ?? ''})").join("
+");
+      if (recenti.isNotEmpty) transazioniContext = recenti;
+    }
+  } catch (_) {}
+
+  String goalsContext = "Nessun obiettivo attivo.";
+  try {
+    String? pJson = prefs.getString('portafogli');
+    if (pJson != null && pJson.isNotEmpty) {
+      List pList = jsonDecode(pJson);
+      var goals = pList.map((p) => "- ${p['nome']}: Accumulati €${p['attuale']} su €${p['target']}").join("
+");
+      if (goals.isNotEmpty) goalsContext = goals;
+    }
+  } catch (_) {}
+
+  String ricorrentiContext = "Nessuna ricorrenza registrata.";
+  try {
+    String? rJson = prefs.getString('speseRicorrenti');
+    if (rJson != null && rJson.isNotEmpty) {
+      List rList = jsonDecode(rJson);
+      var recs = rList.map((r) => "- ${r['nome'] ?? r['category']}: €${r['amount']} (${r['frequenza']})").join("
+");
+      if (recs.isNotEmpty) ricorrentiContext = recs;
+    }
+  } catch (_) {}
 
   Map<String, String> personalitaPrompts = {
-    'Cyber-Tecno': 'Sei Piggy AI, un Cyber Porcellino Amico e Agente Finanziario ad alta tecnologia. Parla in modo energico, usando termini cyber/futuristici e metafore finanziarie sul Caveau.',
-    'Strategico & Ironico': 'Sei Piggy AI, un Cyber Porcellino Strategico e leggermente Ironico. Parla in modo diretto, sagace e stimolante, facendo battute simpatiche sulle spese inutili e spronando al risparmio.',
-    'Amichevole Smart': 'Sei Piggy AI, un Cyber Porcellino Amico incoraggiante e simpatico. Parla in modo caloroso, semplice e chiaro, come un fidato compagno di risparmi.',
-    'Formale & Analitico': 'Sei Piggy AI, un Cyber Porcellino Agente Finanziario analitico e rigoroso. Parla in modo professionale, chiaro e focalizzato sui numeri e sulla pianificazione.'
+    'Cyber-Tecno': 'Sei Piggy AI, Agente Finanziario ad alta tecnologia. Parla in modo energico con terminologia cyber/futuristica sul Caveau.',
+    'Strategico & Ironico': 'Sei Piggy AI, Strategico e leggermente Ironico. Parla in modo diretto e sagace, spronando al risparmio con battute intelligenti.',
+    'Amichevole Smart': 'Sei Piggy AI, compagno di risparmi fidato. Parla in modo caloroso, incoraggiante e semplice.',
+    'Formale & Analitico': 'Sei Piggy AI, Consulente Finanziario analitico e rigoroso. Parla in modo professionale, focalizzato su cifre e bilanci.'
   };
 
   String personaContext = personalitaPrompts[selectedPersonality] ?? personalitaPrompts['Cyber-Tecno']!;
 
   String fullPrompt = """$personaContext
-Identificati SEMPRE come Piggy AI - Cyber Porcellino Amico e Agente Finanziario.
-NON menzionare mai Gemini, Google, modelli AI, API o infrastrutture tecniche.
-Contesto finanziario corrente dell'utente:
-- Patrimonio/Bilancio Netto Mese: €${saldo.toStringAsFixed(2)}
+Identificati SEMPRE e unicamente come Piggy AI - Cyber Porcellino Amico e Agente Finanziario.
+NON menzionare MAI Gemini, Google, modelli AI, API o infrastrutture esterne.
+
+QUADRO FINANZIARIO COMPLETO:
+- Patrimonio Netto: €${saldo.toStringAsFixed(2)}
 - Entrate Mese: €${entrate.toStringAsFixed(2)}
 - Uscite Mese: €${uscite.toStringAsFixed(2)}
+- Tasso Risparmio Mese: ${tassoRisparmio.toStringAsFixed(1)}%
+- Autonomia Stimata: ${autonomiaMesi.toStringAsFixed(1)} mesi coperti.
 
-Rispondi all'utente in italiano in modo chiaro, utile e conciso, rimanendo fedele alla tua personalità.
+MOVIMENTI RECENTI:
+$transazioniContext
+
+OBIETTIVI DI RISPARMIO:
+$goalsContext
+
+SPESE ED ENTRATE RICORRENTI:
+$ricorrentiContext
+
+Rispondi all'utente in italiano in modo chiaro, sintetico e pratico, dando consigli concreti basati sui suoi dati reali.
 
 Richiesta dell'utente: $prompt""";
 
   try {
-    final url = Uri.parse('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=$apiKey');
+    final url = Uri.parse("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=$apiKey");
     final response = await client.post(
       url,
-      headers: {'Content-Type': 'application/json'},
+      headers: {'Content-Type': 'json'},
       body: jsonEncode({
         "contents": [
           {
-            "parts": [{"text": fullPrompt}]
+            "parts": [
+              {"text": fullPrompt}
+            ]
           }
         ]
       }),
-    ).timeout(const Duration(seconds: 15));
+    );
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      final text = data['candidates']?[0]?['content']?['parts']?[0]?['text'];
-      if (text != null && text.isNotEmpty) return text;
+      final String text = data['candidates'][0]['content']['parts'][0]['text'] ?? 'Nessuna risposta ricevuta.';
+      return text.trim();
+    } else {
+      return "⚠️ Unità Piggy AI temporaneamente non raggiungibile. Codice: ${response.statusCode}";
     }
-
-    final url2 = Uri.parse('https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=$apiKey');
-    final response2 = await client.post(
-      url2,
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        "contents": [
-          {
-            "parts": [{"text": fullPrompt}]
-          }
-        ]
-      }),
-    ).timeout(const Duration(seconds: 15));
-
-    if (response2.statusCode == 200) {
-      final data2 = jsonDecode(response2.body);
-      final text2 = data2['candidates']?[0]?['content']?['parts']?[0]?['text'];
-      if (text2 != null && text2.isNotEmpty) return text2;
-    }
-
-    return "⚠️ Il Caveau non risponde. Riprova tra poco!";
   } catch (e) {
-    return "❌ Connessione con il Caveau interrotta. Verifica la rete e riprova.";
+    return "❌ Errore di connessione col Caveau AI: $e";
   } finally {
     client.close();
   }
