@@ -507,6 +507,137 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
+  void _esportaBackupJSON() async {
+    final prefs = await SharedPreferences.getInstance();
+    Map<String, dynamic> backupData = {
+      'app': 'Piggy Vault',
+      'version': '2.8.17',
+      'timestamp': DateTime.now().toIso8601String(),
+      'patrimonio': patrimonio,
+      'entrateMese': entrateMese,
+      'usciteMese': usciteMese,
+      'transazioni': transazioni,
+      'portafogli': portafogli,
+      'speseRicorrenti': speseRicorrenti,
+      'selectedTheme': _currentTheme,
+      'piggyPersonality': _selectedPersonality,
+    };
+    String jsonString = jsonEncode(backupData);
+    if (!mounted) return;
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: _cardBg,
+        title: Text('💾 Backup Locale JSON', style: TextStyle(color: _textColor)),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Copia il codice JSON sottostante per conservare un backup offline del tuo Caveau:', style: TextStyle(color: _subtitleColor, fontSize: 12)),
+              const SizedBox(height: 8),
+              SizedBox(
+                height: 160,
+                child: SingleChildScrollView(
+                  child: SelectableText(jsonString, style: TextStyle(color: _textColor, fontSize: 11, fontFamily: 'monospace')),
+                ),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          ElevatedButton.icon(
+            onPressed: () {
+              Clipboard.setData(ClipboardData(text: jsonString));
+              Navigator.pop(ctx);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Backup JSON copiato negli appunti!')),
+              );
+            },
+            icon: const Icon(Icons.copy, size: 16),
+            label: const Text('Copia Backup'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _ripristinaBackupJSON() {
+    final TextEditingController jsonController = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: _cardBg,
+        title: Text('📥 Ripristina Backup JSON', style: TextStyle(color: _textColor)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Incolla qui il codice JSON del tuo backup per ripristinare i dati:', style: TextStyle(color: _subtitleColor, fontSize: 12)),
+            const SizedBox(height: 12),
+            TextField(
+              controller: jsonController,
+              maxLines: 5,
+              style: TextStyle(color: _textColor, fontSize: 11, fontFamily: 'monospace'),
+              decoration: InputDecoration(
+                hintText: 'Incolla il JSON di backup...',
+                hintStyle: TextStyle(color: _subtitleColor),
+                filled: true,
+                fillColor: _scaffoldBg,
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Annulla'),
+          ),
+          ElevatedButton.icon(
+            onPressed: () async {
+              try {
+                final Map<String, dynamic> data = jsonDecode(jsonController.text.trim());
+                if (data['app'] == 'Piggy Vault' || data.containsKey('patrimonio')) {
+                  final prefs = await SharedPreferences.getInstance();
+                  setState(() {
+                    if (data.containsKey('patrimonio')) patrimonio = (data['patrimonio'] as num).toDouble();
+                    if (data.containsKey('entrateMese')) entrateMese = (data['entrateMese'] as num).toDouble();
+                    if (data.containsKey('usciteMese')) usciteMese = (data['usciteMese'] as num).toDouble();
+                    if (data['transazioni'] != null) transazioni = List<Map<String, dynamic>>.from(data['transazioni']);
+                    if (data['portafogli'] != null) portafogli = List<Map<String, dynamic>>.from(data['portafogli']);
+                    if (data['speseRicorrenti'] != null) speseRicorrenti = List<Map<String, dynamic>>.from(data['speseRicorrenti']);
+                  });
+                  await prefs.setDouble('patrimonio', patrimonio);
+                  await prefs.setDouble('entrateMese', entrateMese);
+                  await prefs.setDouble('usciteMese', usciteMese);
+                  await prefs.setString('transazioni', jsonEncode(transazioni));
+                  await prefs.setString('portafogli', jsonEncode(portafogli));
+                  await prefs.setString('speseRicorrenti', jsonEncode(speseRicorrenti));
+                  Navigator.pop(ctx);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Dati ripristinati con successo!'), backgroundColor: Colors.green),
+                  );
+                } else {
+                  throw Exception('Formato non valido');
+                }
+              } catch (e) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Errore ripristino: $e'), backgroundColor: Colors.red),
+                );
+              }
+            },
+            icon: const Icon(Icons.restore, size: 16),
+            label: const Text('Ripristina'),
+          ),
+        ],
+      ),
+    );
+  }
+
+
+
   Future<void> _salvaSpeseRicorrenti() async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -1685,6 +1816,26 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       ],
                     ),
                     const SizedBox(height: 16),
+                    
+                    Divider(color: _textColor.withOpacity(0.2)),
+                    Text('💾 Backup & Ripristino Offline:', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: _textColor)),
+                    const SizedBox(height: 8),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        OutlinedButton.icon(
+                          onPressed: () { Navigator.pop(context); _esportaBackupJSON(); },
+                          icon: const Icon(Icons.download, size: 16, color: Colors.pinkAccent),
+                          label: const Text('Export JSON', style: TextStyle(color: Colors.pinkAccent, fontSize: 12)),
+                        ),
+                        OutlinedButton.icon(
+                          onPressed: () { Navigator.pop(context); _ripristinaBackupJSON(); },
+                          icon: const Icon(Icons.upload, size: 16, color: Colors.pinkAccent),
+                          label: const Text('Import JSON', style: TextStyle(color: Colors.pinkAccent, fontSize: 12)),
+                        ),
+                      ],
+                    ),
+
                     Divider(color: _textColor.withOpacity(0.2)),
                     ListTile(
                       leading: Icon(Icons.info_outline, color: _textColor.withOpacity(0.7)),
