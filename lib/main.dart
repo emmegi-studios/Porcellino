@@ -16,6 +16,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:speech_to_text/speech_to_text.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -2837,6 +2838,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   
                                                                             
 
+String _selectedPersonality = 'Cyber-Tecno';
 
 void _mostraPiggyAI(BuildContext context, [bool? isDarkOverride]) {
     final bool isDark = isDarkOverride ?? (Theme.of(context).brightness == Brightness.dark);
@@ -3431,189 +3433,4 @@ Richiesta dell'utente: $prompt""";
   } finally {
     client.close();
   }
-}
-
-void _mostraGestioneCaveau(BuildContext context, StateSetter? parentSetState) {
-  final TextEditingController inputController = TextEditingController();
-  final bool isDark = Theme.of(context).brightness == Brightness.dark;
-  final Color bgColor = isDark ? const Color(0xFF1E2235) : Colors.white;
-  final Color textColor = isDark ? Colors.white : Colors.black87;
-
-  showModalBottomSheet(
-    context: context,
-    isScrollControlled: true,
-    backgroundColor: bgColor,
-    shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
-    builder: (ctx) => StatefulBuilder(
-      builder: (ctx, setMState) => Padding(
-        padding: EdgeInsets.only(
-          left: 20.0,
-          right: 20.0,
-          top: 24.0,
-          bottom: MediaQuery.of(ctx).viewInsets.bottom + 24.0,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  _caveauId.isEmpty ? '🔒 Caveau Privato' : '👥 Caveau Condiviso',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: textColor),
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: _caveauId.isEmpty ? Colors.grey.withOpacity(0.2) : Colors.greenAccent.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: _caveauId.isEmpty ? Colors.grey : Colors.greenAccent),
-                  ),
-                  child: Text(
-                    _caveauId.isEmpty ? 'Locale' : 'Attivo',
-                    style: TextStyle(
-                      color: _caveauId.isEmpty ? Colors.grey : Colors.greenAccent,
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            if (_caveauId.isNotEmpty) ...[
-              Container(
-                padding: const EdgeInsets.all(14),
-                decoration: BoxDecoration(
-                  color: isDark ? const Color(0xFF0F111A) : const Color(0xFFF4F6F9),
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: Colors.pinkAccent.withOpacity(0.4)),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text('🔑 ID Caveau Corrente:', style: TextStyle(fontSize: 12, color: Colors.grey)),
-                    const SizedBox(height: 6),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            _caveauId,
-                            style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, fontFamily: 'monospace', color: textColor),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.copy, size: 20, color: Colors.pinkAccent),
-                          tooltip: 'Copia ID',
-                          onPressed: () {
-                            Clipboard.setData(ClipboardData(text: _caveauId));
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('📋 ID Caveau copiato negli appunti!')),
-                            );
-                          },
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 16),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.redAccent.withOpacity(0.15),
-                    foregroundColor: Colors.redAccent,
-                    side: const BorderSide(color: Colors.redAccent),
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                  ),
-                  icon: const Icon(Icons.link_off),
-                  label: const Text('🚫 Scollega Caveau e Torna Locale', style: TextStyle(fontWeight: FontWeight.bold)),
-                  onPressed: () async {
-                    _caveauId = '';
-                    final prefs = await SharedPreferences.getInstance();
-                    await prefs.setString('caveauId', '');
-                    if (parentSetState != null) parentSetState(() {});
-                    setMState(() {});
-                    if (ctx.mounted) Navigator.pop(ctx);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('🔒 Disconnesso: ora sei in Modalità Caveau Locale.')),
-                    );
-                  },
-                ),
-              ),
-            ] else ...[
-              Text(
-                'Inserisci il codice del Caveau trasmesso dalla tua compagna per unire i vostri budget in tempo reale:',
-                style: TextStyle(fontSize: 13, color: isDark ? Colors.white70 : Colors.black54),
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: inputController,
-                style: TextStyle(color: textColor),
-                decoration: InputDecoration(
-                  hintText: 'Incolla o digita caveauId...',
-                  hintStyle: const TextStyle(color: Colors.grey),
-                  filled: true,
-                  fillColor: isDark ? const Color(0xFF0F111A) : const Color(0xFFF4F6F9),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
-                  prefixIcon: const Icon(Icons.vpn_key, color: Colors.pinkAccent),
-                ),
-              ),
-              const SizedBox(height: 16),
-              Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton(
-                      style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                      ),
-                      child: const Text('Genera Nuovo ID'),
-                      onPressed: () async {
-                        final newId = 'caveau_' + DateTime.now().millisecondsSinceEpoch.toString();
-                        _caveauId = newId;
-                        final prefs = await SharedPreferences.getInstance();
-                        await prefs.setString('caveauId', newId);
-                        if (parentSetState != null) parentSetState(() {});
-                        setMState(() {});
-                      },
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.pinkAccent,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                      ),
-                      child: const Text('Collega Caveau', style: TextStyle(fontWeight: FontWeight.bold)),
-                      onPressed: () async {
-                        final txt = inputController.text.trim();
-                        if (txt.isNotEmpty) {
-                          _caveauId = txt;
-                          final prefs = await SharedPreferences.getInstance();
-                          await prefs.setString('caveauId', txt);
-                          if (parentSetState != null) parentSetState(() {});
-                          if (ctx.mounted) Navigator.pop(ctx);
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('👥 Caveau collegato con successo!')),
-                          );
-                        }
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ],
-        ),
-      ),
-    ),
-  );
 }
