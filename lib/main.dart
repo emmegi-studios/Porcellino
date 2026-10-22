@@ -16,7 +16,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:speech_to_text/speech_to_text.dart';
-import 'package:flutter_tts/flutter_tts.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -2653,7 +2652,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   
                                                                             
 
-String _selectedPersonality = 'Cyber-Tecno';
 
 void _mostraPiggyAI(BuildContext context, [bool? isDarkOverride]) {
     final bool isDark = isDarkOverride ?? (Theme.of(context).brightness == Brightness.dark);
