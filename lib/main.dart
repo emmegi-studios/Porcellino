@@ -2905,8 +2905,7 @@ Future<String> _getGeminiResponse(String prompt) async {
     String? txJson = prefs.getString('transazioni');
     if (txJson != null && txJson.isNotEmpty) {
       List txList = jsonDecode(txJson);
-      var recenti = txList.take(7).map((t) => "- ${t['data']} | ${t['category']} | ${t['tipo']}: €${t['amount']} (${t['note'] ?? ''})").join("
-");
+      var recenti = txList.take(7).map((t) => "- ${t['data']} | ${t['category']} | ${t['tipo']}: €${t['amount']} (${t['note'] ?? ''})").join('\n');
       if (recenti.isNotEmpty) transazioniContext = recenti;
     }
   } catch (_) {}
@@ -2916,8 +2915,7 @@ Future<String> _getGeminiResponse(String prompt) async {
     String? pJson = prefs.getString('portafogli');
     if (pJson != null && pJson.isNotEmpty) {
       List pList = jsonDecode(pJson);
-      var goals = pList.map((p) => "- ${p['nome']}: Accumulati €${p['attuale']} su €${p['target']}").join("
-");
+      var goals = pList.map((p) => "- ${p['nome']}: Accumulati €${p['attuale']} su €${p['target']}").join('\n');
       if (goals.isNotEmpty) goalsContext = goals;
     }
   } catch (_) {}
@@ -2927,8 +2925,7 @@ Future<String> _getGeminiResponse(String prompt) async {
     String? rJson = prefs.getString('speseRicorrenti');
     if (rJson != null && rJson.isNotEmpty) {
       List rList = jsonDecode(rJson);
-      var recs = rList.map((r) => "- ${r['nome'] ?? r['category']}: €${r['amount']} (${r['frequenza']})").join("
-");
+      var recs = rList.map((r) => "- ${r['nome'] ?? r['category']}: €${r['amount']} (${r['frequenza']})").join('\n');
       if (recs.isNotEmpty) ricorrentiContext = recs;
     }
   } catch (_) {}
