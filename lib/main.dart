@@ -1271,17 +1271,17 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   }
 
   bool get _isDark => _currentTheme == 'Piggy Dark';
-  Color get _cardBg => (Theme.of(context).brightness == Brightness.dark) ? const Color(0xFF1E2235) : const Color(0xFFF5F6FA);
-  Color get _textColor => Colors.white;
-  Color get _subtitleColor => Colors.white70;
+  Color get _cardBg => _isDark ? const Color(0xFF1E2235) : const Color(0xFFFFFFFF);
+  Color get _textColor => _isDark ? Colors.white : const Color(0xFF1A1A2E);
+  Color get _subtitleColor => _isDark ? Colors.white70 : const Color(0xFF555566);
   Color get _primaryColor => Colors.pinkAccent;
-  Color get _scaffoldBg => (Theme.of(context).brightness == Brightness.dark) ? const Color(0xFF0F111A) : const Color(0xFFFFFFFF);
+  Color get _scaffoldBg => _isDark ? const Color(0xFF0F111A) : const Color(0xFFF4F6F9);
 
   double patrimonio = 0.0;
   double entrateMese = 0.0;
   double usciteMese = 0.0;
   List<Map<String, dynamic>> transazioni = [];
-  String _currentTheme = 'Piggy Dark';
+  String _currentTheme = prefs.getString('selectedTheme') ?? 'Piggy Dark';
   String _selectedPersonality = 'Cyber-Tecno';
   String _caveauId = '';
   String _nomeUtenteDinamico = 'Utente';
@@ -1675,9 +1675,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         ),
                         ElevatedButton.icon(
                           style: ElevatedButton.styleFrom(backgroundColor: Colors.grey.shade200),
-                          onPressed: () { HapticFeedback.lightImpact(); setState(() { _currentTheme = 'Piggy Dark'; }); SharedPreferences.getInstance().then((p) => p.setString("selectedTheme", _currentTheme)); Navigator.pop(context); },
+                          onPressed: () { HapticFeedback.lightImpact(); setState(() { _currentTheme = 'Piggy White'; }); SharedPreferences.getInstance().then((p) => p.setString("selectedTheme", 'Piggy White')); Navigator.pop(context); },
                           icon: const Icon(Icons.light_mode, color: Colors.black87, size: 16),
-                          label: const Text('Piggy White', style: TextStyle(color: Colors.white)),
+                          label: const Text('Piggy White', style: TextStyle(color: Colors.black87)),
                         ),
                       ],
                     ),
