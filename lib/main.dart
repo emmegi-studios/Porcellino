@@ -1798,6 +1798,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   _mostraGestioneCaveau(context);
                 },
               ),
+                      decoration: InputDecoration(
+                        hintText: 'Email del partner da invitare',
+                        hintStyle: TextStyle(color: Colors.white70),
                         filled: true,
                         fillColor: _scaffoldBg,
                         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
