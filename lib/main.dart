@@ -392,7 +392,7 @@ class _LoginScreenState extends State<LoginScreen> {
               const SizedBox(height: 16),
               Text("Piggy Vault", style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87)),
               const SizedBox(height: 8),
-              Text("Accedi al tuo caveau condiviso", style: TextStyle(fontSize: 14, color: Colors.grey)),
+              Text("Accedi al tuo caveau condiviso", style: const TextStyle(fontSize: 14, color: Colors.white70)),
               const SizedBox(height: 32),
               TextField(
                 controller: _emailController,
@@ -400,7 +400,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 keyboardType: TextInputType.emailAddress,
                 decoration: InputDecoration(
                   labelText: "Email utente",
-                  labelStyle: TextStyle(color: Colors.grey),
+                  labelStyle: const TextStyle(color: Colors.white70),
                   floatingLabelStyle: const TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold),
                   filled: true,
                   fillColor: _cardBg,
@@ -414,7 +414,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 style: TextStyle(color: _textColor),
                 decoration: InputDecoration(
                   labelText: "Password",
-                  labelStyle: TextStyle(color: Colors.grey),
+                  labelStyle: const TextStyle(color: Colors.white70),
                   floatingLabelStyle: const TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold),
                   filled: true,
                   fillColor: _cardBg,
@@ -433,7 +433,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   style: TextStyle(color: _textColor),
                   decoration: InputDecoration(
                     labelText: "Conferma Password",
-                    labelStyle: TextStyle(color: Colors.grey),
+                    labelStyle: const TextStyle(color: Colors.white70),
                     floatingLabelStyle: const TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold),
                     filled: true,
                     fillColor: _cardBg,
@@ -485,7 +485,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 onPressed: () => setState(() => _isRegistrazione = !_isRegistrazione),
                 child: Text(
                   _isRegistrazione ? "Hai già un account? Accedi" : "Non hai un account? Registrati",
-                  style: TextStyle(color: Colors.grey),
+                  style: const TextStyle(color: Colors.white70),
                 ),
               ),
             ],
@@ -804,7 +804,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               const SizedBox(height: 8),
               Text(
                 "Totale uscite analizzate: €${totaleUscite.toStringAsFixed(2)}",
-                style: TextStyle(color: Colors.grey, fontSize: 13),
+                style: const TextStyle(color: Colors.white70, fontSize: 13),
               ),
               const SizedBox(height: 16),
               if (categorieOrdate.isEmpty)
@@ -1273,7 +1273,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           controller: controller,
           keyboardType: const TextInputType.numberWithOptions(decimal: true),
           style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87),
-          decoration: InputDecoration(
+          decoration: const InputDecoration(
             labelText: "Budget (€)",
             labelStyle: TextStyle(color: Colors.grey),
           ),
@@ -1781,17 +1781,23 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                           : null,
                     ),
                     Divider(color: _textColor.withOpacity(0.2)),
-                    TextField(
-                      controller: _inviteController,
-                      style: TextStyle(color: _textColor),
-                      decoration: InputDecoration(
               ElevatedButton.icon(
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.pinkAccent, foregroundColor: Colors.white),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.pinkAccent,
+                  foregroundColor: Colors.white,
+                  minimumSize: const Size(double.infinity, 48),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
                 icon: const Icon(Icons.vpn_key),
-                label: Text(_caveauId.isEmpty ? '🔑 Configura Caveau Condiviso' : '👥 Gestisci Caveau Condiviso'),
-                onPressed: () { Navigator.pop(context); _mostraGestioneCaveau(context); },
+                label: Text(
+                  _caveauId.isEmpty ? '🔑 Configura Caveau Condiviso' : '👥 Gestisci Caveau Condiviso',
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                  _mostraGestioneCaveau(context);
+                },
               ),
-                        hintStyle: TextStyle(color: Colors.white70),
                         filled: true,
                         fillColor: _scaffoldBg,
                         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
