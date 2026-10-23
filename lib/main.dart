@@ -392,7 +392,7 @@ class _LoginScreenState extends State<LoginScreen> {
               const SizedBox(height: 16),
               Text("Piggy Vault", style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87)),
               const SizedBox(height: 8),
-              Text("Accedi al tuo caveau condiviso", style: const TextStyle(fontSize: 14, color: Colors.white70)),
+              Text("Accedi al tuo caveau condiviso", style: TextStyle(fontSize: 14, color: Colors.white70)),
               const SizedBox(height: 32),
               TextField(
                 controller: _emailController,
@@ -400,7 +400,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 keyboardType: TextInputType.emailAddress,
                 decoration: InputDecoration(
                   labelText: "Email utente",
-                  labelStyle: const TextStyle(color: Colors.white70),
+                  labelStyle: TextStyle(color: Colors.white70),
                   floatingLabelStyle: const TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold),
                   filled: true,
                   fillColor: _cardBg,
@@ -414,7 +414,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 style: TextStyle(color: _textColor),
                 decoration: InputDecoration(
                   labelText: "Password",
-                  labelStyle: const TextStyle(color: Colors.white70),
+                  labelStyle: TextStyle(color: Colors.white70),
                   floatingLabelStyle: const TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold),
                   filled: true,
                   fillColor: _cardBg,
@@ -433,7 +433,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   style: TextStyle(color: _textColor),
                   decoration: InputDecoration(
                     labelText: "Conferma Password",
-                    labelStyle: const TextStyle(color: Colors.white70),
+                    labelStyle: TextStyle(color: Colors.white70),
                     floatingLabelStyle: const TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold),
                     filled: true,
                     fillColor: _cardBg,
@@ -485,7 +485,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 onPressed: () => setState(() => _isRegistrazione = !_isRegistrazione),
                 child: Text(
                   _isRegistrazione ? "Hai già un account? Accedi" : "Non hai un account? Registrati",
-                  style: const TextStyle(color: Colors.white70),
+                  style: TextStyle(color: Colors.white70),
                 ),
               ),
             ],
@@ -796,7 +796,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.close, color: Colors.white70),
+                    icon: const Icon(Icons.close, color: (Theme.of(context).brightness == Brightness.dark ? Colors.white70 : const Color(0xFF555566))),
                     onPressed: () => Navigator.pop(ctx),
                   ),
                 ],
@@ -804,7 +804,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               const SizedBox(height: 8),
               Text(
                 "Totale uscite analizzate: €${totaleUscite.toStringAsFixed(2)}",
-                style: const TextStyle(color: Colors.white70, fontSize: 13),
+                style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark ? Colors.white70 : const Color(0xFF555566)), fontSize: 13),
               ),
               const SizedBox(height: 16),
               if (categorieOrdate.isEmpty)
@@ -1498,7 +1498,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: Text('Chiudi', style: TextStyle(color: Colors.white70)),
+            child: Text('Chiudi', style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark ? Colors.white70 : const Color(0xFF555566)))),
           ),
         ],
       ),
@@ -1669,7 +1669,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             const SizedBox(height: 12),
             Text(descrizione, style: TextStyle(color: _textColor, fontSize: 13)),
             const SizedBox(height: 16),
-            Text("Patrimonio condiviso attuale: €${patrimonio.toStringAsFixed(2)}", style: TextStyle(color: Colors.white70, fontSize: 12))]),
+            Text("Patrimonio condiviso attuale: €${patrimonio.toStringAsFixed(2)}", style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark ? Colors.white70 : const Color(0xFF555566)), fontSize: 12))]),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -1712,15 +1712,15 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 ),
                 const SizedBox(height: 20),
                 ListTile(
-                  title: Text('Utente Attivo', style: TextStyle(color: Colors.white70, fontSize: 11)),
+                  title: Text('Utente Attivo', style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark ? Colors.white70 : const Color(0xFF555566)), fontSize: 11)),
                   subtitle: Text(_nomeUtenteDinamico, style: TextStyle(color: _textColor, fontWeight: FontWeight.bold, fontSize: 15)),
                 ),
                 ListTile(
-                  title: Text('Email Collegata', style: TextStyle(color: Colors.white70, fontSize: 11)),
+                  title: Text('Email Collegata', style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark ? Colors.white70 : const Color(0xFF555566)), fontSize: 11)),
                   subtitle: Text(widget.userEmail, style: TextStyle(color: _textColor, fontWeight: FontWeight.bold, fontSize: 15)),
                 ),
                 ListTile(
-                  title: Text('Stato Firebase Cloud', style: TextStyle(color: Colors.white70, fontSize: 11)),
+                  title: Text('Stato Firebase Cloud', style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark ? Colors.white70 : const Color(0xFF555566)), fontSize: 11)),
                   subtitle: const Text('Connesso in tempo reale', style: TextStyle(color: Colors.greenAccent, fontWeight: FontWeight.bold)),
                 ),
                 const SizedBox(height: 24),
@@ -1765,7 +1765,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     ),
                     const SizedBox(height: 16),
                     ListTile(
-                      title: Text('Tema Attivo', style: TextStyle(color: Colors.white70, fontSize: 11)),
+                      title: Text('Tema Attivo', style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark ? Colors.white70 : const Color(0xFF555566)), fontSize: 11)),
                       subtitle: Text(_currentTheme, style: TextStyle(color: _primaryColor, fontWeight: FontWeight.bold, fontSize: 14)),
                     ),
                     const SizedBox(height: 16),
@@ -1877,10 +1877,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             children: [
               Text("🎯 Nuovo Obiettivo", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: _textColor)),
               const SizedBox(height: 16),
-              TextField(controller: _goalNameController, style: TextStyle(color: _textColor), decoration: InputDecoration(labelText: 'Nome Obiettivo (es. Viaggio)', labelStyle: TextStyle(color: Colors.white70),
+              TextField(controller: _goalNameController, style: TextStyle(color: _textColor), decoration: InputDecoration(labelText: 'Nome Obiettivo (es. Viaggio)', labelStyle: TextStyle(color: (Theme.of(context).brightness == Brightness.dark ? Colors.white70 : const Color(0xFF555566))),
                   floatingLabelStyle: const TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold), fillColor: _scaffoldBg, filled: true)),
               const SizedBox(height: 12),
-              TextField(controller: _goalTargetController, keyboardType: TextInputType.number, style: TextStyle(color: _textColor), decoration: InputDecoration(labelText: 'Target in € (es. 1500)', labelStyle: TextStyle(color: Colors.white70),
+              TextField(controller: _goalTargetController, keyboardType: TextInputType.number, style: TextStyle(color: _textColor), decoration: InputDecoration(labelText: 'Target in € (es. 1500)', labelStyle: TextStyle(color: (Theme.of(context).brightness == Brightness.dark ? Colors.white70 : const Color(0xFF555566))),
                   floatingLabelStyle: const TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold), fillColor: _scaffoldBg, filled: true)),
               const SizedBox(height: 24),
               ElevatedButton(
@@ -1917,9 +1917,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       builder: (ctx) => AlertDialog(
         backgroundColor: _cardBg,
         title: Text("Finanzia: ${portafogli[index]['nome']}", style: TextStyle(color: _textColor, fontSize: 16, fontWeight: FontWeight.bold)),
-        content: TextField(controller: fundController, keyboardType: TextInputType.number, style: TextStyle(color: _textColor), decoration: InputDecoration(hintText: "Importo da aggiungere", hintStyle: TextStyle(color: Colors.white70))),
+        content: TextField(controller: fundController, keyboardType: TextInputType.number, style: TextStyle(color: _textColor), decoration: InputDecoration(hintText: "Importo da aggiungere", hintStyle: TextStyle(color: (Theme.of(context).brightness == Brightness.dark ? Colors.white70 : const Color(0xFF555566))))),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: Text("Annulla", style: TextStyle(color: Colors.white70))),
+          TextButton(onPressed: () => Navigator.pop(ctx), child: Text("Annulla", style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark ? Colors.white70 : const Color(0xFF555566))))),
           ElevatedButton(
             onPressed: () { HapticFeedback.lightImpact();
               double val = double.tryParse(fundController.text.replaceAll(',', '.')) ?? 0.0;
@@ -1972,7 +1972,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             if (spesaPerCategoria.isEmpty)
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: Text("Nessuna uscita registrata finora.", style: TextStyle(color: Colors.white70, fontSize: 13)),
+                child: Text("Nessuna uscita registrata finora.", style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark ? Colors.white70 : const Color(0xFF555566)), fontSize: 13)),
               )
             else
               ...spesaPerCategoria.entries.map((entry) {
@@ -2046,14 +2046,14 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("RIEPILOGO BILANCIO COMUNE", style: TextStyle(fontSize: 10, color: Colors.white70, fontWeight: FontWeight.bold)),
+                      Text("RIEPILOGO BILANCIO COMUNE", style: TextStyle(fontSize: 10, color: (Theme.of(context).brightness == Brightness.dark ? Colors.white70 : const Color(0xFF555566)), fontWeight: FontWeight.bold)),
                       const SizedBox(height: 8),
                       Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text("Entrate Totali:", style: TextStyle(color: _textColor)), Text("€ ${entrateMese.toStringAsFixed(2)}", style: const TextStyle(color: Colors.blueAccent, fontWeight: FontWeight.bold))]),
                       const SizedBox(height: 4),
                       Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text("Uscite Totali:", style: TextStyle(color: _textColor)), Text("€ ${usciteMese.toStringAsFixed(2)}", style: TextStyle(color: _primaryColor, fontWeight: FontWeight.bold))]),
                       Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text("Bilancio Netto:", style: TextStyle(color: _textColor)), Text("€ ${bilancioNetto.toStringAsFixed(2)}", style: TextStyle(color: bilancioNetto >= 0 ? const Color(0xFF10B981) : _primaryColor, fontWeight: FontWeight.bold))])]))),
               const SizedBox(height: 16),
-              Text("Movimenti Cloud (Swipe per eliminare)", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white70)),
+              Text("Movimenti Cloud (Swipe per eliminare)", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: (Theme.of(context).brightness == Brightness.dark ? Colors.white70 : const Color(0xFF555566)))),
               const SizedBox(height: 8),
               Expanded(
                 child: ListView.builder(
@@ -2072,7 +2072,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       child: ListTile(
                         dense: true,
                         title: Text(tx['category'], style: TextStyle(fontWeight: FontWeight.bold, color: _textColor)),
-                        subtitle: Text("${tx['note']} • Inserito da: ${tx['author'] ?? 'Utente'}", style: TextStyle(color: Colors.white70)),
+                        subtitle: Text("${tx['note']} • Inserito da: ${tx['author'] ?? 'Utente'}", style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark ? Colors.white70 : const Color(0xFF555566)))),
                         trailing: Text(
                           "${tx['type'].contains('Entrata') ? '+' : '-'}€ ${tx['amount'].toStringAsFixed(2)}",
                           style: TextStyle(color: tx['type'].contains('Entrata') ? const Color(0xFF10B981) : _primaryColor, fontWeight: FontWeight.bold))));
@@ -2105,7 +2105,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 value: _selectedType,
                 dropdownColor: _cardBg,
                 style: TextStyle(color: _textColor),
-                decoration: InputDecoration(labelText: "Tipo", labelStyle: TextStyle(color: Colors.white70),
+                decoration: InputDecoration(labelText: "Tipo", labelStyle: TextStyle(color: (Theme.of(context).brightness == Brightness.dark ? Colors.white70 : const Color(0xFF555566))),
                   floatingLabelStyle: TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold), filled: true, fillColor: _scaffoldBg, border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))),
                 items: const [
                   DropdownMenuItem(value: 'Uscita (Spesa)', child: Text("🔴 Uscita (Spesa)")),
@@ -2116,14 +2116,14 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 controller: _amountController,
                 style: TextStyle(color: _textColor),
                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                decoration: InputDecoration(labelText: "Importo (€)", labelStyle: TextStyle(color: Colors.white70),
+                decoration: InputDecoration(labelText: "Importo (€)", labelStyle: TextStyle(color: (Theme.of(context).brightness == Brightness.dark ? Colors.white70 : const Color(0xFF555566))),
                   floatingLabelStyle: TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold), filled: true, fillColor: _scaffoldBg, border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)))),
               const SizedBox(height: 12),
               DropdownButtonFormField<String>(
                 value: _selectedCategory,
                 dropdownColor: _cardBg,
                 style: TextStyle(color: _textColor),
-                decoration: InputDecoration(labelText: "Categoria", labelStyle: TextStyle(color: Colors.white70),
+                decoration: InputDecoration(labelText: "Categoria", labelStyle: TextStyle(color: (Theme.of(context).brightness == Brightness.dark ? Colors.white70 : const Color(0xFF555566))),
                   floatingLabelStyle: TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold), filled: true, fillColor: _scaffoldBg, border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))),
                 items: categorieConEmoji.map((cat) => DropdownMenuItem(value: cat, child: Text(cat))).toList(),
                 onChanged: (val) => setState(() => _selectedCategory = val ?? '🐾 Animali')),
@@ -2131,7 +2131,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               TextField(
                 controller: _noteController,
                 style: TextStyle(color: _textColor),
-                decoration: InputDecoration(labelText: "Note / Descrizione", labelStyle: TextStyle(color: Colors.white70),
+                decoration: InputDecoration(labelText: "Note / Descrizione", labelStyle: TextStyle(color: (Theme.of(context).brightness == Brightness.dark ? Colors.white70 : const Color(0xFF555566))),
                   floatingLabelStyle: const TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold), filled: true, fillColor: _scaffoldBg, border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)))),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
@@ -2366,7 +2366,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 const SizedBox(height: 24),
                 const Text("Caveau Bloccato", style: TextStyle(color: Colors.white, fontSize: 26, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 8),
-                const Text("Autenticati per accedere alla tua Dashboard", style: TextStyle(color: Colors.white70, fontSize: 14), textAlign: TextAlign.center),
+                const Text("Autenticati per accedere alla tua Dashboard", style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark ? Colors.white70 : const Color(0xFF555566)), fontSize: 14), textAlign: TextAlign.center),
                 const SizedBox(height: 32),
                 ElevatedButton.icon(
                   style: ElevatedButton.styleFrom(
@@ -2473,7 +2473,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text("ENTRATE MESE", style: TextStyle(fontSize: 9, color: Colors.white70, fontWeight: FontWeight.bold)),
+                        Text("ENTRATE MESE", style: TextStyle(fontSize: 9, color: (Theme.of(context).brightness == Brightness.dark ? Colors.white70 : const Color(0xFF555566)), fontWeight: FontWeight.bold)),
                         const SizedBox(height: 4),
                         Text("€ ${entrateMese.toStringAsFixed(2)}", style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blueAccent))])))),
               const SizedBox(width: 10),
@@ -2486,7 +2486,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text("USCITE MESE", style: TextStyle(fontSize: 9, color: Colors.white70, fontWeight: FontWeight.bold)),
+                        Text("USCITE MESE", style: TextStyle(fontSize: 9, color: (Theme.of(context).brightness == Brightness.dark ? Colors.white70 : const Color(0xFF555566)), fontWeight: FontWeight.bold)),
                         const SizedBox(height: 4),
                         Text("€ ${usciteMese.toStringAsFixed(2)}", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: _primaryColor))]))))]),
           const SizedBox(height: 14),
@@ -2501,7 +2501,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 children: [
                   Text("🎯 Portafogli a Obiettivi", style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: _textColor)),
                   const SizedBox(height: 12),
-                  if (portafogli.isEmpty) Text("Nessun obiettivo attivo. Creane uno!", style: TextStyle(color: Colors.white70, fontSize: 11)),
+                  if (portafogli.isEmpty) Text("Nessun obiettivo attivo. Creane uno!", style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark ? Colors.white70 : const Color(0xFF555566)), fontSize: 11)),
                   ...portafogli.asMap().entries.map((entry) {
                     int idx = entry.key;
                     var goal = entry.value;
@@ -2512,7 +2512,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(goal['nome'], style: TextStyle(color: _textColor, fontWeight: FontWeight.bold)),
-                            Text("€${goal['attuale'].toStringAsFixed(0)} / €${goal['target'].toStringAsFixed(0)}", style: TextStyle(color: Colors.white70, fontSize: 11)),
+                            Text("€${goal['attuale'].toStringAsFixed(0)} / €${goal['target'].toStringAsFixed(0)}", style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark ? Colors.white70 : const Color(0xFF555566)), fontSize: 11)),
                           ]
                         ),
                         const SizedBox(height: 4),
@@ -2557,7 +2557,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   ),
                   const SizedBox(height: 12),
                   _promemoria.isEmpty
-                      ? Text("Nessuna scadenza imminente. Aggiungi un promemoria!", style: TextStyle(color: Colors.white70, fontSize: 11))
+                      ? Text("Nessuna scadenza imminente. Aggiungi un promemoria!", style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark ? Colors.white70 : const Color(0xFF555566)), fontSize: 11))
                       : Column(
                           children: _promemoria.map((p) => Padding(
                             padding: const EdgeInsets.only(bottom: 8.0),
@@ -2600,10 +2600,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                   style: TextStyle(color: _textColor),
                                   decoration: InputDecoration(
                                     labelText: "Titolo Scadenza",
-                                    labelStyle: TextStyle(color: Colors.white70),
+                                    labelStyle: TextStyle(color: (Theme.of(context).brightness == Brightness.dark ? Colors.white70 : const Color(0xFF555566))),
                   floatingLabelStyle: const TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold),
                                     hintText: "es. Affitto o Bolletta",
-                                    hintStyle: TextStyle(color: Colors.white70.withOpacity(0.5)),
+                                    hintStyle: TextStyle(color: (Theme.of(context).brightness == Brightness.dark ? Colors.white70 : const Color(0xFF555566)).withOpacity(0.5)),
                                   ),
                                 ),
                                 const SizedBox(height: 12),
@@ -2612,7 +2612,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                   style: TextStyle(color: _textColor),
                                   decoration: InputDecoration(
                                     labelText: "Data (DD/MM/YYYY)",
-                                    labelStyle: TextStyle(color: Colors.white70),
+                                    labelStyle: TextStyle(color: (Theme.of(context).brightness == Brightness.dark ? Colors.white70 : const Color(0xFF555566))),
                   floatingLabelStyle: const TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold),
                                   ),
                                 ),
@@ -2621,7 +2621,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                             actions: [
                               TextButton(
                                 onPressed: () => Navigator.pop(context),
-                                child: Text("Annulla", style: TextStyle(color: Colors.white70)),
+                                child: Text("Annulla", style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark ? Colors.white70 : const Color(0xFF555566)))),
                               ),
                               ElevatedButton(
                                 onPressed: () {
@@ -2721,7 +2721,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text("Obiettivo Attuale", style: TextStyle(fontSize: 11, color: Colors.white70)),
+                          Text("Obiettivo Attuale", style: TextStyle(fontSize: 11, color: (Theme.of(context).brightness == Brightness.dark ? Colors.white70 : const Color(0xFF555566)))),
                           Text("€ ${aCurrent.toStringAsFixed(0)} / ${aTarget.toStringAsFixed(0)}€", style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: _textColor)),
                         ],
                       ),
@@ -2760,20 +2760,20 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         const SizedBox(height: 14),
 
           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-            Text("➕ Nuova Transazione", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white70)),
+            Text("➕ Nuova Transazione", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: (Theme.of(context).brightness == Brightness.dark ? Colors.white70 : const Color(0xFF555566)))),
             ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: _primaryColor), onPressed: _mostraModalInserimento, child: Text("+ Nuova", style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87)))
           ]),
           const SizedBox(height: 8),
           
           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-            Text("📜 Storico Condiviso", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white70)),
+            Text("📜 Storico Condiviso", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: (Theme.of(context).brightness == Brightness.dark ? Colors.white70 : const Color(0xFF555566)))),
             ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: _cardBg), onPressed: _mostraFoglioResoconto, child: Text("Apri Resoconto", style: TextStyle(color: _textColor)))
           ]),
           ...transazioni.take(5).map((tx) => Card(
             color: _cardBg,
             child: ListTile(
               title: Text(tx['category'], style: TextStyle(fontWeight: FontWeight.bold, color: _textColor)),
-              subtitle: Text("${tx['note']} • ${tx['author'] ?? 'Utente'}", style: TextStyle(color: Colors.white70)),
+              subtitle: Text("${tx['note']} • ${tx['author'] ?? 'Utente'}", style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark ? Colors.white70 : const Color(0xFF555566)))),
               trailing: Text("${tx['type'].contains('Entrata') ? '+' : '-'}€${tx['amount']}", style: TextStyle(color: tx['type'].contains('Entrata') ? Colors.greenAccent : _primaryColor, fontWeight: FontWeight.bold)))))]));
   }
 
@@ -2790,7 +2790,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           const SizedBox(height: 4),
           Text(titolo, style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: completata ? _textColor : _subtitleColor)),
           const SizedBox(height: 2),
-          Text(sub, style: TextStyle(fontSize: 8, color: Colors.white70))]));
+          Text(sub, style: TextStyle(fontSize: 8, color: (Theme.of(context).brightness == Brightness.dark ? Colors.white70 : const Color(0xFF555566))))]));
   }
 }
 
