@@ -1781,7 +1781,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                           : null,
                     ),
                     Divider(color: _textColor.withOpacity(0.2)),
-              ElevatedButton.icon(
+                    ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.pinkAccent,
                   foregroundColor: Colors.white,
@@ -1798,19 +1798,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   _mostraGestioneCaveau(context);
                 },
               ),
-                      decoration: InputDecoration(
-                        hintText: 'Email del partner da invitare',
-                        hintStyle: TextStyle(color: Colors.white70),
-                        filled: true,
-                        fillColor: _scaffoldBg,
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                      ),
-                    ),
                     const SizedBox(height: 24),
                     const SizedBox(height: 16),
                     
             const SizedBox(height: 16),
-              Text('🎨 Scegli Tema Grafico:', style: TextStyle(fontWeight: FontWeight.bold)),
+            Text('🎨 Scegli Tema Grafico:', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: _textColor)),
                     const SizedBox(height: 8),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
