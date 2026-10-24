@@ -3386,7 +3386,7 @@ Rispondi all'utente in italiano in modo chiaro, sintetico e pratico, dando consi
 Richiesta dell'utente: $prompt""";
 
   try {
-    final url = Uri.parse("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=$apiKey");
+    final url = Uri.parse("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=$apiKey");
     final response = await client.post(
       url,
       headers: {'Content-Type': 'application/json'},
