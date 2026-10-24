@@ -2459,7 +2459,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("PATRIMONIO CONDIVISO", style: TextStyle(fontSize: 10, color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white70 : Colors.black87, fontWeight: FontWeight.bold)),
+                      Text("PATRIMONIO CONDIVISO", style: TextStyle(fontSize: 10, color: _subtitleColor, fontWeight: FontWeight.bold)),
                       const SizedBox(height: 4),
                       Text("€ ${patrimonio.toStringAsFixed(2)}", style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Color(0xFF10B981)))]),
                   Icon(Icons.cloud_done, color: Color(0xFF10B981), size: 32)]))),
@@ -2975,7 +2975,7 @@ void _mostraPiggyAI(BuildContext context, [bool? isDarkOverride]) {
                               ),
                             ),
                             const SizedBox(width: 8),
-                            Text("Piggy AI", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87)),
+                            Text("Piggy AI", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : const Color(0xFF111125))),
                             const SizedBox(width: 8),
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
@@ -3389,7 +3389,7 @@ Richiesta dell'utente: $prompt""";
     final url = Uri.parse("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=$apiKey");
     final response = await client.post(
       url,
-      headers: {'Content-Type': 'json'},
+      headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         "contents": [
           {
