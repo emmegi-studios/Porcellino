@@ -5,6 +5,16 @@ plugins {
 }
 
 android {
+
+    signingConfigs {
+        release {
+            storeFile file('upload-keystore.jks')
+            storePassword 'PiggyVault2026SecuredKey'
+            keyAlias 'piggykey'
+            keyPassword 'PiggyVault2026SecuredKey'
+        }
+    }
+
     namespace "com.porcellino.app"
     compileSdk 34
 
@@ -31,7 +41,7 @@ android {
 
     buildTypes {
         release {
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.release
         }
     }
 }
