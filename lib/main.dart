@@ -880,7 +880,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     }
   }
 
-  void _verificaPromemoriaInScadenza() {
+  void _verificaPromemoriaInScadenza() async {
     if (_promemoria.isEmpty) return;
     final ora = DateTime.now();
     final oggiStr = "${ora.day.toString().padLeft(2, '0')}/${ora.month.toString().padLeft(2, '0')}/${ora.year}";
@@ -900,6 +900,26 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           );
         }
       });
+
+      try {
+        const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
+          'scadenze_channel_id',
+          'Promemoria e Scadenze',
+          channelDescription: 'Notifiche per le scadenze del giorno',
+          importance: Importance.max,
+          priority: Priority.high,
+          icon: '@mipmap/ic_launcher',
+        );
+        const NotificationDetails platformDetails = NotificationDetails(android: androidDetails);
+        await flutterLocalNotificationsPlugin.show(
+          101,
+          '🔔 Scadenze In Arrivo',
+          'Hai $scadenzeOggi promemoria/bollette in scadenza oggi!',
+          platformDetails,
+        );
+      } catch (e) {
+        debugPrint("Errore notifica locale: $e");
+      }
     }
   }
 
