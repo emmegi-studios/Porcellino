@@ -1,3 +1,4 @@
+import 'package:fl_chart/fl_chart.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
@@ -2033,6 +2034,115 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     );
   }
 
+  
+  void _mostraGraficoAnalisi() {
+    Map<String, double> spesaPerCategoria = {};
+    double totaleUsciteGrafico = 0.0;
+
+    for (var tx in transazioni) {
+      final type = (tx['type'] ?? '').toString();
+      if (type.contains('Uscita')) {
+        final cat = (tx['category'] ?? '📦 Altro').toString();
+        final amt = double.tryParse(tx['amount'].toString()) ?? 0.0;
+        spesaPerCategoria[cat] = (spesaPerCategoria[cat] ?? 0.0) + amt;
+        totaleUsciteGrafico += amt;
+      }
+    }
+
+    final List<Color> paletteColori = [
+      Colors.pinkAccent, Colors.purpleAccent, Colors.blueAccent,
+      Colors.cyanAccent, Colors.tealAccent, Colors.amberAccent,
+      Colors.orangeAccent, Colors.deepOrangeAccent
+    ];
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF1A1528) : Colors.white,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+      builder: (context) {
+        if (spesaPerCategoria.isEmpty || totaleUsciteGrafico == 0) {
+          return Container(
+            padding: const EdgeInsets.all(24),
+            height: 250,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.pie_chart_outline, size: 48, color: _subtitleColor),
+                const SizedBox(height: 12),
+                Text("Nessuna uscita registrata per il grafico", style: TextStyle(color: _textColor, fontWeight: FontWeight.bold)),
+              ],
+            ),
+          );
+        }
+
+        int indexColor = 0;
+        List<PieChartSectionData> sections = [];
+        List<Widget> legendaItems = [];
+
+        spesaPerCategoria.forEach((cat, amt) {
+          final perc = (amt / totaleUsciteGrafico) * 100;
+          final color = paletteColori[indexColor % paletteColori.length];
+          indexColor++;
+
+          sections.add(
+            PieChartSectionData(
+              color: color,
+              value: amt,
+              title: '${perc.toStringAsFixed(0)}%',
+              radius: 45,
+              titleStyle: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.white),
+            ),
+          );
+
+          legendaItems.add(
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4.0),
+              child: Row(
+                children: [
+                  Container(width: 12, height: 12, decoration: BoxDecoration(color: color, shape: BoxShape.circle)),
+                  const SizedBox(width: 8),
+                  Expanded(child: Text(cat, style: TextStyle(color: _textColor, fontSize: 12))),
+                  Text("€${amt.toStringAsFixed(2)}", style: TextStyle(color: _textColor, fontWeight: FontWeight.bold, fontSize: 12)),
+                ],
+              ),
+            ),
+          );
+        });
+
+        return Container(
+          padding: const EdgeInsets.all(20),
+          constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text("📊 Ripartizione Spese per Categoria", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: _textColor)),
+              const SizedBox(height: 16),
+              SizedBox(
+                height: 180,
+                child: PieChart(
+                  PieChartData(
+                    sectionsSpace: 3,
+                    centerSpaceRadius: 40,
+                    sections: sections,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Expanded(child: ListView(children: legendaItems)),
+              const SizedBox(height: 8),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(backgroundColor: _primaryColor, padding: const EdgeInsets.symmetric(vertical: 12)),
+                onPressed: () => Navigator.pop(context),
+                child: Text("Chiudi Grafico", style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87, fontWeight: FontWeight.bold)),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   void _mostraFoglioResoconto() {
     double bilancioNetto = entrateMese - usciteMese;
     String searchQuery = "";
@@ -2905,7 +3015,12 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           
           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
             Text("📜 Storico Condiviso", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: _subtitleColor)),
-            ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: _cardBg), onPressed: _mostraFoglioResoconto, child: Text("Apri Resoconto", style: TextStyle(color: _textColor)))
+            Row(
+              children: [
+                IconButton(icon: Icon(Icons.pie_chart, color: _primaryColor), onPressed: _mostraGraficoAnalisi, tooltip: 'Grafico Spese'),
+                ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: _cardBg), onPressed: _mostraFoglioResoconto, child: Text("Apri Resoconto", style: TextStyle(color: _textColor))),
+              ],
+            )
           ]),
           ...transazioni.take(5).map((tx) => Card(
             color: _cardBg,
