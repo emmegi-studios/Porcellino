@@ -2014,79 +2014,171 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   void _mostraFoglioResoconto() {
     double bilancioNetto = entrateMese - usciteMese;
-    showModalBottomSheet(context: context,
-      isScrollControlled: true, backgroundColor: Theme.of(context).brightness == Brightness.dark ? Color(0xFF1A1528) : Colors.white,
+    String searchQuery = "";
+    String filterType = "Tutti";
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF1A1528) : Colors.white,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
       builder: (context) {
-        return Container(
-          padding: const EdgeInsets.all(24),
-          constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.8),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        return StatefulBuilder(
+          builder: (stCtx, setModalState) {
+            final transazioniFiltrate = transazioni.where((tx) {
+              final cat = (tx['category'] ?? '').toString().toLowerCase();
+              final note = (tx['note'] ?? '').toString().toLowerCase();
+              final author = (tx['author'] ?? '').toString().toLowerCase();
+              final q = searchQuery.toLowerCase();
+
+              final matchesSearch = q.isEmpty || cat.contains(q) || note.contains(q) || author.contains(q);
+
+              final type = (tx['type'] ?? '').toString();
+              bool matchesType = true;
+              if (filterType == 'Uscite') {
+                matchesType = type.contains('Uscita');
+              } else if (filterType == 'Entrate') {
+                matchesType = type.contains('Entrata');
+              }
+
+              return matchesSearch && matchesType;
+            }).toList();
+
+            return Container(
+              padding: EdgeInsets.only(
+                left: 20,
+                right: 20,
+                top: 20,
+                bottom: MediaQuery.of(stCtx).viewInsets.bottom + 20,
+              ),
+              constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.85),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text("📋 Foglio Resoconto Cloud", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: _textColor)),
-                      IconButton(
-                        icon: Icon(Icons.download, color: _primaryColor),
-                        tooltip: 'Esporta CSV',
-                        onPressed: () { HapticFeedback.lightImpact();
-                          _esportaCSV();
-                        },
+                      Row(
+                        children: [
+                          Text("📋 Resoconto Movimenti", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: _textColor)),
+                          IconButton(
+                            icon: Icon(Icons.download, color: _primaryColor),
+                            tooltip: 'Esporta CSV',
+                            onPressed: () {
+                              HapticFeedback.lightImpact();
+                              _esportaCSV();
+                            },
+                          ),
+                        ],
                       ),
+                      Icon(Icons.description, color: _primaryColor),
                     ],
                   ),
-                  Icon(Icons.description, color: _primaryColor)]),
-              const SizedBox(height: 16),
-              Card(
-                color: _scaffoldBg,
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text("RIEPILOGO BILANCIO COMUNE", style: TextStyle(fontSize: 10, color: _subtitleColor, fontWeight: FontWeight.bold)),
-                      const SizedBox(height: 8),
-                      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text("Entrate Totali:", style: TextStyle(color: _textColor)), Text("€ ${entrateMese.toStringAsFixed(2)}", style: TextStyle(color: Colors.blueAccent, fontWeight: FontWeight.bold))]),
-                      const SizedBox(height: 4),
-                      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text("Uscite Totali:", style: TextStyle(color: _textColor)), Text("€ ${usciteMese.toStringAsFixed(2)}", style: TextStyle(color: _primaryColor, fontWeight: FontWeight.bold))]),
-                      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text("Bilancio Netto:", style: TextStyle(color: _textColor)), Text("€ ${bilancioNetto.toStringAsFixed(2)}", style: TextStyle(color: bilancioNetto >= 0 ? const Color(0xFF10B981) : _primaryColor, fontWeight: FontWeight.bold))])]))),
-              const SizedBox(height: 16),
-              Text("Movimenti Cloud (Swipe per eliminare)", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: _subtitleColor)),
-              const SizedBox(height: 8),
-              Expanded(
-                child: ListView.builder(
-                  itemCount: transazioni.length,
-                  itemBuilder: (context, index) {
-                    final tx = transazioni[index];
-                    return Dismissible(
-                      key: Key('${tx['category']}_${tx['amount']}_$index'),
-                      direction: DismissDirection.endToStart,
-                      background: Container(
-                        alignment: Alignment.centerRight,
-                        padding: const EdgeInsets.only(right: 20),
-                        color: Colors.red,
-                        child: Icon(Icons.delete, color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87)),
-                      onDismissed: (direction) => _eliminaTransazione(index),
-                      child: ListTile(
-                        dense: true,
-                        title: Text(tx['category'], style: TextStyle(fontWeight: FontWeight.bold, color: _textColor)),
-                        subtitle: Text("${tx['note']} • Inserito da: ${tx['author'] ?? 'Utente'}", style: TextStyle(color: _subtitleColor)),
-                        trailing: Text(
-                          "${tx['type'].contains('Entrata') ? '+' : '-'}€ ${tx['amount'].toStringAsFixed(2)}",
-                          style: TextStyle(color: tx['type'].contains('Entrata') ? const Color(0xFF10B981) : _primaryColor, fontWeight: FontWeight.bold))));
-                  })),
-              const SizedBox(height: 12),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(backgroundColor: _primaryColor, padding: const EdgeInsets.symmetric(vertical: 14)),
-                onPressed: () => Navigator.pop(context),
-                child: Text("Chiudi Resoconto", style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87, fontWeight: FontWeight.bold)))
-            ]));
-      });
+                  const SizedBox(height: 12),
+                  Card(
+                    color: _scaffoldBg,
+                    child: Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text("RIEPILOGO BILANCIO COMUNE", style: TextStyle(fontSize: 10, color: _subtitleColor, fontWeight: FontWeight.bold)),
+                          const SizedBox(height: 6),
+                          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text("Entrate Totali:", style: TextStyle(color: _textColor, fontSize: 13)), Text("€ ${entrateMese.toStringAsFixed(2)}", style: const TextStyle(color: Colors.blueAccent, fontWeight: FontWeight.bold, fontSize: 13))]),
+                          const SizedBox(height: 2),
+                          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text("Uscite Totali:", style: TextStyle(color: _textColor, fontSize: 13)), Text("€ ${usciteMese.toStringAsFixed(2)}", style: TextStyle(color: _primaryColor, fontWeight: FontWeight.bold, fontSize: 13))]),
+                          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text("Bilancio Netto:", style: TextStyle(color: _textColor, fontSize: 13)), Text("€ ${bilancioNetto.toStringAsFixed(2)}", style: TextStyle(color: bilancioNetto >= 0 ? const Color(0xFF10B981) : _primaryColor, fontWeight: FontWeight.bold, fontSize: 13))]),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  TextField(
+                    style: TextStyle(color: _textColor, fontSize: 13),
+                    decoration: InputDecoration(
+                      hintText: "Cerca per categoria, nota o autore...",
+                      hintStyle: TextStyle(color: _subtitleColor, fontSize: 12),
+                      prefixIcon: Icon(Icons.search, color: _primaryColor, size: 18),
+                      suffixIcon: searchQuery.isNotEmpty
+                          ? IconButton(
+                              icon: const Icon(Icons.clear, size: 16),
+                              onPressed: () => setModalState(() => searchQuery = ""),
+                            )
+                          : null,
+                      filled: true,
+                      fillColor: _scaffoldBg,
+                      contentPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+                    ),
+                    onChanged: (val) => setModalState(() => searchQuery = val),
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: ['Tutti', 'Uscite', 'Entrate'].map((f) {
+                      final isSelected = filterType == f;
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                        child: ChoiceChip(
+                          label: Text(f, style: TextStyle(fontSize: 11, color: isSelected ? Colors.white : _textColor, fontWeight: FontWeight.bold)),
+                          selected: isSelected,
+                          selectedColor: _primaryColor,
+                          backgroundColor: _scaffoldBg,
+                          onSelected: (selected) {
+                            if (selected) setModalState(() => filterType = f);
+                          },
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                  const SizedBox(height: 8),
+                  Expanded(
+                    child: transazioniFiltrate.isEmpty
+                        ? Center(child: Text("Nessuna transazione trovata", style: TextStyle(color: _subtitleColor, fontSize: 12)))
+                        : ListView.builder(
+                            itemCount: transazioniFiltrate.length,
+                            itemBuilder: (context, index) {
+                              final tx = transazioniFiltrate[index];
+                              final origIdx = transazioni.indexOf(tx);
+                              return Dismissible(
+                                key: Key('${tx['category']}_${tx['amount']}_$origIdx'),
+                                direction: DismissDirection.endToStart,
+                                background: Container(
+                                  alignment: Alignment.centerRight,
+                                  padding: const EdgeInsets.only(right: 20),
+                                  color: Colors.red,
+                                  child: const Icon(Icons.delete, color: Colors.white),
+                                ),
+                                onDismissed: (direction) {
+                                  _eliminaTransazione(origIdx);
+                                  setModalState(() {});
+                                },
+                                child: ListTile(
+                                  dense: true,
+                                  title: Text(tx['category'], style: TextStyle(fontWeight: FontWeight.bold, color: _textColor)),
+                                  subtitle: Text("${tx['note']} • ${tx['author'] ?? 'Utente'}", style: TextStyle(color: _subtitleColor)),
+                                  trailing: Text(
+                                    "${tx['type'].contains('Entrata') ? '+' : '-'}€ ${tx['amount'].toStringAsFixed(2)}",
+                                    style: TextStyle(color: tx['type'].contains('Entrata') ? const Color(0xFF10B981) : _primaryColor, fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                  ),
+                  const SizedBox(height: 8),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(backgroundColor: _primaryColor, padding: const EdgeInsets.symmetric(vertical: 12)),
+                    onPressed: () => Navigator.pop(context),
+                    child: Text("Chiudi Resoconto", style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87, fontWeight: FontWeight.bold)),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
   }
 
   void _mostraModalInserimento() {
