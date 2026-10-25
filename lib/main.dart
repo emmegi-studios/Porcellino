@@ -1450,6 +1450,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   final TextEditingController _inviteController = TextEditingController();
   String _selectedType = 'Uscita (Spesa)';
   String _selectedCategory = '🐾 Animali';
+  String _selectedRecurrence = 'Nessuna';
   final List<String> categorieConEmoji = ['💰 Stipendio / Entrate', '🍔 Cibo & Spesa', '🏠 Casa & Affitto', '🚗 Trasporti', '💡 Bollette & Utenze', '🎉 Svago & Hobby', '🐾 Animali',
   '📦 Altro'];
 
@@ -2156,7 +2157,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                 child: ListTile(
                                   dense: true,
                                   title: Text(tx['category'], style: TextStyle(fontWeight: FontWeight.bold, color: _textColor)),
-                                  subtitle: Text("${tx['note']} • ${tx['author'] ?? 'Utente'}", style: TextStyle(color: _subtitleColor)),
+                                  subtitle: Text("${tx['note']}${(tx['recurrence'] != null && tx['recurrence'] != 'Nessuna') ? ' • 🔄 ' + tx['recurrence'] : ''} • ${tx['author'] ?? 'Utente'}", style: TextStyle(color: _subtitleColor)),
                                   trailing: Text(
                                     "${tx['type'].contains('Entrata') ? '+' : '-'}€ ${tx['amount'].toStringAsFixed(2)}",
                                     style: TextStyle(color: tx['type'].contains('Entrata') ? const Color(0xFF10B981) : _primaryColor, fontWeight: FontWeight.bold),
@@ -2228,6 +2229,27 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 style: TextStyle(color: _textColor),
                 decoration: InputDecoration(labelText: "Note / Descrizione", labelStyle: TextStyle(color: _subtitleColor),
                   floatingLabelStyle: TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold), filled: true, fillColor: _scaffoldBg, border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)))),
+              const SizedBox(height: 12),
+              DropdownButtonFormField<String>(
+                value: _selectedRecurrence,
+                dropdownColor: _cardBg,
+                style: TextStyle(color: _textColor),
+                decoration: InputDecoration(
+                  labelText: "Ricorrenza Transazione",
+                  labelStyle: TextStyle(color: _subtitleColor),
+                  floatingLabelStyle: const TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold),
+                  filled: true,
+                  fillColor: _scaffoldBg,
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+                items: const [
+                  DropdownMenuItem(value: 'Nessuna', child: Text("➡️ Nessuna (Singola)")),
+                  DropdownMenuItem(value: 'Mensile', child: Text("🔄 Mensile (Ricorrente)")),
+                  DropdownMenuItem(value: 'Annuale', child: Text("📅 Annuale (Ricorrente)")),
+                ],
+                onChanged: (val) => setState(() => _selectedRecurrence = val ?? 'Nessuna'),
+              ),
+              const SizedBox(height: 16),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
                 onPressed: () { HapticFeedback.lightImpact();
@@ -2241,6 +2263,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         "note": note.isEmpty ? _selectedCategory : note,
                         "amount": amount,
                         "type": _selectedType,
+                        "recurrence": _selectedRecurrence,
                         "author": _nomeUtenteDinamico
                       });
                       if (_selectedType.contains('Entrata')) {
@@ -2868,7 +2891,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             color: _cardBg,
             child: ListTile(
               title: Text(tx['category'], style: TextStyle(fontWeight: FontWeight.bold, color: _textColor)),
-              subtitle: Text("${tx['note']} • ${tx['author'] ?? 'Utente'}", style: TextStyle(color: _subtitleColor)),
+              subtitle: Text("${tx['note']}${(tx['recurrence'] != null && tx['recurrence'] != 'Nessuna') ? ' • 🔄 ' + tx['recurrence'] : ''} • ${tx['author'] ?? 'Utente'}", style: TextStyle(color: _subtitleColor)),
               trailing: Text("${tx['type'].contains('Entrata') ? '+' : '-'}€${tx['amount']}", style: TextStyle(color: tx['type'].contains('Entrata') ? Colors.greenAccent : _primaryColor, fontWeight: FontWeight.bold)))))]));
   }
 
