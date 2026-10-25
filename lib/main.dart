@@ -1620,6 +1620,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     await prefs.setDouble('patrimonio', patrimonio);
     await prefs.setDouble('entrateMese', entrateMese);
     await prefs.setDouble('usciteMese', usciteMese);
+    await prefs.setString('cache_transazioni', jsonEncode(transazioni));
     await prefs.setString('selectedTheme', 'Piggy Dark');
 
     try {
@@ -2281,6 +2282,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                   child: const Icon(Icons.delete, color: Colors.white),
                                 ),
                                 onDismissed: (direction) {
+                                  HapticFeedback.mediumImpact();
                                   _eliminaTransazione(origIdx);
                                   setModalState(() {});
                                 },
