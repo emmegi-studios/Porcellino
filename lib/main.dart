@@ -510,6 +510,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
+  double _fabYOffset = 0.0;
 
   void _scollegaCaveauCondiviso() async {
     final prefs = await SharedPreferences.getInstance();
@@ -2681,14 +2682,28 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             icon: Icon(Icons.settings, color: _primaryColor),
             tooltip: "Impostazioni e Temi",
             onPressed: _mostraModalImpostazioni)]),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _mostraPiggyAI(context, _isDarkTheme),
-        elevation: 6,
-        child: ClipOval(
-          child: Image.asset(
-            'assets/images/piggy_ai_assistant.png',
-            width: 48, height: 48, fit: BoxFit.cover,
-            errorBuilder: (c, e, s) => Icon(Icons.savings, color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87, size: 28),
+      floatingActionButton: Transform.translate(
+        offset: Offset(0, _fabYOffset),
+        child: GestureDetector(
+          onVerticalDragUpdate: (details) {
+            setState(() {
+              _fabYOffset = (_fabYOffset + details.delta.dy).clamp(-500.0, 40.0);
+            });
+          },
+          child: FloatingActionButton(
+            onPressed: () => _mostraPiggyAI(context, _isDarkTheme),
+            elevation: 8,
+            shape: const CircleBorder(),
+            backgroundColor: Colors.pinkAccent,
+            child: ClipOval(
+              child: Image.asset(
+                'assets/images/piggy_ai_assistant.png',
+                width: 52,
+                height: 52,
+                fit: BoxFit.cover,
+                errorBuilder: (c, e, s) => const Icon(Icons.savings, color: Colors.white, size: 28),
+              ),
+            ),
           ),
         ),
       ),
@@ -3638,7 +3653,7 @@ Rispondi all'utente in italiano in modo chiaro, sintetico e pratico, dando consi
 Richiesta dell'utente: $prompt""";
 
   try {
-    final url = Uri.parse("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=$apiKey");
+    final url = Uri.parse("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=$apiKey");
     final response = await client.post(
       url,
       headers: {'Content-Type': 'application/json'},
@@ -3658,7 +3673,8 @@ Richiesta dell'utente: $prompt""";
       final String text = data['candidates'][0]['content']['parts'][0]['text'] ?? 'Nessuna risposta ricevuta.';
       return text.trim();
     } else {
-      return "⚠️ Unità Piggy AI temporaneamente non raggiungibile. Codice: ${response.statusCode}";
+      final errBody = response.body;
+      return "⚠️ Errore ${response.statusCode}: ${errBody.length > 120 ? errBody.substring(0, 120) + '...' : errBody}";
     }
   } catch (e) {
     return "❌ Errore di connessione col Caveau AI: $e";
