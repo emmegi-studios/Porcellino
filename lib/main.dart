@@ -2687,7 +2687,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         child: GestureDetector(
           onVerticalDragUpdate: (details) {
             setState(() {
-              _fabYOffset = (_fabYOffset + details.delta.dy).clamp(-500.0, 40.0);
+              _fabYOffset = (_fabYOffset + details.delta.dy).clamp(-380.0, 0.0);
             });
           },
           child: FloatingActionButton(
@@ -3657,9 +3657,7 @@ Richiesta dell"utente: $prompt""";
   final candidateEndpoints = [
     "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent",
     "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent",
-    "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent",
-    "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent",
-    "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent"
+    "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent"
   ];
 
   String lastErrDetail = "";
