@@ -2678,20 +2678,14 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   const SizedBox(width: 4),
                   Text(_nomeUtenteDinamico, style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: _textColor))]))),
           IconButton(
+            icon: const Icon(Icons.auto_awesome, color: Colors.pinkAccent),
+            tooltip: "Piggy AI",
+            onPressed: () => _mostraPiggyAI(context, _isDarkTheme),
+          ),
+          IconButton(
             icon: Icon(Icons.settings, color: _primaryColor),
             tooltip: "Impostazioni e Temi",
             onPressed: _mostraModalImpostazioni)]),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _mostraPiggyAI(context, _isDarkTheme),
-        elevation: 6,
-        child: ClipOval(
-          child: Image.asset(
-            'assets/images/piggy_ai_assistant.png',
-            width: 48, height: 48, fit: BoxFit.cover,
-            errorBuilder: (c, e, s) => Icon(Icons.savings, color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87, size: 28),
-          ),
-        ),
-      ),
       body: ListView(
         padding: const EdgeInsets.all(16.0),
         children: [
@@ -3638,7 +3632,7 @@ Rispondi all'utente in italiano in modo chiaro, sintetico e pratico, dando consi
 Richiesta dell'utente: $prompt""";
 
   try {
-    final url = Uri.parse("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=$apiKey");
+    final url = Uri.parse("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=$apiKey");
     final response = await client.post(
       url,
       headers: {'Content-Type': 'application/json'},
