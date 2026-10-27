@@ -3667,9 +3667,8 @@ Rispondi all'utente in italiano in modo chiaro, sintetico e pratico, dando consi
 Richiesta dell'utente: $prompt""";
 
   final candidateEndpoints = [
-    "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent",
-    "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent",
-    "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent"
+    "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent",
+    "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent"
   ];
 
   String lastErrDetail = "";
