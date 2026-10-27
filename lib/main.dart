@@ -3100,7 +3100,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 String _selectedPersonality = 'Cyber-Tecno';
 
 void _mostraPiggyAI(BuildContext context, [bool? isDarkOverride]) {
-    final bool isDark = isDarkOverride ?? (_isDarkTheme);
+    final bool isDark = isDarkOverride ?? (Theme.of(context).brightness == Brightness.dark);
     final TextEditingController modalInputController = TextEditingController();
     final SpeechToText speechToText = SpeechToText();
     bool isListening = false;
@@ -3234,7 +3234,7 @@ void _mostraPiggyAI(BuildContext context, [bool? isDarkOverride]) {
                       width: 40,
                       height: 4,
                       decoration: BoxDecoration(
-                        color: (_isDarkTheme) ? Colors.white : Colors.black87,
+                        color: isDark ? Colors.white : Colors.black87,
                         borderRadius: BorderRadius.circular(2),
                       ),
                     ),
@@ -3254,7 +3254,7 @@ void _mostraPiggyAI(BuildContext context, [bool? isDarkOverride]) {
                               ),
                             ),
                             const SizedBox(width: 8),
-                            Text("Piggy AI", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: (_isDarkTheme) ? Colors.white : const Color(0xFF111125))),
+                            Text("Piggy AI", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: isDark ? Colors.white : const Color(0xFF111125))),
                             const SizedBox(width: 8),
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
@@ -3268,12 +3268,12 @@ void _mostraPiggyAI(BuildContext context, [bool? isDarkOverride]) {
                           ],
                         ),
                         IconButton(
-                          icon: Icon(Icons.tune, color: (_isDarkTheme) ? Colors.white : Colors.black87),
+                          icon: Icon(Icons.tune, color: isDark ? Colors.white : Colors.black87),
                           tooltip: 'Personalità Piggy AI',
                           onPressed: () {
                             showModalBottomSheet(
                               context: context,
-                              backgroundColor: (_isDarkTheme) ? Color(0xFF1E2235) : Colors.white,
+                              backgroundColor: isDark ? Color(0xFF1E2235) : Colors.white,
                               shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
                               builder: (pCtx) => StatefulBuilder(
                                 builder: (pCtx, setPState) => Padding(
@@ -3282,11 +3282,11 @@ void _mostraPiggyAI(BuildContext context, [bool? isDarkOverride]) {
                                     mainAxisSize: MainAxisSize.min,
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      Text('🎭 Personalità Piggy AI', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: (_isDarkTheme) ? Colors.white : Colors.black87)),
+                                      Text('🎭 Personalità Piggy AI', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: isDark ? Colors.white : Colors.black87)),
                                       const SizedBox(height: 12),
                                       ListTile(
-                                        title: Text('Cyber-Tecno', style: TextStyle(color: (_isDarkTheme) ? Colors.white : Colors.black87, fontWeight: FontWeight.bold, fontSize: 13)),
-                                        subtitle: Text('⚡ Agente ad alta tecnologia. Focus sul Caveau.', style: TextStyle(color: (_isDarkTheme) ? Colors.white70 : Color(0xFF222233), fontSize: 11)),
+                                        title: Text('Cyber-Tecno', style: TextStyle(color: isDark ? Colors.white : Colors.black87, fontWeight: FontWeight.bold, fontSize: 13)),
+                                        subtitle: Text('⚡ Agente ad alta tecnologia. Focus sul Caveau.', style: TextStyle(color: isDark ? Colors.white70 : Color(0xFF222233), fontSize: 11)),
                                         trailing: _selectedPersonality == 'Cyber-Tecno' ? Icon(Icons.check_circle, color: Colors.pinkAccent, size: 20) : null,
                                         onTap: () async {
                                           _selectedPersonality = 'Cyber-Tecno';
@@ -3297,8 +3297,8 @@ void _mostraPiggyAI(BuildContext context, [bool? isDarkOverride]) {
                                         },
                                       ),
                                       ListTile(
-                                        title: Text('Strategico & Ironico', style: TextStyle(color: (_isDarkTheme) ? Colors.white : Colors.black87, fontWeight: FontWeight.bold, fontSize: 13)),
-                                        subtitle: Text('🎯 Saggio e pungente. Battute intelligenti.', style: TextStyle(color: (_isDarkTheme) ? Colors.white70 : Color(0xFF222233), fontSize: 11)),
+                                        title: Text('Strategico & Ironico', style: TextStyle(color: isDark ? Colors.white : Colors.black87, fontWeight: FontWeight.bold, fontSize: 13)),
+                                        subtitle: Text('🎯 Saggio e pungente. Battute intelligenti.', style: TextStyle(color: isDark ? Colors.white70 : Color(0xFF222233), fontSize: 11)),
                                         trailing: _selectedPersonality == 'Strategico & Ironico' ? Icon(Icons.check_circle, color: Colors.pinkAccent, size: 20) : null,
                                         onTap: () async {
                                           _selectedPersonality = 'Strategico & Ironico';
@@ -3309,8 +3309,8 @@ void _mostraPiggyAI(BuildContext context, [bool? isDarkOverride]) {
                                         },
                                       ),
                                       ListTile(
-                                        title: Text('Amichevole Smart', style: TextStyle(color: (_isDarkTheme) ? Colors.white : Colors.black87, fontWeight: FontWeight.bold, fontSize: 13)),
-                                        subtitle: Text('🤝 Compagno fidato. Semplice e caloroso.', style: TextStyle(color: (_isDarkTheme) ? Colors.white70 : Color(0xFF222233), fontSize: 11)),
+                                        title: Text('Amichevole Smart', style: TextStyle(color: isDark ? Colors.white : Colors.black87, fontWeight: FontWeight.bold, fontSize: 13)),
+                                        subtitle: Text('🤝 Compagno fidato. Semplice e caloroso.', style: TextStyle(color: isDark ? Colors.white70 : Color(0xFF222233), fontSize: 11)),
                                         trailing: _selectedPersonality == 'Amichevole Smart' ? Icon(Icons.check_circle, color: Colors.pinkAccent, size: 20) : null,
                                         onTap: () async {
                                           _selectedPersonality = 'Amichevole Smart';
@@ -3321,8 +3321,8 @@ void _mostraPiggyAI(BuildContext context, [bool? isDarkOverride]) {
                                         },
                                       ),
                                       ListTile(
-                                        title: Text('Formale & Analitico', style: TextStyle(color: (_isDarkTheme) ? Colors.white : Colors.black87, fontWeight: FontWeight.bold, fontSize: 13)),
-                                        subtitle: Text('📊 Consulente rigoroso. Cifre e statistiche.', style: TextStyle(color: (_isDarkTheme) ? Colors.white70 : Color(0xFF222233), fontSize: 11)),
+                                        title: Text('Formale & Analitico', style: TextStyle(color: isDark ? Colors.white : Colors.black87, fontWeight: FontWeight.bold, fontSize: 13)),
+                                        subtitle: Text('📊 Consulente rigoroso. Cifre e statistiche.', style: TextStyle(color: isDark ? Colors.white70 : Color(0xFF222233), fontSize: 11)),
                                         trailing: _selectedPersonality == 'Formale & Analitico' ? Icon(Icons.check_circle, color: Colors.pinkAccent, size: 20) : null,
                                         onTap: () async {
                                           _selectedPersonality = 'Formale & Analitico';
@@ -3369,7 +3369,7 @@ void _mostraPiggyAI(BuildContext context, [bool? isDarkOverride]) {
                         ),
                       ],
                     ),
-                    Divider(color: (_isDarkTheme) ? Colors.white : Colors.black87, height: 20),
+                    Divider(color: isDark ? Colors.white : Colors.black87, height: 20),
                     Expanded(
                       child: ListView.builder(
                         itemCount: chatMessages.length,
@@ -3382,12 +3382,12 @@ void _mostraPiggyAI(BuildContext context, [bool? isDarkOverride]) {
                               margin: const EdgeInsets.symmetric(vertical: 4),
                               padding: const EdgeInsets.all(12),
                               decoration: BoxDecoration(
-                                color: isUser ? Colors.pinkAccent : (_isDarkTheme) ? const Color(0xFF1E2235) : Colors.grey.shade200,
+                                color: isUser ? Colors.pinkAccent : isDark ? const Color(0xFF1E2235) : Colors.grey.shade200,
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Text(
                                 msg["text"] ?? "",
-                                style: TextStyle(color: (_isDarkTheme) ? Colors.white : Colors.black87, fontSize: 13),
+                                style: TextStyle(color: isDark ? Colors.white : Colors.black87, fontSize: 13),
                               ),
                             ),
                           );
@@ -3400,12 +3400,12 @@ void _mostraPiggyAI(BuildContext context, [bool? isDarkOverride]) {
                         Expanded(
                           child: TextField(
                             controller: modalInputController,
-                            style: TextStyle(color: (_isDarkTheme) ? Colors.white : Colors.black87, fontSize: 14),
+                            style: TextStyle(color: isDark ? Colors.white : Colors.black87, fontSize: 14),
                             decoration: InputDecoration(
                               hintText: isListening ? "Listening..." : "Chiedi a Piggy AI...",
-                              hintStyle: TextStyle(color: (_isDarkTheme) ? Colors.white : Colors.black87.withOpacity(0.4), fontSize: 13),
+                              hintStyle: TextStyle(color: isDark ? Colors.white : Colors.black87.withOpacity(0.4), fontSize: 13),
                               filled: true,
-                              fillColor: (_isDarkTheme) ? const Color(0xFF1E2235) : Colors.grey.shade200,
+                              fillColor: isDark ? const Color(0xFF1E2235) : Colors.grey.shade200,
                               border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
                               contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                             ),
@@ -3441,7 +3441,7 @@ class InviteManager extends StatefulWidget {
 }
 
 class _InviteManagerState extends State<InviteManager> {
-  bool get isDark => _isDarkTheme;
+  bool get isDark => (Theme.of(context).brightness == Brightness.dark);
   String? currentEmail;
 
   
@@ -3527,7 +3527,7 @@ class _InviteManagerState extends State<InviteManager> {
       margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: (_isDarkTheme) ? const Color(0xFF1E2235) : Colors.grey.shade200,
+        color: (Theme.of(context).brightness == Brightness.dark) ? const Color(0xFF1E2235) : Colors.grey.shade200,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: coloreRischio.withOpacity(0.5), width: 1.5),
         boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 8, spreadRadius: 2)],
@@ -3538,7 +3538,7 @@ class _InviteManagerState extends State<InviteManager> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Stato Rischio Caveau', style: TextStyle(color: (_isDarkTheme) ? Colors.white70 : Colors.black87, fontSize: 13, fontWeight: FontWeight.bold)),
+              Text('Stato Rischio Caveau', style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white70 : Colors.black87, fontSize: 13, fontWeight: FontWeight.bold)),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(color: coloreRischio.withOpacity(0.2), borderRadius: BorderRadius.circular(8)),
