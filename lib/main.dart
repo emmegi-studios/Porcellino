@@ -2682,33 +2682,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             icon: Icon(Icons.settings, color: _primaryColor),
             tooltip: "Impostazioni e Temi",
             onPressed: _mostraModalImpostazioni)]),
-      floatingActionButton: Transform.translate(
-        offset: Offset(0, _fabYOffset),
-        child: GestureDetector(
-          onTap: () => _mostraPiggyAI(context, _isDarkTheme),
-          onVerticalDragUpdate: (details) {
-            setState(() {
-              _fabYOffset = (_fabYOffset + details.delta.dy).clamp(-420.0, 0.0);
-            });
-          },
-          child: FloatingActionButton(
-            onPressed: null, // Disabilitato per evitare conflitti di gesture con GestureDetector
-            elevation: 8,
-            shape: const CircleBorder(),
-            backgroundColor: Colors.pinkAccent,
-            child: ClipOval(
-              child: Image.asset(
-                'assets/images/piggy_ai_assistant.png',
-                width: 52,
-                height: 52,
-                fit: BoxFit.cover,
-                errorBuilder: (c, e, s) => const Icon(Icons.savings, color: Colors.white, size: 28),
-              ),
-            ),
-          ),
-        ),
-      ),
-      body: ListView(
+      body: Stack(
+        children: [
+          ListView(
         padding: const EdgeInsets.all(16.0),
         children: [
           Card(
@@ -3045,7 +3021,41 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             child: ListTile(
               title: Text(tx['category'], style: TextStyle(fontWeight: FontWeight.bold, color: _textColor)),
               subtitle: Text("${tx['note']}${(tx['recurrence'] != null && tx['recurrence'] != 'Nessuna') ? ' • 🔄 ' + tx['recurrence'] : ''} • ${tx['author'] ?? 'Utente'}", style: TextStyle(color: _subtitleColor)),
-              trailing: Text("${tx['type'].contains('Entrata') ? '+' : '-'}€${tx['amount']}", style: TextStyle(color: tx['type'].contains('Entrata') ? Colors.greenAccent : _primaryColor, fontWeight: FontWeight.bold)))))]));
+              trailing: Text("${tx['type'].contains('Entrata') ? '+' : '-'}€${tx['amount']}", style: TextStyle(color: tx['type'].contains('Entrata') ? Colors.greenAccent : _primaryColor, fontWeight: FontWeight.bold)))))]),
+          Positioned(
+            right: 16,
+            bottom: 80 - _fabYOffset, 
+            child: GestureDetector(
+              onTap: () => _mostraPiggyAI(context, _isDarkTheme),
+              onVerticalDragUpdate: (details) {
+                setState(() {
+                  _fabYOffset = (_fabYOffset + details.delta.dy).clamp(-420.0, 0.0);
+                });
+              },
+              child: Container(
+                width: 58,
+                height: 58,
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.pinkAccent,
+                  boxShadow: [
+                    BoxShadow(color: Colors.black38, blurRadius: 10, offset: Offset(0, 4))
+                  ],
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(3.0),
+                  child: ClipOval(
+                    child: Image.asset(
+                      'assets/images/piggy_ai_assistant.png',
+                      fit: BoxFit.cover,
+                      errorBuilder: (c, e, s) => const Icon(Icons.savings, color: Colors.white, size: 28),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          )
+        ]));
   }
 
   Widget _buildTappaBadge(String titolo, String sub, IconData icona, Color colore, bool completata) {
@@ -3656,9 +3666,8 @@ Rispondi all'utente in italiano in modo chiaro, sintetico e pratico, dando consi
 Richiesta dell'utente: $prompt""";
 
   final candidateEndpoints = [
-    "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent",
-    "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent",
-    "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent"
+    "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
+    "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent"
   ];
 
   String lastErrDetail = "";
