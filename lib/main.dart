@@ -8,6 +8,7 @@ import 'package:home_widget/home_widget.dart';
 import 'dart:convert';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:flutter/material.dart';
+import 'package:draggable_fab/draggable_fab.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:dio/dio.dart';
@@ -229,8 +230,8 @@ class _LoginScreenState extends State<LoginScreen> {
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text("Primo accesso: inserisci email e password per abilitare la biometria.", style: TextStyle(color: Colors.white)),
-              backgroundColor: const Color(0xFF1E2235),
+              content: Text("Primo accesso: inserisci email e password per abilitare la biometria.", style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87)),
+              backgroundColor: (Theme.of(context).brightness == Brightness.dark) ? const Color(0xFF1E2235) : Colors.grey.shade200,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12), side: const BorderSide(color: Colors.pinkAccent)),
             ),
           );
@@ -248,8 +249,8 @@ class _LoginScreenState extends State<LoginScreen> {
     if (email.isEmpty || password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text("Compila tutti i campi", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-          backgroundColor: const Color(0xFF1E2235),
+          content: Text("Compila tutti i campi", style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87, fontWeight: FontWeight.bold)),
+          backgroundColor: (Theme.of(context).brightness == Brightness.dark) ? const Color(0xFF1E2235) : Colors.grey.shade200,
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
@@ -266,8 +267,8 @@ class _LoginScreenState extends State<LoginScreen> {
         if (password != _confirmPasswordController.text.trim()) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text("Le password non coincidono", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-              backgroundColor: const Color(0xFF1E2235),
+              content: Text("Le password non coincidono", style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87, fontWeight: FontWeight.bold)),
+              backgroundColor: (Theme.of(context).brightness == Brightness.dark) ? const Color(0xFF1E2235) : Colors.grey.shade200,
               behavior: SnackBarBehavior.floating,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
@@ -306,8 +307,8 @@ class _LoginScreenState extends State<LoginScreen> {
         }
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(msg, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-            backgroundColor: const Color(0xFF1E2235),
+            content: Text(msg, style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87, fontWeight: FontWeight.bold)),
+            backgroundColor: (Theme.of(context).brightness == Brightness.dark) ? const Color(0xFF1E2235) : Colors.grey.shade200,
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
@@ -326,8 +327,8 @@ class _LoginScreenState extends State<LoginScreen> {
     if (email.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text("Inserisci prima la tua email per il recupero", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-          backgroundColor: const Color(0xFF1E2235),
+          content: Text("Inserisci prima la tua email per il recupero", style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87, fontWeight: FontWeight.bold)),
+          backgroundColor: (Theme.of(context).brightness == Brightness.dark) ? const Color(0xFF1E2235) : Colors.grey.shade200,
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
@@ -342,8 +343,8 @@ class _LoginScreenState extends State<LoginScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text("Email di recupero inviata! Controlla la posta.", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-            backgroundColor: const Color(0xFF1E2235),
+            content: Text("Email di recupero inviata! Controlla la posta.", style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87, fontWeight: FontWeight.bold)),
+            backgroundColor: (Theme.of(context).brightness == Brightness.dark) ? const Color(0xFF1E2235) : Colors.grey.shade200,
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
@@ -356,8 +357,8 @@ class _LoginScreenState extends State<LoginScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text("Errore: ${e.toString()}", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-            backgroundColor: const Color(0xFF1E2235),
+            content: Text("Errore: ${e.toString()}", style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87, fontWeight: FontWeight.bold)),
+            backgroundColor: (Theme.of(context).brightness == Brightness.dark) ? const Color(0xFF1E2235) : Colors.grey.shade200,
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
@@ -474,7 +475,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 icon: Icon(Icons.fingerprint, color: Colors.pinkAccent, size: 26),
                 label: Text(
                   "Accedi con Impronta / FaceID",
-                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15)
+                  style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87, fontWeight: FontWeight.bold, fontSize: 15)
                 ),
               ),
               if (!_isRegistrazione) ...[
@@ -798,7 +799,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 children: [
                   Text(
                     "📊 Analisi Spese per Categoria",
-                    style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                    style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87, fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   IconButton(
                     icon: Icon(Icons.close, color: Colors.grey),
@@ -835,7 +836,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(item.key, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14)),
+                                Text(item.key, style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87, fontWeight: FontWeight.bold, fontSize: 14)),
                                 Text("€${item.value.toStringAsFixed(2)} (${(pct * 100).toStringAsFixed(1)}%)", style: TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold, fontSize: 13)),
                               ],
                             ),
@@ -1357,7 +1358,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF1E2235),
+        color: (Theme.of(context).brightness == Brightness.dark) ? const Color(0xFF1E2235) : Colors.grey.shade200,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: progressColor.withOpacity(0.5), width: 1.5),
       ),
@@ -1446,7 +1447,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   }
 
   bool get _isDark => _currentTheme == 'Piggy Dark';
-  Color get _cardBg => _isDark ? const Color(0xFF1E2235) : const Color(0xFFFFFFFF);
+  Color get _cardBg => _isDark ? (Theme.of(context).brightness == Brightness.dark) ? const Color(0xFF1E2235) : Colors.grey.shade200 : const Color(0xFFFFFFFF);
   Color get _textColor => _isDark ? Colors.white : const Color(0xFF1A1A2E);
   Color get _subtitleColor => _isDark ? Colors.white70 : const Color(0xFF222233);
   Color get _primaryColor => Colors.pinkAccent;
@@ -1519,7 +1520,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.pinkAccent),
             icon: Icon(Icons.picture_as_pdf, color: Colors.white, size: 16),
-            label: Text('Esporta PDF', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+            label: Text('Esporta PDF', style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87, fontWeight: FontWeight.bold)),
           
           ),
           TextButton(
@@ -2021,7 +2022,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         borderRadius: BorderRadius.circular(4),
                         child: LinearProgressIndicator(
                           value: percentuale,
-                          backgroundColor: _isDarkTheme ? const Color(0xFF1E2235) : Colors.white10,
+                          backgroundColor: _isDarkTheme ? (Theme.of(context).brightness == Brightness.dark) ? const Color(0xFF1E2235) : Colors.grey.shade200 : Colors.white10,
                           color: Colors.pinkAccent,
                           minHeight: 6,
                         ),
@@ -2421,7 +2422,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   void _mostraGestioneCaveau(BuildContext context) {
     final TextEditingController inputController = TextEditingController();
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
-    final Color bgColor = isDark ? const Color(0xFF1E2235) : Colors.white;
+    final Color bgColor = isDark ? (Theme.of(context).brightness == Brightness.dark) ? const Color(0xFF1E2235) : Colors.grey.shade200 : Colors.white;
     final Color textColor = isDark ? Colors.white : Colors.black87;
 
     showModalBottomSheet(
@@ -2615,7 +2616,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               children: [
                 Icon(Icons.lock_outline, size: 80, color: Colors.pinkAccent),
                 const SizedBox(height: 24),
-                Text("Caveau Bloccato", style: TextStyle(color: Colors.white, fontSize: 26, fontWeight: FontWeight.bold)),
+                Text("Caveau Bloccato", style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87, fontSize: 26, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 8),
                 Text("Autenticati per accedere alla tua Dashboard", style: TextStyle(color: _subtitleColor, fontSize: 14), textAlign: TextAlign.center),
                 const SizedBox(height: 32),
@@ -2627,7 +2628,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   ),
                   onPressed: _sbloccaBiometricoHome,
                   icon: Icon(Icons.fingerprint, color: Colors.white, size: 26),
-                  label: Text("Sblocca ora", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+                  label: Text("Sblocca ora", style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87, fontWeight: FontWeight.bold, fontSize: 16)),
                 ),
               ],
             ),
@@ -3381,7 +3382,7 @@ void _mostraPiggyAI(BuildContext context, [bool? isDarkOverride]) {
                               margin: const EdgeInsets.symmetric(vertical: 4),
                               padding: const EdgeInsets.all(12),
                               decoration: BoxDecoration(
-                                color: isUser ? Colors.pinkAccent : const Color(0xFF1E2235),
+                                color: isUser ? Colors.pinkAccent : (Theme.of(context).brightness == Brightness.dark) ? const Color(0xFF1E2235) : Colors.grey.shade200,
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Text(
@@ -3404,7 +3405,7 @@ void _mostraPiggyAI(BuildContext context, [bool? isDarkOverride]) {
                               hintText: isListening ? "Listening..." : "Chiedi a Piggy AI...",
                               hintStyle: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87.withOpacity(0.4), fontSize: 13),
                               filled: true,
-                              fillColor: const Color(0xFF1E2235),
+                              fillColor: (Theme.of(context).brightness == Brightness.dark) ? const Color(0xFF1E2235) : Colors.grey.shade200,
                               border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
                               contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                             ),
@@ -3526,7 +3527,7 @@ class _InviteManagerState extends State<InviteManager> {
       margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: const Color(0xFF1E2235),
+        color: (Theme.of(context).brightness == Brightness.dark) ? const Color(0xFF1E2235) : Colors.grey.shade200,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: coloreRischio.withOpacity(0.5), width: 1.5),
         boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 8, spreadRadius: 2)],
@@ -3666,8 +3667,7 @@ Rispondi all'utente in italiano in modo chiaro, sintetico e pratico, dando consi
 Richiesta dell'utente: $prompt""";
 
   final candidateEndpoints = [
-    "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
-    "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent"
+    "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent"
   ];
 
   String lastErrDetail = "";
