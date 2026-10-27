@@ -230,8 +230,8 @@ class _LoginScreenState extends State<LoginScreen> {
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text("Primo accesso: inserisci email e password per abilitare la biometria.", style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87)),
-              backgroundColor: (Theme.of(context).brightness == Brightness.dark) ? const Color(0xFF1E2235) : Colors.grey.shade200,
+              content: Text("Primo accesso: inserisci email e password per abilitare la biometria.", style: TextStyle(color: (_isDarkTheme) ? Colors.white : Colors.black87)),
+              backgroundColor: (_isDarkTheme) ? const Color(0xFF1E2235) : Colors.grey.shade200,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12), side: const BorderSide(color: Colors.pinkAccent)),
             ),
           );
@@ -249,8 +249,8 @@ class _LoginScreenState extends State<LoginScreen> {
     if (email.isEmpty || password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text("Compila tutti i campi", style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87, fontWeight: FontWeight.bold)),
-          backgroundColor: (Theme.of(context).brightness == Brightness.dark) ? const Color(0xFF1E2235) : Colors.grey.shade200,
+          content: Text("Compila tutti i campi", style: TextStyle(color: (_isDarkTheme) ? Colors.white : Colors.black87, fontWeight: FontWeight.bold)),
+          backgroundColor: (_isDarkTheme) ? const Color(0xFF1E2235) : Colors.grey.shade200,
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
@@ -267,8 +267,8 @@ class _LoginScreenState extends State<LoginScreen> {
         if (password != _confirmPasswordController.text.trim()) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text("Le password non coincidono", style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87, fontWeight: FontWeight.bold)),
-              backgroundColor: (Theme.of(context).brightness == Brightness.dark) ? const Color(0xFF1E2235) : Colors.grey.shade200,
+              content: Text("Le password non coincidono", style: TextStyle(color: (_isDarkTheme) ? Colors.white : Colors.black87, fontWeight: FontWeight.bold)),
+              backgroundColor: (_isDarkTheme) ? const Color(0xFF1E2235) : Colors.grey.shade200,
               behavior: SnackBarBehavior.floating,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
@@ -307,8 +307,8 @@ class _LoginScreenState extends State<LoginScreen> {
         }
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(msg, style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87, fontWeight: FontWeight.bold)),
-            backgroundColor: (Theme.of(context).brightness == Brightness.dark) ? const Color(0xFF1E2235) : Colors.grey.shade200,
+            content: Text(msg, style: TextStyle(color: (_isDarkTheme) ? Colors.white : Colors.black87, fontWeight: FontWeight.bold)),
+            backgroundColor: (_isDarkTheme) ? const Color(0xFF1E2235) : Colors.grey.shade200,
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
@@ -327,8 +327,8 @@ class _LoginScreenState extends State<LoginScreen> {
     if (email.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text("Inserisci prima la tua email per il recupero", style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87, fontWeight: FontWeight.bold)),
-          backgroundColor: (Theme.of(context).brightness == Brightness.dark) ? const Color(0xFF1E2235) : Colors.grey.shade200,
+          content: Text("Inserisci prima la tua email per il recupero", style: TextStyle(color: (_isDarkTheme) ? Colors.white : Colors.black87, fontWeight: FontWeight.bold)),
+          backgroundColor: (_isDarkTheme) ? const Color(0xFF1E2235) : Colors.grey.shade200,
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
@@ -343,8 +343,8 @@ class _LoginScreenState extends State<LoginScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text("Email di recupero inviata! Controlla la posta.", style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87, fontWeight: FontWeight.bold)),
-            backgroundColor: (Theme.of(context).brightness == Brightness.dark) ? const Color(0xFF1E2235) : Colors.grey.shade200,
+            content: Text("Email di recupero inviata! Controlla la posta.", style: TextStyle(color: (_isDarkTheme) ? Colors.white : Colors.black87, fontWeight: FontWeight.bold)),
+            backgroundColor: (_isDarkTheme) ? const Color(0xFF1E2235) : Colors.grey.shade200,
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
@@ -357,8 +357,8 @@ class _LoginScreenState extends State<LoginScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text("Errore: ${e.toString()}", style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87, fontWeight: FontWeight.bold)),
-            backgroundColor: (Theme.of(context).brightness == Brightness.dark) ? const Color(0xFF1E2235) : Colors.grey.shade200,
+            content: Text("Errore: ${e.toString()}", style: TextStyle(color: (_isDarkTheme) ? Colors.white : Colors.black87, fontWeight: FontWeight.bold)),
+            backgroundColor: (_isDarkTheme) ? const Color(0xFF1E2235) : Colors.grey.shade200,
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
@@ -372,8 +372,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final _cardBg = (Theme.of(context).brightness == Brightness.dark) ? Color(0xFF1E2235) : Colors.white;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final _cardBg = (_isDarkTheme) ? Color(0xFF1E2235) : Colors.white;
+    final isDark = _isDarkTheme;
     final _textColor = isDark ? Colors.white : const Color(0xFF111125);
     final _subtitleColor = isDark ? Colors.white70 : const Color(0xFF4A4D62);
     final _subtleColor = isDark ? Colors.white38 : const Color(0xFF71758A);
@@ -395,7 +395,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 errorBuilder: (context, error, stackTrace) => Icon(Icons.savings, size: 60, color: _primaryColor),
               ),
               const SizedBox(height: 16),
-              Text("Piggy Vault", style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87)),
+              Text("Piggy Vault", style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: (_isDarkTheme) ? Colors.white : Colors.black87)),
               const SizedBox(height: 8),
               Text("Accedi al tuo caveau condiviso", style: TextStyle(fontSize: 14, color: _subtitleColor)),
               const SizedBox(height: 32),
@@ -461,7 +461,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       onPressed: _eseguiAutenticazione,
                       child: Text(
                         _isRegistrazione ? "Registrati e Crea Account" : "Entra nel Caveau Condiviso",
-                        style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87, fontWeight: FontWeight.bold, fontSize: 16),
+                        style: TextStyle(color: (_isDarkTheme) ? Colors.white : Colors.black87, fontWeight: FontWeight.bold, fontSize: 16),
                       ),
                     ),
               const SizedBox(height: 12),
@@ -475,7 +475,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 icon: Icon(Icons.fingerprint, color: Colors.pinkAccent, size: 26),
                 label: Text(
                   "Accedi con Impronta / FaceID",
-                  style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87, fontWeight: FontWeight.bold, fontSize: 15)
+                  style: TextStyle(color: (_isDarkTheme) ? Colors.white : Colors.black87, fontWeight: FontWeight.bold, fontSize: 15)
                 ),
               ),
               if (!_isRegistrazione) ...[
@@ -799,7 +799,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 children: [
                   Text(
                     "📊 Analisi Spese per Categoria",
-                    style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87, fontSize: 18, fontWeight: FontWeight.bold),
+                    style: TextStyle(color: (_isDarkTheme) ? Colors.white : Colors.black87, fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   IconButton(
                     icon: Icon(Icons.close, color: Colors.grey),
@@ -836,7 +836,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(item.key, style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87, fontWeight: FontWeight.bold, fontSize: 14)),
+                                Text(item.key, style: TextStyle(color: (_isDarkTheme) ? Colors.white : Colors.black87, fontWeight: FontWeight.bold, fontSize: 14)),
                                 Text("€${item.value.toStringAsFixed(2)} (${(pct * 100).toStringAsFixed(1)}%)", style: TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold, fontSize: 13)),
                               ],
                             ),
@@ -1096,23 +1096,23 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: (Theme.of(context).brightness == Brightness.dark) ? Color(0xFF1E2235) : Color(0xFFF5F6FA),
+        backgroundColor: (_isDarkTheme) ? Color(0xFF1E2235) : Color(0xFFF5F6FA),
         title: Row(
           children: [
             Icon(Icons.savings, color: Colors.pinkAccent),
             SizedBox(width: 8),
-            Text('Piggy Vault', style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87)),
+            Text('Piggy Vault', style: TextStyle(color: (_isDarkTheme) ? Colors.white : Colors.black87)),
           ],
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Versione: 2.5 Ultimate', style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white70 : Colors.black87)),
+            Text('Versione: 2.5 Ultimate', style: TextStyle(color: (_isDarkTheme) ? Colors.white70 : Colors.black87)),
             SizedBox(height: 8),
             Text('Sviluppato da EmmeGi Studios', style: TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold)),
             SizedBox(height: 8),
-            Text('Assistente Cibernetico: Cyber-Piggy (Modello Terminator v2.5)', style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87, fontSize: 13)),
+            Text('Assistente Cibernetico: Cyber-Piggy (Modello Terminator v2.5)', style: TextStyle(color: (_isDarkTheme) ? Colors.white : Colors.black87, fontSize: 13)),
           ],
         ),
         actions: [
@@ -1130,9 +1130,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
-          backgroundColor: (Theme.of(context).brightness == Brightness.dark) ? Color(0xFF1E2235) : Color(0xFFF5F6FA),
-          title: Text('Aggiornamenti 🚀', style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87)),
-          content: Text('Sei già sulla versione più recente di Piggy Vault v2.0.0!\n\nIl server OTA non ha nuove versioni al momento.', style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white70 : Colors.black87)),
+          backgroundColor: (_isDarkTheme) ? Color(0xFF1E2235) : Color(0xFFF5F6FA),
+          title: Text('Aggiornamenti 🚀', style: TextStyle(color: (_isDarkTheme) ? Colors.white : Colors.black87)),
+          content: Text('Sei già sulla versione più recente di Piggy Vault v2.0.0!\n\nIl server OTA non ha nuove versioni al momento.', style: TextStyle(color: (_isDarkTheme) ? Colors.white70 : Colors.black87)),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
@@ -1181,15 +1181,15 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             SnackBar(
               content: Row(
                 children: [
-                  Icon(Icons.notifications_active, color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87),
+                  Icon(Icons.notifications_active, color: (_isDarkTheme) ? Colors.white : Colors.black87),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text(message.notification!.title ?? 'Nuova attività nel Caveau 🐷', style: TextStyle(fontWeight: FontWeight.bold, color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87)),
-                        Text(message.notification!.body ?? '', style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87)),
+                        Text(message.notification!.title ?? 'Nuova attività nel Caveau 🐷', style: TextStyle(fontWeight: FontWeight.bold, color: (_isDarkTheme) ? Colors.white : Colors.black87)),
+                        Text(message.notification!.body ?? '', style: TextStyle(color: (_isDarkTheme) ? Colors.white : Colors.black87)),
                       ],
                     ),
                   ),
@@ -1293,12 +1293,12 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: (Theme.of(context).brightness == Brightness.dark) ? Color(0xFF1E2235) : Color(0xFFF5F6FA),
-        title: Text("Imposta Tetto di Spesa Mensile", style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87)),
+        backgroundColor: (_isDarkTheme) ? Color(0xFF1E2235) : Color(0xFFF5F6FA),
+        title: Text("Imposta Tetto di Spesa Mensile", style: TextStyle(color: (_isDarkTheme) ? Colors.white : Colors.black87)),
         content: TextField(
           controller: controller,
           keyboardType: const TextInputType.numberWithOptions(decimal: true),
-          style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87),
+          style: TextStyle(color: (_isDarkTheme) ? Colors.white : Colors.black87),
           decoration: const InputDecoration(
             labelText: "Budget (€)",
             labelStyle: TextStyle(color: Colors.grey),
@@ -1317,7 +1317,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               }
               Navigator.pop(context);
             },
-            child: Text("Salva", style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87)),
+            child: Text("Salva", style: TextStyle(color: (_isDarkTheme) ? Colors.white : Colors.black87)),
           ),
         ],
       ),
@@ -1358,7 +1358,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: (Theme.of(context).brightness == Brightness.dark) ? const Color(0xFF1E2235) : Colors.grey.shade200,
+        color: (_isDarkTheme) ? const Color(0xFF1E2235) : Colors.grey.shade200,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: progressColor.withOpacity(0.5), width: 1.5),
       ),
@@ -1371,7 +1371,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text("Tetto di Spesa Mensile", style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87, fontWeight: FontWeight.bold, fontSize: 16)),
+            Text("Tetto di Spesa Mensile", style: TextStyle(color: (_isDarkTheme) ? Colors.white : Colors.black87, fontWeight: FontWeight.bold, fontSize: 16)),
             IconButton(
               icon: Icon(Icons.pie_chart_outline, color: Colors.pinkAccent, size: 22),
               tooltip: "Analisi Categorie",
@@ -1390,7 +1390,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text("Speso: €${currentMonthExpenses.toStringAsFixed(2)}", style: TextStyle(color: Colors.grey, fontSize: 14)),
-              Text("Budget: €${_monthlyBudget.toStringAsFixed(2)}", style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87, fontWeight: FontWeight.bold, fontSize: 14)),
+              Text("Budget: €${_monthlyBudget.toStringAsFixed(2)}", style: TextStyle(color: (_isDarkTheme) ? Colors.white : Colors.black87, fontWeight: FontWeight.bold, fontSize: 14)),
             ],
           ),
           const SizedBox(height: 12),
@@ -1447,7 +1447,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   }
 
   bool get _isDark => _currentTheme == 'Piggy Dark';
-  Color get _cardBg => _isDark ? (Theme.of(context).brightness == Brightness.dark) ? const Color(0xFF1E2235) : Colors.grey.shade200 : const Color(0xFFFFFFFF);
+  Color get _cardBg => _isDark ? (_isDarkTheme) ? const Color(0xFF1E2235) : Colors.grey.shade200 : const Color(0xFFFFFFFF);
   Color get _textColor => _isDark ? Colors.white : const Color(0xFF1A1A2E);
   Color get _subtitleColor => _isDark ? Colors.white70 : const Color(0xFF222233);
   Color get _primaryColor => Colors.pinkAccent;
@@ -1510,8 +1510,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 const SnackBar(content: Text('CSV copiato con successo negli appunti!')),
               );
             },
-            icon: Icon(Icons.download, color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87, size: 16),
-            label: Text('Scarica CSV', style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87)),
+            icon: Icon(Icons.download, color: (_isDarkTheme) ? Colors.white : Colors.black87, size: 16),
+            label: Text('Scarica CSV', style: TextStyle(color: (_isDarkTheme) ? Colors.white : Colors.black87)),
           ),
           ElevatedButton.icon(
             onPressed: () {
@@ -1520,7 +1520,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.pinkAccent),
             icon: Icon(Icons.picture_as_pdf, color: Colors.white, size: 16),
-            label: Text('Esporta PDF', style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87, fontWeight: FontWeight.bold)),
+            label: Text('Esporta PDF', style: TextStyle(color: (_isDarkTheme) ? Colors.white : Colors.black87, fontWeight: FontWeight.bold)),
           
           ),
           TextButton(
@@ -1721,7 +1721,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   void _mostraModalProfilo() {
     showModalBottomSheet(context: context,
       isScrollControlled: true,
-      backgroundColor: Theme.of(context).brightness == Brightness.dark ? Color(0xFF1A1528) : Colors.white,
+      backgroundColor: _isDarkTheme ? Color(0xFF1A1528) : Colors.white,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder: (BuildContext context) {
         return Padding(
@@ -1758,7 +1758,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
                       onPressed: () async { HapticFeedback.lightImpact(); Navigator.pop(context); await FirebaseAuth.instance.signOut(); Navigator.of(context, rootNavigator: true).pushNamedAndRemoveUntil("/", (route) => false); },
-                  child: Text('Disconnetti Account', style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87, fontWeight: FontWeight.bold)),
+                  child: Text('Disconnetti Account', style: TextStyle(color: (_isDarkTheme) ? Colors.white : Colors.black87, fontWeight: FontWeight.bold)),
                 ),
                 const SizedBox(height: 24),
               ],
@@ -1772,7 +1772,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   void _mostraModalImpostazioni() {
     showModalBottomSheet(context: context,
       isScrollControlled: true,
-      backgroundColor: Theme.of(context).brightness == Brightness.dark ? Color(0xFF1A1528) : Colors.white,
+      backgroundColor: _isDarkTheme ? Color(0xFF1A1528) : Colors.white,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder: (BuildContext context) {
         return StatefulBuilder(
@@ -1837,8 +1837,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       children: [
                         ElevatedButton.icon(
                           onPressed: () { HapticFeedback.lightImpact(); setState(() { _currentTheme = 'Piggy Dark'; }); SharedPreferences.getInstance().then((p) => p.setString("selectedTheme", _currentTheme)); Navigator.pop(context); },
-                          icon: Icon(Icons.dark_mode, color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87, size: 16),
-                          label: Text('Piggy Dark', style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87)),
+                          icon: Icon(Icons.dark_mode, color: (_isDarkTheme) ? Colors.white : Colors.black87, size: 16),
+                          label: Text('Piggy Dark', style: TextStyle(color: (_isDarkTheme) ? Colors.white : Colors.black87)),
                         ),
                         ElevatedButton.icon(
                           style: ElevatedButton.styleFrom(backgroundColor: Colors.grey.shade200),
@@ -1895,7 +1895,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   void _mostraModalNuovoObiettivo() {
     showModalBottomSheet(context: context,
       isScrollControlled: true,
-      backgroundColor: Theme.of(context).brightness == Brightness.dark ? Color(0xFF1A1528) : Colors.white,
+      backgroundColor: _isDarkTheme ? Color(0xFF1A1528) : Colors.white,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder: (BuildContext context) {
         return Padding(
@@ -1928,7 +1928,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     Navigator.pop(context);
                   }
                 },
-                child: Text("Crea Obiettivo", style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87, fontWeight: FontWeight.bold)),
+                child: Text("Crea Obiettivo", style: TextStyle(color: (_isDarkTheme) ? Colors.white : Colors.black87, fontWeight: FontWeight.bold)),
               ),
               const SizedBox(height: 24),
             ]
@@ -1958,7 +1958,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 Navigator.pop(ctx);
               }
             },
-            child: Text("Aggiungi", style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87))
+            child: Text("Aggiungi", style: TextStyle(color: (_isDarkTheme) ? Colors.white : Colors.black87))
           )
         ]
       )
@@ -2022,7 +2022,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         borderRadius: BorderRadius.circular(4),
                         child: LinearProgressIndicator(
                           value: percentuale,
-                          backgroundColor: _isDarkTheme ? (Theme.of(context).brightness == Brightness.dark) ? const Color(0xFF1E2235) : Colors.grey.shade200 : Colors.white10,
+                          backgroundColor: _isDarkTheme ? (_isDarkTheme) ? const Color(0xFF1E2235) : Colors.grey.shade200 : Colors.white10,
                           color: Colors.pinkAccent,
                           minHeight: 6,
                         ),
@@ -2061,7 +2061,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF1A1528) : Colors.white,
+      backgroundColor: _isDarkTheme ? const Color(0xFF1A1528) : Colors.white,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
       builder: (context) {
         if (spesaPerCategoria.isEmpty || totaleUsciteGrafico == 0) {
@@ -2137,7 +2137,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               ElevatedButton(
                 style: ElevatedButton.styleFrom(backgroundColor: _primaryColor, padding: const EdgeInsets.symmetric(vertical: 12)),
                 onPressed: () => Navigator.pop(context),
-                child: Text("Chiudi Grafico", style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87, fontWeight: FontWeight.bold)),
+                child: Text("Chiudi Grafico", style: TextStyle(color: (_isDarkTheme) ? Colors.white : Colors.black87, fontWeight: FontWeight.bold)),
               ),
             ],
           ),
@@ -2154,7 +2154,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF1A1528) : Colors.white,
+      backgroundColor: _isDarkTheme ? const Color(0xFF1A1528) : Colors.white,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
       builder: (context) {
         return StatefulBuilder(
@@ -2305,7 +2305,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(backgroundColor: _primaryColor, padding: const EdgeInsets.symmetric(vertical: 12)),
                     onPressed: () => Navigator.pop(context),
-                    child: Text("Chiudi Resoconto", style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87, fontWeight: FontWeight.bold)),
+                    child: Text("Chiudi Resoconto", style: TextStyle(color: (_isDarkTheme) ? Colors.white : Colors.black87, fontWeight: FontWeight.bold)),
                   ),
                 ],
               ),
@@ -2318,7 +2318,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   void _mostraModalInserimento() {
     showModalBottomSheet(context: context,
-      isScrollControlled: true, backgroundColor: Theme.of(context).brightness == Brightness.dark ? Color(0xFF1A1528) : Colors.white,
+      isScrollControlled: true, backgroundColor: _isDarkTheme ? Color(0xFF1A1528) : Colors.white,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
       builder: (context) {
         return Padding(
@@ -2414,15 +2414,15 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     Navigator.pop(context);
                   }
                 },
-                child: Text("Registra e Sincronizza Cloud", style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87, fontWeight: FontWeight.bold)))]));
+                child: Text("Registra e Sincronizza Cloud", style: TextStyle(color: (_isDarkTheme) ? Colors.white : Colors.black87, fontWeight: FontWeight.bold)))]));
       });
   }
 
   @override
   void _mostraGestioneCaveau(BuildContext context) {
     final TextEditingController inputController = TextEditingController();
-    final bool isDark = Theme.of(context).brightness == Brightness.dark;
-    final Color bgColor = isDark ? (Theme.of(context).brightness == Brightness.dark) ? const Color(0xFF1E2235) : Colors.grey.shade200 : Colors.white;
+    final bool isDark = _isDarkTheme;
+    final Color bgColor = isDark ? (_isDarkTheme) ? const Color(0xFF1E2235) : Colors.grey.shade200 : Colors.white;
     final Color textColor = isDark ? Colors.white : Colors.black87;
 
     showModalBottomSheet(
@@ -2616,7 +2616,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               children: [
                 Icon(Icons.lock_outline, size: 80, color: Colors.pinkAccent),
                 const SizedBox(height: 24),
-                Text("Caveau Bloccato", style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87, fontSize: 26, fontWeight: FontWeight.bold)),
+                Text("Caveau Bloccato", style: TextStyle(color: (_isDarkTheme) ? Colors.white : Colors.black87, fontSize: 26, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 8),
                 Text("Autenticati per accedere alla tua Dashboard", style: TextStyle(color: _subtitleColor, fontSize: 14), textAlign: TextAlign.center),
                 const SizedBox(height: 32),
@@ -2628,7 +2628,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   ),
                   onPressed: _sbloccaBiometricoHome,
                   icon: Icon(Icons.fingerprint, color: Colors.white, size: 26),
-                  label: Text("Sblocca ora", style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87, fontWeight: FontWeight.bold, fontSize: 16)),
+                  label: Text("Sblocca ora", style: TextStyle(color: (_isDarkTheme) ? Colors.white : Colors.black87, fontWeight: FontWeight.bold, fontSize: 16)),
                 ),
               ],
             ),
@@ -2673,7 +2673,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             child: Container(
               margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-              decoration: BoxDecoration(color: (Theme.of(context).brightness == Brightness.dark) ? _cardBg : Color(0xFFEFEFF4), borderRadius: BorderRadius.circular(20), border: Border.all(color: _primaryColor.withOpacity(0.5))),
+              decoration: BoxDecoration(color: (_isDarkTheme) ? _cardBg : Color(0xFFEFEFF4), borderRadius: BorderRadius.circular(20), border: Border.all(color: _primaryColor.withOpacity(0.5))),
               child: Row(
                 children: [
                   Icon(Icons.cloud_done, size: 14, color: Colors.greenAccent),
@@ -2882,7 +2882,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                     Navigator.pop(context);
                                   }
                                 },
-                                child: Text("Salva", style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87)),
+                                child: Text("Salva", style: TextStyle(color: (_isDarkTheme) ? Colors.white : Colors.black87)),
                               ),
                             ],
                           ),
@@ -3004,7 +3004,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
             Text("➕ Nuova Transazione", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: _subtitleColor)),
-            ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: _primaryColor), onPressed: _mostraModalInserimento, child: Text("+ Nuova", style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87)))
+            ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: _primaryColor), onPressed: _mostraModalInserimento, child: Text("+ Nuova", style: TextStyle(color: (_isDarkTheme) ? Colors.white : Colors.black87)))
           ]),
           const SizedBox(height: 8),
           
@@ -3100,7 +3100,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 String _selectedPersonality = 'Cyber-Tecno';
 
 void _mostraPiggyAI(BuildContext context, [bool? isDarkOverride]) {
-    final bool isDark = isDarkOverride ?? (Theme.of(context).brightness == Brightness.dark);
+    final bool isDark = isDarkOverride ?? (_isDarkTheme);
     final TextEditingController modalInputController = TextEditingController();
     final SpeechToText speechToText = SpeechToText();
     bool isListening = false;
@@ -3234,7 +3234,7 @@ void _mostraPiggyAI(BuildContext context, [bool? isDarkOverride]) {
                       width: 40,
                       height: 4,
                       decoration: BoxDecoration(
-                        color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87,
+                        color: (_isDarkTheme) ? Colors.white : Colors.black87,
                         borderRadius: BorderRadius.circular(2),
                       ),
                     ),
@@ -3254,7 +3254,7 @@ void _mostraPiggyAI(BuildContext context, [bool? isDarkOverride]) {
                               ),
                             ),
                             const SizedBox(width: 8),
-                            Text("Piggy AI", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : const Color(0xFF111125))),
+                            Text("Piggy AI", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: (_isDarkTheme) ? Colors.white : const Color(0xFF111125))),
                             const SizedBox(width: 8),
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
@@ -3268,12 +3268,12 @@ void _mostraPiggyAI(BuildContext context, [bool? isDarkOverride]) {
                           ],
                         ),
                         IconButton(
-                          icon: Icon(Icons.tune, color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87),
+                          icon: Icon(Icons.tune, color: (_isDarkTheme) ? Colors.white : Colors.black87),
                           tooltip: 'Personalità Piggy AI',
                           onPressed: () {
                             showModalBottomSheet(
                               context: context,
-                              backgroundColor: (Theme.of(context).brightness == Brightness.dark) ? Color(0xFF1E2235) : Colors.white,
+                              backgroundColor: (_isDarkTheme) ? Color(0xFF1E2235) : Colors.white,
                               shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
                               builder: (pCtx) => StatefulBuilder(
                                 builder: (pCtx, setPState) => Padding(
@@ -3282,11 +3282,11 @@ void _mostraPiggyAI(BuildContext context, [bool? isDarkOverride]) {
                                     mainAxisSize: MainAxisSize.min,
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      Text('🎭 Personalità Piggy AI', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87)),
+                                      Text('🎭 Personalità Piggy AI', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: (_isDarkTheme) ? Colors.white : Colors.black87)),
                                       const SizedBox(height: 12),
                                       ListTile(
-                                        title: Text('Cyber-Tecno', style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87, fontWeight: FontWeight.bold, fontSize: 13)),
-                                        subtitle: Text('⚡ Agente ad alta tecnologia. Focus sul Caveau.', style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white70 : Color(0xFF222233), fontSize: 11)),
+                                        title: Text('Cyber-Tecno', style: TextStyle(color: (_isDarkTheme) ? Colors.white : Colors.black87, fontWeight: FontWeight.bold, fontSize: 13)),
+                                        subtitle: Text('⚡ Agente ad alta tecnologia. Focus sul Caveau.', style: TextStyle(color: (_isDarkTheme) ? Colors.white70 : Color(0xFF222233), fontSize: 11)),
                                         trailing: _selectedPersonality == 'Cyber-Tecno' ? Icon(Icons.check_circle, color: Colors.pinkAccent, size: 20) : null,
                                         onTap: () async {
                                           _selectedPersonality = 'Cyber-Tecno';
@@ -3297,8 +3297,8 @@ void _mostraPiggyAI(BuildContext context, [bool? isDarkOverride]) {
                                         },
                                       ),
                                       ListTile(
-                                        title: Text('Strategico & Ironico', style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87, fontWeight: FontWeight.bold, fontSize: 13)),
-                                        subtitle: Text('🎯 Saggio e pungente. Battute intelligenti.', style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white70 : Color(0xFF222233), fontSize: 11)),
+                                        title: Text('Strategico & Ironico', style: TextStyle(color: (_isDarkTheme) ? Colors.white : Colors.black87, fontWeight: FontWeight.bold, fontSize: 13)),
+                                        subtitle: Text('🎯 Saggio e pungente. Battute intelligenti.', style: TextStyle(color: (_isDarkTheme) ? Colors.white70 : Color(0xFF222233), fontSize: 11)),
                                         trailing: _selectedPersonality == 'Strategico & Ironico' ? Icon(Icons.check_circle, color: Colors.pinkAccent, size: 20) : null,
                                         onTap: () async {
                                           _selectedPersonality = 'Strategico & Ironico';
@@ -3309,8 +3309,8 @@ void _mostraPiggyAI(BuildContext context, [bool? isDarkOverride]) {
                                         },
                                       ),
                                       ListTile(
-                                        title: Text('Amichevole Smart', style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87, fontWeight: FontWeight.bold, fontSize: 13)),
-                                        subtitle: Text('🤝 Compagno fidato. Semplice e caloroso.', style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white70 : Color(0xFF222233), fontSize: 11)),
+                                        title: Text('Amichevole Smart', style: TextStyle(color: (_isDarkTheme) ? Colors.white : Colors.black87, fontWeight: FontWeight.bold, fontSize: 13)),
+                                        subtitle: Text('🤝 Compagno fidato. Semplice e caloroso.', style: TextStyle(color: (_isDarkTheme) ? Colors.white70 : Color(0xFF222233), fontSize: 11)),
                                         trailing: _selectedPersonality == 'Amichevole Smart' ? Icon(Icons.check_circle, color: Colors.pinkAccent, size: 20) : null,
                                         onTap: () async {
                                           _selectedPersonality = 'Amichevole Smart';
@@ -3321,8 +3321,8 @@ void _mostraPiggyAI(BuildContext context, [bool? isDarkOverride]) {
                                         },
                                       ),
                                       ListTile(
-                                        title: Text('Formale & Analitico', style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87, fontWeight: FontWeight.bold, fontSize: 13)),
-                                        subtitle: Text('📊 Consulente rigoroso. Cifre e statistiche.', style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white70 : Color(0xFF222233), fontSize: 11)),
+                                        title: Text('Formale & Analitico', style: TextStyle(color: (_isDarkTheme) ? Colors.white : Colors.black87, fontWeight: FontWeight.bold, fontSize: 13)),
+                                        subtitle: Text('📊 Consulente rigoroso. Cifre e statistiche.', style: TextStyle(color: (_isDarkTheme) ? Colors.white70 : Color(0xFF222233), fontSize: 11)),
                                         trailing: _selectedPersonality == 'Formale & Analitico' ? Icon(Icons.check_circle, color: Colors.pinkAccent, size: 20) : null,
                                         onTap: () async {
                                           _selectedPersonality = 'Formale & Analitico';
@@ -3369,7 +3369,7 @@ void _mostraPiggyAI(BuildContext context, [bool? isDarkOverride]) {
                         ),
                       ],
                     ),
-                    Divider(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87, height: 20),
+                    Divider(color: (_isDarkTheme) ? Colors.white : Colors.black87, height: 20),
                     Expanded(
                       child: ListView.builder(
                         itemCount: chatMessages.length,
@@ -3382,12 +3382,12 @@ void _mostraPiggyAI(BuildContext context, [bool? isDarkOverride]) {
                               margin: const EdgeInsets.symmetric(vertical: 4),
                               padding: const EdgeInsets.all(12),
                               decoration: BoxDecoration(
-                                color: isUser ? Colors.pinkAccent : (Theme.of(context).brightness == Brightness.dark) ? const Color(0xFF1E2235) : Colors.grey.shade200,
+                                color: isUser ? Colors.pinkAccent : (_isDarkTheme) ? const Color(0xFF1E2235) : Colors.grey.shade200,
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Text(
                                 msg["text"] ?? "",
-                                style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87, fontSize: 13),
+                                style: TextStyle(color: (_isDarkTheme) ? Colors.white : Colors.black87, fontSize: 13),
                               ),
                             ),
                           );
@@ -3400,12 +3400,12 @@ void _mostraPiggyAI(BuildContext context, [bool? isDarkOverride]) {
                         Expanded(
                           child: TextField(
                             controller: modalInputController,
-                            style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87, fontSize: 14),
+                            style: TextStyle(color: (_isDarkTheme) ? Colors.white : Colors.black87, fontSize: 14),
                             decoration: InputDecoration(
                               hintText: isListening ? "Listening..." : "Chiedi a Piggy AI...",
-                              hintStyle: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white : Colors.black87.withOpacity(0.4), fontSize: 13),
+                              hintStyle: TextStyle(color: (_isDarkTheme) ? Colors.white : Colors.black87.withOpacity(0.4), fontSize: 13),
                               filled: true,
-                              fillColor: (Theme.of(context).brightness == Brightness.dark) ? const Color(0xFF1E2235) : Colors.grey.shade200,
+                              fillColor: (_isDarkTheme) ? const Color(0xFF1E2235) : Colors.grey.shade200,
                               border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
                               contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                             ),
@@ -3441,7 +3441,7 @@ class InviteManager extends StatefulWidget {
 }
 
 class _InviteManagerState extends State<InviteManager> {
-  bool get isDark => Theme.of(context).brightness == Brightness.dark;
+  bool get isDark => _isDarkTheme;
   String? currentEmail;
 
   
@@ -3527,7 +3527,7 @@ class _InviteManagerState extends State<InviteManager> {
       margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: (Theme.of(context).brightness == Brightness.dark) ? const Color(0xFF1E2235) : Colors.grey.shade200,
+        color: (_isDarkTheme) ? const Color(0xFF1E2235) : Colors.grey.shade200,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: coloreRischio.withOpacity(0.5), width: 1.5),
         boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 8, spreadRadius: 2)],
@@ -3538,7 +3538,7 @@ class _InviteManagerState extends State<InviteManager> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Stato Rischio Caveau', style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark) ? Colors.white70 : Colors.black87, fontSize: 13, fontWeight: FontWeight.bold)),
+              Text('Stato Rischio Caveau', style: TextStyle(color: (_isDarkTheme) ? Colors.white70 : Colors.black87, fontSize: 13, fontWeight: FontWeight.bold)),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(color: coloreRischio.withOpacity(0.2), borderRadius: BorderRadius.circular(8)),
