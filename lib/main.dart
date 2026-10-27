@@ -2685,19 +2685,20 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       floatingActionButton: Transform.translate(
         offset: Offset(0, _fabYOffset),
         child: GestureDetector(
+          onTap: () => _mostraPiggyAI(context, _isDarkTheme),
           onVerticalDragUpdate: (details) {
             setState(() {
-              _fabYOffset = (_fabYOffset + details.delta.dy).clamp(-380.0, 0.0);
+              _fabYOffset = (_fabYOffset + details.delta.dy).clamp(-420.0, 0.0);
             });
           },
           child: FloatingActionButton(
-            onPressed: () => _mostraPiggyAI(context, _isDarkTheme),
+            onPressed: null, // Disabilitato per evitare conflitti di gesture con GestureDetector
             elevation: 8,
             shape: const CircleBorder(),
             backgroundColor: Colors.pinkAccent,
             child: ClipOval(
               child: Image.asset(
-                "assets/images/piggy_ai_assistant.png",
+                'assets/images/piggy_ai_assistant.png',
                 width: 52,
                 height: 52,
                 fit: BoxFit.cover,
@@ -3574,7 +3575,7 @@ Future<String> _getGeminiResponse(String prompt) async {
   final client = http.Client();
   final prefs = await SharedPreferences.getInstance();
 
-  String apiKey = prefs.getString("custom_gemini_api_key") ?? "";
+  String apiKey = prefs.getString('custom_gemini_api_key') ?? "";
   if (apiKey.isEmpty) {
     try {
       apiKey = utf8.decode(base64.decode("QVEuQWI4Uk42SWVuaHUyOVV5Um1neV9xQXd0bmdkUEJ1OURhc204Q0F1Q2gyTDE0YXhULVE="));
@@ -3583,52 +3584,52 @@ Future<String> _getGeminiResponse(String prompt) async {
     }
   }
 
-  double saldo = prefs.getDouble("patrimonio") ?? 0.0;
-  double entrate = prefs.getDouble("entrateMese") ?? 0.0;
-  double uscite = prefs.getDouble("usciteMese") ?? 0.0;
-  String selectedPersonality = prefs.getString("piggyPersonality") ?? "Cyber-Tecno";
+  double saldo = prefs.getDouble('patrimonio') ?? 0.0;
+  double entrate = prefs.getDouble('entrateMese') ?? 0.0;
+  double uscite = prefs.getDouble('usciteMese') ?? 0.0;
+  String selectedPersonality = prefs.getString('piggyPersonality') ?? 'Cyber-Tecno';
 
   double tassoRisparmio = entrate > 0 ? ((entrate - uscite) / entrate * 100).clamp(-100, 100) : 0.0;
   double autonomiaMesi = uscite > 0 ? (saldo / uscite) : (saldo > 0 ? 99.0 : 0.0);
 
   String transazioniContext = "Nessun movimento recente.";
   try {
-    String? txJson = prefs.getString("transazioni");
+    String? txJson = prefs.getString('transazioni');
     if (txJson != null && txJson.isNotEmpty) {
       List txList = jsonDecode(txJson);
-      var recenti = txList.take(7).map((t) => "- ${t["data"]} | ${t["category"]} | ${t["tipo"]}: €${t["amount"]} (${t["note"] ?? ""})").join("\n");
+      var recenti = txList.take(7).map((t) => "- ${t['data']} | ${t['category']} | ${t['tipo']}: €${t['amount']} (${t['note'] ?? ''})").join('\n');
       if (recenti.isNotEmpty) transazioniContext = recenti;
     }
   } catch (_) {}
 
   String goalsContext = "Nessun obiettivo attivo.";
   try {
-    String? pJson = prefs.getString("portafogli");
+    String? pJson = prefs.getString('portafogli');
     if (pJson != null && pJson.isNotEmpty) {
       List pList = jsonDecode(pJson);
-      var goals = pList.map((p) => "- ${p["nome"]}: Accumulati €${p["attuale"]} su €${p["target"]}").join("\n");
+      var goals = pList.map((p) => "- ${p['nome']}: Accumulati €${p['attuale']} su €${p['target']}").join('\n');
       if (goals.isNotEmpty) goalsContext = goals;
     }
   } catch (_) {}
 
   String ricorrentiContext = "Nessuna ricorrenza registrata.";
   try {
-    String? rJson = prefs.getString("speseRicorrenti");
+    String? rJson = prefs.getString('speseRicorrenti');
     if (rJson != null && rJson.isNotEmpty) {
       List rList = jsonDecode(rJson);
-      var recs = rList.map((r) => "- ${r["nome"] ?? r["category"]}: €${r["amount"]} (${r["frequenza"]})").join("\n");
+      var recs = rList.map((r) => "- ${r['nome'] ?? r['category']}: €${r['amount']} (${r['frequenza']})").join('\n');
       if (recs.isNotEmpty) ricorrentiContext = recs;
     }
   } catch (_) {}
 
   Map<String, String> personalitaPrompts = {
-    "Cyber-Tecno": "Sei Piggy AI, Agente Finanziario ad alta tecnologia. Parla in modo energico con terminologia cyber/futuristica sul Caveau.",
-    "Strategico & Ironico": "Sei Piggy AI, Strategico e leggermente Ironico. Parla in modo diretto e sagace, spronando al risparmio con battute intelligenti.",
-    "Amichevole Smart": "Sei Piggy AI, compagno di risparmi fidato. Parla in modo caloroso, incoraggiante e semplice.",
-    "Formale & Analitico": "Sei Piggy AI, Consulente Finanziario analitico e rigoroso. Parla in modo professionalmente rigoroso, focalizzato su cifre e bilanci."
+    'Cyber-Tecno': 'Sei Piggy AI, Agente Finanziario ad alta tecnologia. Parla in modo energico con terminologia cyber/futuristica sul Caveau.',
+    'Strategico & Ironico': 'Sei Piggy AI, Strategico e leggermente Ironico. Parla in modo diretto e sagace, spronando al risparmio con battute intelligenti.',
+    'Amichevole Smart': 'Sei Piggy AI, compagno di risparmi fidato. Parla in modo caloroso, incoraggiante e semplice.',
+    'Formale & Analitico': 'Sei Piggy AI, Consulente Finanziario analitico e rigoroso. Parla in modo professionalmente rigoroso, focalizzato su cifre e bilanci.'
   };
 
-  String personaContext = personalitaPrompts[selectedPersonality] ?? personalitaPrompts["Cyber-Tecno"]!;
+  String personaContext = personalitaPrompts[selectedPersonality] ?? personalitaPrompts['Cyber-Tecno']!;
 
   String fullPrompt = """$personaContext
 Identificati SEMPRE e unicamente come Piggy AI - Cyber Porcellino Amico e Agente Finanziario.
@@ -3650,14 +3651,14 @@ $goalsContext
 SPESE ED ENTRATE RICORRENTI:
 $ricorrentiContext
 
-Rispondi all"utente in italiano in modo chiaro, sintetico e pratico, dando consigli concreti basati sui suoi dati reali.
+Rispondi all'utente in italiano in modo chiaro, sintetico e pratico, dando consigli concreti basati sui suoi dati reali.
 
-Richiesta dell"utente: $prompt""";
+Richiesta dell'utente: $prompt""";
 
   final candidateEndpoints = [
     "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent",
-    "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent",
-    "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent"
+    "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent",
+    "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent"
   ];
 
   String lastErrDetail = "";
@@ -3668,8 +3669,7 @@ Richiesta dell"utente: $prompt""";
       final response = await client.post(
         url,
         headers: {
-          "Content-Type": "application/json",
-          "x-goog-api-key": apiKey,
+          'Content-Type': 'application/json',
         },
         body: jsonEncode({
           "contents": [
@@ -3684,7 +3684,7 @@ Richiesta dell"utente: $prompt""";
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        final String text = data["candidates"][0]["content"]["parts"][0]["text"] ?? "Nessuna risposta ricevuta.";
+        final String text = data['candidates'][0]['content']['parts'][0]['text'] ?? 'Nessuna risposta ricevuta.';
         client.close();
         return text.trim();
       } else {
