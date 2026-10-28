@@ -747,7 +747,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   Future<void> _updateAndroidWidget(bool isLoggedIn, double patrimonio, [String ultimoMovimento = '']) async {
     try {
       if (isLoggedIn) {
-        await HomeWidget.saveWidgetData<String>('widget_patrimonio', 'Caveau: € ' + patrimonio.toStringAsFixed(2));
+        await HomeWidget.saveWidgetData<String>('widget_patrimonio', '€ ' + patrimonio.toStringAsFixed(2));
+    await HomeWidget.saveWidgetData<String>('patrimonio_text', '€ ' + patrimonio.toStringAsFixed(2));
+    await HomeWidget.saveWidgetData<String>('patrimonio', '€ ' + patrimonio.toStringAsFixed(2));
         await HomeWidget.saveWidgetData<String>('widget_status', ultimoMovimento.isNotEmpty ? 'Ultimo: ' + ultimoMovimento : 'Stato: Monitoraggio Attivo');
         await HomeWidget.saveWidgetData<bool>('widget_logged', true);
       } else {
@@ -1014,21 +1016,29 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   }
 
   bool _isAppLocked = true;
+  DateTime? _pausedTime;
   final LocalAuthentication _homeLocalAuth = LocalAuthentication();
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
-    if (state == AppLifecycleState.paused || state == AppLifecycleState.inactive) {
-      if (mounted) {
-        setState(() {
-          _isAppLocked = true;
-        });
-      }
+    if (state == AppLifecycleState.paused) {
+      _pausedTime = DateTime.now();
     } else if (state == AppLifecycleState.resumed) {
-      if (_isAppLocked) {
+      if (!_isAppLocked && _pausedTime != null) {
+        final elapsed = DateTime.now().difference(_pausedTime!).inSeconds;
+        if (elapsed >= 60) {
+          if (mounted) {
+            setState(() {
+              _isAppLocked = true;
+            });
+            _sbloccaBiometricoHome();
+          }
+        }
+      } else if (_isAppLocked) {
         _sbloccaBiometricoHome();
       }
+      _pausedTime = null;
     }
   }
 
@@ -3293,6 +3303,11 @@ void _mostraPiggyAI(BuildContext context, [bool? isDarkOverride]) {
                                           setPState(() {});
                                           final prefs = await SharedPreferences.getInstance();
                                           await prefs.setString('piggyPersonality', _selectedPersonality);
+                                          chatMessages.add({
+                                            "sender": "piggy",
+                                            "text": "🎭 **Personalità attivata:** Cyber-Tecno! Pronto ad analizzare il Caveau con terminologia ad alta tecnologia."
+                                          });
+                                          setStateModal(() {});
                                           if (pCtx.mounted) Navigator.pop(pCtx);
                                         },
                                       ),
@@ -3305,6 +3320,11 @@ void _mostraPiggyAI(BuildContext context, [bool? isDarkOverride]) {
                                           setPState(() {});
                                           final prefs = await SharedPreferences.getInstance();
                                           await prefs.setString('piggyPersonality', _selectedPersonality);
+                                          chatMessages.add({
+                                            "sender": "piggy",
+                                            "text": "🎭 **Personalità attivata:** Strategico & Ironico! Pronto ad analizzare i tuoi risparmi con battute intelligenti e pungenti."
+                                          });
+                                          setStateModal(() {});
                                           if (pCtx.mounted) Navigator.pop(pCtx);
                                         },
                                       ),
@@ -3317,6 +3337,11 @@ void _mostraPiggyAI(BuildContext context, [bool? isDarkOverride]) {
                                           setPState(() {});
                                           final prefs = await SharedPreferences.getInstance();
                                           await prefs.setString('piggyPersonality', _selectedPersonality);
+                                          chatMessages.add({
+                                            "sender": "piggy",
+                                            "text": "🎭 **Personalità attivata:** Amichevole Smart! Pronto a darti consigli calorosi ed empatici per le tue finanze."
+                                          });
+                                          setStateModal(() {});
                                           if (pCtx.mounted) Navigator.pop(pCtx);
                                         },
                                       ),
@@ -3329,6 +3354,11 @@ void _mostraPiggyAI(BuildContext context, [bool? isDarkOverride]) {
                                           setPState(() {});
                                           final prefs = await SharedPreferences.getInstance();
                                           await prefs.setString('piggyPersonality', _selectedPersonality);
+                                          chatMessages.add({
+                                            "sender": "piggy",
+                                            "text": "🎭 **Personalità attivata:** Formale & Analitico! Pronto ad esaminare cifre e statistiche con massimo rigore."
+                                          });
+                                          setStateModal(() {});
                                           if (pCtx.mounted) Navigator.pop(pCtx);
                                         },
                                       ),
