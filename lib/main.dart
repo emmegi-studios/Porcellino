@@ -758,8 +758,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         await HomeWidget.saveWidgetData<bool>('widget_logged', false);
       }
       await HomeWidget.updateWidget(
-        name: 'PiggyWidgetProvider',
-        androidName: 'PiggyWidgetProvider',
+        name: 'HomeWidgetProvider',
+        androidName: 'HomeWidgetProvider',
       );
     } catch (_) {}
   }
@@ -1573,6 +1573,30 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       patrimonio = prefs.getDouble('patrimonio') ?? 0.00;
       entrateMese = prefs.getDouble('entrateMese') ?? 0.00;
       usciteMese = prefs.getDouble('usciteMese') ?? 0.00;
+      final String? transazioniJson = prefs.getString('transazioni') ?? prefs.getString('cache_transazioni');
+      if (transazioniJson != null && transazioniJson.isNotEmpty) {
+        final List decodedT = jsonDecode(transazioniJson);
+        transazioni = decodedT.map((e) => Map<String, dynamic>.from(e)).toList();
+      }
+      if (transazioni.isNotEmpty && patrimonio == 0.0) {
+        double calcPatrimonio = 0.0;
+        double calcEntrate = 0.0;
+        double calcUscite = 0.0;
+        for (var tx in transazioni) {
+          final amt = (tx['amount'] as num?)?.toDouble() ?? 0.0;
+          final type = tx['type']?.toString() ?? '';
+          if (type.contains('Entrata')) {
+            calcPatrimonio += amt;
+            calcEntrate += amt;
+          } else {
+            calcPatrimonio -= amt;
+            calcUscite += amt;
+          }
+        }
+        patrimonio = calcPatrimonio;
+        entrateMese = calcEntrate;
+        usciteMese = calcUscite;
+      }
       final String? portafogliJson = prefs.getString('portafogli');
       final String? ricorrentiJson = prefs.getString('speseRicorrenti');
       if (ricorrentiJson != null && ricorrentiJson.isNotEmpty) {
