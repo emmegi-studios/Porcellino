@@ -747,7 +747,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   Future<void> _updateAndroidWidget(bool isLoggedIn, double patrimonio, [String ultimoMovimento = '']) async {
     try {
       if (isLoggedIn) {
-        await HomeWidget.saveWidgetData<String>('widget_patrimonio', '€ ' + patrimonio.toStringAsFixed(2));
+        await HomeWidget.saveWidgetData<String>('widget_patrimonio', 'Patrimonio: € ' + patrimonio.toStringAsFixed(2));
     await HomeWidget.saveWidgetData<String>('patrimonio_text', '€ ' + patrimonio.toStringAsFixed(2));
     await HomeWidget.saveWidgetData<String>('patrimonio', '€ ' + patrimonio.toStringAsFixed(2));
         await HomeWidget.saveWidgetData<String>('widget_status', ultimoMovimento.isNotEmpty ? 'Ultimo: ' + ultimoMovimento : 'Stato: Monitoraggio Attivo');
