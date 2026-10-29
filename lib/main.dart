@@ -756,8 +756,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         await HomeWidget.saveWidgetData<bool>('widget_logged', false);
       }
       await HomeWidget.updateWidget(
-        name: 'PiggyWidgetProvider',
-        androidName: 'PiggyWidgetProvider',
+        name: 'HomeWidgetProvider',
+        androidName: 'HomeWidgetProvider',
       );
     } catch (_) {}
   }
@@ -1014,21 +1014,29 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   }
 
   bool _isAppLocked = true;
+  DateTime? _pausedTime;
   final LocalAuthentication _homeLocalAuth = LocalAuthentication();
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
-    if (state == AppLifecycleState.paused || state == AppLifecycleState.inactive) {
-      if (mounted) {
-        setState(() {
-          _isAppLocked = true;
-        });
-      }
+    if (state == AppLifecycleState.paused) {
+      _pausedTime = DateTime.now();
     } else if (state == AppLifecycleState.resumed) {
-      if (_isAppLocked) {
+      if (!_isAppLocked && _pausedTime != null) {
+        final elapsed = DateTime.now().difference(_pausedTime!).inSeconds;
+        if (elapsed >= 60) {
+          if (mounted) {
+            setState(() {
+              _isAppLocked = true;
+            });
+            _sbloccaBiometricoHome();
+          }
+        }
+      } else if (_isAppLocked) {
         _sbloccaBiometricoHome();
       }
+      _pausedTime = null;
     }
   }
 
@@ -1574,6 +1582,13 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         final List decoded = jsonDecode(portafogliJson);
         portafogli = decoded.map((e) => Map<String, dynamic>.from(e)).toList();
       }
+      final String? transazioniJson = prefs.getString('transazioni') ?? prefs.getString('cache_transazioni');
+      if (transazioniJson != null && transazioniJson.isNotEmpty) {
+        final List decodedT = jsonDecode(transazioniJson);
+        transazioni = decodedT.map((e) => Map<String, dynamic>.from(e)).toList();
+      }
+      String ultimoMov = transazioni.isNotEmpty ? "${transazioni.first['category']} €${transazioni.first['amount']}" : "";
+      _updateAndroidWidget(true, patrimonio, ultimoMov);
       _verificaSogliaBudget();
       _verificaPromemoriaInScadenza();
       _currentTheme = 'Piggy Dark';
