@@ -1181,6 +1181,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    _caricaDatiLocali();
     _sbloccaBiometricoHome();
 
     // Ascoltatore Notifiche Push in Foreground (In tempo reale)
@@ -1217,6 +1218,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     });
 
     WidgetsBinding.instance.addObserver(this);
+    _caricaDatiLocali();
     _loadBudget();
     _loadTheme();
     _caricaPromemoriaDaCloud();
