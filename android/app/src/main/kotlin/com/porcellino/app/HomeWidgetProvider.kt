@@ -14,26 +14,28 @@ class HomeWidgetProvider : HomeWidgetProvider() {
         appWidgetIds: IntArray,
         widgetData: android.content.SharedPreferences
     ) {
-        val prefs = context.getSharedPreferences("DATA", Context.MODE_PRIVATE)
-        val launchIntent = context.packageManager.getLaunchIntentForPackage(context.packageName)
-        val pendingIntent = if (launchIntent != null) {
-            PendingIntent.getActivity(
-                context,
-                0,
-                launchIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-            )
-        } else null
+        val prefData = context.getSharedPreferences("DATA", Context.MODE_PRIVATE)
+        val intent = Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+        }
+        val pendingIntent = PendingIntent.getActivity(
+            context,
+            0,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        val patrimonio = widgetData.getString("widget_patrimonio", null)
+            ?: prefData.getString("widget_patrimonio", null)
+            ?: widgetData.getString("patrimonio", null)
+            ?: prefData.getString("patrimonio", null)
+            ?: "Patrimonio: € 0.00"
 
         appWidgetIds.forEach { widgetId ->
             val views = RemoteViews(context.packageName, R.layout.piggy_widget_layout).apply {
-                val patrimonio = prefs.getString("widget_patrimonio", "Patrimonio: € 0.00")
                 setTextViewText(R.id.widget_patrimonio, patrimonio)
-
-                if (pendingIntent != null) {
-                    setOnClickPendingIntent(R.id.widget_piggy_btn, pendingIntent)
-                    setOnClickPendingIntent(R.id.widget_patrimonio, pendingIntent)
-                }
+                setOnClickPendingIntent(R.id.widget_piggy_btn, pendingIntent)
+                setOnClickPendingIntent(R.id.widget_patrimonio, pendingIntent)
             }
             appWidgetManager.updateAppWidget(widgetId, views)
         }

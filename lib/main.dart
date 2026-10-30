@@ -760,6 +760,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       await HomeWidget.updateWidget(
         name: 'HomeWidgetProvider',
         androidName: 'HomeWidgetProvider',
+        qualifiedAndroidName: 'com.porcellino.app.HomeWidgetProvider',
       );
     } catch (_) {}
   }
@@ -1644,6 +1645,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             if (data['transazioni'] != null) {
               final List decoded = data['transazioni'];
               transazioni = decoded.map((e) => Map<String, dynamic>.from(e)).toList();
+              SharedPreferences.getInstance().then((p) {
+                p.setString('transazioni', jsonEncode(transazioni));
+                p.setString('cache_transazioni', jsonEncode(transazioni));
+              });
             }
           });
         }
@@ -1658,8 +1663,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     await prefs.setDouble('patrimonio', patrimonio);
     await prefs.setDouble('entrateMese', entrateMese);
     await prefs.setDouble('usciteMese', usciteMese);
+    await prefs.setString('transazioni', jsonEncode(transazioni));
     await prefs.setString('cache_transazioni', jsonEncode(transazioni));
     await prefs.setString('selectedTheme', 'Piggy Dark');
+    String ultimoMov = transazioni.isNotEmpty ? "${transazioni.first['category']} €${transazioni.first['amount']}" : "";
+    _updateAndroidWidget(true, patrimonio, ultimoMov);
 
     try {
       await FirebaseFirestore.instance
