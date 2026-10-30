@@ -14,7 +14,6 @@ class HomeWidgetProvider : HomeWidgetProvider() {
         appWidgetIds: IntArray,
         widgetData: android.content.SharedPreferences
     ) {
-        val prefData = context.getSharedPreferences("DATA", Context.MODE_PRIVATE)
         val intent = Intent(context, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
         }
@@ -26,9 +25,7 @@ class HomeWidgetProvider : HomeWidgetProvider() {
         )
 
         val patrimonio = widgetData.getString("widget_patrimonio", null)
-            ?: prefData.getString("widget_patrimonio", null)
             ?: widgetData.getString("patrimonio", null)
-            ?: prefData.getString("patrimonio", null)
             ?: "Patrimonio: € 0.00"
 
         appWidgetIds.forEach { widgetId ->

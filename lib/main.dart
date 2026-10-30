@@ -1572,6 +1572,14 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   Future<void> _caricaDatiLocali() async {
     final prefs = await SharedPreferences.getInstance();
+    if (prefs.getBool('reset_test_completed_v1') != true) {
+      await prefs.setDouble('patrimonio', 0.0);
+      await prefs.setDouble('entrateMese', 0.0);
+      await prefs.setDouble('usciteMese', 0.0);
+      await prefs.setString('transazioni', jsonEncode([]));
+      await prefs.setString('cache_transazioni', jsonEncode([]));
+      await prefs.setBool('reset_test_completed_v1', true);
+    }
     setState(() {
       patrimonio = prefs.getDouble('patrimonio') ?? 0.00;
       entrateMese = prefs.getDouble('entrateMese') ?? 0.00;
