@@ -760,6 +760,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       await HomeWidget.updateWidget(
         name: 'HomeWidgetProvider',
         androidName: 'HomeWidgetProvider',
+        qualifiedAndroidName: 'es.antonborri.home_widget.HomeWidgetProvider',
       );
     } catch (_) {}
   }
@@ -1699,7 +1700,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   double _getProgresso() => (patrimonio / 100000.0).clamp(0.0, 1.0);
 
-  void _eliminaTransazione(int index) {
+  void _eliminaTransazione(int index) async {
     setState(() {
       final tx = transazioni[index];
       double amount = tx['amount'];
@@ -1712,6 +1713,14 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       }
       transazioni.removeAt(index);
     });
+    final prefsTx = await SharedPreferences.getInstance();
+    await prefsTx.setDouble('patrimonio', patrimonio);
+    await prefsTx.setDouble('entrateMese', entrateMese);
+    await prefsTx.setDouble('usciteMese', usciteMese);
+    await prefsTx.setString('transazioni', jsonEncode(transazioni));
+    await prefsTx.setString('cache_transazioni', jsonEncode(transazioni));
+    String ultimoMov = transazioni.isNotEmpty ? "${transazioni.first['category']} €${transazioni.first['amount']}" : "";
+    _updateAndroidWidget(true, patrimonio, ultimoMov);
     _sincronizzaCloud();
     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Movimento eliminato e sincronizzato")));
   }
@@ -2311,7 +2320,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                               final tx = transazioniFiltrate[index];
                               final origIdx = transazioni.indexOf(tx);
                               return Dismissible(
-                                key: Key('${tx['category']}_${tx['amount']}_$origIdx'),
+                                key: ValueKey(tx),
                                 direction: DismissDirection.endToStart,
                                 background: Container(
                                   alignment: Alignment.centerRight,
@@ -2321,6 +2330,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                 ),
                                 onDismissed: (direction) {
                                   HapticFeedback.mediumImpact();
+                                  transazioniFiltrate.removeAt(index);
                                   _eliminaTransazione(origIdx);
                                   setModalState(() {});
                                 },
