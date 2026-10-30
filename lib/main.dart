@@ -760,7 +760,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       await HomeWidget.updateWidget(
         name: 'HomeWidgetProvider',
         androidName: 'HomeWidgetProvider',
-        qualifiedAndroidName: 'es.antonborri.home_widget.HomeWidgetProvider',
       );
     } catch (_) {}
   }
@@ -1700,29 +1699,32 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   double _getProgresso() => (patrimonio / 100000.0).clamp(0.0, 1.0);
 
-  void _eliminaTransazione(int index) async {
+  void _eliminaTransazioneByObject(Map<String, dynamic> tx) async {
     setState(() {
-      final tx = transazioni[index];
-      double amount = tx['amount'];
-      if (tx['type'].contains('Entrata')) {
-        patrimonio -= amount;
-        entrateMese -= amount;
+      final amt = (tx['amount'] as num?)?.toDouble() ?? 0.0;
+      final type = tx['type']?.toString() ?? '';
+      if (type.contains('Entrata')) {
+        patrimonio -= amt;
+        entrateMese -= amt;
       } else {
-        patrimonio += amount;
-        usciteMese -= amount;
+        patrimonio += amt;
+        usciteMese += amt;
       }
-      transazioni.removeAt(index);
+      transazioni.remove(tx);
     });
-    final prefsTx = await SharedPreferences.getInstance();
-    await prefsTx.setDouble('patrimonio', patrimonio);
-    await prefsTx.setDouble('entrateMese', entrateMese);
-    await prefsTx.setDouble('usciteMese', usciteMese);
-    await prefsTx.setString('transazioni', jsonEncode(transazioni));
-    await prefsTx.setString('cache_transazioni', jsonEncode(transazioni));
-    String ultimoMov = transazioni.isNotEmpty ? "${transazioni.first['category']} €${transazioni.first['amount']}" : "";
-    _updateAndroidWidget(true, patrimonio, ultimoMov);
-    _sincronizzaCloud();
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Movimento eliminato e sincronizzato")));
+    try {
+      final prefsTx = await SharedPreferences.getInstance();
+      await prefsTx.setDouble('patrimonio', patrimonio);
+      await prefsTx.setDouble('entrateMese', entrateMese);
+      await prefsTx.setDouble('usciteMese', usciteMese);
+      await prefsTx.setString('transazioni', jsonEncode(transazioni));
+      await prefsTx.setString('cache_transazioni', jsonEncode(transazioni));
+      String ultimoMov = transazioni.isNotEmpty ? "${transazioni.first['category']} €${transazioni.first['amount']}" : "";
+      _updateAndroidWidget(true, patrimonio, ultimoMov);
+      _sincronizzaCloud();
+    } catch (e) {
+      debugPrint("Errore durante la rimozione movimento: $e");
+    }
   }
 
   void _mostraDettaglioLivello(String titolo, String target, String descrizione, IconData icona, Color colore) {
@@ -2330,8 +2332,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                 ),
                                 onDismissed: (direction) {
                                   HapticFeedback.mediumImpact();
-                                  transazioniFiltrate.removeAt(index);
-                                  _eliminaTransazione(origIdx);
+                                  _eliminaTransazioneByObject(tx);
                                   setModalState(() {});
                                 },
                                 child: ListTile(
