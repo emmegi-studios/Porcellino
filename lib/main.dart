@@ -2574,6 +2574,22 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                           ),
                         ],
                       ),
+                      const SizedBox(height: 12),
+                      Center(
+                        child: Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: QrImageView(
+                            data: _caveauId,
+                            version: QrVersions.auto,
+                            size: 160.0,
+                            backgroundColor: Colors.white,
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ),
