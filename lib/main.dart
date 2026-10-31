@@ -3240,10 +3240,13 @@ void _mostraPiggyAI(BuildContext context, [bool? isDarkOverride]) {
 
               try {
                 final response = await _getGeminiResponse(text);
+                // ACTION PARSER: Esecuzione reale sulla richiesta dell'utente
+                _eseguiComandoDaTesto(text);
                 setStateModal(() {
                   chatMessages.removeLast();
                   chatMessages.add({"sender": "piggy", "text": response});
                 });
+                SharedPreferences.getInstance().then((p) => p.setString('cache_piggy_chat', jsonEncode(_chatMessagesPersistent)));
               } catch (e) {
                 setStateModal(() {
                   chatMessages.removeLast();
@@ -3690,7 +3693,57 @@ String _sanitizeTextForTTS(String input) {
 // ==========================================
 // PIGGY AI ENGINE - TOP LEVEL GLOBAL FUNCTION
 // ==========================================
-Future<String> _getGeminiResponse(String prompt) async {
+
+  void _eseguiComandoDaTesto(String text) {
+    String t = text.toLowerCase();
+    final regNum = RegExp(r'(\d+(?:[.,]\d+)?)');
+    final match = regNum.firstMatch(t);
+    if (match != null) {
+      double imp = double.tryParse(match.group(1)!.replaceAll(',', '.')) ?? 0.0;
+      if (imp > 0) {
+        bool isEntrata = t.contains("aggiungi") || t.contains("stipendio") || t.contains("guadagno") || t.contains("entrata") || t.contains("accredito");
+        String cat = isEntrata ? "💰 Stipendio / Entrate" : "🛒 Altro";
+        if (t.contains("cibo") || t.contains("spesa")) cat = "🍔 Cibo / Spesa";
+        if (t.contains("animali") || t.contains("cane")) cat = "🐾 Animali";
+        if (t.contains("svago") || t.contains("gioco")) cat = "🎮 Svago / Hobbies";
+
+        Map<String, dynamic> nuovaTx = {
+          'type': isEntrata ? 'Entrata (Guadagno)' : 'Uscita (Spesa)',
+          'amount': imp,
+          'category': cat,
+          'note': 'Eseguito da Piggy AI',
+          'data': DateTime.now().toString().split(' ')[0],
+          'recurrence': 'Nessuna',
+          'author': 'Piggy AI',
+        };
+
+        setState(() {
+          transazioni.insert(0, nuovaTx);
+          if (isEntrata) {
+            patrimonio += imp;
+            entrateMese += imp;
+          } else {
+            patrimonio -= imp;
+            usciteMese += imp;
+          }
+        });
+        _sincronizzaCloud();
+      }
+    }
+  }
+
+  Future<String> _getGeminiResponse(String prompt) async {
+  // Parsing diretto dei comandi per immediata esecuzione
+  String promptLower = prompt.toLowerCase();
+  if (promptLower.contains("tema scuro") || promptLower.contains("piggy dark")) {
+    setState(() { _currentTheme = 'Piggy Dark'; });
+    SharedPreferences.getInstance().then((p) => p.setString("selectedTheme", 'Piggy Dark'));
+    return "🎨 Tema modificato con successo in **Piggy Dark**!";
+  } else if (promptLower.contains("tema chiaro") || promptLower.contains("piggy white")) {
+    setState(() { _currentTheme = 'Piggy White'; });
+    SharedPreferences.getInstance().then((p) => p.setString("selectedTheme", 'Piggy White'));
+    return "🎨 Tema modificato con successo in **Piggy White**!";
+  }
   final client = http.Client();
   final prefs = await SharedPreferences.getInstance();
 
