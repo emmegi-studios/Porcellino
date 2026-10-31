@@ -1,3 +1,4 @@
+import 'package:qr_flutter/qr_flutter.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -1717,16 +1718,24 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   void _eliminaTransazioneByObject(Map<String, dynamic> tx) async {
     setState(() {
-      final amt = (tx['amount'] as num?)?.toDouble() ?? 0.0;
-      final type = tx['type']?.toString() ?? '';
-      if (type.contains('Entrata')) {
-        patrimonio -= amt;
-        entrateMese -= amt;
-      } else {
-        patrimonio += amt;
-        usciteMese += amt;
-      }
       transazioni.remove(tx);
+      double calcPatrimonio = 0.0;
+      double calcEntrate = 0.0;
+      double calcUscite = 0.0;
+      for (var item in transazioni) {
+        final amt = (item['amount'] as num?)?.toDouble() ?? 0.0;
+        final type = item['type']?.toString() ?? '';
+        if (type.contains('Entrata')) {
+          calcPatrimonio += amt;
+          calcEntrate += amt;
+        } else {
+          calcPatrimonio -= amt;
+          calcUscite += amt;
+        }
+      }
+      patrimonio = calcPatrimonio;
+      entrateMese = calcEntrate;
+      usciteMese = calcUscite;
     });
     try {
       final prefsTx = await SharedPreferences.getInstance();
