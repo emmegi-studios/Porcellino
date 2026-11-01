@@ -3733,17 +3733,7 @@ String _sanitizeTextForTTS(String input) {
   }
 
   Future<String> _getGeminiResponse(String prompt) async {
-  // Parsing diretto dei comandi per immediata esecuzione
-  String promptLower = prompt.toLowerCase();
-  if (promptLower.contains("tema scuro") || promptLower.contains("piggy dark")) {
-    setState(() { _currentTheme = 'Piggy Dark'; });
-    SharedPreferences.getInstance().then((p) => p.setString("selectedTheme", 'Piggy Dark'));
-    return "🎨 Tema modificato con successo in **Piggy Dark**!";
-  } else if (promptLower.contains("tema chiaro") || promptLower.contains("piggy white")) {
-    setState(() { _currentTheme = 'Piggy White'; });
-    SharedPreferences.getInstance().then((p) => p.setString("selectedTheme", 'Piggy White'));
-    return "🎨 Tema modificato con successo in **Piggy White**!";
-  }
+
   final client = http.Client();
   final prefs = await SharedPreferences.getInstance();
 
