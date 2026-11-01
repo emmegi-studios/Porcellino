@@ -3180,7 +3180,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             child: ListTile(
               title: Text(tx['category'], style: TextStyle(fontWeight: FontWeight.bold, color: _textColor)),
               subtitle: Text("${tx['note']}${(tx['recurrence'] != null && tx['recurrence'] != 'Nessuna') ? ' • 🔄 ' + tx['recurrence'] : ''} • ${tx['author'] ?? 'Utente'}", style: TextStyle(color: _subtitleColor)),
-              trailing: Text("${tx['type'].contains('Entrata') ? '+' : '-'}€${tx['amount']}", style: TextStyle(color: tx['type'].contains('Entrata') ? Colors.greenAccent : _primaryColor, fontWeight: FontWeight.bold)))))]),
+              trailing: Text("${tx['type'].contains('Entrata') ? '+' : '-'}€${tx['amount']}", style: TextStyle(color: tx['type'].contains('Entrata') ? Colors.greenAccent : _primaryColor, fontWeight: FontWeight.bold)))))]),),
           Positioned(
             right: 16,
             bottom: 80 - _fabYOffset, 
