@@ -3217,7 +3217,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           const SizedBox(height: 2),
           Text(sub, style: TextStyle(fontSize: 8, color: _subtitleColor))]));
   }
-}
 
 
 
@@ -3598,6 +3597,8 @@ void _mostraPiggyAI(BuildContext context, [bool? isDarkOverride]) {
       },
     );
   }
+
+}
 
 class InviteManager extends StatefulWidget {
   final Widget child;
