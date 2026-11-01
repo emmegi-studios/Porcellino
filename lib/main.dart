@@ -152,12 +152,12 @@ class _LoginScreenState extends State<LoginScreen> {
     HomeWidget.initiallyLaunchedFromHomeWidget().then((Uri? uri) {
       if (uri != null) {
         Future.delayed(const Duration(milliseconds: 300), () {
-          if (mounted) _mostraPiggyAI(context, _isDarkTheme);
+          // if (mounted) _mostraPiggyAI(context, _isDarkTheme);
         });
       }
     });
     HomeWidget.widgetClicked.listen((Uri? uri) {
-      if (mounted) _mostraPiggyAI(context, _isDarkTheme);
+          // if (mounted) _mostraPiggyAI(context, _isDarkTheme);
     });
 
     _isDarkTheme = (widget.initialTheme == 'Piggy Dark');
@@ -3239,7 +3239,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   
                                                                             
 
-String _selectedPersonality = 'Cyber-Tecno';
+// Duplicate _selectedPersonality removed
 
 void _mostraPiggyAI(BuildContext context, [bool? isDarkOverride]) {
     final bool isDark = isDarkOverride ?? (Theme.of(context).brightness == Brightness.dark);
