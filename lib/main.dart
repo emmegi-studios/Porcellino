@@ -2836,7 +2836,14 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             onPressed: _mostraModalImpostazioni)]),
       body: Stack(
         children: [
-          ListView(
+          RefreshIndicator(
+            onRefresh: () async {
+              await _caricaDatiLocali();
+              if (_caveauId.isNotEmpty) {
+                _ascoltaCloudFirestore();
+              }
+            },
+            child: ListView(
         padding: const EdgeInsets.all(16.0),
         children: [
           Card(
