@@ -2491,6 +2491,54 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   }
 
   @override
+    void _eseguiComandoDaTesto(String text) {
+    String t = text.toLowerCase();
+    if (t.contains("tema scuro") || t.contains("piggy dark")) {
+      setState(() { _currentTheme = 'Piggy Dark'; });
+      SharedPreferences.getInstance().then((p) => p.setString("selectedTheme", 'Piggy Dark'));
+      return;
+    } else if (t.contains("tema chiaro") || t.contains("piggy white")) {
+      setState(() { _currentTheme = 'Piggy White'; });
+      SharedPreferences.getInstance().then((p) => p.setString("selectedTheme", 'Piggy White'));
+      return;
+    }
+
+    final regNum = RegExp(r'(\d+(?:[.,]\d+)?)');
+    final match = regNum.firstMatch(t);
+    if (match != null) {
+      double imp = double.tryParse(match.group(1)!.replaceAll(',', '.')) ?? 0.0;
+      if (imp > 0) {
+        bool isEntrata = t.contains("aggiungi") || t.contains("stipendio") || t.contains("guadagno") || t.contains("entrata") || t.contains("accredito");
+        String cat = isEntrata ? "💰 Stipendio / Entrate" : "🛒 Altro";
+        if (t.contains("cibo") || t.contains("spesa")) cat = "🍔 Cibo / Spesa";
+        if (t.contains("animali") || t.contains("cane")) cat = "🐾 Animali";
+        if (t.contains("svago") || t.contains("gioco")) cat = "🎮 Svago / Hobbies";
+
+        Map<String, dynamic> nuovaTx = {
+          'type': isEntrata ? 'Entrata (Guadagno)' : 'Uscita (Spesa)',
+          'amount': imp,
+          'category': cat,
+          'note': 'Eseguito da Piggy AI',
+          'data': DateTime.now().toString().split(' ')[0],
+          'recurrence': 'Nessuna',
+          'author': 'Piggy AI',
+        };
+
+        setState(() {
+          transazioni.insert(0, nuovaTx);
+          if (isEntrata) {
+            patrimonio += imp;
+            entrateMese += imp;
+          } else {
+            patrimonio -= imp;
+            usciteMese += imp;
+          }
+        });
+        _sincronizzaCloud();
+      }
+    }
+  }
+
   void _mostraGestioneCaveau(BuildContext context) {
     final TextEditingController inputController = TextEditingController();
     final bool isDark = _isDarkTheme;
@@ -3694,44 +3742,7 @@ String _sanitizeTextForTTS(String input) {
 // PIGGY AI ENGINE - TOP LEVEL GLOBAL FUNCTION
 // ==========================================
 
-  void _eseguiComandoDaTesto(String text) {
-    String t = text.toLowerCase();
-    final regNum = RegExp(r'(\d+(?:[.,]\d+)?)');
-    final match = regNum.firstMatch(t);
-    if (match != null) {
-      double imp = double.tryParse(match.group(1)!.replaceAll(',', '.')) ?? 0.0;
-      if (imp > 0) {
-        bool isEntrata = t.contains("aggiungi") || t.contains("stipendio") || t.contains("guadagno") || t.contains("entrata") || t.contains("accredito");
-        String cat = isEntrata ? "💰 Stipendio / Entrate" : "🛒 Altro";
-        if (t.contains("cibo") || t.contains("spesa")) cat = "🍔 Cibo / Spesa";
-        if (t.contains("animali") || t.contains("cane")) cat = "🐾 Animali";
-        if (t.contains("svago") || t.contains("gioco")) cat = "🎮 Svago / Hobbies";
-
-        Map<String, dynamic> nuovaTx = {
-          'type': isEntrata ? 'Entrata (Guadagno)' : 'Uscita (Spesa)',
-          'amount': imp,
-          'category': cat,
-          'note': 'Eseguito da Piggy AI',
-          'data': DateTime.now().toString().split(' ')[0],
-          'recurrence': 'Nessuna',
-          'author': 'Piggy AI',
-        };
-
-        setState(() {
-          transazioni.insert(0, nuovaTx);
-          if (isEntrata) {
-            patrimonio += imp;
-            entrateMese += imp;
-          } else {
-            patrimonio -= imp;
-            usciteMese += imp;
-          }
-        });
-        _sincronizzaCloud();
-      }
-    }
-  }
-
+  
   Future<String> _getGeminiResponse(String prompt) async {
 
   final client = http.Client();
