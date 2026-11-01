@@ -512,7 +512,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
-  List> _chatMessagesPersistent = [];
+  List<Map<String, String>> _chatMessagesPersistent = [];
 
   void _eseguiComandoDaTesto(String text) {
     String t = text.toLowerCase();
