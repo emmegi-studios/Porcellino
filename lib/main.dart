@@ -587,7 +587,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     final prefs = await SharedPreferences.getInstance();
     Map<String, dynamic> backupData = {
       'app': 'Piggy Vault',
-      'version': '2.8.17',
+      'version': '2.1.655',
       'timestamp': DateTime.now().toIso8601String(),
       'patrimonio': patrimonio,
       'entrateMese': entrateMese,
@@ -1173,11 +1173,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Versione: 2.5 Ultimate', style: TextStyle(color: (_isDarkTheme) ? Colors.white70 : Colors.black87)),
+            Text('Versione: 2.1.655 🐷', style: TextStyle(color: (_isDarkTheme) ? Colors.white70 : Colors.black87)),
             SizedBox(height: 8),
             Text('Sviluppato da EmmeGi Studios', style: TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold)),
             SizedBox(height: 8),
-            Text('Assistente Cibernetico: Cyber-Piggy (Modello Terminator v2.5)', style: TextStyle(color: (_isDarkTheme) ? Colors.white : Colors.black87, fontSize: 13)),
+            Text('Assistente Cibernetico: Cyber-Piggy (Modello Terminator v2.1.655)', style: TextStyle(color: (_isDarkTheme) ? Colors.white : Colors.black87, fontSize: 13)),
           ],
         ),
         actions: [
@@ -1197,7 +1197,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         builder: (context) => AlertDialog(
           backgroundColor: (_isDarkTheme) ? Color(0xFF1E2235) : Color(0xFFF5F6FA),
           title: Text('Aggiornamenti 🚀', style: TextStyle(color: (_isDarkTheme) ? Colors.white : Colors.black87)),
-          content: Text('Sei già sulla versione più recente di Piggy Vault v2.0.0!\n\nIl server OTA non ha nuove versioni al momento.', style: TextStyle(color: (_isDarkTheme) ? Colors.white70 : Colors.black87)),
+          content: Text('Sei già sulla versione più recente di Piggy Vault v2.1.655 🐷!\n\nIl server OTA non ha nuove versioni al momento.', style: TextStyle(color: (_isDarkTheme) ? Colors.white70 : Colors.black87)),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
@@ -1735,19 +1735,23 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     String ultimoMov = transazioni.isNotEmpty ? "${transazioni.first['category']} €${transazioni.first['amount']}" : "";
     _updateAndroidWidget(true, patrimonio, ultimoMov);
 
-    try {
-      await FirebaseFirestore.instance
-          .collection('caveau_condiviso')
-          .doc(_caveauId)
-          .set({
-        'patrimonio': patrimonio,
-        'entrateMese': entrateMese,
-        'usciteMese': usciteMese,
-        'transazioni': transazioni,
-        'ultimoAggiornamento': FieldValue.serverTimestamp(),
-      });
-    } catch (e) {
-      debugPrint("Cloud sync save notice: $e");
+    if (_caveauId.isNotEmpty) {
+      try {
+        await FirebaseFirestore.instance
+            .collection('caveau_condiviso')
+            .doc(_caveauId)
+            .set({
+          'patrimonio': patrimonio,
+          'entrateMese': entrateMese,
+          'usciteMese': usciteMese,
+          'transazioni': transazioni,
+          'portafogli': portafogli,
+          'speseRicorrenti': speseRicorrenti,
+          'ultimoAggiornamento': FieldValue.serverTimestamp(),
+        }, SetOptions(merge: true));
+      } catch (e) {
+        debugPrint("Cloud sync save notice: $e");
+      }
     }
   }
 
