@@ -561,6 +561,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       }
     }
   }
+
+  
+
+  
   double _fabYOffset = 0.0;
 
   void _scollegaCaveauCondiviso() async {
