@@ -775,8 +775,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
     if (modificato) {
       _salvaSpeseRicorrenti();
-      _salvaSpeseRicorrenti();
-      _updateAndroidWidget(true, patrimonio, transazioni.isNotEmpty ? "${transazioni.first['category']} €${transazioni.first['amount']}" : "");
+      _sincronizzaCloud();
     }
   }
 
