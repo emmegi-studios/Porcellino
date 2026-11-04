@@ -1,3 +1,4 @@
+import 'package:mobile_scanner/mobile_scanner.dart';
 import 'dart:async';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -2804,6 +2805,61 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       ),
                     ),
                     const SizedBox(width: 12),
+                        // Pulsante Fotocamera / Scanner QR
+                        IconButton(
+                          style: IconButton.styleFrom(
+                            backgroundColor: Colors.purple.shade700,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.all(12),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          ),
+                          icon: const Icon(Icons.qr_code_scanner),
+                          tooltip: "Scannerizza QR Code",
+                          onPressed: () async {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  backgroundColor: _cardBg,
+                                  title: Text("📷 Inquadra QR Code Caveau", style: TextStyle(color: _textColor)),
+                                  content: SizedBox(
+                                    width: 300,
+                                    height: 300,
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(12),
+                                      child: MobileScanner(
+                                        onDetect: (capture) {
+                                          final List<Barcode> barcodes = capture.barcodes;
+                                          for (final barcode in barcodes) {
+                                            if (barcode.rawValue != null) {
+                                              String scannedVal = barcode.rawValue!;
+                                              if (scannedVal.contains("id=")) {
+                                                scannedVal = scannedVal.split("id=").last.split("&").first;
+                                              }
+                                              inputController.text = scannedVal;
+                                              Navigator.pop(context);
+                                              ScaffoldMessenger.of(context).showSnackBar(
+                                                SnackBar(content: Text("✅ ID rilevato: $scannedVal")),
+                                              );
+                                              break;
+                                            }
+                                          }
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () => Navigator.pop(context),
+                                      child: Text("Annulla", style: TextStyle(color: _subtitleColor)),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          },
+                        ),
+                        const SizedBox(width: 8),
                     Expanded(
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
