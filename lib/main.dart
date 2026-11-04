@@ -1747,6 +1747,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       _currentTheme = 'Piggy Dark';
       _selectedPersonality = prefs.getString('piggyPersonality') ?? 'Cyber-Tecno';
       _caveauId = prefs.getString('caveauId') ?? '';
+    if (_caveauId.isNotEmpty) {
+      _ascoltaCloudFirestore();
+    }
       if (_caveauId.isNotEmpty) {
         _ascoltaCloudFirestore();
       }
@@ -2875,17 +2878,37 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                           }
                           if (txt.isNotEmpty) {
                             _caveauId = txt;
-                            setState(() {});
+                            final prefs = await SharedPreferences.getInstance();
+                            await prefs.setString('caveauId', txt);
                             if (ctx.mounted) Navigator.pop(ctx);
+                            
+                            try {
+                              // Download preventivo dal Cloud per allineare subito il saldo locale
+                              final docSnap = await FirebaseFirestore.instance.collection('caveau_condiviso').doc(txt).get();
+                              if (docSnap.exists && docSnap.data() != null) {
+                                final data = docSnap.data()!;
+                                setState(() {
+                                  patrimonio = (data['patrimonio'] ?? patrimonio).toDouble();
+                                  entrateMese = (data['entrateMese'] ?? entrateMese).toDouble();
+                                  usciteMese = (data['usciteMese'] ?? usciteMese).toDouble();
+                                  if (data['transazioni'] != null) {
+                                    final List decoded = data['transazioni'];
+                                    transazioni = decoded.map((e) => Map<String, dynamic>.from(e)).toList();
+                                    prefs.setString('transazioni', jsonEncode(transazioni));
+                                  }
+                                });
+                              } else {
+                                _sincronizzaCloud();
+                              }
+                            } catch (e) {
+                              debugPrint("Errore pull iniziale: $e");
+                            }
+
+                            _ascoltaCloudFirestore();
+                            
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(content: Text('👥 Caveau collegato e sincronizzato in tempo reale!')),
                             );
-                            try {
-                              final prefs = await SharedPreferences.getInstance();
-                              await prefs.setString('caveauId', txt);
-                              _ascoltaCloudFirestore();
-                              _sincronizzaCloud();
-                            } catch (_) {}
                           }
                         },
                       ),
