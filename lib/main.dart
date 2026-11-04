@@ -2614,10 +2614,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         "note": note.isEmpty ? _selectedCategory : note,
                         "amount": amount,
                         "type": _selectedType,
+                        "tipo": _selectedType,
                         "recurrence": _selectedRecurrence,
                         "author": _nomeUtenteDinamico
                       });
-            _sincronizzaCloud();
                       if (_selectedType.contains('Entrata')) {
                         patrimonio += amount;
                         entrateMese += amount;
