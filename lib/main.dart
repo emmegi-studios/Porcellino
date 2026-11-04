@@ -2645,7 +2645,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                             borderRadius: BorderRadius.circular(16),
                           ),
                           child: QrImageView(
-                            data: _caveauId,
+                            data: "https://piggyvault.app/join?id=$_caveauId",
                             version: QrVersions.auto,
                             size: 160.0,
                             backgroundColor: Colors.white,
@@ -2714,6 +2714,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                           _caveauId = newId;
                           final prefs = await SharedPreferences.getInstance();
                           await prefs.setString('caveauId', newId);
+                          _ascoltaCloudFirestore();
+                          await _sincronizzaCloud();
                           setState(() {});
                           setMState(() {});
                         },
@@ -2730,15 +2732,20 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         ),
                         child: Text('Collega Caveau', style: TextStyle(fontWeight: FontWeight.bold)),
                         onPressed: () async {
-                          final txt = inputController.text.trim();
+                          String txt = inputController.text.trim();
+                          if (txt.contains('id=')) {
+                            txt = txt.split('id=').last.split('&').first;
+                          }
                           if (txt.isNotEmpty) {
                             _caveauId = txt;
                             final prefs = await SharedPreferences.getInstance();
                             await prefs.setString('caveauId', txt);
+                            _ascoltaCloudFirestore();
+                            await _sincronizzaCloud();
                             setState(() {});
                             if (ctx.mounted) Navigator.pop(ctx);
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('👥 Caveau collegato con successo!')),
+                              const SnackBar(content: Text('👥 Caveau collegato e sincronizzato in tempo reale!')),
                             );
                           }
                         },
