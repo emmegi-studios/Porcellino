@@ -636,6 +636,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   void _scollegaCaveauCondiviso() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('caveauId', '');
+    _caveauSub?.cancel();
     setState(() {
       _caveauId = '';
     });
