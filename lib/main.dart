@@ -693,6 +693,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   await prefs.setString('transazioni', jsonEncode(transazioni));
                   await prefs.setString('portafogli', jsonEncode(portafogli));
                   await prefs.setString('speseRicorrenti', jsonEncode(speseRicorrenti));
+                  await _sincronizzaCloud();
                   Navigator.pop(ctx);
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Dati ripristinati con successo!'), backgroundColor: Colors.green),
@@ -1627,6 +1628,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
 
   Future<void> _caricaDatiLocali() async {
+    try {
     final prefs = await SharedPreferences.getInstance();
     if (prefs.getBool('reset_test_completed_v1') != true) {
       await prefs.setDouble('patrimonio', 0.0);
@@ -1684,6 +1686,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         _ascoltaCloudFirestore();
       }
     });
+    } catch (e) {
+      debugPrint("Errore nel caricamento dati locali: $e");
+    }
   }
 
   void _ascoltaCloudFirestore() {
