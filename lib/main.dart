@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:pdf/pdf.dart';
@@ -174,6 +175,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   void dispose() {
+    _caveauSub?.cancel();
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
@@ -1519,6 +1521,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   Color get _primaryColor => Colors.pinkAccent;
   Color get _scaffoldBg => _isDark ? const Color(0xFF0F111A) : const Color(0xFFF4F6F9);
 
+  StreamSubscription<DocumentSnapshot>? _caveauSub;
   double patrimonio = 0.0;
   double entrateMese = 0.0;
   double usciteMese = 0.0;
@@ -1684,37 +1687,44 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   }
 
   void _ascoltaCloudFirestore() {
+    if (_caveauId.isEmpty) return;
     try {
-      FirebaseFirestore.instance
+      _caveauSub?.cancel();
+      _caveauSub = FirebaseFirestore.instance
           .collection('caveau_condiviso')
           .doc(_caveauId)
           .snapshots()
-          .listen((snapshot) {
+          .listen((snapshot) async {
+        if (!mounted) return;
         if (snapshot.exists && snapshot.data() != null) {
           final data = snapshot.data()!;
+          final prefs = await SharedPreferences.getInstance();
+          
+          if (!mounted) return;
           setState(() {
             patrimonio = (data['patrimonio'] ?? patrimonio).toDouble();
             entrateMese = (data['entrateMese'] ?? entrateMese).toDouble();
             usciteMese = (data['usciteMese'] ?? usciteMese).toDouble();
-            String ultimoMov = transazioni.isNotEmpty ? "${transazioni.first['category']} €${transazioni.first['amount']}" : "";
-            _updateAndroidWidget(true, patrimonio, ultimoMov);
+            
             if (data['speseRicorrenti'] != null) {
               final List decodedR = data['speseRicorrenti'];
               speseRicorrenti = decodedR.map((e) => Map<String, dynamic>.from(e)).toList();
-              _verificaEElaboraRicorrenti();
+              prefs.setString('speseRicorrenti', jsonEncode(speseRicorrenti));
             }
             if (data['portafogli'] != null) {
               final List decoded = data['portafogli'];
               portafogli = decoded.map((e) => Map<String, dynamic>.from(e)).toList();
+              prefs.setString('portafogli', jsonEncode(portafogli));
             }
             if (data['transazioni'] != null) {
               final List decoded = data['transazioni'];
               transazioni = decoded.map((e) => Map<String, dynamic>.from(e)).toList();
-              SharedPreferences.getInstance().then((p) {
-                p.setString('transazioni', jsonEncode(transazioni));
-                p.setString('cache_transazioni', jsonEncode(transazioni));
-              });
+              prefs.setString('transazioni', jsonEncode(transazioni));
+              prefs.setString('cache_transazioni', jsonEncode(transazioni));
             }
+            
+            String ultimoMov = transazioni.isNotEmpty ? "${transazioni.first['category']} €${transazioni.first['amount']}" : "";
+            _updateAndroidWidget(true, patrimonio, ultimoMov);
           });
         }
       });
