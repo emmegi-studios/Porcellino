@@ -1449,7 +1449,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               if (val != null && val > 0) {
                 _saveBudget(val);
               }
-              Navigator.pop(context);
+              Navigator.pop(dlgCtx);
             },
             child: Text("Salva", style: TextStyle(color: (_isDarkTheme) ? Colors.white : Colors.black87)),
           ),
@@ -1969,7 +1969,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     minimumSize: const Size(double.infinity, 50),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
-                      onPressed: () async { HapticFeedback.lightImpact(); Navigator.pop(context); await FirebaseAuth.instance.signOut(); Navigator.of(context, rootNavigator: true).pushNamedAndRemoveUntil("/", (route) => false); },
+                      onPressed: () async { HapticFeedback.lightImpact(); Navigator.pop(dlgCtx); await FirebaseAuth.instance.signOut(); Navigator.of(context, rootNavigator: true).pushNamedAndRemoveUntil("/", (route) => false); },
                   child: Text('Disconnetti Account', style: TextStyle(color: (_isDarkTheme) ? Colors.white : Colors.black87, fontWeight: FontWeight.bold)),
                 ),
                 const SizedBox(height: 24),
@@ -2015,7 +2015,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       subtitle: Text(_caveauId.isNotEmpty ? 'ID: $_caveauId' : 'I tuoi dati sono sincronizzati sul tuo account', style: TextStyle(color: _subtitleColor, fontSize: 11)),
                       trailing: _caveauId.isNotEmpty
                           ? TextButton(
-                              onPressed: () { Navigator.pop(context); _scollegaCaveauCondiviso(); },
+                              onPressed: () { Navigator.pop(dlgCtx); _scollegaCaveauCondiviso(); },
                               child: Text('Scollega', style: TextStyle(color: Colors.redAccent, fontSize: 11)),
                             )
                           : null,
@@ -2034,7 +2034,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 onPressed: () {
-                  Navigator.pop(context);
+                  Navigator.pop(dlgCtx);
                   _mostraGestioneCaveau(context);
                 },
               ),
@@ -2048,13 +2048,13 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         ElevatedButton.icon(
-                          onPressed: () { HapticFeedback.lightImpact(); setState(() { _currentTheme = 'Piggy Dark'; }); SharedPreferences.getInstance().then((p) => p.setString("selectedTheme", _currentTheme)); Navigator.pop(context); },
+                          onPressed: () { HapticFeedback.lightImpact(); setState(() { _currentTheme = 'Piggy Dark'; }); SharedPreferences.getInstance().then((p) => p.setString("selectedTheme", _currentTheme)); Navigator.pop(dlgCtx); },
                           icon: Icon(Icons.dark_mode, color: (_isDarkTheme) ? Colors.white : Colors.black87, size: 16),
                           label: Text('Piggy Dark', style: TextStyle(color: Colors.white)),
                         ),
                         ElevatedButton.icon(
                           style: ElevatedButton.styleFrom(backgroundColor: Colors.grey.shade200),
-                          onPressed: () { HapticFeedback.lightImpact(); setState(() { _currentTheme = 'Piggy White'; }); SharedPreferences.getInstance().then((p) => p.setString("selectedTheme", 'Piggy White')); Navigator.pop(context); },
+                          onPressed: () { HapticFeedback.lightImpact(); setState(() { _currentTheme = 'Piggy White'; }); SharedPreferences.getInstance().then((p) => p.setString("selectedTheme", 'Piggy White')); Navigator.pop(dlgCtx); },
                           icon: Icon(Icons.light_mode, color: Colors.black87, size: 16),
                           label: Text('Piggy White', style: TextStyle(color: Colors.black87)),
                         ),
@@ -2069,12 +2069,12 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         OutlinedButton.icon(
-                          onPressed: () { Navigator.pop(context); _esportaBackupJSON(); },
+                          onPressed: () { Navigator.pop(dlgCtx); _esportaBackupJSON(); },
                           icon: Icon(Icons.download, size: 16, color: Colors.pinkAccent),
                           label: Text('Export JSON', style: TextStyle(color: Colors.pinkAccent, fontSize: 12)),
                         ),
                         OutlinedButton.icon(
-                          onPressed: () { Navigator.pop(context); _ripristinaBackupJSON(); },
+                          onPressed: () { Navigator.pop(dlgCtx); _ripristinaBackupJSON(); },
                           icon: Icon(Icons.upload, size: 16, color: Colors.pinkAccent),
                           label: Text('Import JSON', style: TextStyle(color: Colors.pinkAccent, fontSize: 12)),
                         ),
@@ -2137,7 +2137,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     _goalNameController.clear();
                     _goalTargetController.clear();
                     _salvaPortafogli();
-                    Navigator.pop(context);
+                    Navigator.pop(dlgCtx);
                   }
                 },
                 child: Text("Crea Obiettivo", style: TextStyle(color: (_isDarkTheme) ? Colors.white : Colors.black87, fontWeight: FontWeight.bold)),
@@ -2626,7 +2626,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     _sincronizzaCloud();
                     _noteController.clear();
                     _amountController.clear();
-                    Navigator.pop(context);
+                    Navigator.pop(dlgCtx);
                   }
                 },
                 child: Text("Registra e Sincronizza Cloud", style: TextStyle(color: (_isDarkTheme) ? Colors.white : Colors.black87, fontWeight: FontWeight.bold)))]));
@@ -2795,12 +2795,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         onPressed: () async {
                           final newId = 'caveau_' + DateTime.now().millisecondsSinceEpoch.toString();
                           _caveauId = newId;
-                          final prefs = await SharedPreferences.getInstance();
-                          await prefs.setString('caveauId', newId);
-                          _ascoltaCloudFirestore();
-                          await _sincronizzaCloud();
                           setState(() {});
                           setMState(() {});
+                          SharedPreferences.getInstance().then((p) => p.setString('caveauId', newId));
+                          _ascoltaCloudFirestore();
+                          _sincronizzaCloud();
                         },
                       ),
                     ),
@@ -2817,11 +2816,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                           tooltip: "Scannerizza QR Code",
                           onPressed: () async {
                             showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
+                              context: ctx,
+                              builder: (BuildContext dlgCtx) {
                                 return AlertDialog(
-                                  backgroundColor: _cardBg,
-                                  title: Text("📷 Inquadra QR Code Caveau", style: TextStyle(color: _textColor)),
+                                  backgroundColor: bgColor,
+                                  title: Text("📷 Inquadra QR Code Caveau", style: TextStyle(color: textColor)),
                                   content: SizedBox(
                                     width: 300,
                                     height: 300,
@@ -2837,7 +2836,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                                 scannedVal = scannedVal.split("id=").last.split("&").first;
                                               }
                                               inputController.text = scannedVal;
-                                              Navigator.pop(context);
+                                              Navigator.pop(dlgCtx);
                                               ScaffoldMessenger.of(context).showSnackBar(
                                                 SnackBar(content: Text("✅ ID rilevato: $scannedVal")),
                                               );
@@ -3181,7 +3180,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                     });
                                     _salvaPromemoriaSuCloud();
                                     _mostraNotificaScadenza(titoloScadenza, dataScadenza);
-                                    Navigator.pop(context);
+                                    Navigator.pop(dlgCtx);
                                   }
                                 },
                                 child: Text("Salva", style: TextStyle(color: (_isDarkTheme) ? Colors.white : Colors.black87)),
