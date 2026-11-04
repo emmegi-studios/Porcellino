@@ -2875,15 +2875,17 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                           }
                           if (txt.isNotEmpty) {
                             _caveauId = txt;
-                            final prefs = await SharedPreferences.getInstance();
-                            await prefs.setString('caveauId', txt);
-                            _ascoltaCloudFirestore();
-                            await _sincronizzaCloud();
                             setState(() {});
                             if (ctx.mounted) Navigator.pop(ctx);
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(content: Text('👥 Caveau collegato e sincronizzato in tempo reale!')),
                             );
+                            try {
+                              final prefs = await SharedPreferences.getInstance();
+                              await prefs.setString('caveauId', txt);
+                              _ascoltaCloudFirestore();
+                              _sincronizzaCloud();
+                            } catch (_) {}
                           }
                         },
                       ),
