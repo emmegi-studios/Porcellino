@@ -2102,6 +2102,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 setState(() {
                   portafogli[index]['attuale'] += val;
                 });
+                _salvaPortafogli();
+                _sincronizzaCloud();
                 Navigator.pop(ctx);
               }
             },
@@ -2547,6 +2549,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         "recurrence": _selectedRecurrence,
                         "author": _nomeUtenteDinamico
                       });
+            _sincronizzaCloud();
                       if (_selectedType.contains('Entrata')) {
                         patrimonio += amount;
                         entrateMese += amount;
