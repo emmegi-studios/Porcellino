@@ -518,49 +518,113 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   void _eseguiComandoDaTesto(String text) {
     String t = text.toLowerCase();
-    if (t.contains("tema scuro") || t.contains("piggy dark")) {
+
+    // 1. CAMBIO TEMA
+    if (t.contains("tema scuro") || t.contains("piggy dark") || t.contains("modalità scura")) {
       setState(() { _currentTheme = 'Piggy Dark'; });
       SharedPreferences.getInstance().then((p) => p.setString("selectedTheme", 'Piggy Dark'));
       return;
-    } else if (t.contains("tema chiaro") || t.contains("piggy white")) {
+    } else if (t.contains("tema chiaro") || t.contains("piggy white") || t.contains("modalità chiara")) {
       setState(() { _currentTheme = 'Piggy White'; });
       SharedPreferences.getInstance().then((p) => p.setString("selectedTheme", 'Piggy White'));
       return;
     }
 
+    // 2. ELIMINAZIONE ULTIMO MOVIMENTO
+    if ((t.contains("cancella") || t.contains("elimina") || t.contains("rimuovi") || t.contains("annulla")) &&
+        (t.contains("transazione") || t.contains("movimento") || t.contains("spesa") || t.contains("ultimo") || t.contains("ultima"))) {
+      if (transazioni.isNotEmpty) {
+        _eliminaTransazioneByObject(transazioni.first);
+      }
+      return;
+    }
+
+    // Estrazione importo numerico
     final regNum = RegExp(r'(\d+(?:[.,]\d+)?)');
     final match = regNum.firstMatch(t);
-    if (match != null) {
-      double imp = double.tryParse(match.group(1)!.replaceAll(',', '.')) ?? 0.0;
-      if (imp > 0) {
-        bool isEntrata = t.contains("aggiungi") || t.contains("stipendio") || t.contains("guadagno") || t.contains("entrata") || t.contains("accredito");
-        String cat = isEntrata ? "💰 Stipendio / Entrate" : "🛒 Altro";
-        if (t.contains("cibo") || t.contains("spesa")) cat = "🍔 Cibo / Spesa";
-        if (t.contains("animali") || t.contains("cane")) cat = "🐾 Animali";
-        if (t.contains("svago") || t.contains("gioco")) cat = "🎮 Svago / Hobbies";
+    final double imp = match != null ? (double.tryParse(match.group(1)!.replaceAll(',', '.')) ?? 0.0) : 0.0;
 
-        Map<String, dynamic> nuovaTx = {
-          'type': isEntrata ? 'Entrata (Guadagno)' : 'Uscita (Spesa)',
-          'amount': imp,
-          'category': cat,
-          'note': 'Eseguito da Piggy AI',
-          'data': DateTime.now().toString().split(' ')[0],
-          'recurrence': 'Nessuna',
-          'author': 'Piggy AI',
-        };
-
+    // 3. VERSAMENTO IN PORTAFOGLIO / SALVADANAIO
+    if (imp > 0 && (t.contains("versa") || t.contains("finanzia") || t.contains("salvadanaio") || t.contains("accantona") || t.contains("portafoglio"))) {
+      bool trovato = false;
+      for (int i = 0; i < portafogli.length; i++) {
+        String nomeP = portafogli[i]['nome'].toString().toLowerCase();
+        if (t.contains(nomeP)) {
+          setState(() {
+            portafogli[i]['attuale'] = ((portafogli[i]['attuale'] as num?)?.toDouble() ?? 0.0) + imp;
+          });
+          _salvaPortafogli();
+          _sincronizzaCloud();
+          trovato = true;
+          break;
+        }
+      }
+      if (!trovato && portafogli.isNotEmpty) {
         setState(() {
-          transazioni.insert(0, nuovaTx);
-          if (isEntrata) {
-            patrimonio += imp;
-            entrateMese += imp;
-          } else {
-            patrimonio -= imp;
-            usciteMese += imp;
-          }
+          portafogli[0]['attuale'] = ((portafogli[0]['attuale'] as num?)?.toDouble() ?? 0.0) + imp;
+        });
+        _salvaPortafogli();
+        _sincronizzaCloud();
+      }
+      return;
+    }
+
+    // 4. AGGIUNTA PROMEMORIA / NOTA
+    if (t.contains("ricordami") || t.contains("promemoria") || t.contains("nota")) {
+      String testoNote = text.replaceAll(RegExp(r'(ricordami|promemoria|nota|aggiungi)', caseSensitive: false), '').trim();
+      if (testoNote.isNotEmpty) {
+        setState(() {
+          _promemoria.add({
+            'testo': testoNote,
+            'data': DateTime.now().toString().split(' ')[0],
+            'completato': false,
+          });
         });
         _sincronizzaCloud();
       }
+      return;
+    }
+
+    // 5. TRANSAZIONE SPESA / ENTRATA STANDARD
+    if (imp > 0) {
+      bool isEntrata = t.contains("stipendio") || t.contains("guadagno") || t.contains("entrata") || t.contains("accredito") || t.contains("incasso") || t.contains("rimborso");
+      
+      String cat = isEntrata ? "💰 Stipendio / Entrate" : "🛒 Altro";
+      if (t.contains("cibo") || t.contains("spesa") || t.contains("supermercato") || t.contains("ristorante") || t.contains("pizza") || t.contains("cena")) {
+        cat = "🍔 Cibo / Spesa";
+      } else if (t.contains("animali") || t.contains("cane") || t.contains("gatto") || t.contains("roy") || t.contains("vet") || t.contains("croccantini")) {
+        cat = "🐾 Animali";
+      } else if (t.contains("svago") || t.contains("gioco") || t.contains("hobbies") || t.contains("playstation") || t.contains("cinema")) {
+        cat = "🎮 Svago / Hobbies";
+      } else if (t.contains("benzina") || t.contains("gasolio") || t.contains("auto") || t.contains("macchina") || t.contains("meccanico") || t.contains("trasporti")) {
+        cat = "🚗 Trasporti / Auto";
+      } else if (t.contains("bolletta") || t.contains("luce") || t.contains("gas") || t.contains("affitto") || t.contains("casa") || t.contains("internet")) {
+        cat = "🏠 Casa / Utensili";
+      } else if (t.contains("farmacia") || t.contains("medico") || t.contains("salute") || t.contains("visita")) {
+        cat = "💊 Salute";
+      }
+
+      Map<String, dynamic> nuovaTx = {
+        'type': isEntrata ? 'Entrata (Guadagno)' : 'Uscita (Spesa)',
+        'amount': imp,
+        'category': cat,
+        'note': 'Eseguito via Piggy AI: "$text"',
+        'data': DateTime.now().toString().split(' ')[0],
+        'recurrence': 'Nessuna',
+        'author': _nomeUtenteDinamico.isNotEmpty ? _nomeUtenteDinamico : 'Piggy AI',
+      };
+
+      setState(() {
+        transazioni.insert(0, nuovaTx);
+        if (isEntrata) {
+          patrimonio += imp;
+          entrateMese += imp;
+        } else {
+          patrimonio -= imp;
+          usciteMese += imp;
+        }
+      });
+      _sincronizzaCloud();
     }
   }
 
