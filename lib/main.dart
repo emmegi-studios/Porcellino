@@ -176,6 +176,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   void dispose() {
+    _caveauSub?.cancel();
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
@@ -1775,9 +1776,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           
           if (!mounted) return;
           setState(() {
-            patrimonio = (data['patrimonio'] ?? patrimonio).toDouble();
-            entrateMese = (data['entrateMese'] ?? entrateMese).toDouble();
-            usciteMese = (data['usciteMese'] ?? usciteMese).toDouble();
+            patrimonio = (data['patrimonio'] as num?)?.toDouble() ?? patrimonio;
+            entrateMese = (data['entrateMese'] as num?)?.toDouble() ?? entrateMese;
+            usciteMese = (data['usciteMese'] as num?)?.toDouble() ?? usciteMese;
             
             if (data['speseRicorrenti'] != null) {
               final List decodedR = data['speseRicorrenti'];
