@@ -1748,9 +1748,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       _currentTheme = 'Piggy Dark';
       _selectedPersonality = prefs.getString('piggyPersonality') ?? 'Cyber-Tecno';
       _caveauId = prefs.getString('caveauId') ?? '';
-    if (_caveauId.isNotEmpty) {
-      _ascoltaCloudFirestore();
-    }
       if (_caveauId.isNotEmpty) {
         _ascoltaCloudFirestore();
       }
