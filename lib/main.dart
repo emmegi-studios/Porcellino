@@ -814,7 +814,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             'data': "${oggi.year}-${oggi.month.toString().padLeft(2, '0')}-${oggi.day.toString().padLeft(2, '0')}",
             'category': r['category'] ?? 'Ricorrente',
             'amount': amt,
-            'tipo': tipo,
+            'tipo': tipo, 'type': tipo,
             'author': _nomeUtenteDinamico,
             'note': "Ricorrente: ${r['nome'] ?? ''}"
           });
@@ -1868,7 +1868,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       double calcUscite = 0.0;
       for (var item in transazioni) {
         final amt = (item['amount'] as num?)?.toDouble() ?? 0.0;
-        final type = item['type']?.toString() ?? '';
+        final type = (item['type'] ?? item['tipo'] ?? '').toString();
         if (type.contains('Entrata')) {
           calcPatrimonio += amt;
           calcEntrate += amt;
