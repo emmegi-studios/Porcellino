@@ -1446,7 +1446,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           ),
           ElevatedButton(
             onPressed: () {
-              final val = double.tryParse(controller.text);
+              final val = double.tryParse(controller.text.trim().replaceAll(',', '.'));
               if (val != null && val > 0) {
                 _saveBudget(val);
               }
