@@ -1880,6 +1880,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       entrateMese = calcEntrate;
       usciteMese = calcUscite;
     });
+    _sincronizzaCloud();
     try {
       final prefsTx = await SharedPreferences.getInstance();
       await prefsTx.setDouble('patrimonio', patrimonio);
@@ -2754,16 +2755,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     ),
                     icon: Icon(Icons.link_off),
                     label: Text('🚫 Scollega Caveau e Torna Locale', style: TextStyle(fontWeight: FontWeight.bold)),
-                    onPressed: () async {
-                      _caveauId = '';
-                      final prefs = await SharedPreferences.getInstance();
-                      await prefs.setString('caveauId', '');
-                      setState(() {});
-                      setMState(() {});
+                    onPressed: () {
                       if (ctx.mounted) Navigator.pop(ctx);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('🔒 Disconnesso: ora sei in Modalità Caveau Locale.')),
-                      );
+                      _scollegaCaveauCondiviso();
                     },
                   ),
                 ),
