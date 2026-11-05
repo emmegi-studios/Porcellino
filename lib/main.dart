@@ -176,7 +176,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   void dispose() {
-    _caveauSub?.cancel();
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
@@ -1350,6 +1349,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   @override
   void dispose() {
+    _caveauSub?.cancel();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
