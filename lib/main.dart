@@ -1719,7 +1719,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         double calcUscite = 0.0;
         for (var tx in transazioni) {
           final amt = (tx['amount'] as num?)?.toDouble() ?? 0.0;
-          final type = tx['type']?.toString() ?? '';
+          final type = (tx['type'] ?? tx['tipo'] ?? '').toString();
           if (type.contains('Entrata')) {
             calcPatrimonio += amt;
             calcEntrate += amt;
